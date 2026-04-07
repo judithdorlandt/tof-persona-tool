@@ -5,13 +5,12 @@ export default function Home({ setPage }) {
 
   return (
     <div
-      className="fade-up"
       style={{
         minHeight: 'calc(100vh - 88px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: isMobile ? '24px 16px 36px' : '20px 16px',
+        padding: isMobile ? '28px 16px 36px' : '20px 16px',
         background: '#f7f2ec',
         boxSizing: 'border-box',
       }}
@@ -23,7 +22,7 @@ export default function Home({ setPage }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          gap: isMobile ? 18 : 24,
+          gap: isMobile ? 18 : 22,
         }}
       >
         {/* HEADER */}
@@ -42,13 +41,13 @@ export default function Home({ setPage }) {
 
           <h1
             style={{
-              fontSize: isMobile ? 'clamp(42px, 10vw, 58px)' : 'clamp(56px, 7vw, 92px)',
-              lineHeight: isMobile ? 1.02 : 0.96,
+              fontSize: 'clamp(34px, 4.8vw, 66px)',
+              lineHeight: 1.08,
               fontFamily: 'Playfair Display',
               fontWeight: 500,
-              letterSpacing: '-0.03em',
               margin: 0,
-              maxWidth: 900,
+              maxWidth: 820,
+              color: '#1f1b18',
             }}
           >
             Je werkplek klopt.
@@ -60,11 +59,11 @@ export default function Home({ setPage }) {
 
           <p
             style={{
-              marginTop: 18,
-              maxWidth: 700,
-              lineHeight: 1.6,
+              marginTop: 16,
+              maxWidth: 620,
+              lineHeight: 1.58,
               color: '#444',
-              fontSize: isMobile ? 17 : 17,
+              fontSize: 16,
             }}
           >
             Niet omdat ze niet willen — maar omdat de omgeving niet altijd aansluit
@@ -96,6 +95,7 @@ export default function Home({ setPage }) {
             onClick={() => setPage('intro')}
             style={{
               background: 'transparent',
+              color: '#1a1a1a',
               border: '1px solid #1a1a1a',
               padding: '14px 22px',
               borderRadius: 10,
@@ -109,14 +109,14 @@ export default function Home({ setPage }) {
           </button>
         </div>
 
-        {/* TIJD BADGE */}
+        {/* TIJD */}
         <div
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
-            background: 'rgba(176,82,82,.08)',
-            border: '1px solid rgba(176,82,82,.16)',
+            background: 'rgba(184,92,92,.08)',
+            border: '1px solid rgba(184,92,92,.16)',
             borderRadius: 999,
             padding: '8px 14px',
             fontSize: 12,
@@ -146,12 +146,16 @@ export default function Home({ setPage }) {
             accent="#6b8f7b"
             title="Voor teams"
             text="Zie waar energie lekt, waar het schuurt en welke werkstijlen elkaar versterken of juist tegenwerken."
+            locked
+            lockColor="#6b8f7b"
           />
 
           <FeatureCard
             accent="#c7a24a"
             title="Voor leiding"
             text="Gebruik persona-inzichten om beter te sturen op gedrag, samenwerking en de juiste werkomgeving."
+            locked
+            lockColor="#c7a24a"
           />
         </div>
 
@@ -199,7 +203,7 @@ export default function Home({ setPage }) {
 
             <p
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: 'Playfair Display',
                 fontStyle: 'italic',
                 fontSize: isMobile ? 17 : 20,
                 lineHeight: 1.6,
@@ -236,7 +240,7 @@ export default function Home({ setPage }) {
           </a>
         </div>
 
-        {/* FOOTER / PRIVACY */}
+        {/* PRIVACY */}
         <div
           style={{
             background: '#efe5db',
@@ -266,7 +270,7 @@ export default function Home({ setPage }) {
   );
 }
 
-function FeatureCard({ accent, title, text }) {
+function FeatureCard({ accent, title, text, locked = false, lockColor = '#999' }) {
   return (
     <div
       style={{
@@ -276,8 +280,26 @@ function FeatureCard({ accent, title, text }) {
         borderTop: `4px solid ${accent}`,
         border: '1px solid #e7ddd4',
         minHeight: 140,
+        position: 'relative',
       }}
     >
+      {locked && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            background: lockColor,
+            color: 'white',
+            fontSize: 10,
+            padding: '3px 6px',
+            borderRadius: 6,
+          }}
+        >
+          🔒
+        </div>
+      )}
+
       <h3
         style={{
           fontFamily: 'Playfair Display',
