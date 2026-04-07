@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ARCHETYPES } from '../data';
 
 export default function Library() {
@@ -57,7 +57,7 @@ export default function Library() {
             style={{
                 maxWidth: 1180,
                 margin: '0 auto',
-                padding: isMobile ? '40px 16px 64px' : '56px 24px 80px',
+                padding: isMobile ? '32px 14px 56px' : '56px 24px 80px',
             }}
         >
             <div
@@ -74,7 +74,7 @@ export default function Library() {
 
             <h1
                 style={{
-                    fontSize: isMobile ? 38 : 54,
+                    fontSize: isMobile ? 36 : 54,
                     lineHeight: 1.05,
                     fontFamily: 'Playfair Display',
                     fontWeight: 500,
@@ -87,14 +87,14 @@ export default function Library() {
             <p
                 style={{
                     marginTop: 16,
-                    maxWidth: 700,
+                    maxWidth: 760,
                     color: '#5d514a',
                     fontSize: isMobile ? 16 : 18,
                     lineHeight: 1.6,
                 }}
             >
-                Iedere persona brengt iets anders mee. Klik op een kaart en ontdek wat
-                deze persoon nodig heeft in werkplek, ICT en samenwerking.
+                Iedere persona werkt net even anders. Klik op een kaart en ontdek wat
+                deze persoon nodig heeft in werkomgeving, ICT en samenwerking.
             </p>
 
             <div
@@ -130,6 +130,7 @@ export default function Library() {
                             <button
                                 type="button"
                                 onClick={() => handleToggle(a.id)}
+                                onMouseLeave={(e) => e.currentTarget.blur()}
                                 style={{
                                     width: '100%',
                                     textAlign: 'left',
@@ -147,6 +148,7 @@ export default function Library() {
                                     overflow: 'hidden',
                                     transition: 'all 0.25s ease',
                                     filter: isDimmed ? 'saturate(0.85)' : 'none',
+                                    outline: 'none',
                                 }}
                             >
                                 <div style={{ padding: isMobile ? '20px 18px 18px' : '24px 24px 20px' }}>
@@ -178,7 +180,7 @@ export default function Library() {
                                                     color: '#4d433d',
                                                     fontSize: isMobile ? 15 : 17,
                                                     lineHeight: 1.55,
-                                                    maxWidth: 420,
+                                                    maxWidth: 460,
                                                 }}
                                             >
                                                 {a.short}
@@ -306,7 +308,7 @@ export default function Library() {
                                                     style={{
                                                         color: '#4d433d',
                                                         fontSize: 14,
-                                                        lineHeight: 1.5,
+                                                        lineHeight: 1.55,
                                                     }}
                                                 >
                                                     {a.bricks}
@@ -335,7 +337,7 @@ export default function Library() {
                                                     style={{
                                                         color: '#4d433d',
                                                         fontSize: 14,
-                                                        lineHeight: 1.5,
+                                                        lineHeight: 1.55,
                                                     }}
                                                 >
                                                     {a.bytes}
@@ -364,13 +366,52 @@ export default function Library() {
                                                     style={{
                                                         color: '#4d433d',
                                                         fontSize: 14,
-                                                        lineHeight: 1.5,
+                                                        lineHeight: 1.55,
                                                     }}
                                                 >
                                                     {a.behavior}
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {!!a.energycost?.length && (
+                                            <div
+                                                style={{
+                                                    background: 'rgba(255,255,255,0.78)',
+                                                    borderRadius: 16,
+                                                    padding: '16px 18px',
+                                                    borderLeft: `4px solid ${accent}`,
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        fontSize: 12,
+                                                        letterSpacing: 1.3,
+                                                        textTransform: 'uppercase',
+                                                        color: '#7a6d66',
+                                                        marginBottom: 8,
+                                                    }}
+                                                >
+                                                    Waar deze persona op leegloopt
+                                                </div>
+
+                                                <ul
+                                                    style={{
+                                                        margin: 0,
+                                                        paddingLeft: 18,
+                                                        color: '#4d433d',
+                                                        fontSize: 14,
+                                                        lineHeight: 1.55,
+                                                    }}
+                                                >
+                                                    {a.energycost.slice(0, 3).map((item) => (
+                                                        <li key={item} style={{ marginBottom: 4 }}>
+                                                            {item}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </button>

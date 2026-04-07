@@ -1,10 +1,18 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ARCHETYPES } from '../data';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import Feedback from './feedback';
 
 export default function Results({ resultData }) {
     const cardRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const onResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     if (!resultData) {
         return (
@@ -54,90 +62,38 @@ export default function Results({ resultData }) {
         vernieuwer: '#d08c5b',
     };
 
-    const coachMap = {
-        maker: {
-            bricks:
-                'Geef ruimte voor vrijheid, afwisseling en plekken waar ideeën direct mogen ontstaan. Deze persona floreert niet in kaders, maar in beweging.',
-            bytes:
-                'Houd tools licht, intuïtief en flexibel. Alles wat te veel stappen, controle of vaste formats vraagt, haalt snelheid uit het maakproces.',
-            behavior:
-                'Werk met vertrouwen, autonomie en experimenteerruimte. Minder dichtregelen, meer mogelijk maken.',
-        },
-        groeier: {
-            bricks:
-                'Creëer een omgeving die ontwikkeling uitlokt: plekken om te leren, uit te wisselen en vooruit te bewegen. Stilstand voelt hier snel als verlies.',
-            bytes:
-                'Zorg voor feedback, zicht op voortgang en toegang tot nieuwe kennis en inspiratie. Deze persona wil voelen dat er iets groeit.',
-            behavior:
-                'Stimuleer ontwikkeling actief. Geef uitdaging, perspectief en ruimte om steeds een volgende stap te zetten.',
-        },
-        presteerder: {
-            bricks:
-                'Bied een omgeving die focus, tempo en resultaat ondersteunt. Minder ruis, meer helderheid en vaart.',
-            bytes:
-                'Maak doelen, voortgang en prioriteiten scherp zichtbaar. Heldere dashboards en duidelijke keuzes werken hier beter dan eindeloos afstemmen.',
-            behavior:
-                'Wees duidelijk over verwachtingen. Geef eigenaarschap en stuur op resultaat, niet op bijzaken.',
-        },
-        denker: {
-            bricks:
-                'Bied rust, concentratie en voorbereidingstijd. Diepgang ontstaat niet tussen de interrupties door.',
-            bytes:
-                'Geef toegang tot goede informatie, logische systemen en ruimte om eerst te begrijpen voordat er besloten wordt.',
-            behavior:
-                'Werk zorgvuldig, onderbouw keuzes en forceer geen snelheid als de analyse nog niet klopt.',
-        },
-        verbinder: {
-            bricks:
-                'Maak ruimte voor ontmoeting, contact en informele uitwisseling. Verbinding heeft een plek nodig om te kunnen ontstaan.',
-            bytes:
-                'Zorg dat communicatiekanalen menselijk en laagdrempelig blijven. Niet alles hoeft efficiënt te zijn om goed te werken.',
-            behavior:
-                'Betrek deze persona vroeg. Afstemming, relatie en veiligheid zijn hier geen bijzaak, maar randvoorwaarde.',
-        },
-        teamspeler: {
-            bricks:
-                'Ondersteun samenwerking met gedeelde plekken, overzicht en een omgeving waarin samen werken logisch en prettig voelt.',
-            bytes:
-                'Maak informatie transparant, gedeeld en makkelijk vindbaar. Deze persona werkt beter als het geheel zichtbaar is.',
-            behavior:
-                'Werk met gezamenlijke ritmes, duidelijke afstemming en aandacht voor harmonie in de groep.',
-        },
-        zekerzoeker: {
-            bricks:
-                'Bied helderheid, structuur en voorspelbaarheid. Een stabiele omgeving geeft rust en maakt kwaliteit mogelijk.',
-            bytes:
-                'Gebruik duidelijke systemen, vaste afspraken en informatie die klopt en op tijd beschikbaar is. Consistentie is hier kracht.',
-            behavior:
-                'Communiceer helder, maak verwachtingen expliciet en voorkom onnodige verrassingen. Duidelijkheid geeft vertrouwen.',
-        },
-        vernieuwer: {
-            bricks:
-                'Maak ruimte voor frisse prikkels, nieuwe invalshoeken en omgevingen die verandering niet afremmen maar uitnodigen.',
-            bytes:
-                'Geef toegang tot nieuwe tools, inspiratie en snelle manieren om iets uit te proberen. Deze persona wil vooruit kunnen denken én doen.',
-            behavior:
-                'Nodig uit tot vernieuwing. Geef ruimte om bestaande patronen open te breken en nieuwe routes te verkennen.',
-        },
-    };
-
     const primaryColor = colorMap[primary?.id] || '#b85c5c';
     const secondaryColor = colorMap[secondary?.id] || '#c7bdb1';
     const tertiaryColor = colorMap[tertiary?.id] || '#d8cec5';
-
-    const coach = coachMap[primary?.id] || {
-        bricks:
-            'Zorg voor een omgeving die aansluit bij wat deze persoon nodig heeft om goed te werken.',
-        bytes:
-            'Gebruik systemen en informatie die duidelijk, ondersteunend en passend zijn.',
-        behavior:
-            'Werk met heldere afspraken en gedrag dat deze persoon helpt om tot zijn of haar recht te komen.',
-    };
 
     const scoreEntries = Object.entries(resultData.scores || {}).sort(
         (a, b) => b[1] - a[1]
     );
     const maxScore = Math.max(...scoreEntries.map(([, v]) => v), 1);
+
+    const pickLeadSentence = (text) => {
+        if (!text) return '';
+        const first = text.split('. ')[0]?.trim() || '';
+        if (!first) return '';
+        return first.endsWith('.') ? first : `${first}.`;
+    };
+
+    const lowerFirst = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toLowerCase() + text.slice(1);
+    };
+
+    const combinedCoach = {
+        bricks: `${primary?.bricks || ''} Vanuit jouw mix zie je daarnaast ook behoefte aan ${lowerFirst(
+            pickLeadSentence(secondary?.bricks)
+        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.bricks))}`,
+        bytes: `${primary?.bytes || ''} Vanuit jouw mix helpt het daarnaast als er ook ruimte is voor ${lowerFirst(
+            pickLeadSentence(secondary?.bytes)
+        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.bytes))}`,
+        behavior: `${primary?.behavior || ''} In jouw mix zie je daarnaast ook dat ${secondary?.name?.toLowerCase() || 'je tweede persona'} en ${tertiary?.name?.toLowerCase() || 'je derde persona'} vragen om ${lowerFirst(
+            pickLeadSentence(secondary?.behavior)
+        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.behavior))}`,
+    };
 
     const downloadCardAsPDF = async () => {
         if (!cardRef.current) return;
@@ -164,12 +120,18 @@ export default function Results({ resultData }) {
     };
 
     return (
-        <div style={{ maxWidth: 1180, margin: '0 auto', padding: '56px 24px 80px' }}>
+        <div
+            style={{
+                maxWidth: 1180,
+                margin: '0 auto',
+                padding: isMobile ? '28px 14px 56px' : '56px 24px 80px',
+            }}
+        >
             <div
                 style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: isMobile ? 'flex-start' : 'center',
                     gap: 16,
                     flexWrap: 'wrap',
                     marginBottom: 24,
@@ -190,7 +152,7 @@ export default function Results({ resultData }) {
 
                     <h1
                         style={{
-                            fontSize: 54,
+                            fontSize: isMobile ? 36 : 54,
                             lineHeight: 1.05,
                             fontFamily: 'Playfair Display',
                             fontWeight: 500,
@@ -212,6 +174,7 @@ export default function Results({ resultData }) {
                         cursor: 'pointer',
                         fontSize: 15,
                         fontWeight: 500,
+                        width: isMobile ? '100%' : 'auto',
                     }}
                 >
                     Download kaart (A5 liggend)
@@ -228,14 +191,15 @@ export default function Results({ resultData }) {
                     overflow: 'hidden',
                     minHeight: 540,
                     display: 'grid',
-                    gridTemplateColumns: '0.95fr 1.05fr',
+                    gridTemplateColumns: isMobile ? '1fr' : '0.95fr 1.05fr',
                 }}
             >
                 {/* LINKS */}
                 <div
                     style={{
-                        padding: '34px 28px 28px',
-                        borderRight: '1px solid #eadfd4',
+                        padding: isMobile ? '22px 18px 18px' : '34px 28px 28px',
+                        borderRight: isMobile ? 'none' : '1px solid #eadfd4',
+                        borderBottom: isMobile ? '1px solid #eadfd4' : 'none',
                         display: 'grid',
                         gridTemplateRows: 'auto auto 1fr',
                         gap: 16,
@@ -260,7 +224,7 @@ export default function Results({ resultData }) {
 
                         <div
                             style={{
-                                fontSize: 22,
+                                fontSize: isMobile ? 20 : 22,
                                 color: '#7a6d66',
                                 marginBottom: 8,
                                 letterSpacing: 0.2,
@@ -272,7 +236,7 @@ export default function Results({ resultData }) {
                         <h2
                             style={{
                                 fontFamily: 'Playfair Display',
-                                fontSize: 38,
+                                fontSize: isMobile ? 32 : 38,
                                 lineHeight: 1.08,
                                 margin: 0,
                                 color: '#1f1b18',
@@ -299,16 +263,14 @@ export default function Results({ resultData }) {
                                 fontSize: 16,
                                 lineHeight: 1.55,
                                 color: '#4d433d',
-                                maxWidth: 380,
+                                maxWidth: 420,
                             }}
                         >
-                            <span style={{ fontWeight: 500 }}>
-                                {primary?.short}
-                            </span>
+                            <span style={{ fontWeight: 500 }}>{primary?.short}</span>
                         </p>
                     </div>
 
-                    {/* VERDELING LINKS */}
+                    {/* VERDELING */}
                     <div
                         style={{
                             background: 'rgba(255,255,255,0.55)',
@@ -372,7 +334,7 @@ export default function Results({ resultData }) {
                         </div>
                     </div>
 
-                    {/* MIX LINKS */}
+                    {/* MIX */}
                     <div
                         style={{
                             background: '#f3ece4',
@@ -466,7 +428,7 @@ export default function Results({ resultData }) {
                 {/* RECHTS */}
                 <div
                     style={{
-                        padding: '34px 28px 28px',
+                        padding: isMobile ? '22px 18px 18px' : '34px 28px 28px',
                         display: 'grid',
                         gridTemplateRows: 'auto auto auto 1fr',
                         gap: 16,
@@ -543,8 +505,8 @@ export default function Results({ resultData }) {
                             >
                                 Bricks
                             </div>
-                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.5, fontSize: 14 }}>
-                                {coach.bricks}
+                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.55, fontSize: 14 }}>
+                                {combinedCoach.bricks}
                             </p>
                         </div>
 
@@ -560,8 +522,8 @@ export default function Results({ resultData }) {
                             >
                                 Bytes
                             </div>
-                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.5, fontSize: 14 }}>
-                                {coach.bytes}
+                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.55, fontSize: 14 }}>
+                                {combinedCoach.bytes}
                             </p>
                         </div>
 
@@ -577,8 +539,8 @@ export default function Results({ resultData }) {
                             >
                                 Behavior
                             </div>
-                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.5, fontSize: 14 }}>
-                                {coach.behavior}
+                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.55, fontSize: 14 }}>
+                                {combinedCoach.behavior}
                             </p>
                         </div>
                     </div>
@@ -648,6 +610,8 @@ export default function Results({ resultData }) {
                     </div>
                 </div>
             </div>
+
+            <Feedback primaryPersonaName={primary?.name || ''} />
         </div>
     );
 }
