@@ -16,12 +16,18 @@ export default function Results({ resultData }) {
 
     if (!resultData) {
         return (
-            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '80px 40px' }}>
+            <div
+                style={{
+                    maxWidth: 980,
+                    margin: '0 auto',
+                    padding: isMobile ? '24px 16px 40px' : '56px 24px 80px',
+                }}
+            >
                 <div
                     style={{
                         background: 'white',
                         borderRadius: 20,
-                        padding: 32,
+                        padding: isMobile ? 22 : 32,
                         border: '1px solid #e7e0d9',
                         boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
                     }}
@@ -29,15 +35,16 @@ export default function Results({ resultData }) {
                     <h2
                         style={{
                             fontFamily: 'Playfair Display',
-                            fontSize: 40,
+                            fontSize: isMobile ? 32 : 40,
                             marginTop: 0,
                             marginBottom: 12,
+                            color: '#1f1b18',
                         }}
                     >
                         Nog geen resultaat
                     </h2>
 
-                    <p style={{ color: '#555', fontSize: 18, lineHeight: 1.6 }}>
+                    <p style={{ color: '#555', fontSize: isMobile ? 16 : 18, lineHeight: 1.6 }}>
                         Vul eerst de test in om jouw persona-profiel te zien.
                     </p>
                 </div>
@@ -119,22 +126,30 @@ export default function Results({ resultData }) {
         pdf.save(`tof-persona-${primary?.name?.toLowerCase() || 'resultaat'}.pdf`);
     };
 
+    const infoLabelStyle = {
+        fontSize: 11,
+        letterSpacing: 1.5,
+        textTransform: 'uppercase',
+        color: '#7a6d66',
+        marginBottom: 8,
+    };
+
     return (
         <div
             style={{
                 maxWidth: 1180,
                 margin: '0 auto',
-                padding: isMobile ? '28px 14px 56px' : '56px 24px 80px',
+                padding: isMobile ? '20px 12px 40px' : '40px 20px 72px',
             }}
         >
             <div
                 style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: isMobile ? 'flex-start' : 'center',
-                    gap: 16,
+                    alignItems: isMobile ? 'stretch' : 'center',
+                    gap: 14,
                     flexWrap: 'wrap',
-                    marginBottom: 24,
+                    marginBottom: 18,
                 }}
             >
                 <div>
@@ -143,20 +158,21 @@ export default function Results({ resultData }) {
                             color: '#b85c5c',
                             letterSpacing: 2,
                             fontSize: 12,
-                            marginBottom: 10,
+                            marginBottom: 8,
                             textTransform: 'uppercase',
                         }}
                     >
-                        03 — Jouw resultaat
+                        04 — Jouw resultaat
                     </div>
 
                     <h1
                         style={{
-                            fontSize: isMobile ? 36 : 54,
-                            lineHeight: 1.05,
+                            fontSize: isMobile ? 34 : 48,
+                            lineHeight: 1.02,
                             fontFamily: 'Playfair Display',
                             fontWeight: 500,
                             margin: 0,
+                            color: '#1f1b18',
                         }}
                     >
                         Jouw profiel in één oogopslag
@@ -168,16 +184,16 @@ export default function Results({ resultData }) {
                     style={{
                         background: '#1f1b18',
                         color: 'white',
-                        padding: '14px 20px',
+                        padding: '13px 18px',
                         borderRadius: 12,
                         border: 'none',
                         cursor: 'pointer',
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: 500,
                         width: isMobile ? '100%' : 'auto',
                     }}
                 >
-                    Download kaart (A5 liggend)
+                    Download kaart
                 </button>
             </div>
 
@@ -185,11 +201,10 @@ export default function Results({ resultData }) {
                 ref={cardRef}
                 style={{
                     background: 'linear-gradient(135deg, #f7f2ec 0%, #efe5db 100%)',
-                    borderRadius: 28,
+                    borderRadius: 24,
                     border: '1px solid #e3d8cd',
                     boxShadow: '0 16px 40px rgba(70, 45, 35, 0.08)',
                     overflow: 'hidden',
-                    minHeight: 540,
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : '0.95fr 1.05fr',
                 }}
@@ -197,12 +212,11 @@ export default function Results({ resultData }) {
                 {/* LINKS */}
                 <div
                     style={{
-                        padding: isMobile ? '22px 18px 18px' : '34px 28px 28px',
+                        padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',
                         borderRight: isMobile ? 'none' : '1px solid #eadfd4',
                         borderBottom: isMobile ? '1px solid #eadfd4' : 'none',
                         display: 'grid',
-                        gridTemplateRows: 'auto auto 1fr',
-                        gap: 16,
+                        gap: 12,
                     }}
                 >
                     <div>
@@ -211,12 +225,12 @@ export default function Results({ resultData }) {
                                 display: 'inline-block',
                                 background: primaryColor,
                                 color: 'white',
-                                fontSize: 12,
-                                letterSpacing: 1.5,
+                                fontSize: 11,
+                                letterSpacing: 1.4,
                                 textTransform: 'uppercase',
-                                padding: '8px 12px',
+                                padding: '7px 11px',
                                 borderRadius: 999,
-                                marginBottom: 18,
+                                marginBottom: 14,
                             }}
                         >
                             Primaire persona
@@ -224,10 +238,9 @@ export default function Results({ resultData }) {
 
                         <div
                             style={{
-                                fontSize: isMobile ? 20 : 22,
+                                fontSize: isMobile ? 18 : 20,
                                 color: '#7a6d66',
-                                marginBottom: 8,
-                                letterSpacing: 0.2,
+                                marginBottom: 6,
                             }}
                         >
                             {resultData?.name?.trim() ? `${resultData.name},` : 'Jouw profiel'}
@@ -236,8 +249,8 @@ export default function Results({ resultData }) {
                         <h2
                             style={{
                                 fontFamily: 'Playfair Display',
-                                fontSize: isMobile ? 32 : 38,
-                                lineHeight: 1.08,
+                                fontSize: isMobile ? 30 : 36,
+                                lineHeight: 1.06,
                                 margin: 0,
                                 color: '#1f1b18',
                             }}
@@ -247,11 +260,11 @@ export default function Results({ resultData }) {
 
                         <p
                             style={{
-                                marginTop: 12,
-                                fontSize: 15,
+                                marginTop: 10,
+                                fontSize: 14,
                                 color: '#4d433d',
                                 lineHeight: 1.5,
-                                maxWidth: 360,
+                                maxWidth: 430,
                             }}
                         >
                             Dit zegt iets belangrijks over hoe jij werkt, keuzes maakt en energie krijgt.
@@ -259,38 +272,27 @@ export default function Results({ resultData }) {
 
                         <p
                             style={{
-                                marginTop: 18,
-                                fontSize: 16,
-                                lineHeight: 1.55,
+                                marginTop: 14,
+                                fontSize: 15,
+                                lineHeight: 1.5,
                                 color: '#4d433d',
-                                maxWidth: 420,
+                                maxWidth: 450,
                             }}
                         >
                             <span style={{ fontWeight: 500 }}>{primary?.short}</span>
                         </p>
                     </div>
 
-                    {/* VERDELING */}
                     <div
                         style={{
-                            background: 'rgba(255,255,255,0.55)',
-                            borderRadius: 18,
-                            padding: '16px 18px',
+                            background: 'rgba(255,255,255,0.58)',
+                            borderRadius: 16,
+                            padding: '14px 16px',
                         }}
                     >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.5,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 10,
-                            }}
-                        >
-                            Verdeling over alle persona&apos;s
-                        </div>
+                        <div style={infoLabelStyle}>Verdeling over alle persona&apos;s</div>
 
-                        <div style={{ display: 'grid', gap: 9 }}>
+                        <div style={{ display: 'grid', gap: 8 }}>
                             {scoreEntries.map(([id, value]) => {
                                 const a = getA(id);
                                 const width = `${Math.max(8, (Number(value) / maxScore) * 100)}%`;
@@ -302,8 +304,8 @@ export default function Results({ resultData }) {
                                             style={{
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
-                                                marginBottom: 5,
-                                                fontSize: 13,
+                                                marginBottom: 4,
+                                                fontSize: 12,
                                                 color: '#3f342f',
                                             }}
                                         >
@@ -313,7 +315,7 @@ export default function Results({ resultData }) {
 
                                         <div
                                             style={{
-                                                height: 9,
+                                                height: 8,
                                                 background: '#eadfd4',
                                                 borderRadius: 999,
                                                 overflow: 'hidden',
@@ -334,26 +336,15 @@ export default function Results({ resultData }) {
                         </div>
                     </div>
 
-                    {/* MIX */}
                     <div
                         style={{
                             background: '#f3ece4',
-                            borderRadius: 18,
-                            padding: '16px 16px',
+                            borderRadius: 16,
+                            padding: '14px',
                             borderLeft: `4px solid ${secondaryColor}`,
                         }}
                     >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.4,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 10,
-                            }}
-                        >
-                            Jouw mix
-                        </div>
+                        <div style={infoLabelStyle}>Jouw mix</div>
 
                         <div style={{ display: 'grid', gap: 10 }}>
                             {[secondary, tertiary].filter(Boolean).map((p, i) => {
@@ -363,8 +354,8 @@ export default function Results({ resultData }) {
                                     <div
                                         key={i}
                                         style={{
-                                            background: 'rgba(255,255,255,0.76)',
-                                            borderRadius: 14,
+                                            background: 'rgba(255,255,255,0.78)',
+                                            borderRadius: 12,
                                             padding: '10px 12px',
                                             borderLeft: `4px solid ${pColor}`,
                                         }}
@@ -374,11 +365,11 @@ export default function Results({ resultData }) {
                                                 display: 'inline-block',
                                                 background: pColor,
                                                 color: '#fff',
-                                                padding: '5px 9px',
+                                                padding: '4px 8px',
                                                 borderRadius: 999,
-                                                fontSize: 12,
+                                                fontSize: 11,
                                                 fontWeight: 600,
-                                                marginBottom: 6,
+                                                marginBottom: 5,
                                             }}
                                         >
                                             {i === 0 ? `2. ${p?.name}` : `3. ${p?.name}`}
@@ -386,8 +377,8 @@ export default function Results({ resultData }) {
 
                                         <div
                                             style={{
-                                                fontSize: 11,
-                                                letterSpacing: 1.2,
+                                                fontSize: 10,
+                                                letterSpacing: 1.1,
                                                 textTransform: 'uppercase',
                                                 color: '#8a7c74',
                                                 marginBottom: 3,
@@ -399,10 +390,10 @@ export default function Results({ resultData }) {
                                         <div
                                             style={{
                                                 fontFamily: 'Playfair Display',
-                                                fontSize: 20,
+                                                fontSize: 18,
                                                 lineHeight: 1.1,
                                                 color: '#1f1b18',
-                                                marginBottom: 4,
+                                                marginBottom: 3,
                                             }}
                                         >
                                             {p?.name}
@@ -428,147 +419,41 @@ export default function Results({ resultData }) {
                 {/* RECHTS */}
                 <div
                     style={{
-                        padding: isMobile ? '22px 18px 18px' : '34px 28px 28px',
+                        padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',
                         display: 'grid',
-                        gridTemplateRows: 'auto auto auto 1fr',
-                        gap: 16,
+                        gap: 12,
                     }}
                 >
-                    <div
-                        style={{
-                            background: 'rgba(255,255,255,0.72)',
-                            border: '1px solid #eadfd4',
-                            borderRadius: 18,
-                            padding: '18px 20px',
-                        }}
+                    <SectionCard
+                        label="Wat jou in beweging brengt"
+                        title="Jouw natuurlijke kracht"
+                        titleColor={primaryColor}
                     >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.5,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 8,
-                            }}
-                        >
-                            Wat jou in beweging brengt
-                        </div>
-
-                        <div
-                            style={{
-                                fontFamily: 'Playfair Display',
-                                fontSize: 28,
-                                lineHeight: 1.1,
-                                color: primaryColor,
-                                marginBottom: 10,
-                            }}
-                        >
-                            Jouw natuurlijke kracht
-                        </div>
-
-                        <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.6, fontSize: 15 }}>
+                        <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.55, fontSize: 14 }}>
                             {primary?.energy_from}
                         </p>
-                    </div>
+                    </SectionCard>
 
-                    <div
-                        style={{
-                            background: 'rgba(255,255,255,0.72)',
-                            border: '1px solid #eadfd4',
-                            borderRadius: 18,
-                            padding: '18px 20px',
-                            display: 'grid',
-                            gap: 12,
-                        }}
-                    >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.5,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 2,
-                            }}
-                        >
-                            Coachend advies
-                        </div>
-
-                        <div>
-                            <div
-                                style={{
-                                    fontFamily: 'Playfair Display',
-                                    fontSize: 22,
-                                    lineHeight: 1.1,
-                                    color: primaryColor,
-                                    marginBottom: 5,
-                                }}
-                            >
-                                Bricks
-                            </div>
-                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.55, fontSize: 14 }}>
-                                {combinedCoach.bricks}
-                            </p>
-                        </div>
-
-                        <div>
-                            <div
-                                style={{
-                                    fontFamily: 'Playfair Display',
-                                    fontSize: 22,
-                                    lineHeight: 1.1,
-                                    color: primaryColor,
-                                    marginBottom: 5,
-                                }}
-                            >
-                                Bytes
-                            </div>
-                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.55, fontSize: 14 }}>
-                                {combinedCoach.bytes}
-                            </p>
-                        </div>
-
-                        <div>
-                            <div
-                                style={{
-                                    fontFamily: 'Playfair Display',
-                                    fontSize: 22,
-                                    lineHeight: 1.1,
-                                    color: primaryColor,
-                                    marginBottom: 5,
-                                }}
-                            >
-                                Behavior
-                            </div>
-                            <p style={{ margin: 0, color: '#4d433d', lineHeight: 1.55, fontSize: 14 }}>
-                                {combinedCoach.behavior}
-                            </p>
-                        </div>
-                    </div>
+                    <SectionCard label="Coachend advies">
+                        <CoachBlock title="Bricks" color={primaryColor} text={combinedCoach.bricks} />
+                        <CoachBlock title="Bytes" color={primaryColor} text={combinedCoach.bytes} />
+                        <CoachBlock title="Behavior" color={primaryColor} text={combinedCoach.behavior} />
+                    </SectionCard>
 
                     <div
                         style={{
                             background: 'white',
-                            borderRadius: 18,
-                            padding: '16px 16px 14px',
+                            borderRadius: 16,
+                            padding: '14px 14px 12px',
                             borderTop: `4px solid ${tertiaryColor}`,
                         }}
                     >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.5,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 8,
-                            }}
-                        >
-                            Wat jou energie kost
-                        </div>
+                        <div style={infoLabelStyle}>Wat jou energie kost</div>
 
                         <div
                             style={{
                                 fontFamily: 'Playfair Display',
-                                fontSize: 24,
+                                fontSize: 22,
                                 lineHeight: 1.1,
                                 color: '#1f1b18',
                                 marginBottom: 8,
@@ -582,7 +467,7 @@ export default function Results({ resultData }) {
                                 margin: 0,
                                 paddingLeft: 18,
                                 color: '#4d433d',
-                                lineHeight: 1.5,
+                                lineHeight: 1.45,
                                 fontSize: 13,
                             }}
                         >
@@ -596,9 +481,8 @@ export default function Results({ resultData }) {
 
                     <div
                         style={{
-                            alignSelf: 'end',
-                            padding: '12px 16px',
-                            borderRadius: 16,
+                            padding: '12px 14px',
+                            borderRadius: 14,
                             background: '#e8ddd1',
                             color: '#5a4f49',
                             fontSize: 13,
@@ -611,7 +495,80 @@ export default function Results({ resultData }) {
                 </div>
             </div>
 
-            <Feedback primaryPersonaName={primary?.name || ''} />
+            <div style={{ marginTop: 16 }}>
+                <Feedback primaryPersonaName={primary?.name || ''} />
+            </div>
+        </div>
+    );
+}
+
+function SectionCard({ label, title, titleColor = '#1f1b18', children }) {
+    return (
+        <div
+            style={{
+                background: 'rgba(255,255,255,0.72)',
+                border: '1px solid #eadfd4',
+                borderRadius: 16,
+                padding: '14px 16px',
+                display: 'grid',
+                gap: 10,
+            }}
+        >
+            <div
+                style={{
+                    fontSize: 11,
+                    letterSpacing: 1.5,
+                    textTransform: 'uppercase',
+                    color: '#7a6d66',
+                    marginBottom: title ? -2 : 0,
+                }}
+            >
+                {label}
+            </div>
+
+            {title && (
+                <div
+                    style={{
+                        fontFamily: 'Playfair Display',
+                        fontSize: 24,
+                        lineHeight: 1.08,
+                        color: titleColor,
+                        marginBottom: 2,
+                    }}
+                >
+                    {title}
+                </div>
+            )}
+
+            {children}
+        </div>
+    );
+}
+
+function CoachBlock({ title, color, text }) {
+    return (
+        <div>
+            <div
+                style={{
+                    fontFamily: 'Playfair Display',
+                    fontSize: 20,
+                    lineHeight: 1.1,
+                    color,
+                    marginBottom: 5,
+                }}
+            >
+                {title}
+            </div>
+            <p
+                style={{
+                    margin: 0,
+                    color: '#4d433d',
+                    lineHeight: 1.55,
+                    fontSize: 14,
+                }}
+            >
+                {text}
+            </p>
         </div>
     );
 }
