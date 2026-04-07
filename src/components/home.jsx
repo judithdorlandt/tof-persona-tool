@@ -4,88 +4,114 @@ export default function Home({ setPage }) {
   const isMobile = window.innerWidth < 900;
 
   return (
-    <div className="fade-up">
+    <div
+      className="fade-up"
+      style={{
+        minHeight: 'calc(100vh - 88px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: isMobile ? '24px 16px 36px' : '20px 16px',
+        background: '#f7f2ec',
+        boxSizing: 'border-box',
+      }}
+    >
       <div
         style={{
-          padding: isMobile ? '40px 18px 28px' : '76px 44px 44px',
-          maxWidth: 980,
-          margin: '0 auto',
+          width: '100%',
+          maxWidth: 1100,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          gap: isMobile ? 18 : 24,
         }}
       >
-        <div
-          style={{
-            color: 'var(--rose)',
-            fontSize: 12,
-            letterSpacing: 3,
-            textTransform: 'uppercase',
-            marginBottom: 18,
-          }}
-        >
-          01 — TOF Persona Tool
+        {/* HEADER */}
+        <div>
+          <div
+            style={{
+              color: '#b85c5c',
+              letterSpacing: 2,
+              fontSize: 12,
+              marginBottom: 12,
+              textTransform: 'uppercase',
+            }}
+          >
+            01 — TOF Persona Tool
+          </div>
+
+          <h1
+            style={{
+              fontSize: isMobile ? 'clamp(42px, 10vw, 58px)' : 'clamp(56px, 7vw, 92px)',
+              lineHeight: isMobile ? 1.02 : 0.96,
+              fontFamily: 'Playfair Display',
+              fontWeight: 500,
+              letterSpacing: '-0.03em',
+              margin: 0,
+              maxWidth: 900,
+            }}
+          >
+            Je werkplek klopt.
+            <br />
+            <span style={{ color: '#b85c5c', fontStyle: 'italic' }}>
+              Je mensen nog niet altijd.
+            </span>
+          </h1>
+
+          <p
+            style={{
+              marginTop: 18,
+              maxWidth: 700,
+              lineHeight: 1.6,
+              color: '#444',
+              fontSize: isMobile ? 17 : 17,
+            }}
+          >
+            Niet omdat ze niet willen — maar omdat de omgeving niet altijd aansluit
+            op hoe ze werken. Dit instrument maakt zichtbaar wat iemand nodig heeft
+            in gedrag, werkomgeving en ondersteuning.
+          </p>
         </div>
 
-        <h1
-          style={{
-            maxWidth: 900,
-            margin: 0,
-            fontSize: isMobile ? 54 : 92,
-            lineHeight: isMobile ? 0.98 : 0.92,
-            letterSpacing: '-0.03em',
-          }}
-        >
-          Je werkplek klopt.
-          <br />
-          <em style={{ color: 'var(--rose)' }}>Je mensen nog niet altijd.</em>
-        </h1>
-
-        <p
-          style={{
-            marginTop: 26,
-            maxWidth: 700,
-            fontSize: isMobile ? 19 : 17,
-            lineHeight: 1.65,
-            color: 'var(--text)',
-          }}
-        >
-          Niet omdat ze niet willen — maar omdat de omgeving niet altijd aansluit
-          op hoe ze werken. Dit instrument maakt zichtbaar wat iemand nodig heeft
-          in gedrag, werkomgeving en ondersteuning.
-        </p>
-
-        <div
-          style={{
-            display: 'flex',
-            gap: 14,
-            flexWrap: 'wrap',
-            marginTop: 30,
-          }}
-        >
+        {/* CTA */}
+        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
           <button
-            className="btn btn-rose"
             onClick={() => setPage('quiz')}
             style={{
-              width: isMobile ? '100%' : 'auto',
-              minWidth: 180,
+              background: '#b85c5c',
+              color: 'white',
+              padding: '14px 22px',
+              borderRadius: 10,
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 15,
+              fontWeight: 500,
+              minWidth: isMobile ? '100%' : 180,
             }}
           >
             Start de test
           </button>
 
           <button
-            className="btn btn-ghost"
             onClick={() => setPage('intro')}
             style={{
-              width: isMobile ? '100%' : 'auto',
-              minWidth: 180,
+              background: 'transparent',
+              border: '1px solid #1a1a1a',
+              padding: '14px 22px',
+              borderRadius: 10,
+              cursor: 'pointer',
+              fontSize: 15,
+              fontWeight: 500,
+              minWidth: isMobile ? '100%' : 180,
             }}
           >
             Eerst even uitleg
           </button>
         </div>
 
+        {/* TIJD BADGE */}
         <div
           style={{
-            marginTop: 18,
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
@@ -94,56 +120,45 @@ export default function Home({ setPage }) {
             borderRadius: 999,
             padding: '8px 14px',
             fontSize: 12,
-            color: 'var(--muted)',
+            color: '#6c625c',
+            width: 'fit-content',
           }}
         >
           <span>⏱</span>
           <span>Duurt ongeveer 5 minuten</span>
         </div>
-      </div>
 
-      <div
-        style={{
-          maxWidth: 980,
-          margin: '0 auto',
-          padding: isMobile ? '0 18px 36px' : '0 44px 44px',
-        }}
-      >
+        {/* CARDS */}
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: 18,
+            gap: 16,
           }}
         >
           <FeatureCard
-            accent="var(--rose)"
+            accent="#b85c5c"
             title="Voor jezelf"
             text="Ontdek hoe jij werkt, waar je energie van krijgt en wat jij nodig hebt om goed tot je recht te komen."
           />
+
           <FeatureCard
-            accent="var(--green)"
+            accent="#6b8f7b"
             title="Voor teams"
             text="Zie waar energie lekt, waar het schuurt en welke werkstijlen elkaar versterken of juist tegenwerken."
           />
+
           <FeatureCard
-            accent="var(--amber)"
+            accent="#c7a24a"
             title="Voor leiding"
             text="Gebruik persona-inzichten om beter te sturen op gedrag, samenwerking en de juiste werkomgeving."
           />
         </div>
-      </div>
 
-      <div
-        style={{
-          maxWidth: 980,
-          margin: '0 auto',
-          padding: isMobile ? '0 18px 36px' : '0 44px 52px',
-        }}
-      >
+        {/* PREMIUM */}
         <div
           style={{
-            background: 'var(--dark)',
+            background: '#1f1b18',
             borderRadius: 14,
             padding: isMobile ? '22px 20px' : '28px 30px',
             display: 'flex',
@@ -175,7 +190,7 @@ export default function Home({ setPage }) {
                 fontWeight: 700,
                 letterSpacing: 3,
                 textTransform: 'uppercase',
-                color: 'var(--rose-lt)',
+                color: '#d8a8a8',
                 marginBottom: 10,
               }}
             >
@@ -202,7 +217,7 @@ export default function Home({ setPage }) {
             style={{
               flexShrink: 0,
               display: 'inline-block',
-              background: 'var(--rose)',
+              background: '#b85c5c',
               color: '#fff',
               padding: '12px 24px',
               borderRadius: 8,
@@ -220,18 +235,11 @@ export default function Home({ setPage }) {
             Neem contact op →
           </a>
         </div>
-      </div>
 
-      <div
-        style={{
-          maxWidth: 980,
-          margin: '0 auto 52px',
-          padding: isMobile ? '0 18px' : '0 44px',
-        }}
-      >
+        {/* FOOTER / PRIVACY */}
         <div
           style={{
-            background: 'var(--beige)',
+            background: '#efe5db',
             borderRadius: 10,
             padding: '14px 18px',
             display: 'flex',
@@ -243,12 +251,12 @@ export default function Home({ setPage }) {
           <p
             style={{
               fontSize: 12,
-              color: 'var(--muted)',
+              color: '#6b625d',
               lineHeight: 1.7,
               margin: 0,
             }}
           >
-            <strong style={{ color: 'var(--text)' }}>Privacy:</strong> data wordt
+            <strong style={{ color: '#2e2a27' }}>Privacy:</strong> data wordt
             anoniem gebruikt voor analyse en niet gedeeld met derden. Jouw naam
             blijft optioneel.
           </p>
@@ -262,32 +270,20 @@ function FeatureCard({ accent, title, text }) {
   return (
     <div
       style={{
-        background: 'var(--white)',
+        background: 'white',
         borderRadius: 14,
-        padding: 24,
-        border: '1px solid var(--border)',
-        position: 'relative',
-        overflow: 'hidden',
-        minHeight: 150,
+        padding: 20,
+        borderTop: `4px solid ${accent}`,
+        border: '1px solid #e7ddd4',
+        minHeight: 140,
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 4,
-          background: accent,
-        }}
-      />
-
       <h3
         style={{
-          fontFamily: "'Playfair Display', serif",
+          fontFamily: 'Playfair Display',
+          marginTop: 0,
           fontSize: 20,
-          lineHeight: 1.2,
-          color: 'var(--dark)',
+          color: '#1f1b18',
           marginBottom: 10,
         }}
       >
@@ -296,10 +292,10 @@ function FeatureCard({ accent, title, text }) {
 
       <p
         style={{
+          color: '#555',
+          marginBottom: 0,
           fontSize: 14,
-          color: 'var(--muted)',
-          lineHeight: 1.75,
-          margin: 0,
+          lineHeight: 1.7,
         }}
       >
         {text}
