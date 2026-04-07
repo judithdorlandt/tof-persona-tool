@@ -44,7 +44,14 @@ export default function Results({ resultData }) {
                         Nog geen resultaat
                     </h2>
 
-                    <p style={{ color: '#555', fontSize: isMobile ? 16 : 18, lineHeight: 1.6 }}>
+                    <p
+                        style={{
+                            color: '#555',
+                            fontSize: isMobile ? 16 : 18,
+                            lineHeight: 1.6,
+                            margin: 0,
+                        }}
+                    >
                         Vul eerst de test in om jouw persona-profiel te zien.
                     </p>
                 </div>
@@ -162,7 +169,7 @@ export default function Results({ resultData }) {
                             textTransform: 'uppercase',
                         }}
                     >
-                        04 — Jouw resultaat
+                        04 — Jouw profiel
                     </div>
 
                     <h1
@@ -193,7 +200,7 @@ export default function Results({ resultData }) {
                         width: isMobile ? '100%' : 'auto',
                     }}
                 >
-                    Download kaart
+                    Download profiel →
                 </button>
             </div>
 
@@ -209,7 +216,6 @@ export default function Results({ resultData }) {
                     gridTemplateColumns: isMobile ? '1fr' : '0.95fr 1.05fr',
                 }}
             >
-                {/* LINKS */}
                 <div
                     style={{
                         padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',
@@ -267,7 +273,7 @@ export default function Results({ resultData }) {
                                 maxWidth: 430,
                             }}
                         >
-                            Dit zegt iets belangrijks over hoe jij werkt, keuzes maakt en energie krijgt.
+                            Dit verklaart waarom sommige dingen vanzelf gaan — en andere juist energie kosten.
                         </p>
 
                         <p
@@ -416,7 +422,6 @@ export default function Results({ resultData }) {
                     </div>
                 </div>
 
-                {/* RECHTS */}
                 <div
                     style={{
                         padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',

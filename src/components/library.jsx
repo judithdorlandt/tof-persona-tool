@@ -228,7 +228,7 @@ export default function Library() {
                                         <div
                                             style={{
                                                 display: 'grid',
-                                                gridTemplateColumns: isMobile ? '1fr' : '1fr',
+                                                gridTemplateColumns: '1fr',
                                                 gap: 10,
                                             }}
                                         >
