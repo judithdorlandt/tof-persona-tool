@@ -1,12 +1,17 @@
+import React from 'react';
+
 export default function Intro({ setPage }) {
+    const isMobile = window.innerWidth < 900;
+
     return (
         <div
+            className="fade-up"
             style={{
                 minHeight: 'calc(100vh - 88px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '20px 16px',
+                padding: isMobile ? '20px 16px 24px' : '20px 16px',
                 background: '#f7f2ec',
                 boxSizing: 'border-box',
             }}
@@ -14,244 +19,180 @@ export default function Intro({ setPage }) {
             <div
                 style={{
                     width: '100%',
-                    maxWidth: 960,
+                    maxWidth: 980,
                     display: 'grid',
-                    gap: 18,
+                    gap: isMobile ? 16 : 20,
                 }}
             >
+                {/* HEADER */}
                 <div>
                     <div
                         style={{
                             color: '#b85c5c',
                             letterSpacing: 2,
                             fontSize: 12,
-                            marginBottom: 10,
+                            marginBottom: 12,
                             textTransform: 'uppercase',
                         }}
                     >
-                        02 — Voordat je begint
+                        02 — Voor je begint
                     </div>
 
                     <h1
                         style={{
-                            fontSize: 'clamp(32px, 4vw, 46px)',
+                            fontSize: 'clamp(32px, 4.4vw, 58px)',
                             lineHeight: 1.08,
                             fontFamily: 'Playfair Display',
                             fontWeight: 500,
                             margin: 0,
-                            color: '#1f1b18',
                             maxWidth: 760,
+                            color: '#1f1b18',
                         }}
                     >
-                        In een paar minuten ontdek je hoe jij het liefst werkt.
+                        Kort voordat je start.
                     </h1>
 
                     <p
                         style={{
-                            marginTop: 12,
-                            marginBottom: 0,
-                            color: '#4d433d',
-                            fontSize: 16,
-                            lineHeight: 1.55,
-                            maxWidth: 720,
+                            marginTop: 14,
+                            maxWidth: 680,
+                            lineHeight: 1.58,
+                            color: '#444',
+                            fontSize: isMobile ? 15 : 16,
                         }}
                     >
-                        Je ontdekt waar jij energie van krijgt, wat je leegtrekt en wat jij nodig hebt in werk, ICT en samenwerking.
+                        Je krijgt straks een reeks vragen over hoe jij werkt, keuzes maakt en
+                        energie krijgt. Er passen soms meerdere antwoorden bij je. Kies dan
+                        steeds het antwoord dat het meest dichtbij voelt.
                     </p>
                 </div>
 
+                {/* UITLEG BLOKKEN */}
                 <div
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
                         gap: 14,
                     }}
                 >
-                    <div
-                        style={{
-                            background: 'white',
-                            borderRadius: 18,
-                            padding: '18px 18px 16px',
-                            borderTop: '4px solid #b85c5c',
-                            boxShadow: '0 8px 22px rgba(70, 45, 35, 0.05)',
-                        }}
-                    >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.3,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 6,
-                            }}
-                        >
-                            Wat je doet
-                        </div>
+                    <InfoCard
+                        accent="#b85c5c"
+                        title="Hoe kies je?"
+                        text="Kies het antwoord dat het meest op jou lijkt. Twijfel je tussen meerdere? Ga voor wat het sterkst voelt."
+                    />
 
-                        <div
-                            style={{
-                                fontFamily: 'Playfair Display',
-                                fontSize: 24,
-                                color: '#1f1b18',
-                                marginBottom: 6,
-                            }}
-                        >
-                            Kort en scherp
-                        </div>
+                    <InfoCard
+                        accent="#6b8f7b"
+                        title="Meerdere passend?"
+                        text="Dat is normaal. Je bent geen hokje. Het resultaat laat juist ook je mix van persona’s zien."
+                    />
 
-                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, color: '#4d433d' }}>
-                            Je beantwoordt een reeks vragen over hoe jij werkt in de praktijk.
-                        </p>
-                    </div>
-
-                    <div
-                        style={{
-                            background: 'white',
-                            borderRadius: 18,
-                            padding: '18px 18px 16px',
-                            borderTop: '4px solid #7f9a8a',
-                            boxShadow: '0 8px 22px rgba(70, 45, 35, 0.05)',
-                        }}
-                    >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.3,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 6,
-                            }}
-                        >
-                            Hoe je kiest
-                        </div>
-
-                        <div
-                            style={{
-                                fontFamily: 'Playfair Display',
-                                fontSize: 24,
-                                color: '#1f1b18',
-                                marginBottom: 6,
-                            }}
-                        >
-                            Kies wat het dichtstbij ligt
-                        </div>
-
-                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, color: '#4d433d' }}>
-                            Soms passen meerdere antwoorden. Kies dan steeds wat het meest op jou lijkt.
-                        </p>
-                    </div>
-
-                    <div
-                        style={{
-                            background: 'white',
-                            borderRadius: 18,
-                            padding: '18px 18px 16px',
-                            borderTop: '4px solid #c7a24a',
-                            boxShadow: '0 8px 22px rgba(70, 45, 35, 0.05)',
-                        }}
-                    >
-                        <div
-                            style={{
-                                fontSize: 12,
-                                letterSpacing: 1.3,
-                                textTransform: 'uppercase',
-                                color: '#7a6d66',
-                                marginBottom: 6,
-                            }}
-                        >
-                            Goed om te weten
-                        </div>
-
-                        <div
-                            style={{
-                                fontFamily: 'Playfair Display',
-                                fontSize: 24,
-                                color: '#1f1b18',
-                                marginBottom: 6,
-                            }}
-                        >
-                            ± 5 minuten
-                        </div>
-
-                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5, color: '#4d433d' }}>
-                            Geen goed of fout. Je eerste gevoel is meestal het meest eerlijk.
-                        </p>
-                    </div>
+                    <InfoCard
+                        accent="#c7a24a"
+                        title="Hoe lang duurt het?"
+                        text="Ongeveer 5 minuten. Je hoeft niets voor te bereiden."
+                    />
                 </div>
 
+                {/* EXTRA REGEL */}
                 <div
                     style={{
-                        background: '#f3ece4',
-                        borderRadius: 18,
-                        padding: '16px 18px',
-                        borderLeft: '4px solid #6f7f92',
+                        background: 'white',
+                        borderRadius: 14,
+                        padding: isMobile ? '16px 16px' : '18px 20px',
+                        borderTop: '4px solid #b85c5c',
+                        border: '1px solid #e7ddd4',
                     }}
                 >
-                    <div
-                        style={{
-                            fontSize: 12,
-                            letterSpacing: 1.3,
-                            textTransform: 'uppercase',
-                            color: '#7a6d66',
-                            marginBottom: 6,
-                        }}
-                    >
-                        Wat je krijgt
-                    </div>
-
                     <p
                         style={{
                             margin: 0,
-                            color: '#4d433d',
-                            fontSize: 15,
-                            lineHeight: 1.55,
+                            color: '#4a433e',
+                            fontSize: isMobile ? 14 : 15,
+                            lineHeight: 1.6,
                         }}
                     >
-                        Na afloop zie je jouw persona, jouw mix en wat jij nodig hebt in <strong>Bricks, Bytes en Behavior</strong>.
+                        <strong style={{ color: '#1f1b18' }}>Belangrijk:</strong> dit is geen
+                        goed-fout test. Het gaat niet om wat beter klinkt, maar om wat het
+                        meest natuurlijk bij jou past.
                     </p>
                 </div>
 
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: 12,
-                        flexWrap: 'wrap',
-                        marginTop: 2,
-                    }}
-                >
-                    <button
-                        onClick={() => setPage('home')}
-                        style={{
-                            background: 'transparent',
-                            border: '1px solid #1f1b18',
-                            color: '#1f1b18',
-                            padding: '12px 18px',
-                            borderRadius: 10,
-                            cursor: 'pointer',
-                            fontSize: 14,
-                        }}
-                    >
-                        Terug
-                    </button>
-
+                {/* CTA */}
+                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
                     <button
                         onClick={() => setPage('quiz')}
                         style={{
                             background: '#b85c5c',
                             color: 'white',
                             padding: '14px 22px',
-                            borderRadius: 12,
+                            borderRadius: 10,
                             border: 'none',
                             cursor: 'pointer',
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: 500,
+                            minWidth: isMobile ? '100%' : 180,
                         }}
                     >
-                        Start de vragen
+                        Start de test
+                    </button>
+
+                    <button
+                        onClick={() => setPage('home')}
+                        style={{
+                            background: 'transparent',
+                            color: '#1a1a1a',
+                            border: '1px solid #1a1a1a',
+                            padding: '14px 22px',
+                            borderRadius: 10,
+                            cursor: 'pointer',
+                            fontSize: 15,
+                            fontWeight: 500,
+                            minWidth: isMobile ? '100%' : 180,
+                        }}
+                    >
+                        Terug
                     </button>
                 </div>
             </div>
+        </div>
+    );
+}
+
+function InfoCard({ accent, title, text }) {
+    return (
+        <div
+            style={{
+                background: 'white',
+                borderRadius: 14,
+                padding: 18,
+                borderTop: `4px solid ${accent}`,
+                border: '1px solid #e7ddd4',
+                minHeight: 122,
+            }}
+        >
+            <h3
+                style={{
+                    fontFamily: 'Playfair Display',
+                    marginTop: 0,
+                    marginBottom: 8,
+                    fontSize: 20,
+                    color: '#1f1b18',
+                }}
+            >
+                {title}
+            </h3>
+
+            <p
+                style={{
+                    color: '#555',
+                    margin: 0,
+                    fontSize: 14,
+                    lineHeight: 1.65,
+                }}
+            >
+                {text}
+            </p>
         </div>
     );
 }
