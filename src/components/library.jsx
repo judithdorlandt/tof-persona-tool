@@ -21,7 +21,6 @@ export default function Library() {
             card.scrollIntoView({
                 behavior: 'smooth',
                 block: 'nearest',
-                inline: 'nearest',
             });
         });
     }, [openId]);
@@ -54,10 +53,11 @@ export default function Library() {
 
     return (
         <div
+            className="fade-up"
             style={{
-                maxWidth: 1180,
+                maxWidth: 1120,
                 margin: '0 auto',
-                padding: isMobile ? '32px 14px 56px' : '56px 24px 80px',
+                padding: isMobile ? '20px 12px 40px' : '40px 20px 64px',
             }}
         >
             <div
@@ -65,20 +65,21 @@ export default function Library() {
                     color: '#b85c5c',
                     letterSpacing: 2,
                     fontSize: 12,
-                    marginBottom: 12,
+                    marginBottom: 10,
                     textTransform: 'uppercase',
                 }}
             >
-                04 — Persona&apos;s
+                05 — Persona&apos;s
             </div>
 
             <h1
                 style={{
-                    fontSize: isMobile ? 36 : 54,
-                    lineHeight: 1.05,
+                    fontSize: isMobile ? 34 : 48,
+                    lineHeight: 1.02,
                     fontFamily: 'Playfair Display',
                     fontWeight: 500,
                     margin: 0,
+                    color: '#1f1b18',
                 }}
             >
                 Ontdek de 8 persona&apos;s
@@ -86,23 +87,23 @@ export default function Library() {
 
             <p
                 style={{
-                    marginTop: 16,
+                    marginTop: 14,
                     maxWidth: 760,
                     color: '#5d514a',
-                    fontSize: isMobile ? 16 : 18,
+                    fontSize: isMobile ? 15 : 17,
                     lineHeight: 1.6,
                 }}
             >
                 Iedere persona werkt net even anders. Klik op een kaart en ontdek wat
-                deze persoon nodig heeft in werkomgeving, ICT en samenwerking.
+                deze persoon nodig heeft in werkomgeving, ondersteuning en samenwerking.
             </p>
 
             <div
                 style={{
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, minmax(0, 1fr))',
-                    gap: 22,
-                    marginTop: 34,
+                    gap: 16,
+                    marginTop: 22,
                     alignItems: 'start',
                 }}
             >
@@ -123,7 +124,7 @@ export default function Library() {
                             style={{
                                 scrollMarginTop: 24,
                                 transition: 'all 0.25s ease',
-                                opacity: isDimmed ? 0.55 : 1,
+                                opacity: isDimmed ? 0.6 : 1,
                                 transform: isOpen ? 'translateY(-2px)' : 'translateY(0)',
                             }}
                         >
@@ -138,34 +139,34 @@ export default function Library() {
                                         ? `linear-gradient(135deg, ${soft} 0%, #f7f2ec 100%)`
                                         : '#ffffff',
                                     border: isOpen ? `1px solid ${accent}` : '1px solid #e5d9ce',
-                                    borderTop: `6px solid ${accent}`,
-                                    borderRadius: 22,
+                                    borderTop: `4px solid ${accent}`,
+                                    borderRadius: 18,
                                     padding: 0,
                                     cursor: 'pointer',
                                     boxShadow: isOpen
-                                        ? '0 20px 40px rgba(70, 45, 35, 0.12)'
-                                        : '0 8px 22px rgba(70, 45, 35, 0.05)',
+                                        ? '0 16px 32px rgba(70, 45, 35, 0.10)'
+                                        : '0 8px 20px rgba(70, 45, 35, 0.05)',
                                     overflow: 'hidden',
                                     transition: 'all 0.25s ease',
-                                    filter: isDimmed ? 'saturate(0.85)' : 'none',
+                                    filter: isDimmed ? 'saturate(0.9)' : 'none',
                                     outline: 'none',
                                 }}
                             >
-                                <div style={{ padding: isMobile ? '20px 18px 18px' : '24px 24px 20px' }}>
+                                <div style={{ padding: isMobile ? '16px 14px 14px' : '18px 18px 16px' }}>
                                     <div
                                         style={{
                                             display: 'flex',
                                             justifyContent: 'space-between',
                                             alignItems: 'flex-start',
-                                            gap: 16,
+                                            gap: 12,
                                         }}
                                     >
                                         <div>
                                             <h2
                                                 style={{
                                                     fontFamily: 'Playfair Display',
-                                                    fontSize: isMobile ? 28 : 34,
-                                                    lineHeight: 1.05,
+                                                    fontSize: isMobile ? 26 : 30,
+                                                    lineHeight: 1.04,
                                                     color: accent,
                                                     margin: 0,
                                                 }}
@@ -175,11 +176,11 @@ export default function Library() {
 
                                             <p
                                                 style={{
-                                                    marginTop: 12,
+                                                    marginTop: 10,
                                                     marginBottom: 0,
                                                     color: '#4d433d',
-                                                    fontSize: isMobile ? 15 : 17,
-                                                    lineHeight: 1.55,
+                                                    fontSize: isMobile ? 14 : 15,
+                                                    lineHeight: 1.5,
                                                     maxWidth: 460,
                                                 }}
                                             >
@@ -189,21 +190,18 @@ export default function Library() {
 
                                         <div
                                             style={{
-                                                minWidth: 38,
-                                                height: 38,
+                                                minWidth: 34,
+                                                height: 34,
                                                 borderRadius: 999,
                                                 background: isOpen ? accent : soft,
                                                 color: isOpen ? '#fff' : accent,
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
-                                                fontSize: 22,
+                                                fontSize: 20,
                                                 lineHeight: 1,
                                                 fontWeight: 500,
                                                 flexShrink: 0,
-                                                boxShadow: isOpen
-                                                    ? '0 8px 18px rgba(70, 45, 35, 0.12)'
-                                                    : 'none',
                                             }}
                                         >
                                             {isOpen ? '–' : '+'}
@@ -214,194 +212,40 @@ export default function Library() {
                                 {isOpen && (
                                     <div
                                         style={{
-                                            padding: isMobile ? '0 18px 18px' : '0 24px 24px',
+                                            padding: isMobile ? '0 14px 14px' : '0 18px 18px',
                                             display: 'grid',
-                                            gap: 14,
+                                            gap: 10,
                                         }}
                                     >
-                                        <div
-                                            style={{
-                                                background: 'rgba(255,255,255,0.78)',
-                                                borderRadius: 16,
-                                                padding: '16px 18px',
-                                                borderLeft: `4px solid ${accent}`,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    fontSize: 12,
-                                                    letterSpacing: 1.3,
-                                                    textTransform: 'uppercase',
-                                                    color: '#7a6d66',
-                                                    marginBottom: 6,
-                                                }}
-                                            >
-                                                Energie van
-                                            </div>
-                                            <div
-                                                style={{
-                                                    color: '#3f342f',
-                                                    fontSize: 15,
-                                                    lineHeight: 1.55,
-                                                }}
-                                            >
-                                                {a.energy_from}
-                                            </div>
-                                        </div>
+                                        <InfoBlock accent={accent} label="Energie van">
+                                            {a.energy_from}
+                                        </InfoBlock>
 
-                                        <div
-                                            style={{
-                                                background: 'rgba(255,255,255,0.78)',
-                                                borderRadius: 16,
-                                                padding: '16px 18px',
-                                                borderLeft: `4px solid ${accent}`,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    fontSize: 12,
-                                                    letterSpacing: 1.3,
-                                                    textTransform: 'uppercase',
-                                                    color: '#7a6d66',
-                                                    marginBottom: 6,
-                                                }}
-                                            >
-                                                Frustratie
-                                            </div>
-                                            <div
-                                                style={{
-                                                    color: '#3f342f',
-                                                    fontSize: 15,
-                                                    lineHeight: 1.55,
-                                                }}
-                                            >
-                                                {a.frustration}
-                                            </div>
-                                        </div>
+                                        <InfoBlock accent={accent} label="Frustratie">
+                                            {a.frustration}
+                                        </InfoBlock>
 
                                         <div
                                             style={{
                                                 display: 'grid',
-                                                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr',
-                                                gap: 12,
+                                                gridTemplateColumns: isMobile ? '1fr' : '1fr',
+                                                gap: 10,
                                             }}
                                         >
-                                            <div
-                                                style={{
-                                                    background: '#fff',
-                                                    borderRadius: 16,
-                                                    padding: '16px 16px 14px',
-                                                    borderTop: `4px solid ${accent}`,
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontFamily: 'Playfair Display',
-                                                        fontSize: 22,
-                                                        color: accent,
-                                                        marginBottom: 6,
-                                                    }}
-                                                >
-                                                    Bricks
-                                                </div>
-                                                <div
-                                                    style={{
-                                                        color: '#4d433d',
-                                                        fontSize: 14,
-                                                        lineHeight: 1.55,
-                                                    }}
-                                                >
-                                                    {a.bricks}
-                                                </div>
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    background: '#fff',
-                                                    borderRadius: 16,
-                                                    padding: '16px 16px 14px',
-                                                    borderTop: `4px solid ${accent}`,
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontFamily: 'Playfair Display',
-                                                        fontSize: 22,
-                                                        color: accent,
-                                                        marginBottom: 6,
-                                                    }}
-                                                >
-                                                    Bytes
-                                                </div>
-                                                <div
-                                                    style={{
-                                                        color: '#4d433d',
-                                                        fontSize: 14,
-                                                        lineHeight: 1.55,
-                                                    }}
-                                                >
-                                                    {a.bytes}
-                                                </div>
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    background: '#fff',
-                                                    borderRadius: 16,
-                                                    padding: '16px 16px 14px',
-                                                    borderTop: `4px solid ${accent}`,
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontFamily: 'Playfair Display',
-                                                        fontSize: 22,
-                                                        color: accent,
-                                                        marginBottom: 6,
-                                                    }}
-                                                >
-                                                    Behavior
-                                                </div>
-                                                <div
-                                                    style={{
-                                                        color: '#4d433d',
-                                                        fontSize: 14,
-                                                        lineHeight: 1.55,
-                                                    }}
-                                                >
-                                                    {a.behavior}
-                                                </div>
-                                            </div>
+                                            <MiniCard title="Bricks" color={accent} text={a.bricks} />
+                                            <MiniCard title="Bytes" color={accent} text={a.bytes} />
+                                            <MiniCard title="Behavior" color={accent} text={a.behavior} />
                                         </div>
 
                                         {!!a.energycost?.length && (
-                                            <div
-                                                style={{
-                                                    background: 'rgba(255,255,255,0.78)',
-                                                    borderRadius: 16,
-                                                    padding: '16px 18px',
-                                                    borderLeft: `4px solid ${accent}`,
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontSize: 12,
-                                                        letterSpacing: 1.3,
-                                                        textTransform: 'uppercase',
-                                                        color: '#7a6d66',
-                                                        marginBottom: 8,
-                                                    }}
-                                                >
-                                                    Waar deze persona op leegloopt
-                                                </div>
-
+                                            <InfoBlock accent={accent} label="Waar deze persona op leegloopt">
                                                 <ul
                                                     style={{
                                                         margin: 0,
                                                         paddingLeft: 18,
                                                         color: '#4d433d',
-                                                        fontSize: 14,
-                                                        lineHeight: 1.55,
+                                                        fontSize: 13,
+                                                        lineHeight: 1.5,
                                                     }}
                                                 >
                                                     {a.energycost.slice(0, 3).map((item) => (
@@ -410,7 +254,7 @@ export default function Library() {
                                                         </li>
                                                     ))}
                                                 </ul>
-                                            </div>
+                                            </InfoBlock>
                                         )}
                                     </div>
                                 )}
@@ -418,6 +262,76 @@ export default function Library() {
                         </div>
                     );
                 })}
+            </div>
+        </div>
+    );
+}
+
+function InfoBlock({ accent, label, children }) {
+    return (
+        <div
+            style={{
+                background: 'rgba(255,255,255,0.8)',
+                borderRadius: 14,
+                padding: '14px 14px',
+                borderLeft: `4px solid ${accent}`,
+            }}
+        >
+            <div
+                style={{
+                    fontSize: 11,
+                    letterSpacing: 1.3,
+                    textTransform: 'uppercase',
+                    color: '#7a6d66',
+                    marginBottom: 6,
+                }}
+            >
+                {label}
+            </div>
+
+            <div
+                style={{
+                    color: '#3f342f',
+                    fontSize: 14,
+                    lineHeight: 1.55,
+                }}
+            >
+                {children}
+            </div>
+        </div>
+    );
+}
+
+function MiniCard({ title, color, text }) {
+    return (
+        <div
+            style={{
+                background: '#fff',
+                borderRadius: 14,
+                padding: '14px 14px 12px',
+                borderTop: `4px solid ${color}`,
+            }}
+        >
+            <div
+                style={{
+                    fontFamily: 'Playfair Display',
+                    fontSize: 20,
+                    color,
+                    marginBottom: 6,
+                    lineHeight: 1.1,
+                }}
+            >
+                {title}
+            </div>
+
+            <div
+                style={{
+                    color: '#4d433d',
+                    fontSize: 13,
+                    lineHeight: 1.55,
+                }}
+            >
+                {text}
             </div>
         </div>
     );
