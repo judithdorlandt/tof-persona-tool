@@ -5,39 +5,46 @@ export default function Home({ setPage }) {
 
   return (
     <div className="fade-up">
-      {/* ── HERO ── */}
       <div
         style={{
-          padding: isMobile ? '40px 18px 28px' : '72px 44px 52px',
-          maxWidth: 880,
+          padding: isMobile ? '40px 18px 28px' : '76px 44px 44px',
+          maxWidth: 980,
           margin: '0 auto',
         }}
       >
-        <span className="eyebrow">TOF Persona Tool</span>
+        <div
+          style={{
+            color: 'var(--rose)',
+            fontSize: 12,
+            letterSpacing: 3,
+            textTransform: 'uppercase',
+            marginBottom: 18,
+          }}
+        >
+          01 — TOF Persona Tool
+        </div>
 
         <h1
           style={{
-            maxWidth: 760,
-            marginBottom: 20,
-            fontSize: isMobile ? 54 : undefined,
-            lineHeight: isMobile ? 1.02 : undefined,
+            maxWidth: 900,
+            margin: 0,
+            fontSize: isMobile ? 54 : 92,
+            lineHeight: isMobile ? 0.98 : 0.92,
+            letterSpacing: '-0.03em',
           }}
         >
-          Je werkplek klopt.<br />
-          <em>Je mensen nog niet altijd.</em>
+          Je werkplek klopt.
+          <br />
+          <em style={{ color: 'var(--rose)' }}>Je mensen nog niet altijd.</em>
         </h1>
-
-        <div className="rule" />
 
         <p
           style={{
-            fontSize: isMobile ? 18 : 15,
-            lineHeight: 1.85,
+            marginTop: 26,
+            maxWidth: 700,
+            fontSize: isMobile ? 19 : 17,
+            lineHeight: 1.65,
             color: 'var(--text)',
-            maxWidth: 620,
-            borderLeft: '3px solid var(--rose-lt)',
-            paddingLeft: 18,
-            marginBottom: 28,
           }}
         >
           Niet omdat ze niet willen — maar omdat de omgeving niet altijd aansluit
@@ -48,29 +55,42 @@ export default function Home({ setPage }) {
         <div
           style={{
             display: 'flex',
-            gap: 12,
+            gap: 14,
             flexWrap: 'wrap',
-            marginBottom: 18,
+            marginTop: 30,
           }}
         >
           <button
             className="btn btn-rose"
-            onClick={() => setPage('intro')}
+            onClick={() => setPage('quiz')}
             style={{
               width: isMobile ? '100%' : 'auto',
+              minWidth: 180,
             }}
           >
             Start de test
+          </button>
+
+          <button
+            className="btn btn-ghost"
+            onClick={() => setPage('intro')}
+            style={{
+              width: isMobile ? '100%' : 'auto',
+              minWidth: 180,
+            }}
+          >
+            Eerst even uitleg
           </button>
         </div>
 
         <div
           style={{
+            marginTop: 18,
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
             background: 'rgba(176,82,82,.08)',
-            border: '1px solid rgba(176,82,82,.18)',
+            border: '1px solid rgba(176,82,82,.16)',
             borderRadius: 999,
             padding: '8px 14px',
             fontSize: 12,
@@ -82,53 +102,54 @@ export default function Home({ setPage }) {
         </div>
       </div>
 
-      {/* ── WHAT IT DOES ── */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: 18,
-          padding: isMobile ? '0 18px 36px' : '0 44px 56px',
-          maxWidth: 880,
+          maxWidth: 980,
           margin: '0 auto',
+          padding: isMobile ? '0 18px 36px' : '0 44px 44px',
         }}
       >
-        <InfoCard
-          accent="var(--rose)"
-          title="Voor jezelf"
-          text="Ontdek hoe jij werkt, waar je energie van krijgt en wat jij nodig hebt om goed tot je recht te komen."
-        />
-
-        <InfoCard
-          accent="var(--green)"
-          title="Voor teams"
-          text="Zie waar energie lekt, waar het schuurt en welke werkstijlen elkaar versterken of juist tegenwerken."
-        />
-
-        <InfoCard
-          accent="var(--amber)"
-          title="Voor leiding"
-          text="Gebruik persona-inzichten om beter te sturen op gedrag, samenwerking en de juiste werkomgeving."
-        />
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: 18,
+          }}
+        >
+          <FeatureCard
+            accent="var(--rose)"
+            title="Voor jezelf"
+            text="Ontdek hoe jij werkt, waar je energie van krijgt en wat jij nodig hebt om goed tot je recht te komen."
+          />
+          <FeatureCard
+            accent="var(--green)"
+            title="Voor teams"
+            text="Zie waar energie lekt, waar het schuurt en welke werkstijlen elkaar versterken of juist tegenwerken."
+          />
+          <FeatureCard
+            accent="var(--amber)"
+            title="Voor leiding"
+            text="Gebruik persona-inzichten om beter te sturen op gedrag, samenwerking en de juiste werkomgeving."
+          />
+        </div>
       </div>
 
-      {/* ── PREMIUM STRIP ── */}
       <div
         style={{
-          maxWidth: 880,
+          maxWidth: 980,
           margin: '0 auto',
-          padding: isMobile ? '0 18px 36px' : '0 44px 56px',
+          padding: isMobile ? '0 18px 36px' : '0 44px 52px',
         }}
       >
         <div
           style={{
             background: 'var(--dark)',
-            borderRadius: 12,
-            padding: isMobile ? '22px 20px' : '28px 32px',
+            borderRadius: 14,
+            padding: isMobile ? '22px 20px' : '28px 30px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 24,
+            gap: 22,
             flexWrap: 'wrap',
             position: 'relative',
             overflow: 'hidden',
@@ -139,23 +160,23 @@ export default function Home({ setPage }) {
               position: 'absolute',
               top: 0,
               right: 0,
-              width: 200,
-              height: 200,
+              width: 220,
+              height: 220,
               background:
-                'radial-gradient(circle at top right, rgba(176,82,82,.12) 0%, transparent 65%)',
+                'radial-gradient(circle at top right, rgba(176,82,82,.14) 0%, transparent 68%)',
               pointerEvents: 'none',
             }}
           />
 
-          <div style={{ position: 'relative', zIndex: 1, maxWidth: 520 }}>
+          <div style={{ position: 'relative', zIndex: 1, maxWidth: 560 }}>
             <div
               style={{
                 fontSize: 10,
-                fontWeight: 600,
+                fontWeight: 700,
                 letterSpacing: 3,
                 textTransform: 'uppercase',
                 color: 'var(--rose-lt)',
-                marginBottom: 9,
+                marginBottom: 10,
               }}
             >
               Premium
@@ -165,14 +186,14 @@ export default function Home({ setPage }) {
               style={{
                 fontFamily: "'Playfair Display', serif",
                 fontStyle: 'italic',
-                fontSize: isMobile ? 16 : 18,
-                color: 'white',
+                fontSize: isMobile ? 17 : 20,
                 lineHeight: 1.6,
-                marginBottom: 0,
+                color: '#fff',
+                margin: 0,
               }}
             >
-              Wil je dit vertalen naar team- of organisatie-inzicht?
-              Dan bouwen we door op gedrag, dynamiek en werkplekkeuzes.
+              Wil je dit vertalen naar team- of organisatie-inzicht? Dan bouwen
+              we door op gedrag, dynamiek en werkplekkeuzes.
             </p>
           </div>
 
@@ -182,26 +203,18 @@ export default function Home({ setPage }) {
               flexShrink: 0,
               display: 'inline-block',
               background: 'var(--rose)',
-              color: 'white',
+              color: '#fff',
               padding: '12px 24px',
-              borderRadius: 6,
-              fontFamily: "'Inter', sans-serif",
+              borderRadius: 8,
               fontSize: 13,
               fontWeight: 600,
               textDecoration: 'none',
               position: 'relative',
               zIndex: 1,
               whiteSpace: 'nowrap',
-              transition: 'background 0.2s',
               width: isMobile ? '100%' : 'auto',
               textAlign: 'center',
               boxSizing: 'border-box',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--rose-dk)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--rose)';
             }}
           >
             Neem contact op →
@@ -209,19 +222,18 @@ export default function Home({ setPage }) {
         </div>
       </div>
 
-      {/* ── PRIVACY NOTICE ── */}
       <div
         style={{
-          maxWidth: 880,
-          margin: '0 auto 56px',
+          maxWidth: 980,
+          margin: '0 auto 52px',
           padding: isMobile ? '0 18px' : '0 44px',
         }}
       >
         <div
           style={{
             background: 'var(--beige)',
-            borderRadius: 8,
-            padding: '14px 20px',
+            borderRadius: 10,
+            padding: '14px 18px',
             display: 'flex',
             alignItems: 'center',
             gap: 10,
@@ -236,9 +248,9 @@ export default function Home({ setPage }) {
               margin: 0,
             }}
           >
-            <strong style={{ color: 'var(--text)' }}>Privacy:</strong>{' '}
-            Data wordt anoniem gebruikt voor analyse en wordt niet gedeeld met derden.
-            Jouw naam blijft optioneel.
+            <strong style={{ color: 'var(--text)' }}>Privacy:</strong> data wordt
+            anoniem gebruikt voor analyse en niet gedeeld met derden. Jouw naam
+            blijft optioneel.
           </p>
         </div>
       </div>
@@ -246,16 +258,17 @@ export default function Home({ setPage }) {
   );
 }
 
-function InfoCard({ accent, title, text }) {
+function FeatureCard({ accent, title, text }) {
   return (
     <div
       style={{
         background: 'var(--white)',
-        borderRadius: 10,
-        padding: 26,
+        borderRadius: 14,
+        padding: 24,
+        border: '1px solid var(--border)',
         position: 'relative',
         overflow: 'hidden',
-        border: '1px solid var(--border)',
+        minHeight: 150,
       }}
     >
       <div
@@ -264,21 +277,23 @@ function InfoCard({ accent, title, text }) {
           top: 0,
           left: 0,
           right: 0,
-          height: 3,
+          height: 4,
           background: accent,
         }}
       />
+
       <h3
         style={{
           fontFamily: "'Playfair Display', serif",
           fontSize: 20,
+          lineHeight: 1.2,
           color: 'var(--dark)',
           marginBottom: 10,
-          lineHeight: 1.25,
         }}
       >
         {title}
       </h3>
+
       <p
         style={{
           fontSize: 14,
