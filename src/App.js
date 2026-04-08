@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './index.css';
 
 import Nav from './components/Nav';
-import Home from './components/Home';
+import Home from './components/Home.jsx';
 import Library from './components/Library';
 import Quiz from './components/Quiz';
 import Team from './components/Team';
