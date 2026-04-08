@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './index.css';
 
-import Nav from './components/Nav.jsx';
+import Nav from './components/nav.jsx';
 import Home from './components/Home.jsx';
 import Library from './components/Library.jsx';
 import Quiz from './components/Quiz.jsx';
