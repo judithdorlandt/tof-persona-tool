@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import './index.css';
 
-import Nav from './components/Nav';
+import Nav from './components/Nav.jsx';
 import Home from './components/Home.jsx';
-import Library from './components/Library';
-import Quiz from './components/Quiz';
-import Team from './components/Team';
-import Results from './components/Results';
+import Library from './components/Library.jsx';
+import Quiz from './components/Quiz.jsx';
+import Team from './components/Team.jsx';
+import Results from './components/Results.jsx';
 
 export default function App() {
   const [page, setPage] = useState('home');
