@@ -1,26 +1,69 @@
 import React, { useState } from 'react';
-import Nav from './components/nav';
-import Home from './components/home';
-import Intro from './components/intro';
-import Quiz from './components/quiz';
-import Library from './components/library';
-import Results from './components/results';
+import './index.css';
+
+import Nav from './components/Nav';
+import Home from './components/Home';
+import Library from './components/Library';
+import Quiz from './components/Quiz';
+import Team from './components/Team';
+import Results from './components/Results';
+
+const isAdmin = false;
 
 export default function App() {
   const [page, setPage] = useState('home');
   const [resultData, setResultData] = useState(null);
 
-  return (
-    <div>
-      <Nav page={page} setPage={setPage} />
+  function navigate(target) {
+    if (target === 'dashboard' && !isAdmin) {
+      setPage('home');
+      return;
+    }
 
-      {page === 'home' && <Home setPage={setPage} />}
-      {page === 'intro' && <Intro setPage={setPage} />}
-      {page === 'quiz' && (
-        <Quiz setPage={setPage} setResultData={setResultData} />
-      )}
-      {page === 'library' && <Library />}
-      {page === 'results' && <Results resultData={resultData} />}
-    </div>
+    setPage(target);
+  }
+
+  const renderPage = () => {
+    switch (page) {
+      case 'home':
+        return <Home setPage={navigate} />;
+
+      case 'library':
+        return resultData
+          ? <Library />
+          : <Home setPage={navigate} />;
+
+      case 'team':
+        return <Team setPage={navigate} />;
+
+      case 'quiz':
+        return (
+          <Quiz
+            setPage={navigate}
+            setResultData={setResultData}
+          />
+        );
+
+      case 'results':
+        return <Results resultData={resultData} />;
+
+      case 'dashboard':
+        return <Home setPage={navigate} />;
+
+      default:
+        return <Home setPage={navigate} />;
+    }
+  };
+
+  return (
+    <>
+      <Nav
+        page={page}
+        setPage={navigate}
+        hasResult={!!resultData}
+      />
+
+      <main>{renderPage()}</main>
+    </>
   );
 }

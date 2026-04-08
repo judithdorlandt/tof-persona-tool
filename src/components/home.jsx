@@ -107,6 +107,23 @@ export default function Home({ setPage }) {
           >
             Eerst even uitleg
           </button>
+
+          <button
+            onClick={() => setPage('team')}
+            style={{
+              background: 'transparent',
+              color: '#1a1a1a',
+              border: '1px solid #1a1a1a',
+              padding: '14px 22px',
+              borderRadius: 10,
+              cursor: 'pointer',
+              fontSize: 15,
+              fontWeight: 500,
+              minWidth: isMobile ? '100%' : 180,
+            }}
+          >
+            Bekijk team
+          </button>
         </div>
 
         {/* TIJD */}

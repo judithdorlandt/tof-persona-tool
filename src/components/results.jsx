@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ARCHETYPES } from '../data';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import Feedback from './feedback';
+import Feedback from './Feedback';
 
 export default function Results({ resultData }) {
     const cardRef = useRef(null);
