@@ -1,6 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
 import { ARCHETYPES } from '../data';
 
+const COLOR_MAP = {
+    maker: '#b85c5c',
+    groeier: '#c28d6b',
+    presteerder: '#c7a24a',
+    denker: '#6f7f92',
+    verbinder: '#7f9a8a',
+    teamspeler: '#8b7f9a',
+    zekerzoeker: '#7d8a6b',
+    vernieuwer: '#d08c5b',
+};
+
+const SOFT_MAP = {
+    maker: '#f4dfdf',
+    groeier: '#f2e2d7',
+    presteerder: '#f3ead1',
+    denker: '#dde3ea',
+    verbinder: '#dde9e2',
+    teamspeler: '#e6e0ec',
+    zekerzoeker: '#e1e6da',
+    vernieuwer: '#f3dfd2',
+};
+
 export default function Library() {
     const [openId, setOpenId] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
@@ -24,28 +46,6 @@ export default function Library() {
             });
         });
     }, [openId]);
-
-    const colorMap = {
-        maker: '#b85c5c',
-        groeier: '#c28d6b',
-        presteerder: '#c7a24a',
-        denker: '#6f7f92',
-        verbinder: '#7f9a8a',
-        teamspeler: '#8b7f9a',
-        zekerzoeker: '#7d8a6b',
-        vernieuwer: '#d08c5b',
-    };
-
-    const softMap = {
-        maker: '#f4dfdf',
-        groeier: '#f2e2d7',
-        presteerder: '#f3ead1',
-        denker: '#dde3ea',
-        verbinder: '#dde9e2',
-        teamspeler: '#e6e0ec',
-        zekerzoeker: '#e1e6da',
-        vernieuwer: '#f3dfd2',
-    };
 
     const handleToggle = (id) => {
         setOpenId((prev) => (prev === id ? null : id));
@@ -107,19 +107,19 @@ export default function Library() {
                     alignItems: 'start',
                 }}
             >
-                {ARCHETYPES.map((a) => {
-                    const isOpen = openId === a.id;
+                {ARCHETYPES.map((persona) => {
+                    const isOpen = openId === persona.id;
                     const hasOpenCard = openId !== null;
                     const isDimmed = hasOpenCard && !isOpen;
 
-                    const accent = colorMap[a.id] || '#b85c5c';
-                    const soft = softMap[a.id] || '#f3ece4';
+                    const accent = COLOR_MAP[persona.id] || '#b85c5c';
+                    const soft = SOFT_MAP[persona.id] || '#f3ece4';
 
                     return (
                         <div
-                            key={a.id}
+                            key={persona.id}
                             ref={(el) => {
-                                cardRefs.current[a.id] = el;
+                                cardRefs.current[persona.id] = el;
                             }}
                             style={{
                                 scrollMarginTop: 24,
@@ -130,7 +130,7 @@ export default function Library() {
                         >
                             <button
                                 type="button"
-                                onClick={() => handleToggle(a.id)}
+                                onClick={() => handleToggle(persona.id)}
                                 onMouseLeave={(e) => e.currentTarget.blur()}
                                 style={{
                                     width: '100%',
@@ -171,7 +171,7 @@ export default function Library() {
                                                     margin: 0,
                                                 }}
                                             >
-                                                {a.name}
+                                                {persona.name}
                                             </h2>
 
                                             <p
@@ -184,7 +184,7 @@ export default function Library() {
                                                     maxWidth: 460,
                                                 }}
                                             >
-                                                {a.short}
+                                                {persona.short}
                                             </p>
                                         </div>
 
@@ -218,11 +218,11 @@ export default function Library() {
                                         }}
                                     >
                                         <InfoBlock accent={accent} label="Energie van">
-                                            {a.energy_from}
+                                            {persona.energy_from}
                                         </InfoBlock>
 
                                         <InfoBlock accent={accent} label="Frustratie">
-                                            {a.frustration}
+                                            {persona.frustration}
                                         </InfoBlock>
 
                                         <div
@@ -232,12 +232,12 @@ export default function Library() {
                                                 gap: 10,
                                             }}
                                         >
-                                            <MiniCard title="Bricks" color={accent} text={a.bricks} />
-                                            <MiniCard title="Bytes" color={accent} text={a.bytes} />
-                                            <MiniCard title="Behavior" color={accent} text={a.behavior} />
+                                            <MiniCard title="Bricks" color={accent} text={persona.bricks} />
+                                            <MiniCard title="Bytes" color={accent} text={persona.bytes} />
+                                            <MiniCard title="Behavior" color={accent} text={persona.behavior} />
                                         </div>
 
-                                        {!!a.energycost?.length && (
+                                        {!!persona.energycost?.length && (
                                             <InfoBlock accent={accent} label="Waar deze persona op leegloopt">
                                                 <ul
                                                     style={{
@@ -248,7 +248,7 @@ export default function Library() {
                                                         lineHeight: 1.5,
                                                     }}
                                                 >
-                                                    {a.energycost.slice(0, 3).map((item) => (
+                                                    {persona.energycost.slice(0, 3).map((item) => (
                                                         <li key={item} style={{ marginBottom: 4 }}>
                                                             {item}
                                                         </li>

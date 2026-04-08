@@ -33,7 +33,7 @@ export default function Results({ resultData }) {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    const getArchetype = (id) => ARCHETYPES.find((a) => a.id === id);
+    const getArchetype = (id) => ARCHETYPES.find((archetype) => archetype.id === id);
 
     const primary = getArchetype(resultData?.primary);
     const secondary = getArchetype(resultData?.secondary);
@@ -218,7 +218,6 @@ export default function Results({ resultData }) {
                     gridTemplateColumns: isMobile ? '1fr' : '0.95fr 1.05fr',
                 }}
             >
-                {/* LINKS */}
                 <div
                     style={{
                         padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',
@@ -253,6 +252,19 @@ export default function Results({ resultData }) {
                             }}
                         >
                             {resultData?.name?.trim() ? `${resultData.name},` : 'Jouw profiel'}
+                            {(resultData?.role || resultData?.team_size) && (
+                                <div
+                                    style={{
+                                        fontSize: 14,
+                                        color: '#7a6d66',
+                                        marginBottom: 6,
+                                    }}
+                                >
+                                    {resultData?.role && `Rol: ${resultData.role}`}
+                                    {resultData?.role && resultData?.team_size && ' • '}
+                                    {resultData?.team_size && `Team: ${resultData.team_size}`}
+                                </div>
+                            )}
                         </div>
 
                         <h2
@@ -264,7 +276,7 @@ export default function Results({ resultData }) {
                                 color: '#1f1b18',
                             }}
                         >
-                            Jij bent een {primary?.name?.toLowerCase()}.
+                            Jouw dominante profiel is {primary?.name?.toLowerCase()}.
                         </h2>
 
                         <p
@@ -273,10 +285,11 @@ export default function Results({ resultData }) {
                                 fontSize: 14,
                                 color: '#4d433d',
                                 lineHeight: 1.5,
-                                maxWidth: 430,
+                                maxWidth: 460,
                             }}
                         >
-                            Dit verklaart waarom sommige dingen vanzelf gaan — en andere juist energie kosten.
+                            Dat helpt te begrijpen waarom bepaalde situaties je energie geven, waarom
+                            andere juist schuren en wat jij nodig hebt om goed tot je recht te komen.
                         </p>
 
                         <p
@@ -290,6 +303,24 @@ export default function Results({ resultData }) {
                         >
                             <span style={{ fontWeight: 500 }}>{primary?.short}</span>
                         </p>
+                    </div>
+
+                    <div
+                        style={{
+                            marginTop: 18,
+                            background: '#f3ece4',
+                            borderRadius: 12,
+                            padding: '16px 18px',
+                            color: '#4d433d',
+                            fontSize: 14,
+                            lineHeight: 1.6,
+                            maxWidth: 600,
+                        }}
+                    >
+                        <strong style={{ color: '#1f1b18' }}>Wat dit betekent in de praktijk:</strong>
+                        <br /><br />
+                        Je werkt het sterkst wanneer je omgeving aansluit op hoe jij van nature werkt.
+                        Zit daar verschil in, dan kost dat energie — en wordt het lastiger om echt tot je recht te komen.
                     </div>
 
                     <div
@@ -371,33 +402,6 @@ export default function Results({ resultData }) {
                                     >
                                         <div
                                             style={{
-                                                display: 'inline-block',
-                                                background: mixColor,
-                                                color: '#fff',
-                                                padding: '4px 8px',
-                                                borderRadius: 999,
-                                                fontSize: 11,
-                                                fontWeight: 600,
-                                                marginBottom: 5,
-                                            }}
-                                        >
-                                            {index === 0 ? `2. ${persona?.name}` : `3. ${persona?.name}`}
-                                        </div>
-
-                                        <div
-                                            style={{
-                                                fontSize: 10,
-                                                letterSpacing: 1.1,
-                                                textTransform: 'uppercase',
-                                                color: '#8a7c74',
-                                                marginBottom: 3,
-                                            }}
-                                        >
-                                            Ook zichtbaar in jouw profiel
-                                        </div>
-
-                                        <div
-                                            style={{
                                                 fontFamily: 'Playfair Display',
                                                 fontSize: 18,
                                                 lineHeight: 1.1,
@@ -425,7 +429,6 @@ export default function Results({ resultData }) {
                     </div>
                 </div>
 
-                {/* RECHTS */}
                 <div
                     style={{
                         padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',
@@ -490,16 +493,17 @@ export default function Results({ resultData }) {
 
                     <div
                         style={{
-                            padding: '12px 14px',
+                            padding: '14px 16px',
                             borderRadius: 14,
                             background: '#e8ddd1',
                             color: '#5a4f49',
                             fontSize: 13,
-                            lineHeight: 1.5,
+                            lineHeight: 1.6,
                         }}
                     >
-                        <strong style={{ color: '#1f1b18' }}>Premium:</strong> Wil je deze inzichten
-                        vertalen naar team- of organisatieanalyse? Vraag de uitgebreide versie aan.
+                        <strong style={{ color: '#1f1b18' }}>Volgende stap:</strong> individueel inzicht wordt pas echt waardevol
+                        als je het ook naast teamdynamiek, leiderschap en werkomgeving legt. Daar ontstaat het gesprek
+                        over waarom samenwerking stroomt — of juist schuurt.
                     </div>
                 </div>
             </div>
@@ -568,6 +572,7 @@ function CoachBlock({ title, color, text }) {
             >
                 {title}
             </div>
+
             <p
                 style={{
                     margin: 0,

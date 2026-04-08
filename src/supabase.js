@@ -1,7 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
+// =========================
+// INIT
+// =========================
+
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Supabase env vars ontbreken');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -10,61 +18,71 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // =========================
 
 export async function saveResponse(profile) {
-  const payload = {
-    name: profile.name || null,
-    organization: profile.org || null,
-    department: profile.dept || null,
-    team: profile.team || null,
-    primary_archetype: profile.primary || null,
-    secondary_archetype: profile.secondary || null,
-    tertiary_archetype: profile.tertiary || null,
-    full_scores: profile.scores || null,
-  };
+  try {
+    const payload = {
+      name: profile.name || null,
+      organization: profile.org || null,
+      department: profile.dept || null,
+      team: profile.team || null,
 
-  console.log('🔥 Saving response:', payload);
+      // 👇 NIEUW TOEGEVOEGD
+      role: profile.role || null,
+      team_size: profile.team_size || null,
 
-  const { data, error } = await supabase
-    .from('responses')
-    .insert([payload])
-    .select();
+      primary_archetype: profile.primary || null,
+      secondary_archetype: profile.secondary || null,
+      tertiary_archetype: profile.tertiary || null,
+      full_scores: profile.scores || null,
+      created_at: new Date().toISOString(),
+    };
 
-  if (error) {
-    console.error('❌ Response error:', error);
-    throw error;
+    console.log('🔥 Saving response full:', JSON.stringify(payload, null, 2));
+
+    const { data, error } = await supabase
+      .from('responses')
+      .insert([payload])
+      .select();
+
+    if (error) throw error;
+
+    console.log('✅ Response opgeslagen:', data);
+    return data;
+  } catch (err) {
+    console.error('❌ Response error:', err.message);
+    return null;
   }
-
-  console.log('✅ Response opgeslagen:', data);
-  return data;
 }
 
 // =========================
-// FEEDBACK (belangrijk nu)
+// FEEDBACK
 // =========================
 
 export async function saveFeedback(feedback) {
-  const payload = {
-    primary_persona_name: feedback.primary_persona_name || null,
-    fit: feedback.fit || null,
-    reason: feedback.reason || null,
-    team_use: feedback.team_use || null,
-    email: feedback.email || null,
-    submitted_at: new Date().toISOString(),
-  };
+  try {
+    const payload = {
+      primary_persona_name: feedback.primary_persona_name || null,
+      fit: feedback.fit || null,
+      reason: feedback.reason || null,
+      team_use: feedback.team_use || null,
+      email: feedback.email || null,
+      submitted_at: new Date().toISOString(),
+    };
 
-  console.log('🔥 Saving feedback:', payload);
+    console.log('🔥 Saving feedback:', payload);
 
-  const { data, error } = await supabase
-    .from('Feedback') // ⚠️ BELANGRIJK (hoofdletter!)
-    .insert([payload])
-    .select();
+    const { data, error } = await supabase
+      .from('feedback') // ✅ lowercase (goed!)
+      .insert([payload])
+      .select();
 
-  if (error) {
-    console.error('❌ Feedback error:', error);
-    throw error;
+    if (error) throw error;
+
+    console.log('✅ Feedback opgeslagen:', data);
+    return data;
+  } catch (err) {
+    console.error('❌ Feedback error:', err.message);
+    return null;
   }
-
-  console.log('✅ Feedback opgeslagen:', data);
-  return data;
 }
 
 // =========================
@@ -72,15 +90,17 @@ export async function saveFeedback(feedback) {
 // =========================
 
 export async function getAllFeedback() {
-  const { data, error } = await supabase
-    .from('Feedback')
-    .select('*')
-    .order('submitted_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('feedback')
+      .select('*')
+      .order('submitted_at', { ascending: false });
 
-  if (error) {
-    console.error('❌ Fetch feedback error:', error);
+    if (error) throw error;
+
+    return data || [];
+  } catch (err) {
+    console.error('❌ Fetch feedback error:', err.message);
     return [];
   }
-
-  return data || [];
 }

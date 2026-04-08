@@ -5,12 +5,18 @@ export const ARCHETYPES = [
     kw: ['creëren', 'experimenteren', 'vrijheid'],
     short: 'Jij maakt. Ideeën zijn voor jou pas waardevol als ze zichtbaar worden.',
     motivation: 'Vrijheid om te creëren, te experimenteren en snel iets neer te zetten.',
-    energy_from: 'Vrijheid om te creëren, experimenteren en ideeën direct om te zetten naar iets tastbaars.',
-    frustration: 'Strakke processen, micromanagement en omgevingen waar weinig ruimte is voor initiatief.',
-    strengths: 'Brengt originaliteit, energie en beweging. Zet ideeën om in iets tastbaars.',
-    bricks: 'Flexibele werkplekken, projecttafels en plekken waar je direct iets kunt maken. Denk aan aanlandplekken, creatieve zones, whiteboards, visuele zones en prototyping-ruimtes.',
-    bytes: 'Snelle, intuïtieve tools die het creatieve proces ondersteunen in plaats van vertragen. Denk aan Miro, Figma of lichte samenwerkingstools waarmee je snel kunt schetsen, delen en aanpassen.',
-    behavior: 'Geef vrijheid in aanpak en stuur op resultaat. Vertrouwen en autonomie zorgen hier voor energie en eigenaarschap.',
+    energy_from:
+      'Vrijheid om te creëren, experimenteren en ideeën direct om te zetten naar iets tastbaars.',
+    frustration:
+      'Strakke processen, micromanagement en omgevingen waar weinig ruimte is voor initiatief.',
+    strengths:
+      'Brengt originaliteit, energie en beweging. Zet ideeën om in iets tastbaars.',
+    bricks:
+      'Flexibele werkplekken, projecttafels en plekken waar je direct iets kunt maken. Denk aan aanlandplekken, creatieve zones, whiteboards, visuele zones en prototyping-ruimtes.',
+    bytes:
+      'Snelle, intuïtieve tools die het creatieve proces ondersteunen in plaats van vertragen. Denk aan Miro, Figma of lichte samenwerkingstools waarmee je snel kunt schetsen, delen en aanpassen.',
+    behavior:
+      'Geef vrijheid in aanpak en stuur op resultaat. Vertrouwen en autonomie zorgen hier voor energie en eigenaarschap.',
     friction: [
       'Vaste werkplekken en strakke procedures drukken jouw energie omlaag.',
       'Als de cultuur uitvoering belangrijker maakt dan ideeën, raak jij eigenaarschap kwijt.',
@@ -26,7 +32,8 @@ export const ARCHETYPES = [
       'Spreek over resultaat, niet over elk tussenstapje.',
       'Beloon initiatief zichtbaar en maak experimenteren normaal.',
     ],
-    lquote: 'Als je deze persoon te strak aanstuurt, raak je niet de chaos kwijt — maar de creativiteit.',
+    lquote:
+      'Als je deze persoon te strak aanstuurt, raak je niet de chaos kwijt — maar de creativiteit.',
     mismatch: [
       'Werkplekken zonder maakruimte remmen jouw natuurlijke manier van werken.',
       'Kantoren zonder focus- én experimenteerzones maken goed werken moeilijk.',
@@ -59,13 +66,19 @@ export const ARCHETYPES = [
     name: 'Groeier',
     kw: ['ontwikkelen', 'leren', 'vooruit'],
     short: 'Jij groeit. Stilstand is voor jou geen comfort, maar verlies.',
-    motivation: 'Zich ontwikkelen, nieuwe vaardigheden opbouwen en steeds een volgende stap zetten.',
-    energy_from: 'Nieuwe dingen leren, feedback krijgen en zichzelf continu ontwikkelen.',
-    frustration: 'Stagnatie, herhaling en omgevingen waar weinig ruimte is om te groeien.',
+    motivation:
+      'Zich ontwikkelen, nieuwe vaardigheden opbouwen en steeds een volgende stap zetten.',
+    energy_from:
+      'Nieuwe dingen leren, feedback krijgen en zichzelf continu ontwikkelen.',
+    frustration:
+      'Stagnatie, herhaling en omgevingen waar weinig ruimte is om te groeien.',
     strengths: 'Leert snel, beweegt mee en trekt anderen mee in ontwikkeling.',
-    bricks: 'Leerplekken, duo-werkplekken en informele kenniszones. Denk aan plekken voor uitwisseling, kennisdeling en korte feedbackmomenten.',
-    bytes: 'Systemen die ontwikkeling zichtbaar maken, feedback makkelijk maken en toegang geven tot nieuwe kennis en inspiratie. Denk aan leerplatforms, feedbacktools en kennisbanken.',
-    behavior: 'Geef perspectief, uitdaging en ontwikkelruimte. Zorg dat leren onderdeel is van het werk, niet iets extra’s.',
+    bricks:
+      'Leerplekken, duo-werkplekken en informele kenniszones. Denk aan plekken voor uitwisseling, kennisdeling en korte feedbackmomenten.',
+    bytes:
+      'Systemen die ontwikkeling zichtbaar maken, feedback makkelijk maken en toegang geven tot nieuwe kennis en inspiratie. Denk aan leerplatforms, feedbacktools en kennisbanken.',
+    behavior:
+      'Geef perspectief, uitdaging en ontwikkelruimte. Zorg dat leren onderdeel is van het werk, niet iets extra’s.',
     friction: [
       'Als alles hetzelfde blijft, slaat jouw energie om in onrust.',
       'Weinig feedback voelt voor jou als desinteresse.',
@@ -81,7 +94,8 @@ export const ARCHETYPES = [
       'Geef uitdagende opdrachten vóór routinetaken.',
       'Maak leren praktisch en laagdrempelig mogelijk.',
     ],
-    lquote: 'Als je deze persoon niet uitdaagt, verlies je eerst de energie — en daarna de persoon.',
+    lquote:
+      'Als je deze persoon niet uitdaagt, verlies je eerst de energie — en daarna de persoon.',
     mismatch: [
       'Functies met weinig variatie voelen als stilstand.',
       'Senioriteit belonen boven nieuwsgierigheid werkt demotiverend.',
@@ -115,12 +129,18 @@ export const ARCHETYPES = [
     kw: ['doelen halen', 'grip', 'resultaat'],
     short: 'Jij gaat voor resultaat. Doelen zijn er om gehaald te worden.',
     motivation: 'Doelen halen, voortgang zien en grip houden op wat telt.',
-    energy_from: 'Heldere doelen, zichtbare voortgang en het behalen van resultaat.',
-    frustration: 'Onduidelijkheid, trage besluitvorming en vergaderingen zonder uitkomst.',
-    strengths: 'Brengt focus, tempo en resultaat. Houdt het team scherp op wat ertoe doet.',
-    bricks: 'Stille focusplekken en resultaatgerichte werkzones. Denk aan afgeschermde werkplekken, duidelijke zones voor geconcentreerd werk en projectruimtes zonder afleiding.',
-    bytes: 'Dashboards, taaktools en systemen die prioriteiten, deadlines en voortgang direct zichtbaar maken.',
-    behavior: 'Wees duidelijk over doelen en prioriteiten. Geef eigenaarschap en stuur op resultaat.',
+    energy_from:
+      'Heldere doelen, zichtbare voortgang en het behalen van resultaat.',
+    frustration:
+      'Onduidelijkheid, trage besluitvorming en vergaderingen zonder uitkomst.',
+    strengths:
+      'Brengt focus, tempo en resultaat. Houdt het team scherp op wat ertoe doet.',
+    bricks:
+      'Stille focusplekken en resultaatgerichte werkzones. Denk aan afgeschermde werkplekken, duidelijke zones voor geconcentreerd werk en projectruimtes zonder afleiding.',
+    bytes:
+      'Dashboards, taaktools en systemen die prioriteiten, deadlines en voortgang direct zichtbaar maken.',
+    behavior:
+      'Wees duidelijk over doelen en prioriteiten. Geef eigenaarschap en stuur op resultaat.',
     friction: [
       'Onduidelijke doelen leggen jouw werk stil.',
       'Steeds schuivende prioriteiten kosten vertrouwen.',
@@ -136,7 +156,8 @@ export const ARCHETYPES = [
       'Erken resultaat expliciet.',
       'Geef vrijheid in aanpak, maar laat richting nooit vaag.',
     ],
-    lquote: 'Zonder helder doel gaat deze motor draaien — maar nergens naartoe.',
+    lquote:
+      'Zonder helder doel gaat deze motor draaien — maar nergens naartoe.',
     mismatch: [
       'Werkplekken zonder focusmogelijkheden drukken jouw productiviteit.',
       'Processen boven resultaten zetten frustreert je structureel.',
@@ -169,13 +190,20 @@ export const ARCHETYPES = [
     name: 'Denker',
     kw: ['begrijpen', 'structuur', 'inhoud'],
     short: 'Jij denkt eerst, dan doe je. Diepgang gaat voor snelheid.',
-    motivation: 'Complexiteit begrijpen en kwaliteit brengen voordat er gehandeld wordt.',
-    energy_from: 'Rust, analyse en de tijd om complexe vraagstukken echt te doorgronden.',
-    frustration: 'Oppervlakkigheid, ruis en beslissingen zonder onderbouwing.',
-    strengths: 'Brengt diepgang, precisie en kwaliteit. Ziet wat anderen missen.',
-    bricks: 'Stille concentratieplekken en afgesloten ruimtes. Denk aan focuskamers, bibliotheekachtige werkplekken, akoestische rust en overzicht.',
-    bytes: 'Logische systemen, complete informatie, documentatie en kennisstructuren die verdieping mogelijk maken.',
-    behavior: 'Geef tijd om te denken en zorg voor goede voorbereiding. Kwaliteit boven snelheid.',
+    motivation:
+      'Complexiteit begrijpen en kwaliteit brengen voordat er gehandeld wordt.',
+    energy_from:
+      'Rust, analyse en de tijd om complexe vraagstukken echt te doorgronden.',
+    frustration:
+      'Oppervlakkigheid, ruis en beslissingen zonder onderbouwing.',
+    strengths:
+      'Brengt diepgang, precisie en kwaliteit. Ziet wat anderen missen.',
+    bricks:
+      'Stille concentratieplekken en afgesloten ruimtes. Denk aan focuskamers, bibliotheekachtige werkplekken, akoestische rust en overzicht.',
+    bytes:
+      'Logische systemen, complete informatie, documentatie en kennisstructuren die verdieping mogelijk maken.',
+    behavior:
+      'Geef tijd om te denken en zorg voor goede voorbereiding. Kwaliteit boven snelheid.',
     friction: [
       'Open kantoren zijn voor jou vaak pure cognitieve ruis.',
       'Culturen die snelheid boven kwaliteit zetten, knellen direct.',
@@ -191,7 +219,8 @@ export const ARCHETYPES = [
       'Respecteer denktijd en verwacht niet altijd direct een antwoord.',
       'Waardeer grondigheid, ook als het tempo tijdelijk lager ligt.',
     ],
-    lquote: 'Wie deze persoon haast, verliest vaak precies datgene wat de kwaliteit bewaakt.',
+    lquote:
+      'Wie deze persoon haast, verliest vaak precies datgene wat de kwaliteit bewaakt.',
     mismatch: [
       'Open werkvloeren met veel ruis en onderbrekingen.',
       'Besluiten onder tijdsdruk zonder inhoudelijke basis.',
@@ -224,13 +253,20 @@ export const ARCHETYPES = [
     name: 'Verbinder',
     kw: ['mensen', 'energie', 'samen'],
     short: 'Jij verbindt. Mensen laten samenwerken is jouw kracht.',
-    motivation: 'Menselijk contact, vertrouwen en samenwerking die verder gaat dan taakverdeling.',
-    energy_from: 'Contact, samenwerking en het gevoel dat mensen echt verbonden zijn.',
-    frustration: 'Isolement, afstand en werken zonder menselijk contact.',
-    strengths: 'Brengt mensen samen, voelt de onderstroom aan en houdt samenwerking menselijk.',
-    bricks: 'Ontmoetingsplekken, koffiecorners en open samenwerkzones. Denk aan warme ontmoetingsplekken, informele zones en routing die toevallige ontmoetingen uitlokt.',
-    bytes: 'Communicatietools die verbinding makkelijk en menselijk maken. Denk aan chat, video en informele kanalen.',
-    behavior: 'Maak ruimte voor contact en afstemming. Relatie is hier net zo belangrijk als resultaat.',
+    motivation:
+      'Menselijk contact, vertrouwen en samenwerking die verder gaat dan taakverdeling.',
+    energy_from:
+      'Contact, samenwerking en het gevoel dat mensen echt verbonden zijn.',
+    frustration:
+      'Isolement, afstand en werken zonder menselijk contact.',
+    strengths:
+      'Brengt mensen samen, voelt de onderstroom aan en houdt samenwerking menselijk.',
+    bricks:
+      'Ontmoetingsplekken, koffiecorners en open samenwerkzones. Denk aan warme ontmoetingsplekken, informele zones en routing die toevallige ontmoetingen uitlokt.',
+    bytes:
+      'Communicatietools die verbinding makkelijk en menselijk maken. Denk aan chat, video en informele kanalen.',
+    behavior:
+      'Maak ruimte voor contact en afstemming. Relatie is hier net zo belangrijk als resultaat.',
     friction: [
       'Hybride werken zonder verbindingsrituelen voelt voor jou als verlies.',
       'Een cultuur die contact minimaliseert haalt jouw energie weg.',
@@ -246,7 +282,8 @@ export const ARCHETYPES = [
       'Betrek deze persona vroeg bij verandering en samenwerking.',
       'Zorg dat ontmoeting geen toeval is, maar mogelijk gemaakt wordt.',
     ],
-    lquote: 'Een team zonder verbinder merkt pas wat er ontbreekt als iedereen nog wel samenwerkt, maar niemand meer verbonden is.',
+    lquote:
+      'Een team zonder verbinder merkt pas wat er ontbreekt als iedereen nog wel samenwerkt, maar niemand meer verbonden is.',
     mismatch: [
       'Werkplekken die alleen op focus zijn ingericht.',
       'Digitale communicatie als enige vorm van contact.',
@@ -279,13 +316,19 @@ export const ARCHETYPES = [
     name: 'Teamspeler',
     kw: ['vertrouwen', 'vaste groep', 'loyaliteit'],
     short: 'Jij werkt voor het team. Samen winnen is belangrijker dan solo scoren.',
-    motivation: 'Bijdragen aan een hechte groep met continuïteit, vertrouwen en heldere rollen.',
-    energy_from: 'Samenwerken met een vertrouwd team en duidelijke onderlinge afspraken.',
+    motivation:
+      'Bijdragen aan een hechte groep met continuïteit, vertrouwen en heldere rollen.',
+    energy_from:
+      'Samenwerken met een vertrouwd team en duidelijke onderlinge afspraken.',
     frustration: 'Wisselende teams en gebrek aan stabiliteit.',
-    strengths: 'Brengt rust, loyaliteit en stabiliteit. Houdt teams bij elkaar.',
-    bricks: 'Vaste teamplekken, herkenbare zones en gezamenlijke werkzones. Denk aan plekken waar je met je team zit en samen zichtbaar bent.',
-    bytes: 'Gedeelde systemen, teamoverzichten, planningen en vertrouwde processen die samenwerking ondersteunen.',
-    behavior: 'Werk met ritme, duidelijkheid en gezamenlijke afspraken. Zorg voor stabiliteit en samenwerking.',
+    strengths:
+      'Brengt rust, loyaliteit en stabiliteit. Houdt teams bij elkaar.',
+    bricks:
+      'Vaste teamplekken, herkenbare zones en gezamenlijke werkzones. Denk aan plekken waar je met je team zit en samen zichtbaar bent.',
+    bytes:
+      'Gedeelde systemen, teamoverzichten, planningen en vertrouwde processen die samenwerking ondersteunen.',
+    behavior:
+      'Werk met ritme, duidelijkheid en gezamenlijke afspraken. Zorg voor stabiliteit en samenwerking.',
     friction: [
       'Continu wisselende teams voelen voor jou als structurele onrust.',
       'Activiteitengebaseerd werken zonder thuisbasis haalt houvast weg.',
@@ -301,7 +344,8 @@ export const ARCHETYPES = [
       'Kondig veranderingen vroeg aan.',
       'Maak teamdynamiek expliciet onderdeel van het werk.',
     ],
-    lquote: 'Als je het team als wisselgeld behandelt, verliest deze persoon zijn fundament.',
+    lquote:
+      'Als je het team als wisselgeld behandelt, verliest deze persoon zijn fundament.',
     mismatch: [
       'Hot-desking en continu roulerende teams.',
       'Flexibiliteit boven continuïteit zetten.',
@@ -335,12 +379,17 @@ export const ARCHETYPES = [
     kw: ['rust', 'duidelijkheid', 'voorspelbaarheid'],
     short: 'Jij zorgt dat het klopt. Duidelijkheid en structuur maken jou sterk.',
     motivation: 'Stabiliteit, overzicht en weten wat er verwacht wordt.',
-    energy_from: 'Overzicht, voorspelbaarheid en duidelijke verwachtingen.',
+    energy_from:
+      'Overzicht, voorspelbaarheid en duidelijke verwachtingen.',
     frustration: 'Onzekerheid, last-minute wijzigingen en chaos.',
-    strengths: 'Brengt rust, consistentie en proceskwaliteit. Ziet snel waar het niet klopt.',
-    bricks: 'Vaste werkplekken, duidelijke zones en een voorspelbare indeling. Denk aan afgeschermde werkplekken, overzichtelijke routing en zo min mogelijk onverwachte verandering.',
-    bytes: 'Heldere systemen, vaste processen en betrouwbare informatie. Denk aan duidelijke afspraken, complete informatie en zo min mogelijk wisselingen tegelijk.',
-    behavior: 'Communiceer duidelijk en op tijd. Voorkom verrassingen en geef structuur.',
+    strengths:
+      'Brengt rust, consistentie en proceskwaliteit. Ziet snel waar het niet klopt.',
+    bricks:
+      'Vaste werkplekken, duidelijke zones en een voorspelbare indeling. Denk aan afgeschermde werkplekken, overzichtelijke routing en zo min mogelijk onverwachte verandering.',
+    bytes:
+      'Heldere systemen, vaste processen en betrouwbare informatie. Denk aan duidelijke afspraken, complete informatie en zo min mogelijk wisselingen tegelijk.',
+    behavior:
+      'Communiceer duidelijk en op tijd. Voorkom verrassingen en geef structuur.',
     friction: [
       'Onduidelijkheid is voor jou geen kleine irritatie, maar een directe belemmering.',
       'Agile omgevingen zonder houvast voelen structureel ongemakkelijk.',
@@ -356,7 +405,8 @@ export const ARCHETYPES = [
       'Bied structuur in onzekere periodes.',
       'Maak verwachtingen en keuzes expliciet.',
     ],
-    lquote: 'Onduidelijkheid is voor deze persoon geen uitdaging, maar een aantasting van werkvermogen.',
+    lquote:
+      'Onduidelijkheid is voor deze persoon geen uitdaging, maar een aantasting van werkvermogen.',
     mismatch: [
       'Voortdurend heringerichte werkplekken.',
       'Wendbaarheid verwarren met onvoorspelbaarheid.',
@@ -392,10 +442,14 @@ export const ARCHETYPES = [
     motivation: 'Nieuwe kansen zien, verkennen en omzetten in beweging.',
     energy_from: 'Nieuwe ideeën, verandering en het bouwen aan de toekomst.',
     frustration: 'Status quo en organisaties zonder visie.',
-    strengths: 'Brengt richting, vernieuwing en een scherp oog voor wat morgen nodig is.',
-    bricks: 'Inspirerende werkplekken, innovatiezones en projectruimtes. Denk aan brainstormruimtes, externe prikkels en plekken waar vernieuwing zichtbaar wordt.',
-    bytes: 'Tools voor innovatie, trends en experimenteren. Denk aan systemen die snel testen, leren en vernieuwen mogelijk maken.',
-    behavior: 'Geef ruimte voor vernieuwing en ideeën. Betrek deze persona in strategische keuzes.',
+    strengths:
+      'Brengt richting, vernieuwing en een scherp oog voor wat morgen nodig is.',
+    bricks:
+      'Inspirerende werkplekken, innovatiezones en projectruimtes. Denk aan brainstormruimtes, externe prikkels en plekken waar vernieuwing zichtbaar wordt.',
+    bytes:
+      'Tools voor innovatie, trends en experimenteren. Denk aan systemen die snel testen, leren en vernieuwen mogelijk maken.',
+    behavior:
+      'Geef ruimte voor vernieuwing en ideeën. Betrek deze persona in strategische keuzes.',
     friction: [
       'Organisaties die alleen op de korte termijn sturen, knellen voor jou.',
       'Als ideeën steeds niet landen, stop jij met delen.',
@@ -411,7 +465,8 @@ export const ARCHETYPES = [
       'Verbind ideeën aan concrete experimenten en deadlines.',
       'Zie deze persona als mede-ontwerper, niet alleen als uitvoerder.',
     ],
-    lquote: 'Zonder podium bouwt deze persoon zijn eigen podium — en dat is zelden binnen dezelfde organisatie.',
+    lquote:
+      'Zonder podium bouwt deze persoon zijn eigen podium — en dat is zelden binnen dezelfde organisatie.',
     mismatch: [
       'Innovatie roepen maar besluitvorming vertragen.',
       'Bestaande structuren beschermen boven nieuwe mogelijkheden.',
@@ -442,20 +497,212 @@ export const ARCHETYPES = [
 ];
 
 export const QUESTIONS = [
-  { q: 'Wat geeft jou de meeste energie op een werkdag?', a: ['Iets nieuws maken of bedenken', 'Een stap zetten in mijn eigen ontwikkeling', 'Een doel halen — met een vinkje erachter', 'Diep in een vraagstuk duiken', 'Een goed gesprek met een collega', 'Samenwerken met mensen die ik vertrouw', 'Weten wat ik vandaag moet doen', 'Een kans zien die anderen nog niet zien'] },
-  { q: 'Hoe reageer jij op een plotselinge verandering in je werk?', a: ['Ik zie het als kans om iets nieuws te proberen', 'Ik vraag me af wat ik ervan kan leren', 'Ik wil snel weten wat het voor mijn resultaten betekent', 'Ik wil het eerst goed begrijpen', 'Ik bespreek het eerst met collega\'s', 'Ik hoop dat het mijn team niet uit elkaar trekt', 'Ik word onrustig als er niet snel duidelijkheid is', 'Ik ben blij — stilstand is achteruitgang'] },
-  { q: 'Wat ergert jou het meeste op de werkvloer?', a: ['Te veel regels en te weinig vrijheid', 'Geen ruimte om te groeien', 'Vaagheid over wat er van mij verwacht wordt', 'Oppervlakkige besluiten zonder onderbouwing', 'Weinig aandacht voor de mens achter het werk', 'Wisselende teams zonder continuïteit', 'Onverwachte veranderingen zonder uitleg', 'Gebrek aan ambitie of toekomstvisie'] },
-  { q: 'Hoe ziet jouw ideale werkdag eruit?', a: ['Vrijheid om zelf vorm te geven aan mijn werk', 'Vol met nieuwe inzichten en uitdagingen', 'Gericht, productief en aan het einde klaar', 'Rustig, diep en zonder onnodige onderbrekingen', 'Goed gesprek, samenwerken, mensen zien', 'Samen met mijn vaste team aan iets werken', 'Helder, overzichtelijk en voorspelbaar', 'Strategie, richting en toekomst'] },
-  { q: 'Wat motiveert jou het meest in je werk?', a: ['Iets creëren wat er nog niet was', 'Iedere dag een beetje beter worden', 'Zichtbaar resultaat boeken', 'Diep begrip van hoe iets in elkaar zit', 'Iemand verder helpen of verbinden', 'Deel zijn van een hecht team', 'Weten dat ik betrouwbaar bijdroeg', 'Bijdragen aan iets groters dan vandaag'] },
-  { q: 'Welk type omgeving werkt het beste voor jou?', a: ['Open, creatief en flexibel', 'Lerend en uitdagend', 'Resultaatgericht en efficiënt', 'Rustig, geordend en informatierijk', 'Menselijk en sociaal', 'Vertrouwd met dezelfde mensen', 'Stabiel en voorspelbaar', 'Inspirerend en toekomstgericht'] },
-  { q: 'Wat vind jij het belangrijkst in een goede samenwerking?', a: ['Ruimte voor eigen ideeën', 'Dat we van elkaar leren', 'Dat we doelen halen', 'Dat besluiten goed onderbouwd zijn', 'Dat iedereen gehoord wordt', 'Dat we op elkaar kunnen rekenen', 'Dat rollen en verwachtingen helder zijn', 'Dat we richting geven aan de toekomst'] },
-  { q: 'Wanneer was jij echt in je element?', a: ['Iets gemaakt of bedacht dat werkte', 'Iets geleerd wat ik niet wist', 'Een doel gehaald waar ik hard voor werkte', 'Iets begrepen wat heel complex leek', 'Een samenwerking die echt klikte', 'Het gevoel dat we als team één waren', 'Rust, overzicht en alles op zijn plek', 'Een inzicht dat de richting veranderde'] },
-  { q: 'Hoe geef jij het liefst richting aan je eigen werk?', a: ['Zelf bepalen hoe ik het aanpak', 'Mijn eigen groeipunten sturen', 'Sturen op resultaat en voortgang', 'Verdieping en structuur aanbrengen', 'Afstemmen met anderen', 'Samen optrekken in een vast ritme', 'Werken vanuit een helder kader', 'Agenda bepalen op toekomstkansen'] },
-  { q: 'Wat maakt een leidinggevende goed in jouw ogen?', a: ['Geeft ruimte en vertrouwen', 'Investeert in mijn ontwikkeling', 'Is duidelijk en resultaatgericht', 'Biedt inhoudelijk houvast', 'Is menselijk en betrokken', 'Houdt het team bij elkaar', 'Communiceert helder en consistent', 'Heeft visie en lef'] },
-  { q: 'Wat beschrijft jouw werkstijl het best?', a: ['Creatief en autonoom', 'Lerend en nieuwsgierig', 'Doelgericht en gedisciplineerd', 'Analytisch en grondig', 'Sociaal en empathisch', 'Stabiel en loyaal', 'Gestructureerd en betrouwbaar', 'Visionair en vernieuwend'] },
-  { q: 'Wat heeft direct invloed op hoe goed jij werkt?', a: ['Vrijheid om de ruimte zelf in te richten', 'Toegang tot nieuwe kennis en prikkels', 'Een plek zonder afleiding', 'Rust en overzicht om diep te denken', 'Collega\'s en ontmoetingsplekken', 'Een vaste plek met vertrouwd team', 'Duidelijke indeling en weinig verandering', 'Een inspirerende omgeving'] },
-  { q: 'Wanneer voel jij je het meest ondergewaardeerd?', a: ['Als ik niet creatief mag zijn', 'Als er geen ruimte is voor groei', 'Als resultaten niet erkend worden', 'Als diepgang niet gewaardeerd wordt', 'Als de menselijke kant genegeerd wordt', 'Als ik buitengesloten ben van de groep', 'Als het onduidelijk is wat ik moet doen', 'Als mijn visie niet serieus genomen wordt'] },
-  { q: 'Hoe ga jij om met onzekerheid?', a: ['Ik gebruik het als experimenteerruimte', 'Ik zie het als leerkans', 'Ik zoek houvast in doelen en voortgang', 'Ik analyseer tot het duidelijker is', 'Ik praat erover met anderen', 'Ik zoek steun bij mijn vaste team', 'Ik wacht liever tot het duidelijker is', 'Ik zie het als kans voor verandering'] },
-  { q: 'Als je een nieuwe opdracht krijgt — wat is je eerste reactie?', a: ['Hoe pak ik dit aan op mijn manier?', 'Wat kan ik hiervan leren?', 'Wat is het doel en hoe haal ik het?', 'Wat zijn alle kanten van dit vraagstuk?', 'Met wie doe ik dit?', 'Wie zijn mijn teamleden en de rollen?', 'Wat zijn de verwachtingen en de kaders?', 'Welke kans biedt dit voor de toekomst?'] },
-  { q: 'Waar haal jij op een moeilijke dag het meeste houvast uit?', a: ['Ruimte om iets te maken of uit te proberen', 'Weten dat ik iets nieuws heb geleerd', 'Een concreet resultaat — hoe klein ook', 'Grip krijgen op wat er speelt', 'Contact met iemand die luistert', 'Steun van mijn vaste team', 'Duidelijkheid over wat er van me verwacht wordt', 'Een groter doel voor ogen houden'] },
+  {
+    q: 'Wat geeft jou de meeste energie op een werkdag?',
+    a: [
+      'Iets nieuws maken of bedenken',
+      'Een stap zetten in mijn eigen ontwikkeling',
+      'Een doel halen — met een vinkje erachter',
+      'Diep in een vraagstuk duiken',
+      'Een goed gesprek met een collega',
+      'Samenwerken met mensen die ik vertrouw',
+      'Weten wat ik vandaag moet doen',
+      'Een kans zien die anderen nog niet zien',
+    ],
+  },
+  {
+    q: 'Hoe reageer jij op een plotselinge verandering in je werk?',
+    a: [
+      'Ik zie het als kans om iets nieuws te proberen',
+      'Ik vraag me af wat ik ervan kan leren',
+      'Ik wil snel weten wat het voor mijn resultaten betekent',
+      'Ik wil het eerst goed begrijpen',
+      "Ik bespreek het eerst met collega's",
+      'Ik hoop dat het mijn team niet uit elkaar trekt',
+      'Ik word onrustig als er niet snel duidelijkheid is',
+      'Ik ben blij — stilstand is achteruitgang',
+    ],
+  },
+  {
+    q: 'Wat ergert jou het meeste op de werkvloer?',
+    a: [
+      'Te veel regels en te weinig vrijheid',
+      'Geen ruimte om te groeien',
+      'Vaagheid over wat er van mij verwacht wordt',
+      'Oppervlakkige besluiten zonder onderbouwing',
+      'Weinig aandacht voor de mens achter het werk',
+      'Wisselende teams zonder continuïteit',
+      'Onverwachte veranderingen zonder uitleg',
+      'Gebrek aan ambitie of toekomstvisie',
+    ],
+  },
+  {
+    q: 'Hoe ziet jouw ideale werkdag eruit?',
+    a: [
+      'Vrijheid om zelf vorm te geven aan mijn werk',
+      'Vol met nieuwe inzichten en uitdagingen',
+      'Gericht, productief en aan het einde klaar',
+      'Rustig, diep en zonder onnodige onderbrekingen',
+      'Goed gesprek, samenwerken, mensen zien',
+      'Samen met mijn vaste team aan iets werken',
+      'Helder, overzichtelijk en voorspelbaar',
+      'Strategie, richting en toekomst',
+    ],
+  },
+  {
+    q: 'Wat motiveert jou het meest in je werk?',
+    a: [
+      'Iets creëren wat er nog niet was',
+      'Iedere dag een beetje beter worden',
+      'Zichtbaar resultaat boeken',
+      'Diep begrip van hoe iets in elkaar zit',
+      'Iemand verder helpen of verbinden',
+      'Deel zijn van een hecht team',
+      'Weten dat ik betrouwbaar bijdroeg',
+      'Bijdragen aan iets groters dan vandaag',
+    ],
+  },
+  {
+    q: 'Welk type omgeving werkt het beste voor jou?',
+    a: [
+      'Open, creatief en flexibel',
+      'Lerend en uitdagend',
+      'Resultaatgericht en efficiënt',
+      'Rustig, geordend en informatierijk',
+      'Menselijk en sociaal',
+      'Vertrouwd met dezelfde mensen',
+      'Stabiel en voorspelbaar',
+      'Inspirerend en toekomstgericht',
+    ],
+  },
+  {
+    q: 'Wat vind jij het belangrijkst in een goede samenwerking?',
+    a: [
+      'Ruimte voor eigen ideeën',
+      'Dat we van elkaar leren',
+      'Dat we doelen halen',
+      'Dat besluiten goed onderbouwd zijn',
+      'Dat iedereen gehoord wordt',
+      'Dat we op elkaar kunnen rekenen',
+      'Dat rollen en verwachtingen helder zijn',
+      'Dat we richting geven aan de toekomst',
+    ],
+  },
+  {
+    q: 'Wanneer was jij echt in je element?',
+    a: [
+      'Iets gemaakt of bedacht dat werkte',
+      'Iets geleerd wat ik niet wist',
+      'Een doel gehaald waar ik hard voor werkte',
+      'Iets begrepen wat heel complex leek',
+      'Een samenwerking die echt klikte',
+      'Het gevoel dat we als team één waren',
+      'Rust, overzicht en alles op zijn plek',
+      'Een inzicht dat de richting veranderde',
+    ],
+  },
+  {
+    q: 'Hoe geef jij het liefst richting aan je eigen werk?',
+    a: [
+      'Zelf bepalen hoe ik het aanpak',
+      'Mijn eigen groeipunten sturen',
+      'Sturen op resultaat en voortgang',
+      'Verdieping en structuur aanbrengen',
+      'Afstemmen met anderen',
+      'Samen optrekken in een vast ritme',
+      'Werken vanuit een helder kader',
+      'Agenda bepalen op toekomstkansen',
+    ],
+  },
+  {
+    q: 'Wat maakt een leidinggevende goed in jouw ogen?',
+    a: [
+      'Geeft ruimte en vertrouwen',
+      'Investeert in mijn ontwikkeling',
+      'Is duidelijk en resultaatgericht',
+      'Biedt inhoudelijk houvast',
+      'Is menselijk en betrokken',
+      'Houdt het team bij elkaar',
+      'Communiceert helder en consistent',
+      'Heeft visie en lef',
+    ],
+  },
+  {
+    q: 'Wat beschrijft jouw werkstijl het best?',
+    a: [
+      'Creatief en autonoom',
+      'Lerend en nieuwsgierig',
+      'Doelgericht en gedisciplineerd',
+      'Analytisch en grondig',
+      'Sociaal en empathisch',
+      'Stabiel en loyaal',
+      'Gestructureerd en betrouwbaar',
+      'Visionair en vernieuwend',
+    ],
+  },
+  {
+    q: 'Wat heeft direct invloed op hoe goed jij werkt?',
+    a: [
+      'Vrijheid om de ruimte zelf in te richten',
+      'Toegang tot nieuwe kennis en prikkels',
+      'Een plek zonder afleiding',
+      'Rust en overzicht om diep te denken',
+      "Collega's en ontmoetingsplekken",
+      'Een vaste plek met vertrouwd team',
+      'Duidelijke indeling en weinig verandering',
+      'Een inspirerende omgeving',
+    ],
+  },
+  {
+    q: 'Wanneer voel jij je het meest ondergewaardeerd?',
+    a: [
+      'Als ik niet creatief mag zijn',
+      'Als er geen ruimte is voor groei',
+      'Als resultaten niet erkend worden',
+      'Als diepgang niet gewaardeerd wordt',
+      'Als de menselijke kant genegeerd wordt',
+      'Als ik buitengesloten ben van de groep',
+      'Als het onduidelijk is wat ik moet doen',
+      'Als mijn visie niet serieus genomen wordt',
+    ],
+  },
+  {
+    q: 'Hoe ga jij om met onzekerheid?',
+    a: [
+      'Ik gebruik het als experimenteerruimte',
+      'Ik zie het als leerkans',
+      'Ik zoek houvast in doelen en voortgang',
+      'Ik analyseer tot het duidelijker is',
+      'Ik praat erover met anderen',
+      'Ik zoek steun bij mijn vaste team',
+      'Ik wacht liever tot het duidelijker is',
+      'Ik zie het als kans voor verandering',
+    ],
+  },
+  {
+    q: 'Als je een nieuwe opdracht krijgt — wat is je eerste reactie?',
+    a: [
+      'Hoe pak ik dit aan op mijn manier?',
+      'Wat kan ik hiervan leren?',
+      'Wat is het doel en hoe haal ik het?',
+      'Wat zijn alle kanten van dit vraagstuk?',
+      'Met wie doe ik dit?',
+      'Wie zijn mijn teamleden en de rollen?',
+      'Wat zijn de verwachtingen en de kaders?',
+      'Welke kans biedt dit voor de toekomst?',
+    ],
+  },
+  {
+    q: 'Waar haal jij op een moeilijke dag het meeste houvast uit?',
+    a: [
+      'Ruimte om iets te maken of uit te proberen',
+      'Weten dat ik iets nieuws heb geleerd',
+      'Een concreet resultaat — hoe klein ook',
+      'Grip krijgen op wat er speelt',
+      'Contact met iemand die luistert',
+      'Steun van mijn vaste team',
+      'Duidelijkheid over wat er van me verwacht wordt',
+      'Een groter doel voor ogen houden',
+    ],
+  },
 ];

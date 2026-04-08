@@ -11,6 +11,10 @@ function shuffleArray(array) {
     return copy;
 }
 
+function createEmptyScores() {
+    return Object.fromEntries(ARCHETYPES.map((archetype) => [archetype.id, 0]));
+}
+
 export default function Quiz({ setPage, setResultData }) {
     const [step, setStep] = useState(-1);
     const [profile, setProfile] = useState({
@@ -18,10 +22,10 @@ export default function Quiz({ setPage, setResultData }) {
         org: '',
         dept: '',
         team: '',
+        role: '',
+        team_size: '',
     });
-    const [scores, setScores] = useState(
-        Object.fromEntries(ARCHETYPES.map((a) => [a.id, 0]))
-    );
+    const [scores, setScores] = useState(createEmptyScores());
     const [selectedAnswers, setSelectedAnswers] = useState([]);
     const [shuffledOptions, setShuffledOptions] = useState([]);
     const [saving, setSaving] = useState(false);
@@ -29,7 +33,7 @@ export default function Quiz({ setPage, setResultData }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     const totalQuestions = QUESTIONS.length;
-    const current = step >= 0 ? QUESTIONS[step] : null;
+    const currentQuestion = step >= 0 ? QUESTIONS[step] : null;
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -38,9 +42,9 @@ export default function Quiz({ setPage, setResultData }) {
     }, []);
 
     useEffect(() => {
-        if (step < 0 || !current) return;
+        if (step < 0 || !currentQuestion) return;
 
-        const optionObjects = current.a.map((answerText, index) => ({
+        const optionObjects = currentQuestion.a.map((answerText, index) => ({
             text: answerText,
             archetypeId: ARCHETYPES[index]?.id,
             originalIndex: index,
@@ -48,29 +52,36 @@ export default function Quiz({ setPage, setResultData }) {
 
         setShuffledOptions(shuffleArray(optionObjects));
         setSelectedAnswers([]);
-    }, [step, current]);
+        setError('');
+    }, [step, currentQuestion]);
 
     const progress = useMemo(() => {
         if (step < 0) return 0;
         return ((step + 1) / totalQuestions) * 100;
     }, [step, totalQuestions]);
 
+    const updateProfileField = (field, value) => {
+        setProfile((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
+    };
+
     const startQuiz = () => {
         if (!profile.team.trim()) {
             setError('Vul minimaal een teamnaam in.');
             return;
         }
+
         setError('');
         setStep(0);
     };
 
     const toggleAnswer = (option) => {
-        const exists = selectedAnswers.find((item) => item.text === option.text);
+        const exists = selectedAnswers.some((item) => item.text === option.text);
 
         if (exists) {
-            setSelectedAnswers((prev) =>
-                prev.filter((item) => item.text !== option.text)
-            );
+            setSelectedAnswers((prev) => prev.filter((item) => item.text !== option.text));
             return;
         }
 
@@ -91,6 +102,7 @@ export default function Quiz({ setPage, setResultData }) {
 
         selectedAnswers.forEach((option, index) => {
             const weight = index === 0 ? 3 : index === 1 ? 2 : 1;
+
             if (option.archetypeId) {
                 weightedScores[option.archetypeId] =
                     (weightedScores[option.archetypeId] || 0) + weight;
@@ -104,9 +116,9 @@ export default function Quiz({ setPage, setResultData }) {
         }
 
         const sorted = [...ARCHETYPES]
-            .map((a) => ({
-                ...a,
-                score: weightedScores[a.id] || 0,
+            .map((archetype) => ({
+                ...archetype,
+                score: weightedScores[archetype.id] || 0,
             }))
             .sort((a, b) => b.score - a.score);
 
@@ -118,17 +130,20 @@ export default function Quiz({ setPage, setResultData }) {
             scores: weightedScores,
         };
 
+        console.log('📦 RESULT VOLLEDIG:', JSON.stringify(result, null, 2));
+
         setSaving(true);
 
         try {
             await saveResponse(result);
-        } catch (e) {
-            console.error(e);
+            setResultData(result);
+            setPage('results');
+        } catch (err) {
+            console.error('Quiz save error:', err);
+            setError('Er ging iets mis bij het opslaan. Probeer het opnieuw.');
+        } finally {
+            setSaving(false);
         }
-
-        setSaving(false);
-        setResultData(result);
-        setPage('results');
     };
 
     if (step === -1) {
@@ -204,34 +219,53 @@ export default function Quiz({ setPage, setResultData }) {
                         }}
                     >
                         <FormField
-                            label="Naam"
+                            label="Voornaam"
                             optional
                             value={profile.name}
-                            onChange={(value) => setProfile((p) => ({ ...p, name: value }))}
+                            onChange={(value) => updateProfileField('name', value)}
                         />
 
                         <FormField
                             label="Organisatie"
                             value={profile.org}
-                            onChange={(value) => setProfile((p) => ({ ...p, org: value }))}
+                            onChange={(value) => updateProfileField('org', value)}
                         />
 
                         <FormField
                             label="Afdeling"
                             value={profile.dept}
-                            onChange={(value) => setProfile((p) => ({ ...p, dept: value }))}
+                            onChange={(value) => updateProfileField('dept', value)}
                         />
 
                         <FormField
                             label="Team"
                             required
                             value={profile.team}
-                            onChange={(value) => setProfile((p) => ({ ...p, team: value }))}
+                            onChange={(value) => updateProfileField('team', value)}
                         />
 
-                        {error && <div style={{ color: '#b85c5c', fontSize: 14 }}>{error}</div>}
+                        <FormField
+                            label="Rol"
+                            placeholder="Bijv. teamleider, adviseur, designer"
+                            value={profile.role}
+                            onChange={(value) => updateProfileField('role', value)}
+                        />
+
+                        <FormField
+                            label="Teamgrootte"
+                            placeholder="Bijv. 5-10, 10-20"
+                            value={profile.team_size}
+                            onChange={(value) => updateProfileField('team_size', value)}
+                        />
+
+                        {error && (
+                            <div style={{ color: '#b85c5c', fontSize: 14 }}>
+                                {error}
+                            </div>
+                        )}
 
                         <button
+                            type="button"
                             onClick={startQuiz}
                             style={{
                                 marginTop: 4,
@@ -330,7 +364,7 @@ export default function Quiz({ setPage, setResultData }) {
                                 color: '#1f1b18',
                             }}
                         >
-                            {current?.q}
+                            {currentQuestion?.q}
                         </h1>
 
                         <p
@@ -351,7 +385,7 @@ export default function Quiz({ setPage, setResultData }) {
                             gap: isMobile ? 8 : 10,
                         }}
                     >
-                        {shuffledOptions.map((option, i) => {
+                        {shuffledOptions.map((option, index) => {
                             const selectedIndex = selectedAnswers.findIndex(
                                 (item) => item.text === option.text
                             );
@@ -367,7 +401,7 @@ export default function Quiz({ setPage, setResultData }) {
 
                             return (
                                 <button
-                                    key={`${option.text}-${i}`}
+                                    key={`${option.text}-${index}`}
                                     type="button"
                                     onClick={() => toggleAnswer(option)}
                                     onMouseLeave={(e) => e.currentTarget.blur()}
@@ -414,7 +448,9 @@ export default function Quiz({ setPage, setResultData }) {
                     </div>
 
                     {error && (
-                        <div style={{ color: '#b85c5c', fontSize: 14 }}>{error}</div>
+                        <div style={{ color: '#b85c5c', fontSize: 14 }}>
+                            {error}
+                        </div>
                     )}
 
                     <div
@@ -436,11 +472,11 @@ export default function Quiz({ setPage, setResultData }) {
                         >
                             {selectedAnswers.length === 0
                                 ? 'Nog niets gekozen'
-                                : `${selectedAnswers.length} antwoord${selectedAnswers.length > 1 ? 'en' : ''
-                                } gekozen`}
+                                : `${selectedAnswers.length} antwoord${selectedAnswers.length > 1 ? 'en' : ''} gekozen`}
                         </div>
 
                         <button
+                            type="button"
                             onClick={handleNext}
                             disabled={saving || selectedAnswers.length === 0}
                             style={{
@@ -470,7 +506,14 @@ export default function Quiz({ setPage, setResultData }) {
     );
 }
 
-function FormField({ label, value, onChange, optional = false, required = false }) {
+function FormField({
+    label,
+    value,
+    onChange,
+    placeholder = '',
+    optional = false,
+    required = false,
+}) {
     return (
         <div>
             <label style={{ display: 'block', marginBottom: 6, fontWeight: 600 }}>
@@ -478,9 +521,11 @@ function FormField({ label, value, onChange, optional = false, required = false 
                 {optional && <span style={{ color: '#777', fontWeight: 400 }}>(optioneel)</span>}
                 {required && <span style={{ color: '#b85c5c' }}>*</span>}
             </label>
+
             <input
                 type="text"
                 value={value}
+                placeholder={placeholder}
                 onChange={(e) => onChange(e.target.value)}
                 style={{
                     width: '100%',

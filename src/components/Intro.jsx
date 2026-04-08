@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function Intro({ setPage }) {
-    const isMobile = window.innerWidth < 900;
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 900);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
         <div
@@ -24,7 +30,6 @@ export default function Intro({ setPage }) {
                     gap: isMobile ? 16 : 20,
                 }}
             >
-                {/* HEADER */}
                 <div>
                     <div
                         style={{
@@ -67,7 +72,6 @@ export default function Intro({ setPage }) {
                     </p>
                 </div>
 
-                {/* UITLEG BLOKKEN */}
                 <div
                     style={{
                         display: 'grid',
@@ -94,7 +98,6 @@ export default function Intro({ setPage }) {
                     />
                 </div>
 
-                {/* EXTRA REGEL */}
                 <div
                     style={{
                         background: 'white',
@@ -118,44 +121,46 @@ export default function Intro({ setPage }) {
                     </p>
                 </div>
 
-                {/* CTA */}
                 <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-                    <button
+                    <ActionButton
                         onClick={() => setPage('quiz')}
-                        style={{
-                            background: '#b85c5c',
-                            color: 'white',
-                            padding: '14px 22px',
-                            borderRadius: 10,
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: 15,
-                            fontWeight: 500,
-                            minWidth: isMobile ? '100%' : 180,
-                        }}
+                        primary
+                        fullWidth={isMobile}
                     >
                         Start de test
-                    </button>
+                    </ActionButton>
 
-                    <button
+                    <ActionButton
                         onClick={() => setPage('home')}
-                        style={{
-                            background: 'transparent',
-                            color: '#1a1a1a',
-                            border: '1px solid #1a1a1a',
-                            padding: '14px 22px',
-                            borderRadius: 10,
-                            cursor: 'pointer',
-                            fontSize: 15,
-                            fontWeight: 500,
-                            minWidth: isMobile ? '100%' : 180,
-                        }}
+                        fullWidth={isMobile}
                     >
                         Terug
-                    </button>
+                    </ActionButton>
                 </div>
             </div>
         </div>
+    );
+}
+
+function ActionButton({ children, onClick, primary = false, fullWidth = false }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            style={{
+                background: primary ? '#b85c5c' : 'transparent',
+                color: primary ? 'white' : '#1a1a1a',
+                border: primary ? 'none' : '1px solid #1a1a1a',
+                padding: '14px 22px',
+                borderRadius: 10,
+                cursor: 'pointer',
+                fontSize: 15,
+                fontWeight: 500,
+                minWidth: fullWidth ? '100%' : 180,
+            }}
+        >
+            {children}
+        </button>
     );
 }
 

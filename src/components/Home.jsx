@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function Home({ setPage }) {
-  const isMobile = window.innerWidth < 900;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 900);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   return (
     <div
@@ -25,7 +31,6 @@ export default function Home({ setPage }) {
           gap: isMobile ? 18 : 22,
         }}
       >
-        {/* HEADER */}
         <div>
           <div
             style={{
@@ -46,87 +51,49 @@ export default function Home({ setPage }) {
               fontFamily: 'Playfair Display',
               fontWeight: 500,
               margin: 0,
-              maxWidth: 820,
+              maxWidth: 860,
               color: '#1f1b18',
             }}
           >
             Je werkplek klopt.
             <br />
             <span style={{ color: '#b85c5c', fontStyle: 'italic' }}>
-              Je mensen nog niet altijd.
+              Maar past die ook bij je mensen?
             </span>
           </h1>
 
           <p
             style={{
               marginTop: 16,
-              maxWidth: 620,
-              lineHeight: 1.58,
+              maxWidth: 680,
+              lineHeight: 1.62,
               color: '#444',
               fontSize: 16,
             }}
           >
-            Niet omdat ze niet willen — maar omdat de omgeving niet altijd aansluit
-            op hoe ze werken. Dit instrument maakt zichtbaar wat iemand nodig heeft
-            in gedrag, werkomgeving en ondersteuning.
+            Deze tool maakt zichtbaar hoe iemand van nature werkt, waar energie ontstaat
+            en wat nodig is om goed tot zijn recht te komen. Zo wordt gedrag, werkomgeving
+            en samenwerking concreet bespreekbaar — voor jezelf, voor teams en voor leidinggevenden.
           </p>
         </div>
 
-        {/* CTA */}
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setPage('quiz')}
-            style={{
-              background: '#b85c5c',
-              color: 'white',
-              padding: '14px 22px',
-              borderRadius: 10,
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: 15,
-              fontWeight: 500,
-              minWidth: isMobile ? '100%' : 180,
-            }}
-          >
-            Start de test
-          </button>
-
-          <button
+          <ActionButton
             onClick={() => setPage('intro')}
-            style={{
-              background: 'transparent',
-              color: '#1a1a1a',
-              border: '1px solid #1a1a1a',
-              padding: '14px 22px',
-              borderRadius: 10,
-              cursor: 'pointer',
-              fontSize: 15,
-              fontWeight: 500,
-              minWidth: isMobile ? '100%' : 180,
-            }}
+            fullWidth={isMobile}
           >
             Eerst even uitleg
-          </button>
+          </ActionButton>
 
-          <button
-            onClick={() => setPage('team')}
-            style={{
-              background: 'transparent',
-              color: '#1a1a1a',
-              border: '1px solid #1a1a1a',
-              padding: '14px 22px',
-              borderRadius: 10,
-              cursor: 'pointer',
-              fontSize: 15,
-              fontWeight: 500,
-              minWidth: isMobile ? '100%' : 180,
-            }}
+          <ActionButton
+            onClick={() => setPage('quiz')}
+            primary
+            fullWidth={isMobile}
           >
-            Bekijk team
-          </button>
+            Start de test
+          </ActionButton>
         </div>
 
-        {/* TIJD */}
         <div
           style={{
             display: 'inline-flex',
@@ -145,7 +112,6 @@ export default function Home({ setPage }) {
           <span>Duurt ongeveer 5 minuten</span>
         </div>
 
-        {/* CARDS */}
         <div
           style={{
             display: 'grid',
@@ -156,13 +122,13 @@ export default function Home({ setPage }) {
           <FeatureCard
             accent="#b85c5c"
             title="Voor jezelf"
-            text="Ontdek hoe jij werkt, waar je energie van krijgt en wat jij nodig hebt om goed tot je recht te komen."
+            text="Krijg zicht op jouw natuurlijke werkstijl, energiebronnen en wat jij nodig hebt om sterk te functioneren."
           />
 
           <FeatureCard
             accent="#6b8f7b"
             title="Voor teams"
-            text="Zie waar energie lekt, waar het schuurt en welke werkstijlen elkaar versterken of juist tegenwerken."
+            text="Maak zichtbaar waar verschil in werkstijlen elkaar versterkt — of juist spanning en energielek veroorzaakt."
             locked
             lockColor="#6b8f7b"
           />
@@ -170,13 +136,12 @@ export default function Home({ setPage }) {
           <FeatureCard
             accent="#c7a24a"
             title="Voor leiding"
-            text="Gebruik persona-inzichten om beter te sturen op gedrag, samenwerking en de juiste werkomgeving."
+            text="Gebruik persona-inzichten om gerichter te sturen op samenwerking, leiderschap en passende werkomgevingen."
             locked
             lockColor="#c7a24a"
           />
         </div>
 
-        {/* PREMIUM */}
         <div
           style={{
             background: '#1f1b18',
@@ -228,8 +193,8 @@ export default function Home({ setPage }) {
                 margin: 0,
               }}
             >
-              Wil je dit vertalen naar team- of organisatie-inzicht? Dan bouwen
-              we door op gedrag, dynamiek en werkplekkeuzes.
+              Wil je van individueel inzicht naar team- of organisatie-inzicht? Dan vertalen
+              we persona’s naar teamdynamiek, leiderschap en werkplekkeuzes die echt passen.
             </p>
           </div>
 
@@ -257,7 +222,6 @@ export default function Home({ setPage }) {
           </a>
         </div>
 
-        {/* PRIVACY */}
         <div
           style={{
             background: '#efe5db',
@@ -284,6 +248,28 @@ export default function Home({ setPage }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ActionButton({ children, onClick, primary = false, fullWidth = false }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        background: primary ? '#b85c5c' : 'transparent',
+        color: primary ? 'white' : '#1a1a1a',
+        border: primary ? 'none' : '1px solid #1a1a1a',
+        padding: '14px 22px',
+        borderRadius: 10,
+        cursor: 'pointer',
+        fontSize: 15,
+        fontWeight: 500,
+        minWidth: fullWidth ? '100%' : 180,
+      }}
+    >
+      {children}
+    </button>
   );
 }
 

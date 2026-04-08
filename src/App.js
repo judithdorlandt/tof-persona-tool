@@ -3,6 +3,7 @@ import './index.css';
 
 import Nav from './components/Nav.jsx';
 import Home from './components/Home.jsx';
+import Intro from './components/Intro.jsx';
 import Library from './components/Library.jsx';
 import Quiz from './components/Quiz.jsx';
 import Team from './components/Team.jsx';
@@ -12,17 +13,20 @@ export default function App() {
   const [page, setPage] = useState('home');
   const [resultData, setResultData] = useState(null);
 
-  function navigate(target) {
+  const navigate = (target) => {
     setPage(target);
-  }
+  };
 
   const renderPage = () => {
     switch (page) {
       case 'home':
         return <Home setPage={navigate} />;
 
+      case 'intro':
+        return <Intro setPage={navigate} />;
+
       case 'library':
-        return resultData ? <Library /> : <Home setPage={navigate} />;
+        return <Library />;
 
       case 'team':
         return <Team setPage={navigate} />;
@@ -36,7 +40,11 @@ export default function App() {
         );
 
       case 'results':
-        return <Results resultData={resultData} />;
+        return resultData ? (
+          <Results resultData={resultData} />
+        ) : (
+          <Home setPage={navigate} />
+        );
 
       default:
         return <Home setPage={navigate} />;
@@ -48,7 +56,7 @@ export default function App() {
       <Nav
         page={page}
         setPage={navigate}
-        hasResult={!!resultData}
+        hasResult={Boolean(resultData)}
       />
       <main>{renderPage()}</main>
     </>
