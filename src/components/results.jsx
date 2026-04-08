@@ -1,8 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ARCHETYPES } from '../data';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Feedback from './Feedback';
+
+const COLOR_MAP = {
+    maker: '#b85c5c',
+    groeier: '#c28d6b',
+    presteerder: '#c7a24a',
+    denker: '#6f7f92',
+    verbinder: '#7f9a8a',
+    teamspeler: '#8b7f9a',
+    zekerzoeker: '#7d8a6b',
+    vernieuwer: '#d08c5b',
+};
+
+const INFO_LABEL_STYLE = {
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    color: '#7a6d66',
+    marginBottom: 8,
+};
 
 export default function Results({ resultData }) {
     const cardRef = useRef(null);
@@ -13,6 +32,71 @@ export default function Results({ resultData }) {
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
+
+    const getArchetype = (id) => ARCHETYPES.find((a) => a.id === id);
+
+    const primary = getArchetype(resultData?.primary);
+    const secondary = getArchetype(resultData?.secondary);
+    const tertiary = getArchetype(resultData?.tertiary);
+
+    const primaryColor = COLOR_MAP[primary?.id] || '#b85c5c';
+    const secondaryColor = COLOR_MAP[secondary?.id] || '#c7bdb1';
+    const tertiaryColor = COLOR_MAP[tertiary?.id] || '#d8cec5';
+
+    const scoreEntries = useMemo(() => {
+        return Object.entries(resultData?.scores || {}).sort((a, b) => b[1] - a[1]);
+    }, [resultData]);
+
+    const maxScore = Math.max(...scoreEntries.map(([, value]) => value), 1);
+
+    const pickLeadSentence = (text) => {
+        if (!text) return '';
+        const first = text.split('. ')[0]?.trim() || '';
+        if (!first) return '';
+        return first.endsWith('.') ? first : `${first}.`;
+    };
+
+    const lowerFirst = (text) => {
+        if (!text) return '';
+        return text.charAt(0).toLowerCase() + text.slice(1);
+    };
+
+    const combinedCoach = {
+        bricks: `${primary?.bricks || ''} Vanuit jouw mix zie je daarnaast ook behoefte aan ${lowerFirst(
+            pickLeadSentence(secondary?.bricks)
+        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.bricks))}`,
+        bytes: `${primary?.bytes || ''} Vanuit jouw mix helpt het daarnaast als er ook ruimte is voor ${lowerFirst(
+            pickLeadSentence(secondary?.bytes)
+        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.bytes))}`,
+        behavior: `${primary?.behavior || ''} In jouw mix zie je daarnaast ook dat ${secondary?.name?.toLowerCase() || 'je tweede persona'
+            } en ${tertiary?.name?.toLowerCase() || 'je derde persona'} vragen om ${lowerFirst(
+                pickLeadSentence(secondary?.behavior)
+            )} En ook ${lowerFirst(pickLeadSentence(tertiary?.behavior))}`,
+    };
+
+    const downloadCardAsPDF = async () => {
+        if (!cardRef.current) return;
+
+        const canvas = await html2canvas(cardRef.current, {
+            scale: 2,
+            backgroundColor: '#f7f2ec',
+            useCORS: true,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: 'a5',
+        });
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+        pdf.save(`tof-persona-${primary?.name?.toLowerCase() || 'resultaat'}.pdf`);
+    };
 
     if (!resultData) {
         return (
@@ -58,88 +142,6 @@ export default function Results({ resultData }) {
             </div>
         );
     }
-
-    const getA = (id) => ARCHETYPES.find((a) => a.id === id);
-
-    const primary = getA(resultData.primary);
-    const secondary = getA(resultData.secondary);
-    const tertiary = getA(resultData.tertiary);
-
-    const colorMap = {
-        maker: '#b85c5c',
-        groeier: '#c28d6b',
-        presteerder: '#c7a24a',
-        denker: '#6f7f92',
-        verbinder: '#7f9a8a',
-        teamspeler: '#8b7f9a',
-        zekerzoeker: '#7d8a6b',
-        vernieuwer: '#d08c5b',
-    };
-
-    const primaryColor = colorMap[primary?.id] || '#b85c5c';
-    const secondaryColor = colorMap[secondary?.id] || '#c7bdb1';
-    const tertiaryColor = colorMap[tertiary?.id] || '#d8cec5';
-
-    const scoreEntries = Object.entries(resultData.scores || {}).sort(
-        (a, b) => b[1] - a[1]
-    );
-    const maxScore = Math.max(...scoreEntries.map(([, v]) => v), 1);
-
-    const pickLeadSentence = (text) => {
-        if (!text) return '';
-        const first = text.split('. ')[0]?.trim() || '';
-        if (!first) return '';
-        return first.endsWith('.') ? first : `${first}.`;
-    };
-
-    const lowerFirst = (text) => {
-        if (!text) return '';
-        return text.charAt(0).toLowerCase() + text.slice(1);
-    };
-
-    const combinedCoach = {
-        bricks: `${primary?.bricks || ''} Vanuit jouw mix zie je daarnaast ook behoefte aan ${lowerFirst(
-            pickLeadSentence(secondary?.bricks)
-        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.bricks))}`,
-        bytes: `${primary?.bytes || ''} Vanuit jouw mix helpt het daarnaast als er ook ruimte is voor ${lowerFirst(
-            pickLeadSentence(secondary?.bytes)
-        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.bytes))}`,
-        behavior: `${primary?.behavior || ''} In jouw mix zie je daarnaast ook dat ${secondary?.name?.toLowerCase() || 'je tweede persona'} en ${tertiary?.name?.toLowerCase() || 'je derde persona'} vragen om ${lowerFirst(
-            pickLeadSentence(secondary?.behavior)
-        )} En ook ${lowerFirst(pickLeadSentence(tertiary?.behavior))}`,
-    };
-
-    const downloadCardAsPDF = async () => {
-        if (!cardRef.current) return;
-
-        const canvas = await html2canvas(cardRef.current, {
-            scale: 2,
-            backgroundColor: '#f7f2ec',
-            useCORS: true,
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-
-        const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'mm',
-            format: 'a5',
-        });
-
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
-        pdf.save(`tof-persona-${primary?.name?.toLowerCase() || 'resultaat'}.pdf`);
-    };
-
-    const infoLabelStyle = {
-        fontSize: 11,
-        letterSpacing: 1.5,
-        textTransform: 'uppercase',
-        color: '#7a6d66',
-        marginBottom: 8,
-    };
 
     return (
         <div
@@ -216,6 +218,7 @@ export default function Results({ resultData }) {
                     gridTemplateColumns: isMobile ? '1fr' : '0.95fr 1.05fr',
                 }}
             >
+                {/* LINKS */}
                 <div
                     style={{
                         padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',
@@ -296,13 +299,13 @@ export default function Results({ resultData }) {
                             padding: '14px 16px',
                         }}
                     >
-                        <div style={infoLabelStyle}>Verdeling over alle persona&apos;s</div>
+                        <div style={INFO_LABEL_STYLE}>Verdeling over alle persona&apos;s</div>
 
                         <div style={{ display: 'grid', gap: 8 }}>
                             {scoreEntries.map(([id, value]) => {
-                                const a = getA(id);
+                                const archetype = getArchetype(id);
                                 const width = `${Math.max(8, (Number(value) / maxScore) * 100)}%`;
-                                const barColor = colorMap[id] || '#b85c5c';
+                                const barColor = COLOR_MAP[id] || '#b85c5c';
 
                                 return (
                                     <div key={id}>
@@ -315,7 +318,7 @@ export default function Results({ resultData }) {
                                                 color: '#3f342f',
                                             }}
                                         >
-                                            <span style={{ fontWeight: 600 }}>{a?.name || id}</span>
+                                            <span style={{ fontWeight: 600 }}>{archetype?.name || id}</span>
                                             <span>{value}</span>
                                         </div>
 
@@ -350,26 +353,26 @@ export default function Results({ resultData }) {
                             borderLeft: `4px solid ${secondaryColor}`,
                         }}
                     >
-                        <div style={infoLabelStyle}>Jouw mix</div>
+                        <div style={INFO_LABEL_STYLE}>Jouw mix</div>
 
                         <div style={{ display: 'grid', gap: 10 }}>
-                            {[secondary, tertiary].filter(Boolean).map((p, i) => {
-                                const pColor = colorMap[p?.id] || '#d8cec5';
+                            {[secondary, tertiary].filter(Boolean).map((persona, index) => {
+                                const mixColor = COLOR_MAP[persona?.id] || '#d8cec5';
 
                                 return (
                                     <div
-                                        key={i}
+                                        key={persona?.id || index}
                                         style={{
                                             background: 'rgba(255,255,255,0.78)',
                                             borderRadius: 12,
                                             padding: '10px 12px',
-                                            borderLeft: `4px solid ${pColor}`,
+                                            borderLeft: `4px solid ${mixColor}`,
                                         }}
                                     >
                                         <div
                                             style={{
                                                 display: 'inline-block',
-                                                background: pColor,
+                                                background: mixColor,
                                                 color: '#fff',
                                                 padding: '4px 8px',
                                                 borderRadius: 999,
@@ -378,7 +381,7 @@ export default function Results({ resultData }) {
                                                 marginBottom: 5,
                                             }}
                                         >
-                                            {i === 0 ? `2. ${p?.name}` : `3. ${p?.name}`}
+                                            {index === 0 ? `2. ${persona?.name}` : `3. ${persona?.name}`}
                                         </div>
 
                                         <div
@@ -402,7 +405,7 @@ export default function Results({ resultData }) {
                                                 marginBottom: 3,
                                             }}
                                         >
-                                            {p?.name}
+                                            {persona?.name}
                                         </div>
 
                                         <p
@@ -413,7 +416,7 @@ export default function Results({ resultData }) {
                                                 fontSize: 13,
                                             }}
                                         >
-                                            {p?.short}
+                                            {persona?.short}
                                         </p>
                                     </div>
                                 );
@@ -422,6 +425,7 @@ export default function Results({ resultData }) {
                     </div>
                 </div>
 
+                {/* RECHTS */}
                 <div
                     style={{
                         padding: isMobile ? '18px 14px 14px' : '26px 24px 22px',
@@ -453,7 +457,7 @@ export default function Results({ resultData }) {
                             borderTop: `4px solid ${tertiaryColor}`,
                         }}
                     >
-                        <div style={infoLabelStyle}>Wat jou energie kost</div>
+                        <div style={INFO_LABEL_STYLE}>Wat jou energie kost</div>
 
                         <div
                             style={{

@@ -8,18 +8,11 @@ import Quiz from './components/Quiz';
 import Team from './components/Team';
 import Results from './components/Results';
 
-const isAdmin = false;
-
 export default function App() {
   const [page, setPage] = useState('home');
   const [resultData, setResultData] = useState(null);
 
   function navigate(target) {
-    if (target === 'dashboard' && !isAdmin) {
-      setPage('home');
-      return;
-    }
-
     setPage(target);
   }
 
@@ -29,9 +22,7 @@ export default function App() {
         return <Home setPage={navigate} />;
 
       case 'library':
-        return resultData
-          ? <Library />
-          : <Home setPage={navigate} />;
+        return resultData ? <Library /> : <Home setPage={navigate} />;
 
       case 'team':
         return <Team setPage={navigate} />;
@@ -47,9 +38,6 @@ export default function App() {
       case 'results':
         return <Results resultData={resultData} />;
 
-      case 'dashboard':
-        return <Home setPage={navigate} />;
-
       default:
         return <Home setPage={navigate} />;
     }
@@ -62,7 +50,6 @@ export default function App() {
         setPage={navigate}
         hasResult={!!resultData}
       />
-
       <main>{renderPage()}</main>
     </>
   );
