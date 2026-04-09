@@ -377,7 +377,7 @@ export default function Quiz({ setPage, setResultData }) {
                             }}
                         >
                             Kies wat het meest op jou lijkt — niet wat 'goed' klinkt.
-                            Je mag meerdere opties kiezen,
+                            Je kan tot max 3 opties kiezen.
                         </p>
                     </div>
 
