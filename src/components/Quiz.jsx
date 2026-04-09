@@ -85,7 +85,9 @@ export default function Quiz({ setPage, setResultData }) {
             return;
         }
 
-        if (selectedAnswers.length >= 3) return;
+        if (selectedAnswers.length >= 3) {
+            return;
+        }
 
         setSelectedAnswers((prev) => [...prev, option]);
     };
@@ -202,8 +204,7 @@ export default function Quiz({ setPage, setResultData }) {
                                 fontSize: isMobile ? 15 : 17,
                             }}
                         >
-                            Deze informatie gebruiken we om jouw profiel op te slaan en later te
-                            kunnen vertalen naar team- of organisatie-inzichten.
+                            Deze informatie helpt om jouw profiel goed te plaatsen. Vul alleen in wat voor jou relevant voelt — teamnaam is nodig, de rest mag kort en praktisch blijven.
                         </p>
                     </div>
 
@@ -280,7 +281,7 @@ export default function Quiz({ setPage, setResultData }) {
                                 width: isMobile ? '100%' : 'auto',
                             }}
                         >
-                            Verder naar de vragen
+                            Start de vragen
                         </button>
                     </div>
                 </div>
@@ -375,7 +376,8 @@ export default function Quiz({ setPage, setResultData }) {
                                 lineHeight: 1.45,
                             }}
                         >
-                            Kies maximaal 3 antwoorden. Begin met wat het meest dichtbij voelt.
+                            Kies wat het meest op jou lijkt — niet wat 'goed' klinkt.
+                            Je mag meerdere opties kiezen,
                         </p>
                     </div>
 
@@ -471,8 +473,8 @@ export default function Quiz({ setPage, setResultData }) {
                             }}
                         >
                             {selectedAnswers.length === 0
-                                ? 'Nog niets gekozen'
-                                : `${selectedAnswers.length} antwoord${selectedAnswers.length > 1 ? 'en' : ''} gekozen`}
+                                ? 'Kies 1 of meer opties'
+                                : `${selectedAnswers.length} optie${selectedAnswers.length > 1 ? 's' : ''} gekozen`}
                         </div>
 
                         <button
@@ -496,8 +498,8 @@ export default function Quiz({ setPage, setResultData }) {
                             {saving
                                 ? 'Bezig...'
                                 : step + 1 === totalQuestions
-                                    ? 'Bekijk resultaat'
-                                    : 'Volgende'}
+                                    ? 'Naar mijn resultaat'
+                                    : 'Volgende vraag'}
                         </button>
                     </div>
                 </div>
