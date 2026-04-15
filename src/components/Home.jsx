@@ -27,6 +27,7 @@ export default function Home({ setPage }) {
     setShowLock(true);
     setAccessCode('');
     setLockError('');
+    setCheckingCode(false);
   }
 
   function closeTeamLock() {
@@ -40,7 +41,7 @@ export default function Home({ setPage }) {
     const code = accessCode.trim();
 
     if (!code) {
-      setLockError('Voer eerst een code in');
+      setLockError('Voer eerst een toegangscode in');
       return;
     }
 
@@ -68,7 +69,7 @@ export default function Home({ setPage }) {
 
     grantTeamAccess(code);
     closeTeamLock();
-    setPage('team');
+    setPage('teamintro');
   }
 
   return (
@@ -123,12 +124,16 @@ export default function Home({ setPage }) {
           </div>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <PrimaryButton onClick={() => setPage('intro')}>
+            <PrimaryButton onClick={() => setPage('quiz')}>
               Start de Persona test
             </PrimaryButton>
 
             <SecondaryButton onClick={() => setPage('team')}>
               Voor teams & organisaties
+            </SecondaryButton>
+
+            <SecondaryButton onClick={openTeamLock}>
+              Teamomgeving
             </SecondaryButton>
           </div>
 
@@ -381,6 +386,7 @@ export default function Home({ setPage }) {
       </div>
       {showLock && (
         <div
+          onClick={closeTeamLock}
           style={{
             position: 'fixed',
             inset: 0,
@@ -393,18 +399,100 @@ export default function Home({ setPage }) {
           }}
         >
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
-              background: '#FFFFFF',
-              borderRadius: 16,
-              padding: 24,
               width: '100%',
-              maxWidth: 380,
+              maxWidth: 420,
+              background: '#fff',
+              borderRadius: 24,
+              border: '1px solid #E5D9CD',
+              boxShadow: '0 24px 70px rgba(40, 28, 22, 0.18)',
+              padding: isMobile ? '20px 18px' : '24px 24px',
               display: 'grid',
-              gap: 16,
-              boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+              gap: 14,
             }}
           >
-            {/* modal content */}
+            <div
+              style={{
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: 1.8,
+                color: 'var(--tof-text-muted)',
+                fontWeight: 700,
+              }}
+            >
+              Teamomgeving
+            </div>
+
+            <div
+              style={{
+                fontFamily: 'var(--tof-font-heading)',
+                fontSize: isMobile ? 28 : 32,
+                lineHeight: 1.05,
+                color: 'var(--tof-text)',
+              }}
+            >
+              Voer je toegangscode in
+            </div>
+
+            <p
+              style={{
+                margin: 0,
+                color: 'var(--tof-text-soft)',
+                fontSize: 14,
+                lineHeight: 1.65,
+              }}
+            >
+              De teamomgeving is alleen toegankelijk met een persoonlijke code.
+            </p>
+
+            <input
+              type="text"
+              value={accessCode}
+              onChange={(e) => setAccessCode(e.target.value)}
+              placeholder="Voer code in"
+              autoFocus
+              style={{
+                width: '100%',
+                padding: '14px 16px',
+                borderRadius: 14,
+                border: '1px solid #E2D8CC',
+                fontSize: 15,
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !checkingCode) {
+                  handleUnlock();
+                }
+              }}
+            />
+
+            {lockError ? (
+              <div
+                style={{
+                  fontSize: 13,
+                  color: '#B05252',
+                  lineHeight: 1.5,
+                }}
+              >
+                {lockError}
+              </div>
+            ) : null}
+
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <PrimaryButton
+                onClick={handleUnlock}
+                style={{ flex: 1 }}
+                disabled={checkingCode}
+              >
+                {checkingCode ? 'Controleren...' : 'Ga verder'}
+              </PrimaryButton>
+
+              <SecondaryButton onClick={closeTeamLock}>
+                Sluiten
+              </SecondaryButton>
+            </div>
           </div>
         </div>
       )}

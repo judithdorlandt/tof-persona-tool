@@ -48,13 +48,6 @@ const leadText = {
     fontSize: 15,
 };
 
-const bodyText = {
-    margin: 0,
-    color: '#4D433D',
-    lineHeight: 1.65,
-    fontSize: 14,
-};
-
 const SPACING = {
     xs: 4,
     sm: 8,
@@ -118,24 +111,6 @@ function InnerCard({ label, title, titleColor = '#1F1F1F', children }) {
                 </div>
             ) : null}
 
-            {children}
-        </div>
-    );
-}
-
-function InfoPanel({ children }) {
-    return (
-        <div
-            style={{
-                background: '#F4EDE6',
-                borderRadius: 16,
-                padding: '16px 18px',
-                color: '#4D433D',
-                fontSize: 13,
-                lineHeight: 1.6,
-                border: '1px solid rgba(120, 90, 70, 0.06)',
-            }}
-        >
             {children}
         </div>
     );
