@@ -21,7 +21,9 @@ export default function Quiz({ setPage, setResultData }) {
         name: '',
         org: '',
         dept: '',
+        has_multiple_teams: '',
         team: '',
+        invite_code: '',
         role: '',
         team_size: '',
     });
@@ -68,8 +70,30 @@ export default function Quiz({ setPage, setResultData }) {
     };
 
     const startQuiz = () => {
-        if (!profile.team.trim()) {
-            setError('Vul minimaal een teamnaam in.');
+        const hasOrg = profile.org.trim() !== '';
+        const hasDept = profile.dept.trim() !== '';
+        const hasMultipleTeams = profile.has_multiple_teams === 'yes';
+        const hasAnsweredTeamQuestion =
+            profile.has_multiple_teams === 'yes' || profile.has_multiple_teams === 'no';
+        const hasTeam = profile.team.trim() !== '';
+
+        if (!hasOrg) {
+            setError('Vul je organisatie in.');
+            return;
+        }
+
+        if (!hasDept) {
+            setError('Vul je afdeling in.');
+            return;
+        }
+
+        if (!hasAnsweredTeamQuestion) {
+            setError('Geef aan of jouw afdeling uit meerdere teams bestaat.');
+            return;
+        }
+
+        if (hasMultipleTeams && !hasTeam) {
+            setError('Vul je team in.');
             return;
         }
 
@@ -124,8 +148,12 @@ export default function Quiz({ setPage, setResultData }) {
             }))
             .sort((a, b) => b.score - a.score);
 
+        const normalizedTeam =
+            profile.has_multiple_teams === 'yes' ? profile.team.trim() : profile.dept.trim();
+
         const result = {
             ...profile,
+            team: normalizedTeam,
             primary: sorted[0]?.id || null,
             secondary: sorted[1]?.id || null,
             tertiary: sorted[2]?.id || null,
@@ -204,7 +232,10 @@ export default function Quiz({ setPage, setResultData }) {
                                 fontSize: isMobile ? 15 : 17,
                             }}
                         >
-                            Deze informatie helpt om jouw profiel goed te plaatsen. Vul alleen in wat voor jou relevant voelt — teamnaam is nodig, de rest mag kort en praktisch blijven.
+                            Deze informatie helpt om jouw profiel goed te plaatsen. Organisatie en
+                            afdeling zijn verplicht. Bestaat jouw afdeling uit meerdere teams? Dan
+                            vragen we ook naar jouw team. Heb je een teamcode ontvangen? Vul die dan
+                            ook in.
                         </p>
                     </div>
 
@@ -228,21 +259,51 @@ export default function Quiz({ setPage, setResultData }) {
 
                         <FormField
                             label="Organisatie"
+                            required
+                            placeholder="Bijv. jouw organisatie"
                             value={profile.org}
                             onChange={(value) => updateProfileField('org', value)}
                         />
 
                         <FormField
                             label="Afdeling"
+                            required
+                            placeholder="Bijv. HR, Finance of Huisvesting"
                             value={profile.dept}
                             onChange={(value) => updateProfileField('dept', value)}
                         />
 
-                        <FormField
-                            label="Team"
+                        <ChoiceField
+                            label="Bestaat jouw afdeling uit meerdere teams?"
                             required
-                            value={profile.team}
-                            onChange={(value) => updateProfileField('team', value)}
+                            value={profile.has_multiple_teams}
+                            onChange={(value) => {
+                                updateProfileField('has_multiple_teams', value);
+                                if (value === 'no') {
+                                    updateProfileField('team', '');
+                                }
+                            }}
+                            options={[
+                                { label: 'Ja', value: 'yes' },
+                                { label: 'Nee', value: 'no' },
+                            ]}
+                        />
+
+                        {profile.has_multiple_teams === 'yes' && (
+                            <FormField
+                                label="Team"
+                                required
+                                placeholder="Bijv. directieteam, projectteam of ondersteuning"
+                                value={profile.team}
+                                onChange={(value) => updateProfileField('team', value)}
+                            />
+                        )}
+
+                        <FormField
+                            label="Teamcode (alleen invullen als je die hebt ontvangen)"
+                            placeholder="Bijv. TEAM-2026-01"
+                            value={profile.invite_code}
+                            onChange={(value) => updateProfileField('invite_code', value)}
                         />
 
                         <FormField
@@ -376,8 +437,8 @@ export default function Quiz({ setPage, setResultData }) {
                                 lineHeight: 1.45,
                             }}
                         >
-                            Kies wat het meest op jou lijkt — niet wat 'goed' klinkt.
-                            Je kan tot max 3 opties kiezen.
+                            Kies wat het meest op jou lijkt — niet wat 'goed' klinkt. Ga op je eerste
+                            gevoel af.
                         </p>
                     </div>
 
@@ -473,7 +534,7 @@ export default function Quiz({ setPage, setResultData }) {
                             }}
                         >
                             {selectedAnswers.length === 0
-                                ? 'Kies 1 of meer opties'
+                                ? 'Kies 1 of meer opties (max. 3)'
                                 : `${selectedAnswers.length} optie${selectedAnswers.length > 1 ? 's' : ''} gekozen`}
                         </div>
 
@@ -538,6 +599,42 @@ function FormField({
                     boxSizing: 'border-box',
                 }}
             />
+        </div>
+    );
+}
+
+function ChoiceField({ label, value, onChange, options, required = false }) {
+    return (
+        <div>
+            <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>
+                {label} {required && <span style={{ color: '#b85c5c' }}>*</span>}
+            </label>
+
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {options.map((option) => {
+                    const active = value === option.value;
+
+                    return (
+                        <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => onChange(option.value)}
+                            style={{
+                                padding: '10px 14px',
+                                borderRadius: 10,
+                                border: active ? '2px solid #b85c5c' : '1px solid #ddd',
+                                background: active ? '#fcf1f1' : 'white',
+                                color: '#1f1b18',
+                                cursor: 'pointer',
+                                fontSize: 14,
+                                fontWeight: 500,
+                            }}
+                        >
+                            {option.label}
+                        </button>
+                    );
+                })}
+            </div>
         </div>
     );
 }

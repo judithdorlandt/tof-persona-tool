@@ -94,7 +94,7 @@ export default function Intro({ setPage }) {
                     <InfoCard
                         accent="#c7a24a"
                         title="Hoe lang duurt het?"
-                        text="Ongeveer 5 minuten. Je hoeft niets voor te bereiden."
+                        text="Ongeveer 15 minuten. Je hoeft niets voor te bereiden."
                     />
                 </div>
 
@@ -127,7 +127,7 @@ export default function Intro({ setPage }) {
                         primary
                         fullWidth={isMobile}
                     >
-                        Start de test
+                        Start met de vragen
                     </ActionButton>
 
                     <ActionButton
