@@ -124,7 +124,7 @@ export default function Home({ setPage }) {
           </div>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <PrimaryButton onClick={() => setPage('quiz')}>
+            <PrimaryButton onClick={() => setPage('intro')}>
               Start de Persona test
             </PrimaryButton>
 

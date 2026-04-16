@@ -780,7 +780,7 @@ export const QUESTIONS = [
       'Ik zet ideeën in beweging en maak dingen concreet',
       'Ik breng energie, nieuwsgierigheid en leerbereidheid',
       'Ik houd het team scherp op doelen en resultaten',
-      'Ik bewak de kwaliteit en diepgang van besluiten',
+      'Ik bewaak de kwaliteit en diepgang van besluiten',
       'Ik zorg dat mensen zich gezien en verbonden voelen',
       'Ik houd het team bij elkaar en zorg voor saamhorigheid',
       'Ik breng structuur, betrouwbaarheid en overzicht',

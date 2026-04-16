@@ -131,9 +131,9 @@ export default function TeamIntro({ setPage }) {
                         <div
                             style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-                                gap: 20,
-                                alignItems: 'start',
+                                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(0, 1fr))',
+                                gap: isMobile ? 14 : 20,
+                                alignItems: 'stretch',
                             }}
                         >
                             <ExpandableOfferCard
@@ -227,7 +227,7 @@ export default function TeamIntro({ setPage }) {
                                 onToggle={toggleBlock}
                                 eyebrow="Voor organisaties · premium & op aanvraag"
                                 title="Strategisch Team- & Werkplekinzicht"
-                                teaser="Voor organisaties die teamdynamiek willen koppelen aan ambitie, leiderschap en werkplekstrategie."
+                                teaser="Voor mensgerichte organisaties die teamdynamiek willen koppelen aan ambitie, leiderschap en werkplekstrategie."
                                 accent="var(--tof-text)"
                             >
                                 <p style={offerBodyText}>
@@ -472,8 +472,11 @@ function ExpandableOfferCard({
                 border: isOpen ? `1px solid ${accent}` : '1px solid var(--tof-border)',
                 display: 'grid',
                 gap: 10,
-                minHeight: isOpen ? 'auto' : 220,
-                alignContent: 'start',
+                minHeight: 240,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
                 boxShadow: isOpen
                     ? '0 12px 30px rgba(40, 25, 20, 0.08)'
                     : 'var(--tof-shadow)',
