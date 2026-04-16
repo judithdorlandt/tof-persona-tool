@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { ARCHETYPES, QUESTIONS } from '../data';
 import { saveResponse } from '../supabase';
 
@@ -28,6 +28,7 @@ export default function Quiz({ setPage, setResultData }) {
         team_size: '',
     });
     const [scores, setScores] = useState(createEmptyScores());
+    const questionTopRef = useRef(null);
     const [selectedAnswers, setSelectedAnswers] = useState([]);
     const [shuffledOptions, setShuffledOptions] = useState([]);
     const [saving, setSaving] = useState(false);
@@ -42,6 +43,15 @@ export default function Quiz({ setPage, setResultData }) {
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
+
+    useEffect(() => {
+        if (step >= 0 && questionTopRef.current) {
+            questionTopRef.current.scrollIntoView({
+                behavior: isMobile ? 'auto' : 'smooth',
+                block: 'start',
+            });
+        }
+    }, [step, isMobile]);
 
     useEffect(() => {
         if (step < 0 || !currentQuestion) return;
@@ -242,12 +252,12 @@ export default function Quiz({ setPage, setResultData }) {
                     <div
                         style={{
                             background: 'white',
-                            borderRadius: 16,
-                            padding: isMobile ? 18 : 24,
+                            borderRadius: 18,
+                            padding: isMobile ? '16px 14px 14px' : '20px 22px 18px',
                             borderTop: '4px solid #b85c5c',
-                            display: 'grid',
-                            gap: 14,
                             boxShadow: '0 10px 26px rgba(70, 45, 35, 0.05)',
+                            display: 'grid',
+                            gap: 12,
                         }}
                     >
                         <FormField
@@ -406,6 +416,7 @@ export default function Quiz({ setPage, setResultData }) {
                 </div>
 
                 <div
+                    ref={questionTopRef}
                     style={{
                         background: 'white',
                         borderRadius: 18,

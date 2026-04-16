@@ -81,8 +81,9 @@ export default function TeamIntro({ setPage }) {
                             }}
                         >
                             Deze omgeving is bedoeld voor organisaties die werkstijlen willen
-                            vertalen naar samenwerking, leiderschap en werkplek. Hier ontdek je
-                            wat de verschillende trajecten inhouden en welk niveau past bij jouw vraag.
+                            vertalen naar samenwerking, leiderschap en werkplek. Wil je ontdekken
+                            wat de verschillende modules inhouden en welk niveau past bij jouw vraag,
+                            plan dan een afspraak in.
                         </p>
 
                         {makerMode ? (
@@ -125,235 +126,239 @@ export default function TeamIntro({ setPage }) {
                     </div>
                 </SectionCard>
 
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(0, 1fr))',
-                        gap: isMobile ? 14 : 20,
-                        alignItems: 'start',
-                    }}
-                >
-                    <ExpandableOfferCard
-                        id="team-insight"
-                        isOpen={openBlock === 'team-insight'}
-                        onToggle={toggleBlock}
-                        eyebrow="Voor teams · premium traject"
-                        title="Team Insight & Quick Wins"
-                        teaser="Inzicht in hoe jouw team écht werkt — waar energie zit, waar het schuurt en wat direct helpt."
-                        accent="var(--tof-accent-sage)"
-                    >
-                        <p style={offerBodyText}>
-                            Elk team heeft een eigen samenstelling — en die samenstelling bepaalt
-                            meer dan de meeste managers denken. Waar energie ontstaat, waar het
-                            schuurt, en wat mensen nodig hebben om goed te werken. Dit blok maakt
-                            dat zichtbaar.
-                        </p>
-
-                        <p style={offerBodyText}>
-                            Teamleden vullen individueel de persona tool in. Op basis van die
-                            uitkomsten ontstaat een teamdashboard dat laat zien hoe werkstijlen
-                            zich binnen het team verdelen, welke werkplekbehoefte daaruit voortkomt
-                            en waar de samenwerking versterkt of juist vertraagt.
-                        </p>
-
-                        <p style={offerBodyText}>
-                            Je ziet in één oogopslag waar de spanning zit — en waar de grootste
-                            kansen liggen. Het dashboard is direct bruikbaar: als gespreksonderwerp,
-                            als input voor een teamoverleg, of als eerste stap richting scherpere
-                            werkplek- en samenwerkingsafspraken.
-                        </p>
-
-                        <div style={offerHighlightStyle}>
-                            <strong>Wat je krijgt</strong>
-                            <br />
-                            Een teamdashboard met concrete inzichten in werkstijlen,
-                            werkplekbehoefte en directe verbeterkansen. Geen eindpunt,
-                            maar een helder vertrekpunt voor teams die bewuster willen samenwerken.
-                        </div>
-
-                        <div style={offerFootnoteStyle}>
-                            Beschikbaar als onderdeel van de Team Insight omgeving voor teams en organisaties.
-                        </div>
-                    </ExpandableOfferCard>
-
-                    <ExpandableOfferCard
-                        id="team-dynamics"
-                        isOpen={openBlock === 'team-dynamics'}
-                        onToggle={toggleBlock}
-                        eyebrow="Voor teams & organisaties · premium traject"
-                        title="Team Dynamics Sessie"
-                        teaser="Voor teams die verschillen niet alleen willen zien, maar ook samen willen bespreken en benutten."
-                        accent="var(--tof-accent-rose)"
-                    >
-                        <p style={offerBodyText}>
-                            Het teamdashboard laat zien hoe werkstijlen verdeeld zijn.
-                            Maar wat er écht gebeurt in samenwerking, besluitvorming en
-                            teamritme, vraagt meer diepgang. Deze module bouwt voort op de
-                            uitkomsten van de module Team Insight & Quick Wins
-                            en legt bloot wat onder de oppervlakte speelt.
-                        </p>
-
-                        <p style={offerBodyText}>
-                            Je krijgt een verdiept dashboard met inzicht in waar gesprekken vastlopen,
-                            waarom tempo en structuur botsen, wat dit vraagt van leiderschap en
-                            hoe de werkplek daarop aansluit — of juist niet.
-                        </p>
-
-                        <p style={offerBodyText}>
-                            De uitkomsten licht ik toe — live of online, afhankelijk van wat past.
-                            Zo worden de inzichten niet alleen begrijpelijk, maar ook direct
-                            vertaalbaar naar keuzes voor samenwerking, leiderschap en werkplek.
-                        </p>
-
-                        <div style={offerHighlightStyle}>
-                            <strong>Wat je krijgt</strong>
-                            <br />
-                            Een verdiept dashboard met duiding op de teamdynamiek,
-                            toegelicht in een live sessie. Inclusief concrete handvatten
-                            voor samenwerking, leiderschap en werkplekkeuzes.
-                        </div>
-
-                        <div style={offerFootnoteStyle}>
-                            Beschikbaar als verdiepend traject binnen de Team Insight omgeving.
-                        </div>
-                    </ExpandableOfferCard>
-
-                    <ExpandableOfferCard
-                        id="strategisch"
-                        isOpen={openBlock === 'strategisch'}
-                        onToggle={toggleBlock}
-                        eyebrow="Voor organisaties · premium & op aanvraag"
-                        title="Strategisch Team- & Werkplekinzicht"
-                        teaser="Voor organisaties die teamdynamiek willen koppelen aan ambitie, leiderschap en werkplekstrategie."
-                        accent="var(--tof-text)"
-                    >
-                        <p style={offerBodyText}>
-                            Organisaties die hun werkplekbeleid voor de komende jaren willen onderbouwen,
-                            hebben meer nodig dan een teambeeld. Ze hebben richting nodig — gebaseerd op
-                            eigen visie én op wat er in de buitenwereld speelt.
-                        </p>
-
-                        <p style={offerBodyText}>
-                            Deze module start met een gerichte vragenlijst over de visie en ambitie van de
-                            organisatie op het gebied van werken, werkplek en verandering. Vervolgens bespreek
-                            ik de antwoorden in een gesprek van ongeveer 45 minuten — niet om te toetsen,
-                            maar om de juiste nuance op te halen.
-                        </p>
-
-                        <p style={offerBodyText}>
-                            Op basis daarvan ontvang je een strategisch dashboard dat richting geeft voor de
-                            komende jaren. Het combineert de eigen input van de organisatie met actuele inzichten
-                            over werkplekbeleid, bezetting, beleving en organisatieverandering.
-                        </p>
-
-                        <p style={offerBodyText}>
-                            Dit dashboard geeft richting voor de komende vijf jaar. Maar richting alleen is niet
-                            genoeg — het vraagt ook om iemand die naast je staat als het spannend wordt.
-                            Ik begeleid je graag bij de eerste stappen, de moeilijke keuzes en de momenten
-                            waarop het proces even stokt.
-                        </p>
-
-                        <div style={offerHighlightStyle}>
-                            <strong>Wat je krijgt</strong>
-                            <br />
-                            Een strategisch dashboard als kompas voor de komende jaren, gebaseerd op
-                            jouw visie en actuele inzichten.
-                            <br />
-                            Optioneel: businesscoach die naast je gaat zitten als het ingewikkeld wordt.
-                        </div>
-
-                        <div style={offerFootnoteStyle}>
-                            Beschikbaar voor organisaties die teaminzicht willen vertalen naar structurele keuzes.
-                        </div>
-                    </ExpandableOfferCard>
-                </div>
-
-                <SectionCard
-                    padding={isMobile ? 20 : 26}
-                    background="var(--tof-surface-soft)"
-                    borderTopColor="var(--tof-accent-sage)"
-                >
-                    <div style={{ display: 'grid', gap: 12 }}>
-                        <SectionEyebrow>Waarom dit waardevol is</SectionEyebrow>
-
-                        <h2
+                {!isMobile && (
+                    <>
+                        <div
                             style={{
-                                margin: 0,
-                                fontFamily: 'var(--tof-font-heading)',
-                                fontSize: 28,
-                                lineHeight: 1.08,
-                                color: 'var(--tof-text)',
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                                gap: 20,
+                                alignItems: 'start',
                             }}
                         >
-                            Je team werkt.
-                            <br />
-                            Werkt het ook samen?
-                        </h2>
+                            <ExpandableOfferCard
+                                id="team-insight"
+                                isOpen={openBlock === 'team-insight'}
+                                onToggle={toggleBlock}
+                                eyebrow="Voor teams · premium traject"
+                                title="Team Insight & Quick Wins"
+                                teaser="Inzicht in hoe jouw team écht werkt — waar energie zit, waar het schuurt en wat direct helpt."
+                                accent="var(--tof-accent-sage)"
+                            >
+                                <p style={offerBodyText}>
+                                    Elk team heeft een eigen samenstelling — en die samenstelling bepaalt
+                                    meer dan de meeste managers denken. Waar energie ontstaat, waar het
+                                    schuurt, en wat mensen nodig hebben om goed te werken. Dit blok maakt
+                                    dat zichtbaar.
+                                </p>
 
-                        <p
-                            style={{
-                                margin: 0,
-                                maxWidth: 760,
-                                color: 'var(--tof-text-soft)',
-                                fontSize: 15,
-                                lineHeight: 1.75,
-                            }}
-                        >
-                            Teamdynamiek gaat niet alleen over wie er in een team zit, maar over
-                            hoe verschillen in tempo, structuur, verbinding en vernieuwing elkaar
-                            versterken of juist tegenwerken. Dáár ontstaat het echte gesprek.
-                        </p>
-                    </div>
-                </SectionCard>
+                                <p style={offerBodyText}>
+                                    Teamleden vullen individueel de persona tool in. Op basis van die
+                                    uitkomsten ontstaat een teamdashboard dat laat zien hoe werkstijlen
+                                    zich binnen het team verdelen, welke werkplekbehoefte daaruit voortkomt
+                                    en waar de samenwerking versterkt of juist vertraagt.
+                                </p>
 
-                <SectionCard
-                    padding={isMobile ? 20 : 26}
-                    background="var(--tof-surface)"
-                    borderTopColor="var(--tof-accent-rose)"
-                >
-                    <div style={{ display: 'grid', gap: 12 }}>
-                        <SectionEyebrow>Volgende stap</SectionEyebrow>
+                                <p style={offerBodyText}>
+                                    Je ziet in één oogopslag waar de spanning zit — en waar de grootste
+                                    kansen liggen. Het dashboard is direct bruikbaar: als gespreksonderwerp,
+                                    als input voor een teamoverleg, of als eerste stap richting scherpere
+                                    werkplek- en samenwerkingsafspraken.
+                                </p>
 
-                        <h2
-                            style={{
-                                margin: 0,
-                                fontFamily: 'var(--tof-font-heading)',
-                                fontSize: 28,
-                                lineHeight: 1.08,
-                                color: 'var(--tof-text)',
-                            }}
-                        >
-                            Klaar om verder te gaan
-                            <br />
-                            richting teamomgeving?
-                        </h2>
+                                <div style={offerHighlightStyle}>
+                                    <strong>Wat je krijgt</strong>
+                                    <br />
+                                    Een teamdashboard met concrete inzichten in werkstijlen,
+                                    werkplekbehoefte en directe verbeterkansen. Geen eindpunt,
+                                    maar een helder vertrekpunt voor teams die bewuster willen samenwerken.
+                                </div>
 
-                        <p
-                            style={{
-                                margin: 0,
-                                maxWidth: 760,
-                                color: 'var(--tof-text-soft)',
-                                fontSize: 15,
-                                lineHeight: 1.75,
-                            }}
-                        >
-                            De teamomgeving is onderdeel van een traject voor organisaties en alleen toegankelijk met een persoonlijke code.
-                        </p>
+                                <div style={offerFootnoteStyle}>
+                                    Beschikbaar als onderdeel van de Team Insight omgeving voor teams en organisaties.
+                                </div>
+                            </ExpandableOfferCard>
 
-                        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 4 }}>
-                            <PrimaryButton onClick={() => setShowAccessModal(true)}>
-                                🔒 Naar teamomgeving →
-                            </PrimaryButton>
+                            <ExpandableOfferCard
+                                id="team-dynamics"
+                                isOpen={openBlock === 'team-dynamics'}
+                                onToggle={toggleBlock}
+                                eyebrow="Voor teams & organisaties · premium traject"
+                                title="Team Dynamics Sessie"
+                                teaser="Voor teams die verschillen niet alleen willen zien, maar ook samen willen bespreken en benutten."
+                                accent="var(--tof-accent-rose)"
+                            >
+                                <p style={offerBodyText}>
+                                    Het teamdashboard laat zien hoe werkstijlen verdeeld zijn.
+                                    Maar wat er écht gebeurt in samenwerking, besluitvorming en
+                                    teamritme, vraagt meer diepgang. Deze module bouwt voort op de
+                                    uitkomsten van de module Team Insight & Quick Wins
+                                    en legt bloot wat onder de oppervlakte speelt.
+                                </p>
 
-                            <SecondaryButton onClick={() => setPage('home')}>
-                                Terug
-                            </SecondaryButton>
+                                <p style={offerBodyText}>
+                                    Je krijgt een verdiept dashboard met inzicht in waar gesprekken vastlopen,
+                                    waarom tempo en structuur botsen, wat dit vraagt van leiderschap en
+                                    hoe de werkplek daarop aansluit — of juist niet.
+                                </p>
+
+                                <p style={offerBodyText}>
+                                    De uitkomsten licht ik toe — live of online, afhankelijk van wat past.
+                                    Zo worden de inzichten niet alleen begrijpelijk, maar ook direct
+                                    vertaalbaar naar keuzes voor samenwerking, leiderschap en werkplek.
+                                </p>
+
+                                <div style={offerHighlightStyle}>
+                                    <strong>Wat je krijgt</strong>
+                                    <br />
+                                    Een verdiept dashboard met duiding op de teamdynamiek,
+                                    toegelicht in een live sessie. Inclusief concrete handvatten
+                                    voor samenwerking, leiderschap en werkplekkeuzes.
+                                </div>
+
+                                <div style={offerFootnoteStyle}>
+                                    Beschikbaar als verdiepend traject binnen de Team Insight omgeving.
+                                </div>
+                            </ExpandableOfferCard>
+
+                            <ExpandableOfferCard
+                                id="strategisch"
+                                isOpen={openBlock === 'strategisch'}
+                                onToggle={toggleBlock}
+                                eyebrow="Voor organisaties · premium & op aanvraag"
+                                title="Strategisch Team- & Werkplekinzicht"
+                                teaser="Voor organisaties die teamdynamiek willen koppelen aan ambitie, leiderschap en werkplekstrategie."
+                                accent="var(--tof-text)"
+                            >
+                                <p style={offerBodyText}>
+                                    Organisaties die hun werkplekbeleid voor de komende jaren willen onderbouwen,
+                                    hebben meer nodig dan een teambeeld. Ze hebben richting nodig — gebaseerd op
+                                    eigen visie én op wat er in de buitenwereld speelt.
+                                </p>
+
+                                <p style={offerBodyText}>
+                                    Deze module start met een gerichte vragenlijst over de visie en ambitie van de
+                                    organisatie op het gebied van werken, werkplek en verandering. Vervolgens bespreek
+                                    ik de antwoorden in een gesprek van ongeveer 45 minuten — niet om te toetsen,
+                                    maar om de juiste nuance op te halen.
+                                </p>
+
+                                <p style={offerBodyText}>
+                                    Op basis daarvan ontvang je een strategisch dashboard dat richting geeft voor de
+                                    komende jaren. Het combineert de eigen input van de organisatie met actuele inzichten
+                                    over werkplekbeleid, bezetting, beleving en organisatieverandering.
+                                </p>
+
+                                <p style={offerBodyText}>
+                                    Dit dashboard geeft richting voor de komende vijf jaar. Maar richting alleen is niet
+                                    genoeg — het vraagt ook om iemand die naast je staat als het spannend wordt.
+                                    Ik begeleid je graag bij de eerste stappen, de moeilijke keuzes en de momenten
+                                    waarop het proces even stokt.
+                                </p>
+
+                                <div style={offerHighlightStyle}>
+                                    <strong>Wat je krijgt</strong>
+                                    <br />
+                                    Een strategisch dashboard als kompas voor de komende jaren, gebaseerd op
+                                    jouw visie en actuele inzichten.
+                                    <br />
+                                    Optioneel: businesscoach die naast je gaat zitten als het ingewikkeld wordt.
+                                </div>
+
+                                <div style={offerFootnoteStyle}>
+                                    Beschikbaar voor organisaties die teaminzicht willen vertalen naar structurele keuzes.
+                                </div>
+                            </ExpandableOfferCard>
                         </div>
-                    </div>
-                </SectionCard>
+
+                        <SectionCard
+                            padding={26}
+                            background="var(--tof-surface-soft)"
+                            borderTopColor="var(--tof-accent-sage)"
+                        >
+                            <div style={{ display: 'grid', gap: 12 }}>
+                                <SectionEyebrow>Waarom dit waardevol is</SectionEyebrow>
+
+                                <h2
+                                    style={{
+                                        margin: 0,
+                                        fontFamily: 'var(--tof-font-heading)',
+                                        fontSize: 28,
+                                        lineHeight: 1.08,
+                                        color: 'var(--tof-text)',
+                                    }}
+                                >
+                                    Je team werkt.
+                                    <br />
+                                    Werkt het ook samen?
+                                </h2>
+
+                                <p
+                                    style={{
+                                        margin: 0,
+                                        maxWidth: 760,
+                                        color: 'var(--tof-text-soft)',
+                                        fontSize: 15,
+                                        lineHeight: 1.75,
+                                    }}
+                                >
+                                    Teamdynamiek gaat niet alleen over wie er in een team zit, maar over
+                                    hoe verschillen in tempo, structuur, verbinding en vernieuwing elkaar
+                                    versterken of juist tegenwerken. Dáár ontstaat het echte gesprek.
+                                </p>
+                            </div>
+                        </SectionCard>
+
+                        <SectionCard
+                            padding={26}
+                            background="var(--tof-surface)"
+                            borderTopColor="var(--tof-accent-rose)"
+                        >
+                            <div style={{ display: 'grid', gap: 12 }}>
+                                <SectionEyebrow>Volgende stap</SectionEyebrow>
+
+                                <h2
+                                    style={{
+                                        margin: 0,
+                                        fontFamily: 'var(--tof-font-heading)',
+                                        fontSize: 28,
+                                        lineHeight: 1.08,
+                                        color: 'var(--tof-text)',
+                                    }}
+                                >
+                                    Klaar om verder te gaan
+                                    <br />
+                                    richting teamomgeving?
+                                </h2>
+
+                                <p
+                                    style={{
+                                        margin: 0,
+                                        maxWidth: 760,
+                                        color: 'var(--tof-text-soft)',
+                                        fontSize: 15,
+                                        lineHeight: 1.75,
+                                    }}
+                                >
+                                    De teamomgeving is onderdeel van een traject voor organisaties en alleen toegankelijk met een persoonlijke code.
+                                </p>
+
+                                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 4 }}>
+                                    <PrimaryButton onClick={() => setShowAccessModal(true)}>
+                                        🔒 Naar teamomgeving →
+                                    </PrimaryButton>
+
+                                    <SecondaryButton onClick={() => setPage('home')}>
+                                        Terug
+                                    </SecondaryButton>
+                                </div>
+                            </div>
+                        </SectionCard>
+                    </>
+                )}
             </div>
 
-            {showAccessModal && (
+            {!isMobile && showAccessModal && (
                 <div
                     style={{
                         position: 'fixed',

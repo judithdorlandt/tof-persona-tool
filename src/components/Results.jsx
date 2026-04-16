@@ -676,138 +676,7 @@ export default function Results({ resultData, setPage }) {
                             alignItems: 'start',
                         }}
                     >
-                        {/* LINKERKOLOM */}
-                        <div
-                            style={{
-                                display: 'grid',
-                                gap: 16,
-                                alignContent: 'start',
-                            }}
-                        >
-                            <InnerCard
-                                label="Bricks"
-                                title="Jouw ideale werkplekmix"
-                                titleColor={primaryColor}
-                            >
-                                <div style={{ display: 'grid', gap: 10 }}>
-                                    {bricksItems.map((item) => (
-                                        <div
-                                            key={item.key}
-                                            style={{
-                                                background: 'rgba(255,255,255,0.9)',
-                                                borderRadius: 14,
-                                                padding: '12px 14px',
-                                                borderLeft: `4px solid ${primaryColor}`,
-                                                display: 'grid',
-                                                gap: 6,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    gap: 10,
-                                                    alignItems: 'center',
-                                                    flexWrap: 'wrap',
-                                                }}
-                                            >
-                                                <div
-                                                    style={{
-                                                        fontFamily: 'var(--tof-font-heading)',
-                                                        fontSize: 17,
-                                                        lineHeight: 1.12,
-                                                        color: 'var(--tof-text)',
-                                                    }}
-                                                >
-                                                    {item.label}
-                                                </div>
-
-                                                <div
-                                                    style={{
-                                                        fontSize: 11,
-                                                        color: primaryColor,
-                                                        background: '#F4EDE6',
-                                                        borderRadius: 999,
-                                                        padding: '4px 8px',
-                                                        fontWeight: 600,
-                                                    }}
-                                                >
-                                                    score {item.score}
-                                                </div>
-                                            </div>
-                                            <p
-                                                style={{
-                                                    margin: 0,
-                                                    color: '#4D433D',
-                                                    lineHeight: 1.62,
-                                                    fontSize: 13,
-                                                }}
-                                            >
-                                                {item.text}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </InnerCard>
-
-                            <InnerCard
-                                label="Bytes & Behavior"
-                                title="Wat jij nodig hebt"
-                                titleColor={primaryColor}
-                            >
-                                <div style={{ display: 'grid', gap: 10 }}>
-                                    {bytesBehaviorBlocks.map((item) => (
-                                        <div
-                                            key={item.key}
-                                            style={{
-                                                background: 'rgba(255,255,255,0.9)',
-                                                borderRadius: 14,
-                                                padding: '12px 14px',
-                                                borderLeft: `4px solid ${primaryColor}`,
-                                                display: 'grid',
-                                                gap: 6,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    fontSize: 11,
-                                                    letterSpacing: 1.3,
-                                                    textTransform: 'uppercase',
-                                                    color: primaryColor,
-                                                    fontWeight: 700,
-                                                }}
-                                            >
-                                                {item.label}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    fontFamily: 'var(--tof-font-heading)',
-                                                    fontSize: 17,
-                                                    lineHeight: 1.14,
-                                                    color: 'var(--tof-text)',
-                                                }}
-                                            >
-                                                {item.title}
-                                            </div>
-
-                                            <p
-                                                style={{
-                                                    margin: 0,
-                                                    color: '#4D433D',
-                                                    lineHeight: 1.66,
-                                                    fontSize: 13,
-                                                }}
-                                            >
-                                                {item.text}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </InnerCard>
-                        </div>
-
-                        {/* RECHTERKOLOM */}
+                        {/* LINKERKOLOM (Verdeling + Mix + Leiderschap) */}
                         <div
                             style={{
                                 display: 'grid',
@@ -913,7 +782,6 @@ export default function Results({ resultData, setPage }) {
                                             >
                                                 {persona?.short}
                                             </p>
-
                                         </div>
                                     ))}
                                 </div>
@@ -942,6 +810,138 @@ export default function Results({ resultData, setPage }) {
                                     </ul>
                                 </InnerCard>
                             ) : null}
+                        </div>
+
+                        {/* RECHTERKOLOM (Bricks + Bytes) */}
+                        <div
+                            style={{
+                                display: 'grid',
+                                gap: 16,
+                                alignContent: 'start',
+                            }}
+                        >
+                            <InnerCard
+                                label="Bricks"
+                                title="Jouw ideale werkplekmix"
+                                titleColor={primaryColor}
+                            >
+                                <div style={{ display: 'grid', gap: 10 }}>
+                                    {bricksItems.map((item) => (
+                                        <div
+                                            key={item.key}
+                                            style={{
+                                                background: 'rgba(255,255,255,0.9)',
+                                                borderRadius: 14,
+                                                padding: '12px 14px',
+                                                borderLeft: `4px solid ${primaryColor}`,
+                                                display: 'grid',
+                                                gap: 6,
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    gap: 10,
+                                                    alignItems: 'center',
+                                                    flexWrap: 'wrap',
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        fontFamily: 'var(--tof-font-heading)',
+                                                        fontSize: 17,
+                                                        lineHeight: 1.12,
+                                                        color: 'var(--tof-text)',
+                                                    }}
+                                                >
+                                                    {item.label}
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        fontSize: 11,
+                                                        color: primaryColor,
+                                                        background: '#F4EDE6',
+                                                        borderRadius: 999,
+                                                        padding: '4px 8px',
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    score {item.score}
+                                                </div>
+                                            </div>
+
+                                            <p
+                                                style={{
+                                                    margin: 0,
+                                                    color: '#4D433D',
+                                                    lineHeight: 1.62,
+                                                    fontSize: 13,
+                                                }}
+                                            >
+                                                {item.text}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </InnerCard>
+
+                            <InnerCard
+                                label="Bytes & Behavior"
+                                title="Wat jij nodig hebt"
+                                titleColor={primaryColor}
+                            >
+                                <div style={{ display: 'grid', gap: 10 }}>
+                                    {bytesBehaviorBlocks.map((item) => (
+                                        <div
+                                            key={item.key}
+                                            style={{
+                                                background: 'rgba(255,255,255,0.9)',
+                                                borderRadius: 14,
+                                                padding: '12px 14px',
+                                                borderLeft: `4px solid ${primaryColor}`,
+                                                display: 'grid',
+                                                gap: 6,
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    fontSize: 11,
+                                                    letterSpacing: 1.3,
+                                                    textTransform: 'uppercase',
+                                                    color: primaryColor,
+                                                    fontWeight: 700,
+                                                }}
+                                            >
+                                                {item.label}
+                                            </div>
+
+                                            <div
+                                                style={{
+                                                    fontFamily: 'var(--tof-font-heading)',
+                                                    fontSize: 17,
+                                                    lineHeight: 1.14,
+                                                    color: 'var(--tof-text)',
+                                                }}
+                                            >
+                                                {item.title}
+                                            </div>
+
+                                            <p
+                                                style={{
+                                                    margin: 0,
+                                                    color: '#4D433D',
+                                                    lineHeight: 1.66,
+                                                    fontSize: 13,
+                                                }}
+                                            >
+                                                {item.text}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </InnerCard>
                         </div>
                     </div>
 
