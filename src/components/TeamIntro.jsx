@@ -470,7 +470,6 @@ function ExpandableOfferCard({
                 padding: 22,
                 borderTop: `4px solid ${accent}`,
                 border: isOpen ? `1px solid ${accent}` : '1px solid var(--tof-border)',
-                display: 'grid',
                 gap: 10,
                 minHeight: 240,
                 height: '100%',
