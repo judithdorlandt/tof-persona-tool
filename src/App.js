@@ -8,6 +8,7 @@ import Intro from './components/Intro.jsx';
 import Library from './components/Library.jsx';
 import Quiz from './components/Quiz.jsx';
 import Team from './components/Team.jsx';
+import TeamDynamics from './components/TeamDynamics.jsx';
 import TeamIntro from './components/TeamIntro.jsx';
 import Results from './components/Results.jsx';
 import TeamSelector from './components/TeamSelector.jsx';
@@ -15,6 +16,8 @@ import TeamSelector from './components/TeamSelector.jsx';
 export default function App() {
   const [page, setPage] = useState('landing');
   const [resultData, setResultData] = useState(null);
+  const [teamResponses, setTeamResponses] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null);
 
   function navigate(target) {
     setPage(target);
@@ -50,18 +53,61 @@ export default function App() {
         );
 
       case 'team':
-        return <TeamIntro setPage={navigate} />;
+        return (
+          <TeamIntro
+            setPage={navigate}
+            setTeamResponses={setTeamResponses}
+            setSelectedTeam={setSelectedTeam}
+          />
+        );
+
+      case 'team-insight':
+        return (
+          <TeamIntro
+            setPage={navigate}
+            setTeamResponses={setTeamResponses}
+            setSelectedTeam={setSelectedTeam}
+            initialOpen="insight"
+          />
+        );
+
+      case 'team-dynamics':
+        return (
+          <TeamIntro
+            setPage={navigate}
+            setTeamResponses={setTeamResponses}
+            setSelectedTeam={setSelectedTeam}
+            initialOpen="dynamics"
+          />
+        );
+
+      case 'teamdashboard':
+        return (
+          <Team
+            setPage={navigate}
+            teamResponses={teamResponses}
+            selectedTeam={selectedTeam}
+          />
+        );
 
       case 'teamselector':
         return (
           <TeamSelector
             setPage={navigate}
             setResultData={setResultData}
+            setTeamResponses={setTeamResponses}
+            setSelectedTeam={setSelectedTeam}
           />
         );
 
-      case 'teamdashboard':
-        return <Team resultData={resultData} setPage={navigate} />;
+      case 'teamdynamics':
+        return (
+          <TeamDynamics
+            setPage={navigate}
+            teamResponses={teamResponses}
+            selectedTeam={selectedTeam}
+          />
+        );
 
       default:
         return <Landing setPage={navigate} />;

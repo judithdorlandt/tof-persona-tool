@@ -192,74 +192,55 @@ export default function Quiz({ setPage, setResultData }) {
                 style={{
                     minHeight: 'calc(100vh - 88px)',
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     justifyContent: 'center',
-                    padding: isMobile ? '20px 16px 28px' : '24px 20px',
+                    padding: isMobile ? '16px 16px 28px' : '20px 20px 32px',
                     background: '#f7f2ec',
                     boxSizing: 'border-box',
                 }}
             >
-                <div
-                    style={{
-                        width: '100%',
-                        maxWidth: 760,
-                        display: 'grid',
-                        gap: 18,
-                    }}
-                >
-                    <div>
-                        <div
-                            style={{
-                                color: '#b85c5c',
-                                letterSpacing: 2,
-                                fontSize: 12,
-                                marginBottom: 12,
-                                textTransform: 'uppercase',
-                            }}
-                        >
-                            03 — Voor je begint
+                <div style={{ width: '100%', maxWidth: 680, display: 'grid', gap: 14 }}>
+
+                    {/* ── HERO — rode identiteit ──────────────────────── */}
+                    <div style={{
+                        background: '#fff',
+                        borderRadius: 20,
+                        border: '1px solid #e7ddd4',
+                        boxShadow: '0 10px 26px rgba(70,45,35,0.05)',
+                        padding: isMobile ? '22px 18px 20px' : '30px 34px 26px',
+                        position: 'relative',
+                        overflow: 'hidden',
+                    }}>
+                        <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: '#b85c5c', borderRadius: '4px 0 0 4px' }} />
+                        <div style={{ paddingLeft: isMobile ? 8 : 12 }}>
+                            <div style={{ color: '#b85c5c', letterSpacing: 2, fontSize: 11, textTransform: 'uppercase', fontWeight: 700, marginBottom: 10 }}>
+                                03 — Jouw context
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
+                                <h1 style={{ margin: 0, fontFamily: 'Playfair Display', fontWeight: 500, fontSize: isMobile ? 28 : 36, lineHeight: 1.06, color: '#1f1b18' }}>
+                                    Over jouw{' '}
+                                    <em style={{ color: '#b85c5c', fontStyle: 'italic' }}>context</em>
+                                </h1>
+                                {!isMobile && (
+                                    <p style={{ margin: 0, maxWidth: 220, fontSize: 13, lineHeight: 1.6, color: '#777', paddingBottom: 3, flexShrink: 0 }}>
+                                        Organisatie en afdeling zijn verplicht. De rest is optioneel.
+                                    </p>
+                                )}
+                            </div>
                         </div>
-
-                        <h1
-                            style={{
-                                fontSize: isMobile ? 34 : 42,
-                                lineHeight: 1.08,
-                                fontFamily: 'Playfair Display',
-                                fontWeight: 500,
-                                margin: 0,
-                                color: '#1f1b18',
-                            }}
-                        >
-                            Over jouw context
-                        </h1>
-
-                        <p
-                            style={{
-                                marginTop: 14,
-                                maxWidth: 620,
-                                lineHeight: 1.6,
-                                color: '#444',
-                                fontSize: isMobile ? 15 : 17,
-                            }}
-                        >
-                            Deze informatie helpt om jouw profiel goed te plaatsen. Organisatie en
-                            afdeling zijn verplicht. Bestaat jouw afdeling uit meerdere teams? Dan
-                            vragen we ook naar jouw team. Heb je een teamcode ontvangen? Vul die dan
-                            ook in.
-                        </p>
                     </div>
 
-                    <div
-                        style={{
-                            background: 'white',
-                            borderRadius: 18,
-                            padding: isMobile ? '16px 14px 14px' : '20px 22px 18px',
-                            borderTop: '4px solid #b85c5c',
-                            boxShadow: '0 10px 26px rgba(70, 45, 35, 0.05)',
-                            display: 'grid',
-                            gap: 12,
-                        }}
-                    >
+                    {/* ── FORMULIER ───────────────────────────────────── */}
+                    <div style={{
+                        background: 'white',
+                        borderRadius: 18,
+                        padding: isMobile ? '16px 14px' : '20px 22px',
+                        border: '1px solid #e7ddd4',
+                        boxShadow: '0 10px 26px rgba(70,45,35,0.05)',
+                        display: 'grid',
+                        gap: 12,
+                    }}>
+                        {/* Naam — één kolom breed */}
                         <FormField
                             label="Voornaam"
                             optional
@@ -267,31 +248,32 @@ export default function Quiz({ setPage, setResultData }) {
                             onChange={(value) => updateProfileField('name', value)}
                         />
 
-                        <FormField
-                            label="Organisatie"
-                            required
-                            placeholder="Bijv. jouw organisatie"
-                            value={profile.org}
-                            onChange={(value) => updateProfileField('org', value)}
-                        />
+                        {/* Organisatie + Afdeling naast elkaar */}
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
+                            <FormField
+                                label="Organisatie"
+                                required
+                                placeholder="Jouw organisatie"
+                                value={profile.org}
+                                onChange={(value) => updateProfileField('org', value)}
+                            />
+                            <FormField
+                                label="Afdeling"
+                                required
+                                placeholder="Bijv. HR of Finance"
+                                value={profile.dept}
+                                onChange={(value) => updateProfileField('dept', value)}
+                            />
+                        </div>
 
-                        <FormField
-                            label="Afdeling"
-                            required
-                            placeholder="Bijv. HR, Finance of Huisvesting"
-                            value={profile.dept}
-                            onChange={(value) => updateProfileField('dept', value)}
-                        />
-
+                        {/* Meerdere teams? */}
                         <ChoiceField
                             label="Bestaat jouw afdeling uit meerdere teams?"
                             required
                             value={profile.has_multiple_teams}
                             onChange={(value) => {
                                 updateProfileField('has_multiple_teams', value);
-                                if (value === 'no') {
-                                    updateProfileField('team', '');
-                                }
+                                if (value === 'no') updateProfileField('team', '');
                             }}
                             options={[
                                 { label: 'Ja', value: 'yes' },
@@ -303,37 +285,37 @@ export default function Quiz({ setPage, setResultData }) {
                             <FormField
                                 label="Team"
                                 required
-                                placeholder="Bijv. directieteam, projectteam of ondersteuning"
+                                placeholder="Bijv. directieteam of projectteam"
                                 value={profile.team}
                                 onChange={(value) => updateProfileField('team', value)}
                             />
                         )}
 
+                        {/* Rol + Teamgrootte naast elkaar */}
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
+                            <FormField
+                                label="Rol"
+                                placeholder="Bijv. teamleider of adviseur"
+                                value={profile.role}
+                                onChange={(value) => updateProfileField('role', value)}
+                            />
+                            <FormField
+                                label="Teamgrootte"
+                                placeholder="Bijv. 5-10"
+                                value={profile.team_size}
+                                onChange={(value) => updateProfileField('team_size', value)}
+                            />
+                        </div>
+
                         <FormField
-                            label="Teamcode (alleen invullen als je die hebt ontvangen)"
-                            placeholder="Bijv. TEAM-2026-01"
+                            label="Teamcode"
+                            placeholder="Alleen invullen als je die hebt ontvangen"
                             value={profile.invite_code}
                             onChange={(value) => updateProfileField('invite_code', value)}
                         />
 
-                        <FormField
-                            label="Rol"
-                            placeholder="Bijv. teamleider, adviseur, designer"
-                            value={profile.role}
-                            onChange={(value) => updateProfileField('role', value)}
-                        />
-
-                        <FormField
-                            label="Teamgrootte"
-                            placeholder="Bijv. 5-10, 10-20"
-                            value={profile.team_size}
-                            onChange={(value) => updateProfileField('team_size', value)}
-                        />
-
                         {error && (
-                            <div style={{ color: '#b85c5c', fontSize: 14 }}>
-                                {error}
-                            </div>
+                            <div style={{ color: '#b85c5c', fontSize: 13 }}>{error}</div>
                         )}
 
                         <button
@@ -343,16 +325,20 @@ export default function Quiz({ setPage, setResultData }) {
                                 marginTop: 4,
                                 background: '#b85c5c',
                                 color: 'white',
-                                padding: '13px 20px',
+                                padding: '13px 22px',
                                 borderRadius: 10,
                                 border: 'none',
                                 cursor: 'pointer',
                                 fontSize: 15,
-                                fontWeight: 500,
+                                fontWeight: 600,
                                 width: isMobile ? '100%' : 'auto',
+                                boxShadow: '0 4px 14px rgba(176,82,82,0.28)',
+                                transition: 'transform 0.15s, box-shadow 0.15s',
                             }}
+                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(176,82,82,0.36)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(176,82,82,0.28)'; }}
                         >
-                            Start de vragen
+                            Start de vragen →
                         </button>
                     </div>
                 </div>
@@ -367,74 +353,45 @@ export default function Quiz({ setPage, setResultData }) {
                 display: 'flex',
                 alignItems: isMobile ? 'flex-start' : 'center',
                 justifyContent: 'center',
-                padding: isMobile ? '16px 12px 20px' : '18px 20px',
+                padding: isMobile ? '12px 12px 20px' : '16px 20px',
                 background: '#f7f2ec',
                 boxSizing: 'border-box',
             }}
         >
-            <div
-                style={{
-                    width: '100%',
-                    maxWidth: 1020,
-                    display: 'grid',
-                    gap: 12,
-                }}
-            >
-                <div
-                    style={{
-                        height: 6,
-                        background: '#e6dfd8',
-                        borderRadius: 999,
-                        overflow: 'hidden',
-                    }}
-                >
-                    <div
-                        style={{
-                            width: `${progress}%`,
-                            height: '100%',
-                            background: '#b85c5c',
-                            transition: '0.3s',
-                        }}
-                    />
-                </div>
+            <div style={{ width: '100%', maxWidth: 960, display: 'grid', gap: 10 }}>
 
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        marginBottom: 2,
-                        color: '#777',
-                        fontSize: 11,
-                        textTransform: 'uppercase',
-                        letterSpacing: 1.5,
-                    }}
-                >
-                    <span>
-                        Vraag {step + 1} van {totalQuestions}
+                {/* Voortgang + teller */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ flex: 1, height: 5, background: '#e6dfd8', borderRadius: 999, overflow: 'hidden' }}>
+                        <div style={{ width: `${progress}%`, height: '100%', background: '#b85c5c', borderRadius: 999, transition: 'width 0.3s ease' }} />
+                    </div>
+                    <span style={{ color: '#999', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5, whiteSpace: 'nowrap', fontWeight: 600 }}>
+                        {step + 1} / {totalQuestions}
                     </span>
-                    <span>{Math.round(progress)}%</span>
                 </div>
 
                 <div
                     ref={questionTopRef}
                     style={{
                         background: 'white',
-                        borderRadius: 18,
-                        padding: isMobile ? '16px 14px 14px' : '20px 22px 18px',
-                        borderTop: '4px solid #b85c5c',
-                        boxShadow: '0 10px 26px rgba(70, 45, 35, 0.05)',
+                        borderRadius: 20,
+                        padding: isMobile ? '18px 16px' : '24px 28px 20px',
+                        borderTop: '4px solid #1f1b18',
+                        border: '1px solid #ddd6ce',
+                        boxShadow: '0 12px 32px rgba(31,27,24,0.08)',
                         display: 'grid',
-                        gap: 12,
+                        gap: 14,
                     }}
                 >
                     <div>
                         <h1
                             style={{
                                 fontFamily: 'Playfair Display',
-                                fontSize: isMobile ? 28 : 34,
-                                lineHeight: 1.15,
-                                margin: '0 0 8px 0',
+                                fontSize: isMobile ? 24 : 28,
+                                lineHeight: 1.18,
+                                margin: '0 0 6px 0',
                                 color: '#1f1b18',
+                                fontWeight: 500,
                             }}
                         >
                             {currentQuestion?.q}
@@ -448,15 +405,55 @@ export default function Quiz({ setPage, setResultData }) {
                                 lineHeight: 1.45,
                             }}
                         >
-                            Kies wat het meest op jou lijkt — niet wat 'goed' klinkt. Ga op je eerste
-                            gevoel af.
+                            Kies wat het meest op jou lijkt — niet wat 'goed' klinkt. Ga op je eerste gevoel af.
                         </p>
+                    </div>
+
+                    {/* Selectie-instructie — duidelijk zichtbaar boven de opties */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 12,
+                        background: '#f7f2ec',
+                        borderRadius: 10,
+                        padding: '9px 14px',
+                        flexWrap: 'wrap',
+                    }}>
+                        <span style={{ fontSize: 13, color: '#6a5f58', lineHeight: 1.4 }}>
+                            Kies <strong style={{ color: '#1f1b18' }}>1, 2 of 3 antwoorden</strong> die het beste bij jou passen. Volgorde telt mee.
+                        </span>
+                        {/* Visuele teller */}
+                        <div style={{ display: 'flex', gap: 5, flexShrink: 0 }}>
+                            {[1, 2, 3].map((n) => {
+                                const filled = selectedAnswers.length >= n;
+                                return (
+                                    <div key={n} style={{
+                                        width: 26,
+                                        height: 26,
+                                        borderRadius: 999,
+                                        background: filled ? '#b85c5c' : 'white',
+                                        border: `1.5px solid ${filled ? '#b85c5c' : '#ddd'}`,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        color: filled ? 'white' : '#bbb',
+                                        transition: 'all 0.15s ease',
+                                    }}>
+                                        {n}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
 
                     <div
                         style={{
                             display: 'grid',
-                            gap: isMobile ? 8 : 10,
+                            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+                            gap: isMobile ? 7 : 8,
                         }}
                     >
                         {shuffledOptions.map((option, index) => {
@@ -465,13 +462,9 @@ export default function Quiz({ setPage, setResultData }) {
                             );
                             const isSelected = selectedIndex !== -1;
                             const orderBadge =
-                                selectedIndex === 0
-                                    ? '1'
-                                    : selectedIndex === 1
-                                        ? '2'
-                                        : selectedIndex === 2
-                                            ? '3'
-                                            : '+';
+                                selectedIndex === 0 ? '1' :
+                                    selectedIndex === 1 ? '2' :
+                                        selectedIndex === 2 ? '3' : '+';
 
                             return (
                                 <button
@@ -480,36 +473,35 @@ export default function Quiz({ setPage, setResultData }) {
                                     onClick={() => toggleAnswer(option)}
                                     onMouseLeave={(e) => e.currentTarget.blur()}
                                     style={{
-                                        padding: isMobile ? '12px 12px' : '13px 16px',
+                                        padding: isMobile ? '10px 12px' : '11px 14px',
                                         borderRadius: 12,
                                         border: isSelected ? '2px solid #b85c5c' : '1px solid #ddd',
                                         background: isSelected ? '#fcf1f1' : 'white',
                                         textAlign: 'left',
                                         cursor: 'pointer',
-                                        fontSize: isMobile ? 15 : 16,
+                                        fontSize: isMobile ? 14 : 15,
                                         lineHeight: 1.35,
                                         transition: '0.2s',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        gap: 12,
+                                        gap: 10,
                                         outline: 'none',
-                                        minHeight: isMobile ? 56 : 58,
+                                        minHeight: isMobile ? 48 : 50,
                                     }}
                                 >
-                                    <span style={{ paddingRight: 8 }}>{option.text}</span>
-
+                                    <span style={{ paddingRight: 6 }}>{option.text}</span>
                                     <span
                                         style={{
-                                            minWidth: isMobile ? 28 : 30,
-                                            height: isMobile ? 28 : 30,
+                                            minWidth: 26,
+                                            height: 26,
                                             borderRadius: 999,
                                             background: isSelected ? '#b85c5c' : '#efe8df',
                                             color: isSelected ? 'white' : '#7a6d66',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            fontSize: 13,
+                                            fontSize: 12,
                                             fontWeight: 700,
                                             flexShrink: 0,
                                         }}
@@ -527,45 +519,33 @@ export default function Quiz({ setPage, setResultData }) {
                         </div>
                     )}
 
-                    <div
-                        style={{
-                            marginTop: 2,
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: isMobile ? 'stretch' : 'center',
-                            gap: 12,
-                            flexWrap: 'wrap',
-                        }}
-                    >
-                        <div
-                            style={{
-                                color: '#7a6d66',
-                                fontSize: 13,
-                                lineHeight: 1.4,
-                            }}
-                        >
-                            {selectedAnswers.length === 0
-                                ? 'Kies 1 of meer opties (max. 3)'
-                                : `${selectedAnswers.length} optie${selectedAnswers.length > 1 ? 's' : ''} gekozen`}
-                        </div>
+                    <div style={{
+                        marginTop: 2,
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        gap: 12,
+                    }}>
 
                         <button
                             type="button"
                             onClick={handleNext}
                             disabled={saving || selectedAnswers.length === 0}
                             style={{
-                                background:
-                                    saving || selectedAnswers.length === 0 ? '#d8cec5' : '#1f1b18',
+                                background: saving || selectedAnswers.length === 0 ? '#d8cec5' : '#1f1b18',
                                 color: 'white',
-                                padding: '13px 18px',
+                                padding: '13px 22px',
                                 borderRadius: 12,
                                 border: 'none',
-                                cursor:
-                                    saving || selectedAnswers.length === 0 ? 'not-allowed' : 'pointer',
+                                cursor: saving || selectedAnswers.length === 0 ? 'not-allowed' : 'pointer',
                                 fontSize: 15,
-                                fontWeight: 500,
-                                minWidth: isMobile ? '100%' : 190,
+                                fontWeight: 600,
+                                minWidth: isMobile ? '100%' : 200,
+                                boxShadow: saving || selectedAnswers.length === 0 ? 'none' : '0 4px 14px rgba(31,27,24,0.18)',
+                                transition: 'transform 0.15s, box-shadow 0.15s',
                             }}
+                            onMouseEnter={e => { if (selectedAnswers.length > 0) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(31,27,24,0.24)'; } }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = selectedAnswers.length > 0 ? '0 4px 14px rgba(31,27,24,0.18)' : 'none'; }}
                         >
                             {saving
                                 ? 'Bezig...'

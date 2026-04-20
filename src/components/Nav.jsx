@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
+import { hasModule2Access } from '../utils/access';
 
 export default function Nav({ page, setPage, hasResult = false }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 820);
@@ -17,6 +18,9 @@ export default function Nav({ page, setPage, hasResult = false }) {
         }
     }, [isMobile]);
 
+    const TEAM_PAGES = ['team', 'team-insight', 'team-dynamics', 'teamintro', 'teamdashboard', 'teamdynamics', 'teamselector'];
+    const isTeamContext = TEAM_PAGES.includes(page);
+
     const baseItems = [
         { key: 'home', label: 'Home' },
         { key: 'intro', label: 'Eerst even uitleg' },
@@ -30,7 +34,13 @@ export default function Nav({ page, setPage, hasResult = false }) {
         ]
         : [];
 
-    const items = [...baseItems, ...resultItems];
+    const teamItems = [
+        { key: 'home', label: 'Home' },
+        { key: 'team-insight', label: 'Team Insight' },
+        { key: 'team-dynamics', label: 'Team Dynamics' },
+    ];
+
+    const items = isTeamContext ? teamItems : [...baseItems, ...resultItems];
 
     function handleNavigate(target) {
         setPage(target);

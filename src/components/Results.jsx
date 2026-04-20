@@ -88,8 +88,8 @@ function InnerCard({ label, title, titleColor = '#1F1F1F', children }) {
             style={{
                 background: 'rgba(255,255,255,0.82)',
                 border: '1px solid #EADFD4',
-                borderRadius: 18,
-                padding: '16px 18px',
+                borderRadius: 14,
+                padding: '14px 16px',
                 display: 'grid',
                 alignSelf: 'start',
                 gap: 10,
@@ -100,7 +100,8 @@ function InnerCard({ label, title, titleColor = '#1F1F1F', children }) {
             {title ? (
                 <div
                     style={{
-                        fontFamily: 'var(--tof-font-heading)',
+                        fontFamily: "'Playfair Display', serif",
+                        fontWeight: 500,
                         fontSize: 24,
                         lineHeight: 1.08,
                         color: titleColor,
@@ -250,7 +251,7 @@ export default function Results({ resultData, setPage }) {
 
         return Object.entries(totals)
             .sort((a, b) => b[1] - a[1])
-            .slice(0, 3)
+            .filter(([, value]) => value > 0)
             .map(([key, value]) => ({
                 key,
                 score: Number(value.toFixed(1)),
@@ -370,7 +371,8 @@ export default function Results({ resultData, setPage }) {
                         <h1
                             style={{
                                 margin: 0,
-                                fontFamily: 'var(--tof-font-heading)',
+                                fontFamily: "'Playfair Display', serif",
+                                fontWeight: 500,
                                 fontSize: 'clamp(30px, 4vw, 48px)',
                                 lineHeight: 1.08,
                                 color: 'var(--tof-text)',
@@ -399,460 +401,436 @@ export default function Results({ resultData, setPage }) {
     }
 
     return (
-        <PageShell padding={isMobile ? '20px 16px 28px' : '24px 20px 36px'}>
+        <PageShell padding={isMobile ? '16px 16px 28px' : '20px 20px 36px'}>
             <div
                 style={{
                     animation: 'tofFadeIn 0.5s ease',
                     display: 'grid',
                     alignSelf: 'start',
                     gridTemplateColumns: '1fr',
-                    gap: isMobile ? 24 : 40,
+                    gap: isMobile ? 20 : 28,
                     width: '100%',
                 }}
             >
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: isMobile ? 'stretch' : 'flex-end',
-                        gap: 16,
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    <div style={{ display: 'grid', gap: 10 }}>
-                        <SectionEyebrow>04 — Jouw profiel</SectionEyebrow>
-
-                        <h1
-                            style={{
-                                margin: 0,
-                                fontFamily: 'var(--tof-font-heading)',
-                                fontSize: 'clamp(34px, 5vw, 62px)',
-                                lineHeight: 1.04,
-                                color: 'var(--tof-text)',
-                                maxWidth: 760,
-                            }}
-                        >
-                            Jouw profiel in
-                            <br />
-                            <span
-                                style={{
-                                    color: primaryColor,
-                                    fontStyle: 'italic',
-                                }}
-                            >
-                                één oogopslag.
-                            </span>
-                        </h1>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                        <PrimaryButton
-                            onClick={downloadCardAsPDF}
-                            style={{ width: isMobile ? '100%' : 'auto' }}
-                        >
-                            Download profiel →
-                        </PrimaryButton>
-
-                        <SecondaryButton onClick={() => setPage('library')}>
-                            Bekijk alle persona&apos;s
-                        </SecondaryButton>
-                    </div>
-                </div>
-
-                <div
-                    style={{
-                        width: '100%',
-                        maxWidth: 920,
-                        background: 'linear-gradient(135deg, #F7F3EE 0%, #EFE6DC 100%)',
-                        borderRadius: 32,
-                        border: '1px solid #E5D9CD',
-                        boxShadow: '0 20px 52px rgba(70, 45, 35, 0.07)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        padding: isMobile ? '22px 18px 20px' : '32px 32px 28px',
-                        display: 'grid',
-                        alignSelf: 'start',
-                        gap: isMobile ? 18 : 20,
-                    }}
-                >
-                    <div
-                        style={{
-                            position: 'absolute',
-                            left: 0,
-                            top: 0,
-                            width: 4,
-                            height: '100%',
-                            background: primaryColor,
-                            opacity: 0.95,
-                        }}
-                    />
-
-                    <img
-                        src={tofLogo}
-                        alt="TOF logo"
-                        style={{
-                            position: 'absolute',
-                            top: 18,
-                            right: 18,
-                            width: 24,
-                            height: 24,
-                            objectFit: 'contain',
-                            opacity: 0.35,
-                        }}
-                    />
-
-                    {/* JOUW PROFIEL */}
+                {/* ── PROFIELKAART + DOWNLOAD — zelfde breedte ─────── */}
+                <div style={{ width: '100%', maxWidth: 920, display: 'grid', gap: isMobile ? 20 : 28, alignSelf: 'start' }}>
 
                     <div
                         style={{
+                            width: '100%',
+                            background: 'linear-gradient(135deg, #F7F3EE 0%, #EFE6DC 100%)',
+                            borderRadius: 32,
+                            border: '1px solid #E5D9CD',
+                            boxShadow: '0 20px 52px rgba(70, 45, 35, 0.07)',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            padding: isMobile ? '22px 18px 20px' : '32px 32px 28px',
                             display: 'grid',
-                            gap: 16,
-                            paddingLeft: isMobile ? 8 : 18,
-                            maxWidth: isMobile ? '100%' : 760,
+                            alignSelf: 'start',
+                            gap: isMobile ? 18 : 20,
                         }}
                     >
                         <div
                             style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 8,
+                                position: 'absolute',
+                                left: 0,
+                                top: 0,
+                                width: 4,
+                                height: '100%',
                                 background: primaryColor,
-                                borderRadius: 20,
-                                padding: '6px 14px',
-                                minHeight: 36,
-                                boxSizing: 'border-box',
-                                width: 'fit-content',
-                                marginBottom: 6,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    width: 7,
-                                    height: 7,
-                                    borderRadius: '50%',
-                                    background: '#fff',
-                                    opacity: 0.7,
-                                    flexShrink: 0,
-                                }}
-                            />
-                            <span
-                                style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    fontSize: 9,
-                                    fontWeight: 600,
-                                    letterSpacing: '2.5px',
-                                    textTransform: 'uppercase',
-                                    color: '#fff',
-                                    lineHeight: 1,
-                                    transform: 'translateY(0.5px)',
-                                }}
-                            >
-                                Primaire persona
-                            </span>
-                        </div>
-
-                        <div
-                            style={{
-                                fontSize: isMobile ? 15 : 16,
-                                color: '#9A9088',
-                                marginBottom: 4,
-                                letterSpacing: 0.2,
-                            }}
-                        >
-                            {resultData?.name?.trim() ? `${resultData.name}` : 'Jouw profiel'}
-                        </div>
-
-                        <h2
-                            style={{
-                                fontFamily: 'var(--tof-font-heading)',
-                                fontSize: isMobile ? 36 : 52,
-                                lineHeight: 1,
-                                letterSpacing: '-0.025em',
-                                margin: 0,
-                                color: 'var(--tof-text)',
-                                maxWidth: 760,
-                            }}
-                        >
-                            Jouw dominante profiel is{' '}
-                            <span
-                                style={{
-                                    color: primaryColor,
-                                    fontStyle: 'italic',
-                                }}
-                            >
-                                {primary?.name}.
-                            </span>
-                        </h2>
-
-                        <p
-                            style={{
-                                marginTop: 4,
-                                marginBottom: 0,
-                                fontSize: isMobile ? 15 : 16,
-                                color: '#6F6862',
-                                lineHeight: 1.74,
-                                maxWidth: 720,
-                            }}
-                        >
-                            {primary?.short}
-                        </p>
-
-                        <div
-                            style={{
-                                width: 52,
-                                height: 3,
-                                background: primaryColor,
-                                marginTop: 4,
-                                borderRadius: 999,
+                                opacity: 0.95,
                             }}
                         />
-                    </div>
 
-                    {/* WAT DIT BETEKENT */}
-                    <div
-                        style={{
-                            background: '#F4EDE6',
-                            borderRadius: 20,
-                            padding: isMobile ? '16px 16px' : '18px 22px',
-                            color: '#4D433D',
-                            fontSize: 14,
-                            lineHeight: 1.7,
-                            border: '1px solid rgba(120, 90, 70, 0.06)',
-                        }}
-                    >
-                        <strong style={{ color: 'var(--tof-text)' }}>
-                            Wat dit betekent in de praktijk
-                        </strong>
-                        <br />
-                        Je werkt het sterkst wanneer je omgeving aansluit op hoe jij van nature werkt.
-                        Zit daar verschil in, dan kost dat energie en wordt het moeilijker om echt tot
-                        je recht te komen.
-                    </div>
-
-                    {/* WAT JOU IN BEWEGING BRENGT */}
-                    <div
-                        style={{
-                            background: 'rgba(255,255,255,0.82)',
-                            border: '1px solid #EADFD4',
-                            borderRadius: 20,
-                            padding: isMobile ? '16px 16px' : '18px 22px',
-                            display: 'grid',
-                            gap: 10,
-                        }}
-                    >
-                        <div style={INFO_LABEL_STYLE}>Wat jou in beweging brengt</div>
-
-                        <div
+                        <img
+                            src={tofLogo}
+                            alt="TOF logo"
                             style={{
-                                fontFamily: 'var(--tof-font-heading)',
-                                fontSize: isMobile ? 18 : 22,
-                                lineHeight: 1.18,
-                                color: primaryColor,
+                                position: 'absolute',
+                                top: 18,
+                                right: 18,
+                                width: 24,
+                                height: 24,
+                                objectFit: 'contain',
+                                opacity: 0.35,
                             }}
-                        >
-                            Jouw natuurlijke kracht
-                        </div>
+                        />
 
-                        <p
-                            style={{
-                                margin: 0,
-                                color: '#4D433D',
-                                lineHeight: 1.7,
-                                fontSize: 14,
-                            }}
-                        >
-                            {primary?.energy_from}
-                        </p>
-                    </div>
+                        {/* JOUW PROFIEL */}
 
-                    {/* 2 KOLOMMEN */}
-                    <div
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: isMobile ? '1fr' : '1.16fr 0.94fr',
-                            gap: isMobile ? 16 : 20,
-                            alignItems: 'start',
-                        }}
-                    >
-                        {/* LINKERKOLOM (Verdeling + Mix + Leiderschap) */}
                         <div
                             style={{
                                 display: 'grid',
-                                gap: 14,
-                                alignContent: 'start',
+                                gap: 12,
+                                paddingLeft: isMobile ? 8 : 18,
+                                maxWidth: isMobile ? '100%' : 760,
                             }}
                         >
-                            <div
+                            {/* Eyebrow rij: badge + naam */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                                <div
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 7,
+                                        background: primaryColor,
+                                        borderRadius: 20,
+                                        padding: '5px 12px',
+                                        width: 'fit-content',
+                                    }}
+                                >
+                                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff', opacity: 0.7, flexShrink: 0 }} />
+                                    <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: '#fff', lineHeight: 1 }}>
+                                        Primaire persona
+                                    </span>
+                                </div>
+                                {resultData?.name?.trim() && (
+                                    <span style={{ fontSize: 14, color: '#9A9088', letterSpacing: 0.2 }}>
+                                        {resultData.name}
+                                    </span>
+                                )}
+                            </div>
+
+                            <h2
                                 style={{
-                                    background: 'rgba(255,255,255,0.72)',
-                                    borderRadius: 18,
-                                    padding: '16px 18px',
-                                    border: '1px solid #E7DBCF',
-                                    display: 'grid',
-                                    gap: 10,
+                                    fontFamily: "'Playfair Display', serif",
+                                    fontWeight: 500,
+                                    fontSize: isMobile ? 30 : 42,
+                                    lineHeight: 1.04,
+                                    letterSpacing: '-0.02em',
+                                    margin: 0,
+                                    color: 'var(--tof-text)',
+                                    maxWidth: 760,
                                 }}
                             >
-                                <div style={INFO_LABEL_STYLE}>Verdeling van jouw profiel</div>
+                                Jouw dominante profiel is{' '}
+                                <span
+                                    style={{
+                                        color: primaryColor,
+                                        fontStyle: 'italic',
+                                    }}
+                                >
+                                    {primary?.name}.
+                                </span>
+                            </h2>
 
-                                <div style={{ display: 'grid', gap: 8 }}>
-                                    {topScoreEntries.map((item) => (
-                                        <div key={item.id} style={{ display: 'grid', gap: 4 }}>
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    gap: 10,
-                                                    fontSize: 12,
-                                                    color: '#3F342F',
-                                                }}
-                                            >
-                                                <span style={{ fontWeight: 600 }}>{item.name}</span>
-                                                <span>{item.percentage}%</span>
+                            <p
+                                style={{
+                                    marginTop: 4,
+                                    marginBottom: 0,
+                                    fontSize: isMobile ? 15 : 16,
+                                    color: '#6F6862',
+                                    lineHeight: 1.74,
+                                    maxWidth: 720,
+                                }}
+                            >
+                                {primary?.short}
+                            </p>
+
+                            <div
+                                style={{
+                                    width: 52,
+                                    height: 3,
+                                    background: primaryColor,
+                                    marginTop: 4,
+                                    borderRadius: 999,
+                                }}
+                            />
+                        </div>
+
+                        {/* WAT DIT BETEKENT */}
+                        <div
+                            style={{
+                                background: '#F4EDE6',
+                                borderRadius: 20,
+                                padding: isMobile ? '16px 16px' : '18px 22px',
+                                color: '#4D433D',
+                                fontSize: 14,
+                                lineHeight: 1.7,
+                                border: '1px solid rgba(120, 90, 70, 0.06)',
+                            }}
+                        >
+                            <strong style={{ color: 'var(--tof-text)' }}>
+                                Wat dit betekent in de praktijk
+                            </strong>
+                            <br />
+                            Je werkt het sterkst wanneer je omgeving aansluit op hoe jij van nature werkt.
+                            Zit daar verschil in, dan kost dat energie en wordt het moeilijker om echt tot
+                            je recht te komen.
+                        </div>
+
+                        {/* WAT JOU IN BEWEGING BRENGT */}
+                        <div
+                            style={{
+                                background: 'rgba(255,255,255,0.82)',
+                                border: '1px solid #EADFD4',
+                                borderRadius: 20,
+                                padding: isMobile ? '16px 16px' : '18px 22px',
+                                display: 'grid',
+                                gap: 10,
+                            }}
+                        >
+                            <div style={INFO_LABEL_STYLE}>Wat jou in beweging brengt</div>
+
+                            <div
+                                style={{
+                                    fontFamily: "'Playfair Display', serif",
+                                    fontWeight: 500,
+                                    fontSize: isMobile ? 18 : 22,
+                                    lineHeight: 1.18,
+                                    color: primaryColor,
+                                }}
+                            >
+                                Jouw natuurlijke kracht
+                            </div>
+
+                            <p
+                                style={{
+                                    margin: 0,
+                                    color: '#4D433D',
+                                    lineHeight: 1.7,
+                                    fontSize: 14,
+                                }}
+                            >
+                                {primary?.energy_from}
+                            </p>
+                        </div>
+
+                        {/* 2 KOLOMMEN — gelijke breedte, elk blok op eigen hoogte */}
+                        <div
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                                gap: isMobile ? 14 : 16,
+                                alignItems: 'start',
+                            }}
+                        >
+                            {/* LINKERKOLOM */}
+                            <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
+                                <div
+                                    style={{
+                                        background: 'rgba(255,255,255,0.82)',
+                                        borderRadius: 14,
+                                        padding: '14px 16px',
+                                        border: '1px solid #E7DBCF',
+                                        display: 'grid',
+                                        gap: 10,
+                                    }}
+                                >
+                                    <div style={INFO_LABEL_STYLE}>Verdeling van jouw profiel</div>
+
+                                    <div style={{ display: 'grid', gap: 8 }}>
+                                        {topScoreEntries.map((item) => (
+                                            <div key={item.id} style={{ display: 'grid', gap: 4 }}>
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        gap: 10,
+                                                        fontSize: 12,
+                                                        color: '#3F342F',
+                                                    }}
+                                                >
+                                                    <span style={{ fontWeight: 600 }}>{item.name}</span>
+                                                    <span>{item.percentage}%</span>
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        height: 8,
+                                                        background: '#EADFD4',
+                                                        borderRadius: 999,
+                                                        overflow: 'hidden',
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            width: `${Math.max(item.percentage, 6)}%`,
+                                                            height: '100%',
+                                                            background: item.color,
+                                                            opacity: item.opacity,
+                                                            borderRadius: 999,
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
+                                        ))}
+                                    </div>
+                                </div>
 
+                                <div
+                                    style={{
+                                        background: '#F3ECE4',
+                                        borderRadius: 14,
+                                        padding: '14px 16px',
+                                        display: 'grid',
+                                        gap: 10,
+                                        borderLeft: `4px solid ${primaryColor}`,
+                                    }}
+                                >
+                                    <div style={INFO_LABEL_STYLE}>Jouw mix</div>
+
+                                    <div style={{ display: 'grid', gap: 8 }}>
+                                        {[secondary, tertiary].filter(Boolean).map((persona, index) => (
                                             <div
+                                                key={persona?.id || index}
                                                 style={{
-                                                    height: 8,
-                                                    background: '#EADFD4',
-                                                    borderRadius: 999,
-                                                    overflow: 'hidden',
+                                                    background: 'rgba(255,255,255,0.82)',
+                                                    borderRadius: 12,
+                                                    padding: '10px 12px',
+                                                    borderLeft: `4px solid ${COLOR_MAP[persona?.id] || primaryColor}`,
+                                                    opacity: index === 0 ? 0.95 : 0.8,
                                                 }}
                                             >
                                                 <div
                                                     style={{
-                                                        width: `${Math.max(item.percentage, 6)}%`,
-                                                        height: '100%',
-                                                        background: item.color,
-                                                        opacity: item.opacity,
-                                                        borderRadius: 999,
+                                                        fontFamily: "'Playfair Display', serif",
+                                                        fontWeight: 500,
+                                                        fontSize: 18,
+                                                        lineHeight: 1.1,
+                                                        color: 'var(--tof-text)',
+                                                        marginBottom: 3,
                                                     }}
-                                                />
+                                                >
+                                                    {persona?.name}
+                                                </div>
+
+                                                <p
+                                                    style={{
+                                                        margin: 0,
+                                                        color: '#4D433D',
+                                                        lineHeight: 1.54,
+                                                        fontSize: 13,
+                                                    }}
+                                                >
+                                                    {persona?.short}
+                                                </p>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div
-                                style={{
-                                    background: '#F3ECE4',
-                                    borderRadius: 18,
-                                    padding: '16px 18px',
-                                    display: 'grid',
-                                    gap: 10,
-                                    borderLeft: `4px solid ${primaryColor}`,
-                                }}
-                            >
-                                <div style={INFO_LABEL_STYLE}>Jouw mix</div>
-
-                                <div style={{ display: 'grid', gap: 8 }}>
-                                    {[secondary, tertiary].filter(Boolean).map((persona, index) => (
-                                        <div
-                                            key={persona?.id || index}
+                                {leadershipItems.length > 0 ? (
+                                    <InnerCard
+                                        label="Wat helpt in leiderschap"
+                                        title="Zo kom jij beter tot je recht"
+                                        titleColor={primaryColor}
+                                    >
+                                        <ul
                                             style={{
-                                                background: 'rgba(255,255,255,0.82)',
-                                                borderRadius: 12,
-                                                padding: '10px 12px',
-                                                borderLeft: `4px solid ${COLOR_MAP[persona?.id] || primaryColor}`,
-                                                opacity: index === 0 ? 0.95 : 0.8,
+                                                margin: 0,
+                                                paddingLeft: 18,
+                                                color: '#4D433D',
+                                                lineHeight: 1.65,
+                                                fontSize: 13,
                                             }}
                                         >
-                                            <div
-                                                style={{
-                                                    fontFamily: 'var(--tof-font-heading)',
-                                                    fontSize: 18,
-                                                    lineHeight: 1.1,
-                                                    color: 'var(--tof-text)',
-                                                    marginBottom: 3,
-                                                }}
-                                            >
-                                                {persona?.name}
-                                            </div>
-
-                                            <p
-                                                style={{
-                                                    margin: 0,
-                                                    color: '#4D433D',
-                                                    lineHeight: 1.54,
-                                                    fontSize: 13,
-                                                }}
-                                            >
-                                                {persona?.short}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
+                                            {leadershipItems.map((item) => (
+                                                <li key={item} style={{ marginBottom: 6 }}>
+                                                    {item}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </InnerCard>
+                                ) : null}
                             </div>
 
-                            {leadershipItems.length > 0 ? (
+                            {/* RECHTERKOLOM */}
+                            <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
                                 <InnerCard
-                                    label="Wat helpt in leiderschap"
-                                    title="Zo kom jij beter tot je recht"
+                                    label="Bricks"
+                                    title="Jouw ideale werkplekmix"
                                     titleColor={primaryColor}
                                 >
-                                    <ul
-                                        style={{
-                                            margin: 0,
-                                            paddingLeft: 18,
-                                            color: '#4D433D',
-                                            lineHeight: 1.65,
-                                            fontSize: 13,
-                                        }}
-                                    >
-                                        {leadershipItems.map((item) => (
-                                            <li key={item} style={{ marginBottom: 6 }}>
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </InnerCard>
-                            ) : null}
-                        </div>
-
-                        {/* RECHTERKOLOM (Bricks + Bytes) */}
-                        <div
-                            style={{
-                                display: 'grid',
-                                gap: 16,
-                                alignContent: 'start',
-                            }}
-                        >
-                            <InnerCard
-                                label="Bricks"
-                                title="Jouw ideale werkplekmix"
-                                titleColor={primaryColor}
-                            >
-                                <div style={{ display: 'grid', gap: 10 }}>
-                                    {bricksItems.map((item) => (
-                                        <div
-                                            key={item.key}
-                                            style={{
-                                                background: 'rgba(255,255,255,0.9)',
-                                                borderRadius: 14,
-                                                padding: '12px 14px',
-                                                borderLeft: `4px solid ${primaryColor}`,
-                                                display: 'grid',
-                                                gap: 6,
-                                            }}
-                                        >
+                                    <div style={{ display: 'grid', gap: 10 }}>
+                                        {bricksItems.map((item) => (
                                             <div
+                                                key={item.key}
                                                 style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    gap: 10,
-                                                    alignItems: 'center',
-                                                    flexWrap: 'wrap',
+                                                    background: 'rgba(255,255,255,0.9)',
+                                                    borderRadius: 14,
+                                                    padding: '12px 14px',
+                                                    borderLeft: `4px solid ${primaryColor}`,
+                                                    display: 'grid',
+                                                    gap: 6,
                                                 }}
                                             >
                                                 <div
                                                     style={{
-                                                        fontFamily: 'var(--tof-font-heading)',
-                                                        fontSize: 17,
-                                                        lineHeight: 1.12,
-                                                        color: 'var(--tof-text)',
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        gap: 10,
+                                                        alignItems: 'center',
+                                                        flexWrap: 'wrap',
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            fontFamily: "'Playfair Display', serif",
+                                                            fontWeight: 500,
+                                                            fontSize: 17,
+                                                            lineHeight: 1.12,
+                                                            color: 'var(--tof-text)',
+                                                        }}
+                                                    >
+                                                        {item.label}
+                                                    </div>
+
+                                                    <div
+                                                        style={{
+                                                            fontSize: 11,
+                                                            color: primaryColor,
+                                                            background: '#F4EDE6',
+                                                            borderRadius: 999,
+                                                            padding: '4px 8px',
+                                                            fontWeight: 600,
+                                                        }}
+                                                    >
+                                                        score {item.score}
+                                                    </div>
+                                                </div>
+
+                                                <p
+                                                    style={{
+                                                        margin: 0,
+                                                        color: '#4D433D',
+                                                        lineHeight: 1.62,
+                                                        fontSize: 13,
+                                                    }}
+                                                >
+                                                    {item.text}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </InnerCard>
+
+                                <InnerCard
+                                    label="Bytes & Behavior"
+                                    title="Wat jij nodig hebt"
+                                    titleColor={primaryColor}
+                                >
+                                    <div style={{ display: 'grid', gap: 10 }}>
+                                        {bytesBehaviorBlocks.map((item) => (
+                                            <div
+                                                key={item.key}
+                                                style={{
+                                                    background: 'rgba(255,255,255,0.9)',
+                                                    borderRadius: 14,
+                                                    padding: '12px 14px',
+                                                    borderLeft: `4px solid ${primaryColor}`,
+                                                    display: 'grid',
+                                                    gap: 6,
+                                                }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        fontSize: 11,
+                                                        letterSpacing: 1.3,
+                                                        textTransform: 'uppercase',
+                                                        color: primaryColor,
+                                                        fontWeight: 700,
                                                     }}
                                                 >
                                                     {item.label}
@@ -860,110 +838,240 @@ export default function Results({ resultData, setPage }) {
 
                                                 <div
                                                     style={{
-                                                        fontSize: 11,
-                                                        color: primaryColor,
-                                                        background: '#F4EDE6',
-                                                        borderRadius: 999,
-                                                        padding: '4px 8px',
-                                                        fontWeight: 600,
+                                                        fontFamily: "'Playfair Display', serif",
+                                                        fontWeight: 500,
+                                                        fontSize: 17,
+                                                        lineHeight: 1.14,
+                                                        color: 'var(--tof-text)',
                                                     }}
                                                 >
-                                                    score {item.score}
+                                                    {item.title}
                                                 </div>
+
+                                                <p
+                                                    style={{
+                                                        margin: 0,
+                                                        color: '#4D433D',
+                                                        lineHeight: 1.66,
+                                                        fontSize: 13,
+                                                    }}
+                                                >
+                                                    {item.text}
+                                                </p>
                                             </div>
+                                        ))}
+                                    </div>
+                                </InnerCard>
+                            </div>
+                        </div>
 
-                                            <p
-                                                style={{
-                                                    margin: 0,
-                                                    color: '#4D433D',
-                                                    lineHeight: 1.62,
-                                                    fontSize: 13,
-                                                }}
-                                            >
-                                                {item.text}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </InnerCard>
-
-                            <InnerCard
-                                label="Bytes & Behavior"
-                                title="Wat jij nodig hebt"
-                                titleColor={primaryColor}
+                        {/* WAAR JE OP LEEGLOOPT */}
+                        {primary?.energycost?.length > 0 && (
+                            <div
+                                style={{
+                                    background: 'rgba(255,255,255,0.82)',
+                                    border: '1px solid #EADFD4',
+                                    borderRadius: 20,
+                                    padding: isMobile ? '16px 16px' : '18px 22px',
+                                    display: 'grid',
+                                    gap: 12,
+                                }}
                             >
-                                <div style={{ display: 'grid', gap: 10 }}>
-                                    {bytesBehaviorBlocks.map((item) => (
-                                        <div
-                                            key={item.key}
-                                            style={{
-                                                background: 'rgba(255,255,255,0.9)',
-                                                borderRadius: 14,
-                                                padding: '12px 14px',
-                                                borderLeft: `4px solid ${primaryColor}`,
-                                                display: 'grid',
-                                                gap: 6,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    fontSize: 11,
-                                                    letterSpacing: 1.3,
-                                                    textTransform: 'uppercase',
-                                                    color: primaryColor,
-                                                    fontWeight: 700,
-                                                }}
-                                            >
-                                                {item.label}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    fontFamily: 'var(--tof-font-heading)',
-                                                    fontSize: 17,
-                                                    lineHeight: 1.14,
-                                                    color: 'var(--tof-text)',
-                                                }}
-                                            >
-                                                {item.title}
-                                            </div>
-
-                                            <p
-                                                style={{
-                                                    margin: 0,
-                                                    color: '#4D433D',
-                                                    lineHeight: 1.66,
-                                                    fontSize: 13,
-                                                }}
-                                            >
-                                                {item.text}
-                                            </p>
+                                <div style={INFO_LABEL_STYLE}>Waar je op leegloopt</div>
+                                <div style={{ display: 'grid', gap: 8 }}>
+                                    {primary.energycost.slice(0, 3).map((item) => (
+                                        <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                            <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, flexShrink: 0, lineHeight: 1.6 }}>×</span>
+                                            <span style={{ fontSize: 14, color: '#4D433D', lineHeight: 1.62 }}>{item}</span>
                                         </div>
                                     ))}
                                 </div>
-                            </InnerCard>
+                            </div>
+                        )}
+
+                        {/* QUOTE */}
+                        {primary?.lquote ? (
+                            <div
+                                style={{
+                                    background: primaryColor,
+                                    borderRadius: 20,
+                                    padding: isMobile ? '16px 16px' : '18px 22px',
+                                    color: quoteTextColor,
+                                    fontFamily: "'Playfair Display', serif",
+                                    fontWeight: 500,
+                                    fontSize: isMobile ? 18 : 22,
+                                    lineHeight: 1.45,
+                                    fontStyle: 'italic',
+                                    letterSpacing: '-0.01em',
+                                }}
+                            >
+                                {primary.lquote}
+                            </div>
+                        ) : null}
+                    </div>
+
+                    {/* ── PREMIUM DOWNLOAD KAART ────────────────────────── */}
+                    <div style={{
+                        borderRadius: 20,
+                        border: '1px solid var(--tof-border)',
+                        overflow: 'hidden',
+                        boxShadow: '0 12px 32px rgba(31,31,31,0.07)',
+                    }}>
+                        {/* Gekleurde topper */}
+                        <div style={{
+                            background: primaryColor,
+                            padding: '12px 24px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: 12,
+                            flexWrap: 'wrap',
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, color: 'rgba(255,255,255,0.65)' }}>
+                                    Jouw personakaart
+                                </span>
+                                <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)', display: 'inline-block' }} />
+                                <span style={{ fontSize: 13, fontFamily: "'Playfair Display', serif", fontWeight: 500, fontStyle: 'italic', color: '#fff' }}>
+                                    {primary?.name}
+                                </span>
+                            </div>
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>
+                                PDF · 2 pagina&apos;s · A5
+                            </span>
+                        </div>
+
+                        {/* Body */}
+                        <div style={{
+                            background: 'var(--tof-surface)',
+                            padding: isMobile ? '20px 20px 22px' : '24px 28px 28px',
+                            display: 'grid',
+                            gap: 20,
+                        }}>
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                                gap: isMobile ? 12 : 20,
+                            }}>
+                                {/* Wat er in zit */}
+                                <div style={{ display: 'grid', gap: 10 }}>
+                                    <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
+                                        Wat je downloadt
+                                    </div>
+                                    <div style={{ display: 'grid', gap: 7 }}>
+                                        {[
+                                            'Jouw dominante persona en profielverdeling',
+                                            'Jouw mix van secundaire persona\'s',
+                                            'Wat jou in beweging brengt',
+                                            'Jouw ideale werkplekmix (top 3)',
+                                            'Wat helpt in leiderschap',
+                                        ].map((item, i) => (
+                                            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
+                                                <div style={{
+                                                    width: 18, height: 18, borderRadius: 999,
+                                                    background: `${primaryColor}18`,
+                                                    border: `1.5px solid ${primaryColor}50`,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    fontSize: 9, fontWeight: 700, color: primaryColor,
+                                                    flexShrink: 0, marginTop: 1,
+                                                }}>✓</div>
+                                                <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tof-text-soft)' }}>{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Preview beschrijving */}
+                                <div style={{
+                                    background: 'var(--tof-surface-soft)',
+                                    borderRadius: 14,
+                                    padding: '16px 18px',
+                                    border: '1px solid var(--tof-border)',
+                                    display: 'grid',
+                                    gap: 8,
+                                    alignContent: 'start',
+                                }}>
+                                    <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
+                                        Hoe te gebruiken
+                                    </div>
+                                    <p style={{ margin: 0, fontSize: 13, lineHeight: 1.72, color: 'var(--tof-text-soft)' }}>
+                                        De kaart is ontworpen om te delen — met je manager, je team of je organisatie.
+                                        Gebruik hem als gespreksstarter of als input voor werkplek- en samenwerkingsafspraken.
+                                    </p>
+                                    {resultData?.name?.trim() && (
+                                        <div style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                            fontSize: 12,
+                                            color: primaryColor,
+                                            background: `${primaryColor}10`,
+                                            border: `1px solid ${primaryColor}30`,
+                                            borderRadius: 999,
+                                            padding: '3px 10px',
+                                            width: 'fit-content',
+                                            marginTop: 4,
+                                        }}>
+                                            Opgemaakt voor {resultData.name.trim().split(/\s+/)[0]}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Download knop */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                                <button
+                                    onClick={downloadCardAsPDF}
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 10,
+                                        padding: '13px 28px',
+                                        borderRadius: 999,
+                                        background: primaryColor,
+                                        color: '#fff',
+                                        fontFamily: 'var(--tof-font-body)',
+                                        fontWeight: 700,
+                                        fontSize: 15,
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        letterSpacing: 0.2,
+                                        boxShadow: `0 6px 20px ${primaryColor}50`,
+                                        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
+                                        e.currentTarget.style.boxShadow = `0 10px 28px ${primaryColor}60`;
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = `0 6px 20px ${primaryColor}50`;
+                                    }}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                                        <path d="M8 1v9M8 10l-3-3M8 10l3-3M2 13h12" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                    Download personakaart
+                                </button>
+                                <span style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
+                                    PDF · gratis · direct beschikbaar
+                                </span>
+                            </div>
+
+                            {/* Navigatie onderaan */}
+                            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', paddingTop: 4, borderTop: '1px solid var(--tof-border)' }}>
+                                <SecondaryButton onClick={() => setPage('library')}>
+                                    Bekijk alle persona&apos;s
+                                </SecondaryButton>
+                                <SecondaryButton onClick={() => setPage('quiz')}>
+                                    Test opnieuw
+                                </SecondaryButton>
+                            </div>
                         </div>
                     </div>
 
-                    {/* QUOTE */}
-                    {primary?.lquote ? (
-                        <div
-                            style={{
-                                background: primaryColor,
-                                borderRadius: 20,
-                                padding: isMobile ? '16px 16px' : '18px 22px',
-                                color: quoteTextColor,
-                                fontFamily: 'var(--tof-font-heading)',
-                                fontSize: isMobile ? 18 : 22,
-                                lineHeight: 1.45,
-                                fontStyle: 'italic',
-                                letterSpacing: '-0.01em',
-                            }}
-                        >
-                            {primary.lquote}
-                        </div>
-                    ) : null}
-                </div>
+                </div> {/* einde maxWidth 920 wrapper */}
+
             </div>
 
             <div
@@ -1078,7 +1186,8 @@ export default function Results({ resultData, setPage }) {
 
                         <h1
                             style={{
-                                fontFamily: 'var(--tof-font-heading)',
+                                fontFamily: "'Playfair Display', serif",
+                                fontWeight: 500,
                                 fontSize: 31,
                                 fontWeight: 400,
                                 color: '#1E1E1E',
@@ -1231,7 +1340,8 @@ export default function Results({ resultData, setPage }) {
                                         >
                                             <p
                                                 style={{
-                                                    fontFamily: 'var(--tof-font-heading)',
+                                                    fontFamily: "'Playfair Display', serif",
+                                                    fontWeight: 500,
                                                     fontSize: 13,
                                                     color: '#1E1E1E',
                                                     margin: '0 0 3px',
@@ -1281,7 +1391,8 @@ export default function Results({ resultData, setPage }) {
 
                             <p
                                 style={{
-                                    fontFamily: 'var(--tof-font-heading)',
+                                    fontFamily: "'Playfair Display', serif",
+                                    fontWeight: 500,
                                     fontSize: 13,
                                     color: primaryColor,
                                     fontStyle: 'italic',
@@ -1371,218 +1482,123 @@ export default function Results({ resultData, setPage }) {
                         background: '#F7F3EE',
                         fontFamily: 'Inter, Arial, sans-serif',
                         position: 'relative',
-                        display: 'grid',
-                        gridTemplateRows: 'auto 1fr auto',
+                        display: 'flex',
+                        flexDirection: 'column',
                         boxSizing: 'border-box',
                         overflow: 'hidden',
                     }}
                 >
-                    <div
-                        style={{
-                            position: 'absolute',
-                            right: 0,
-                            top: 0,
-                            width: 4,
-                            height: '100%',
-                            background: primaryColor,
-                        }}
-                    />
+                    {/* Accentlijn rechts */}
+                    <div style={{ position: 'absolute', right: 0, top: 0, width: 4, height: '100%', background: primaryColor }} />
 
-                    {/* Bovenste deel */}
-                    <div
-                        style={{
-                            padding: `${SPACING.lg + 14}px ${PDF_GRID.pageX}px 0 ${PDF_GRID.pageX}px`,
-                            display: 'grid',
-                            gap: SPACING.sm,
-                            alignContent: 'start',
-                        }}
-                    >
-                        <div
-                            style={{
-                                background: 'rgba(255,255,255,0.82)',
-                                borderRadius: 12,
-                                padding: '14px 16px',
-                                border: '1px solid #EADFD4',
-                                display: 'grid',
-                                gap: SPACING.sm,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    fontSize: 8,
-                                    fontWeight: 600,
-                                    letterSpacing: '2.5px',
-                                    textTransform: 'uppercase',
-                                    color: '#C5B5A5',
-                                    margin: 0,
-                                }}
-                            >
-                                Jouw ideale werkplekmix
-                            </div>
+                    {/* Premium header-balk */}
+                    <div style={{
+                        background: primaryColor,
+                        padding: '10px 42px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexShrink: 0,
+                    }}>
+                        <div style={{ fontSize: 8, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.75)' }}>
+                            Jouw ideale werkplekmix
+                        </div>
+                        <img
+                            src={tofLogo}
+                            alt="TOF logo"
+                            style={{ width: 18, height: 18, objectFit: 'contain', opacity: 0.7, filter: 'brightness(10)' }}
+                        />
+                    </div>
 
-                            <div
-                                style={{
-                                    fontFamily: 'var(--tof-font-heading)',
-                                    fontSize: 21,
-                                    lineHeight: 1.08,
-                                    color: primaryColor,
-                                }}
-                            >
-                                Wat jij nodig hebt in de werkomgeving
-                            </div>
-
-                            <div
-                                style={{
-                                    display: 'grid',
-                                    gap: SPACING.sm,
-                                    marginTop: SPACING.sm,
-                                }}
-                            >
-                                {pdfData.achterkant.workplace.map((item, i) => (
-                                    <div
-                                        key={i}
-                                        style={{
-                                            background: '#fff',
-                                            borderRadius: 8,
-                                            padding: '8px 10px',
-                                            borderLeft: `3px solid ${primaryColor}`,
-                                            display: 'grid',
-                                            gap: 3,
-                                        }}
-                                    >
-                                        <div
-                                            style={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                gap: SPACING.sm,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    fontFamily: 'var(--tof-font-heading)',
-                                                    fontSize: 13,
-                                                    color: '#1E1E1E',
-                                                    lineHeight: 1.2,
-                                                }}
-                                            >
-                                                {item.label}
-                                            </div>
-
-                                            <span
-                                                style={{
-                                                    fontSize: 9,
-                                                    color: '#C5B5A5',
-                                                    whiteSpace: 'nowrap',
-                                                }}
-                                            >
-                                                score {item.score}
-                                            </span>
-                                        </div>
-
-                                        <p
-                                            style={{
-                                                margin: 0,
-                                                fontSize: 10,
-                                                color: '#777',
-                                                lineHeight: 1.5,
-                                            }}
-                                        >
-                                            {item.text}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
+                    {/* Werkplekmix content */}
+                    <div style={{
+                        padding: '14px 42px 0 42px',
+                        flex: '0 0 auto',
+                    }}>
+                        {/* Titel */}
+                        <div style={{ fontFamily: 'var(--tof-font-heading)', fontSize: 20, lineHeight: 1.08, color: primaryColor, marginBottom: 16 }}>
+                            Wat jij nodig hebt in de werkomgeving
                         </div>
 
-                        <div
-                            style={{
-                                background: 'rgba(255,255,255,0.82)',
-                                borderRadius: 12,
-                                padding: '12px 14px',
-                                border: '1px solid #EADFD4',
-                                display: 'grid',
-                                gap: 6,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    fontSize: 8,
-                                    fontWeight: 600,
-                                    letterSpacing: '2.5px',
-                                    textTransform: 'uppercase',
-                                    color: '#C5B5A5',
-                                    margin: 0,
-                                }}
-                            >
+                        {/* Werkplek items — compact, beschrijving ingekort */}
+                        <div style={{ display: 'grid', gap: 5 }}>
+                            {pdfData.achterkant.workplace.map((item, i) => (
+                                <div key={i} style={{
+                                    background: 'rgba(255,255,255,0.82)',
+                                    borderRadius: 6,
+                                    padding: '5px 8px 5px 10px',
+                                    borderLeft: `3px solid ${primaryColor}`,
+                                    display: 'grid',
+                                    gap: 2,
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+                                        <div style={{ fontFamily: 'var(--tof-font-heading)', fontSize: 11, color: '#1E1E1E', lineHeight: 1.2 }}>
+                                            {item.label}
+                                        </div>
+                                        <span style={{ fontSize: 7.5, color: '#C5B5A5', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                                            score {item.score}
+                                        </span>
+                                    </div>
+                                    {item.text && (
+                                        <p style={{ margin: 0, fontSize: 8.5, color: '#777', lineHeight: 1.38 }}>
+                                            {/* Eerste zin van de beschrijving */}
+                                            {item.text.split('.')[0]}.
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Leiderschap */}
+                    <div style={{
+                        padding: '8px 42px 0 42px',
+                        flex: '0 0 auto',
+                    }}>
+                        <div style={{ background: 'rgba(255,255,255,0.82)', borderRadius: 8, padding: '8px 10px', border: '1px solid #EADFD4', display: 'grid', gap: 4 }}>
+                            <div style={{ fontSize: 7.5, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: '#C5B5A5' }}>
                                 Wat helpt in leiderschap
                             </div>
-
-                            <p
-                                style={{
-                                    margin: 0,
-                                    fontSize: 10,
-                                    color: '#555',
-                                    lineHeight: 1.58,
-                                }}
-                            >
+                            <p style={{ margin: 0, fontSize: 10, color: '#2F2521', lineHeight: 1.55, fontWeight: 500 }}>
                                 {pdfData.achterkant.leiderschap}
                             </p>
                         </div>
                     </div>
 
-                    {/* Midden */}
-                    <div
-                        style={{
-                            display: 'grid',
-                            alignContent: 'center',
-                            justifyItems: 'center',
-                            textAlign: 'center',
-                            padding: `0 ${PDF_GRID.pageX}px`,
-                            gap: SPACING.md,
-                            marginTop: -8,
-                        }}
-                    >
-                        {pdfData.achterkant.eindquote?.tekst ? (
-                            <div
-                                style={{
-                                    maxWidth: 320,
-                                    fontFamily: 'var(--tof-font-heading)',
-                                    fontSize: 14,
-                                    lineHeight: 1.52,
-                                    letterSpacing: '-0.01em',
-                                    color: '#4D433D',
-                                    fontStyle: 'italic',
-                                }}
-                            >
-                                “{pdfData.achterkant.eindquote.tekst}”
+                    {/* Quote + logo onderaan — flex-end zodat het altijd op de pagina blijft */}
+                    <div style={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        textAlign: 'center',
+                        padding: `8px 42px 16px`,
+                        gap: 8,
+                        minHeight: 0,
+                    }}>
+                        {pdfData.achterkant.eindquote?.tekst && (
+                            <div style={{
+                                maxWidth: 340,
+                                fontFamily: "'Playfair Display', serif",
+                                fontWeight: 500,
+                                fontSize: 13,
+                                lineHeight: 1.5,
+                                letterSpacing: '-0.01em',
+                                color: '#4D433D',
+                                fontStyle: 'italic',
+                            }}>
+                                "{pdfData.achterkant.eindquote.tekst}"
                             </div>
-                        ) : null}
-
+                        )}
                         <img
                             src={tofLogo}
                             alt="TOF logo"
-                            style={{
-                                width: 68,
-                                height: 68,
-                                objectFit: 'contain',
-                                opacity: 0.95,
-                            }}
+                            style={{ width: 52, height: 52, objectFit: 'contain', opacity: 0.9 }}
                         />
-                    </div>
-
-                    {/* Onder */}
-                    <div
-                        style={{
-                            padding: `0 ${PDF_GRID.pageX}px ${SPACING.lg}px ${PDF_GRID.pageX}px`,
-                            textAlign: 'center',
-                            fontSize: 10,
-                            color: '#C5B5A5',
-                            lineHeight: 1.45,
-                            letterSpacing: '0.3px',
-                        }}
-                    >
-                        Helping people understand their workplace through insight, design and movement.
+                        <div style={{ fontSize: 8.5, color: '#C5B5A5', lineHeight: 1.4, letterSpacing: '0.3px' }}>
+                            Helping people understand their workplace through insight, design and movement.
+                        </div>
                     </div>
                 </div>
             </div>

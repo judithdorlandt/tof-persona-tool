@@ -1,60 +1,82 @@
-/* =========================
-   🔐 TEAM ACCESS (bestaand)
-   ========================= */
+const TEAM_ACCESS_KEY = 'tof_team_access';
+const MAKER_ACCESS_KEY = 'tof_maker_access';
+const ADMIN_ACCESS_KEY = 'tof_admin_access';
 
-export function hasTeamAccess() {
-    return localStorage.getItem('tof_team_access') === 'granted';
+// ─── ADMIN CODE ───────────────────────────────────────────────────────────────
+// Geeft toegang tot alle organisaties in de TeamSelector.
+const ADMIN_CODE = 'P3rs0n4_ADMIN!';
+
+export function checkAndGrantAdminAccess(input) {
+    if (String(input || '').trim() === ADMIN_CODE) {
+        localStorage.setItem(ADMIN_ACCESS_KEY, 'true');
+        return true;
+    }
+    return false;
 }
 
-export function grantTeamAccess(code) {
-    localStorage.setItem('tof_team_access', 'granted');
-    localStorage.setItem('tof_team_code', code);
+export function isAdminAccess() {
+    return localStorage.getItem(ADMIN_ACCESS_KEY) === 'true';
 }
 
-export function clearTeamAccess() {
-    localStorage.removeItem('tof_team_access');
-    localStorage.removeItem('tof_team_code');
+export function revokeAdminAccess() {
+    localStorage.removeItem(ADMIN_ACCESS_KEY);
 }
 
-export function getTeamCode() {
-    return localStorage.getItem('tof_team_code') || '';
+// ─── TEAM ACCESS ──────────────────────────────────────────────────────────────
+
+export function grantTeamAccess(payload = {}) {
+    const cleanPayload =
+        payload === true
+            ? { granted: true, code: '', team: '', organization: '' }
+            : {
+                granted: true,
+                code: payload.code || '',
+                team: payload.team || '',
+                organization: payload.organization || '',
+            };
+
+    localStorage.setItem(TEAM_ACCESS_KEY, JSON.stringify(cleanPayload));
 }
 
+export function revokeTeamAccess() {
+    localStorage.removeItem(TEAM_ACCESS_KEY);
+}
 
-/* =========================
-   🛠 MAKER ACCESS (nieuw)
-   ========================= */
+export function getStoredTeamAccess() {
+    const raw = localStorage.getItem(TEAM_ACCESS_KEY);
 
-export function isMakerAccess() {
+    if (!raw) return null;
+
     try {
-        return localStorage.getItem('tof_maker_access') === 'true';
-    } catch (error) {
-        console.error('Maker access check failed', error);
-        return false;
+        const parsed = JSON.parse(raw);
+        return {
+            granted: true,
+            code: parsed.code || '',
+            team: parsed.team || '',
+            organization: parsed.organization || '',
+        };
+    } catch {
+        return { granted: true, code: '', team: '', organization: '' };
     }
 }
-
-export function grantMakerAccess() {
-    try {
-        localStorage.setItem('tof_maker_access', 'true');
-    } catch (error) {
-        console.error('Kon maker access niet opslaan', error);
-    }
-}
-
-export function clearMakerAccess() {
-    try {
-        localStorage.removeItem('tof_maker_access');
-    } catch (error) {
-        console.error('Kon maker access niet verwijderen', error);
-    }
-}
-
-
-/* =========================
-   🚀 COMBINED ACCESS (optioneel maar slim)
-   ========================= */
 
 export function hasFullTeamAccess() {
-    return hasTeamAccess() || isMakerAccess();
+    const access = getStoredTeamAccess();
+    if (isMakerAccess()) return true;
+    if (!access) return false;
+    return access.granted || !!access.code;
+}
+
+// ─── MAKER ACCESS ─────────────────────────────────────────────────────────────
+
+export function grantMakerAccess() {
+    localStorage.setItem(MAKER_ACCESS_KEY, 'true');
+}
+
+export function revokeMakerAccess() {
+    localStorage.removeItem(MAKER_ACCESS_KEY);
+}
+
+export function isMakerAccess() {
+    return localStorage.getItem(MAKER_ACCESS_KEY) === 'true';
 }
