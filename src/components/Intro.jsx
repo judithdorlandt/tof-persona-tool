@@ -109,16 +109,16 @@ export default function Intro({ setPage }) {
                     border: '1px solid #e7ddd4',
                     borderLeft: '4px solid #b85c5c',
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: isMobile ? 'stretch' : 'center',
                     justifyContent: 'space-between',
                     gap: 16,
-                    flexWrap: isMobile ? 'wrap' : 'nowrap',
+                    flexWrap: 'wrap',
                     boxShadow: '0 4px 14px rgba(70,45,35,0.04)',
                 }}>
-                    <p style={{ margin: 0, color: '#4a433e', fontSize: 14, lineHeight: 1.55, flex: 1, minWidth: 0 }}>
+                    <p style={{ margin: 0, color: '#4a433e', fontSize: 14, lineHeight: 1.55, flex: 1, minWidth: 180 }}>
                         <strong style={{ color: '#1f1b18' }}>Belangrijk:</strong> dit is geen goed-fout test. Het gaat om wat het meest natuurlijk bij jou past.
                     </p>
-                    <div style={{ display: 'flex', gap: 10, flexShrink: 0, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', flexShrink: 0, width: isMobile ? '100%' : 'auto' }}>
                         <button
                             type="button"
                             onClick={() => setPage('quiz')}
@@ -126,6 +126,7 @@ export default function Intro({ setPage }) {
                                 background: '#b85c5c', color: '#fff', border: 'none',
                                 padding: '12px 22px', borderRadius: 10, cursor: 'pointer',
                                 fontSize: 14, fontWeight: 600,
+                                flex: isMobile ? 1 : 'none',
                                 boxShadow: '0 4px 12px rgba(176,82,82,0.28)',
                                 transition: 'transform 0.15s, box-shadow 0.15s',
                             }}
@@ -141,6 +142,7 @@ export default function Intro({ setPage }) {
                                 background: 'transparent', color: '#1a1a1a',
                                 border: '1px solid #d8cec4', padding: '12px 18px',
                                 borderRadius: 10, cursor: 'pointer', fontSize: 14, fontWeight: 500,
+                                flex: isMobile ? 1 : 'none',
                             }}
                         >
                             Terug
