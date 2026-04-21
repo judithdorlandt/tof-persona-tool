@@ -319,20 +319,19 @@ export default function Results({ resultData, setPage }) {
         if (!pdfFrontRef.current || !pdfBackRef.current) return;
 
         const frontCanvas = await html2canvas(pdfFrontRef.current, {
-            scale: 1.2, // was 2
+            scale: 2,
             backgroundColor: '#F7F3EE',
             useCORS: true,
         });
 
         const backCanvas = await html2canvas(pdfBackRef.current, {
-            scale: 1.2,
+            scale: 2,
             backgroundColor: '#F7F3EE',
             useCORS: true,
         });
 
-        // JPEG i.p.v. PNG
-        const frontImgData = frontCanvas.toDataURL('image/jpeg', 0.85);
-        const backImgData = backCanvas.toDataURL('image/jpeg', 0.85);
+        const frontImgData = frontCanvas.toDataURL('image/jpeg', 0.98);
+        const backImgData = backCanvas.toDataURL('image/jpeg', 0.98);
 
         const pdf = new jsPDF({
             orientation: 'portrait',
