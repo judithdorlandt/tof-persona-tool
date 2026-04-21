@@ -319,24 +319,26 @@ export default function Results({ resultData, setPage }) {
         if (!pdfFrontRef.current || !pdfBackRef.current) return;
 
         const frontCanvas = await html2canvas(pdfFrontRef.current, {
-            scale: 2,
+            scale: 1.2, // was 2
             backgroundColor: '#F7F3EE',
             useCORS: true,
         });
 
         const backCanvas = await html2canvas(pdfBackRef.current, {
-            scale: 2,
+            scale: 1.2,
             backgroundColor: '#F7F3EE',
             useCORS: true,
         });
 
-        const frontImgData = frontCanvas.toDataURL('image/png');
-        const backImgData = backCanvas.toDataURL('image/png');
+        // JPEG i.p.v. PNG
+        const frontImgData = frontCanvas.toDataURL('image/jpeg', 0.85);
+        const backImgData = backCanvas.toDataURL('image/jpeg', 0.85);
 
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
             format: 'a5',
+            compress: true,
         });
 
         const pageWidth = pdf.internal.pageSize.getWidth();
@@ -351,18 +353,25 @@ export default function Results({ resultData, setPage }) {
             ? `${firstName} - personakaart TOF.pdf`
             : 'personakaart TOF.pdf';
 
-        // iOS/Safari blokkeren pdf.save() — open als blob in nieuw tabblad als fallback
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-        if (isIOS || isSafari) {
+        try {
             const blob = pdf.output('blob');
             const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-            // Ruim de blob-URL op na kort uitstel
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.rel = 'noopener noreferrer';
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
             setTimeout(() => URL.revokeObjectURL(url), 10000);
-        } else {
+        } catch (error) {
+            console.error('PDF download failed:', error);
+
+            // fallback
             pdf.save(fileName);
         }
     };
