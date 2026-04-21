@@ -351,7 +351,20 @@ export default function Results({ resultData, setPage }) {
             ? `${firstName} - personakaart TOF.pdf`
             : 'personakaart TOF.pdf';
 
-        pdf.save(fileName);
+        // iOS/Safari blokkeren pdf.save() — open als blob in nieuw tabblad als fallback
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        if (isIOS || isSafari) {
+            const blob = pdf.output('blob');
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            // Ruim de blob-URL op na kort uitstel
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+        } else {
+            pdf.save(fileName);
+        }
     };
 
     if (!resultData) {
@@ -1187,9 +1200,8 @@ export default function Results({ resultData, setPage }) {
                         <h1
                             style={{
                                 fontFamily: "'Playfair Display', serif",
-                                fontWeight: 500,
-                                fontSize: 31,
                                 fontWeight: 400,
+                                fontSize: 31,
                                 color: '#1E1E1E',
                                 lineHeight: 1.12,
                                 margin: '0 0 12px',
