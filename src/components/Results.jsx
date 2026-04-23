@@ -318,34 +318,60 @@ export default function Results({ resultData, setPage }) {
     const downloadCardAsPDF = async () => {
         if (!pdfFrontRef.current || !pdfBackRef.current) return;
 
-        const frontCanvas = await html2canvas(pdfFrontRef.current, {
-            scale: 2,
-            backgroundColor: '#F7F3EE',
-            useCORS: true,
-        });
+        const RENDER_SCALE = 3;
+        const RENDER_WIDTH = 559;
 
-        const backCanvas = await html2canvas(pdfBackRef.current, {
-            scale: 2,
-            backgroundColor: '#F7F3EE',
+        const canvasOptions = {
+            scale: RENDER_SCALE,
+            backgroundColor: null,
             useCORS: true,
-        });
+            allowTaint: false,
+            logging: false,
+            imageTimeout: 15000,
+            windowWidth: RENDER_WIDTH,
+            width: RENDER_WIDTH,
+        };
 
-        const frontImgData = frontCanvas.toDataURL('image/jpeg', 0.98);
-        const backImgData = backCanvas.toDataURL('image/jpeg', 0.98);
+        const frontCanvas = await html2canvas(pdfFrontRef.current, canvasOptions);
+        const backCanvas = await html2canvas(pdfBackRef.current, canvasOptions);
+
+        const frontImgData = frontCanvas.toDataURL('image/jpeg', 0.95);
+        const backImgData = backCanvas.toDataURL('image/jpeg', 0.95);
 
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
             format: 'a5',
             compress: true,
+            hotfixes: ['px_scaling'],
         });
 
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
 
-        pdf.addImage(frontImgData, 'PNG', 0, 0, pageWidth, pageHeight);
+        pdf.addImage(
+            frontImgData,
+            'JPEG',
+            0,
+            0,
+            pageWidth,
+            pageHeight,
+            undefined,
+            'FAST'
+        );
+
         pdf.addPage('a5', 'portrait');
-        pdf.addImage(backImgData, 'PNG', 0, 0, pageWidth, pageHeight);
+
+        pdf.addImage(
+            backImgData,
+            'JPEG',
+            0,
+            0,
+            pageWidth,
+            pageHeight,
+            undefined,
+            'FAST'
+        );
 
         const firstName = getFirstName(resultData?.name);
         const fileName = firstName
@@ -369,8 +395,6 @@ export default function Results({ resultData, setPage }) {
             setTimeout(() => URL.revokeObjectURL(url), 10000);
         } catch (error) {
             console.error('PDF download failed:', error);
-
-            // fallback
             pdf.save(fileName);
         }
     };
