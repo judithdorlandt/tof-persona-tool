@@ -233,6 +233,33 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     })}
                 </div>
 
+                {/* ── MANAGER-STROOK ──────────────────────────────────── */}
+                {/* Discrete strook voor afdelingsmanagers die meerdere teams overzien. */}
+                <div style={{
+                    background: 'var(--tof-surface)',
+                    border: '1px solid var(--tof-border)',
+                    borderLeft: '3px solid var(--tof-accent-rose)',
+                    borderRadius: 14,
+                    padding: isMobile ? '14px 16px' : '16px 22px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 16,
+                    flexWrap: 'wrap',
+                }}>
+                    <div style={{ display: 'grid', gap: 4, minWidth: 200 }}>
+                        <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-accent-rose)' }}>
+                            Meerdere teams onder je hoede?
+                        </div>
+                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tof-text-soft)' }}>
+                            Log in als afdelingsmanager om alle dashboards in één overzicht te zien.
+                        </p>
+                    </div>
+                    <SecondaryButton onClick={() => setPage('login')}>
+                        Inloggen als manager
+                    </SecondaryButton>
+                </div>
+
                 {/* ── FOOTER NAVIGATIE ────────────────────────────────── */}
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                     <SecondaryButton onClick={() => setPage('home')}>Terug naar home</SecondaryButton>

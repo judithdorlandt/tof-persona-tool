@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
-import { hasModule2Access } from '../utils/access';
 
-export default function Nav({ page, setPage, hasResult = false }) {
+export default function Nav({
+    page,
+    setPage,
+    hasResult = false,
+    currentUser = null,
+    onLogout,
+}) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 820);
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -18,9 +23,6 @@ export default function Nav({ page, setPage, hasResult = false }) {
         }
     }, [isMobile]);
 
-    const TEAM_PAGES = ['team', 'team-insight', 'team-dynamics', 'teamintro', 'teamdashboard', 'teamdynamics', 'teamselector'];
-    const isTeamContext = TEAM_PAGES.includes(page);
-
     const baseItems = [
         { key: 'home', label: 'Home' },
         { key: 'intro', label: 'Eerst even uitleg' },
@@ -34,17 +36,20 @@ export default function Nav({ page, setPage, hasResult = false }) {
         ]
         : [];
 
-    const teamItems = [
-        { key: 'home', label: 'Home' },
-        { key: 'team-insight', label: 'Team Insight' },
-        { key: 'team-dynamics', label: 'Team Dynamics' },
-    ];
+    const managerItems = currentUser
+        ? [{ key: 'managerteams', label: 'Mijn teams' }]
+        : [];
 
-    const items = isTeamContext ? teamItems : [...baseItems, ...resultItems];
+    const items = [...baseItems, ...resultItems, ...managerItems];
 
     function handleNavigate(target) {
         setPage(target);
         setMenuOpen(false);
+    }
+
+    function handleLogoutClick() {
+        setMenuOpen(false);
+        if (typeof onLogout === 'function') onLogout();
     }
 
     return (
@@ -184,6 +189,55 @@ export default function Nav({ page, setPage, hasResult = false }) {
                                     </button>
                                 );
                             })}
+
+                            {currentUser ? (
+                                <button
+                                    type="button"
+                                    onClick={handleLogoutClick}
+                                    style={{
+                                        padding: '10px 16px',
+                                        borderRadius: 14,
+                                        border: '1px solid #E2D8CC',
+                                        background: '#FFFFFF',
+                                        color: '#7A7A7A',
+                                        cursor: 'pointer',
+                                        fontSize: 13,
+                                        fontWeight: 500,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 8,
+                                    }}
+                                    title={currentUser.email || ''}
+                                >
+                                    <span
+                                        style={{
+                                            width: 6,
+                                            height: 6,
+                                            borderRadius: '50%',
+                                            background: '#7F9A8A',
+                                            display: 'inline-block',
+                                        }}
+                                    />
+                                    Uitloggen
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => handleNavigate('login')}
+                                    style={{
+                                        padding: '10px 16px',
+                                        borderRadius: 14,
+                                        border: '1px solid #E2D8CC',
+                                        background: '#FFFFFF',
+                                        color: '#1F1F1F',
+                                        cursor: 'pointer',
+                                        fontSize: 13,
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    Inloggen
+                                </button>
+                            )}
                         </div>
                     ) : (
                         <button
@@ -240,6 +294,46 @@ export default function Nav({ page, setPage, hasResult = false }) {
                                 </button>
                             );
                         })}
+
+                        {currentUser ? (
+                            <button
+                                type="button"
+                                onClick={handleLogoutClick}
+                                style={{
+                                    width: '100%',
+                                    textAlign: 'left',
+                                    padding: '12px 14px',
+                                    borderRadius: 12,
+                                    border: '1px solid #E2D8CC',
+                                    background: '#FFFFFF',
+                                    color: '#7A7A7A',
+                                    cursor: 'pointer',
+                                    fontSize: 14,
+                                    fontWeight: 500,
+                                }}
+                            >
+                                Uitloggen ({currentUser.email})
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => handleNavigate('login')}
+                                style={{
+                                    width: '100%',
+                                    textAlign: 'left',
+                                    padding: '12px 14px',
+                                    borderRadius: 12,
+                                    border: '1px solid #E2D8CC',
+                                    background: '#FFFFFF',
+                                    color: '#1F1F1F',
+                                    cursor: 'pointer',
+                                    fontSize: 14,
+                                    fontWeight: 500,
+                                }}
+                            >
+                                Inloggen
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
