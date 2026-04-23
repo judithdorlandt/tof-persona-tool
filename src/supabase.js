@@ -27,8 +27,147 @@ function ensureSupabase() {
   return true;
 }
 
+// Helper: responses staat in schema 'private', rest in 'public'
+function responsesTable() {
+  return supabase.schema('private').from('responses');
+}
+
 // =========================
-// RESPONSES
+// AUTH
+// =========================
+
+export async function signInWithEmail(email, password) {
+  if (!ensureSupabase()) return { user: null, session: null, error: 'no_client' };
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: String(email || '').trim(),
+      password: String(password || ''),
+    });
+
+    if (error) throw error;
+
+    return {
+      user: data?.user || null,
+      session: data?.session || null,
+      error: null,
+    };
+  } catch (err) {
+    console.error('❌ Sign in error:', err?.message || err);
+    return {
+      user: null,
+      session: null,
+      error: err?.message || 'sign_in_failed',
+    };
+  }
+}
+
+export async function signOut() {
+  if (!ensureSupabase()) return { error: 'no_client' };
+
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    return { error: null };
+  } catch (err) {
+    console.error('❌ Sign out error:', err?.message || err);
+    return { error: err?.message || 'sign_out_failed' };
+  }
+}
+
+export async function getCurrentUser() {
+  if (!ensureSupabase()) return null;
+
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    return data?.user || null;
+  } catch (err) {
+    console.error('❌ Get user error:', err?.message || err);
+    return null;
+  }
+}
+
+export async function getCurrentSession() {
+  if (!ensureSupabase()) return null;
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return data?.session || null;
+  } catch (err) {
+    console.error('❌ Get session error:', err?.message || err);
+    return null;
+  }
+}
+
+export function onAuthChange(callback) {
+  if (!ensureSupabase()) return () => { };
+
+  const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    callback(event, session);
+  });
+
+  return () => {
+    data?.subscription?.unsubscribe?.();
+  };
+}
+
+// =========================
+// MEMBERSHIP
+// =========================
+
+export async function getUserMemberships(userId = null) {
+  if (!ensureSupabase()) return [];
+
+  try {
+    let resolvedUserId = userId;
+
+    if (!resolvedUserId) {
+      const user = await getCurrentUser();
+      resolvedUserId = user?.id || null;
+    }
+
+    if (!resolvedUserId) return [];
+
+    const { data, error } = await supabase
+      .from('membership')
+      .select('*')
+      .eq('user_id', resolvedUserId)
+      .order('organization', { ascending: true })
+      .order('team', { ascending: true });
+
+    if (error) throw error;
+
+    return (data || []).map((row) => ({
+      ...row,
+      organization: String(row?.organization || '').trim(),
+      team: String(row?.team || '').trim(),
+      role: row?.role ? String(row.role).trim().toLowerCase() : null,
+    }));
+  } catch (err) {
+    console.error('❌ Fetch memberships error:', err?.message || err);
+    return [];
+  }
+}
+
+export async function isUserAdmin(userId = null) {
+  const memberships = await getUserMemberships(userId);
+  return memberships.some((m) => m.role === 'admin');
+}
+
+export async function getUserAccessibleTeams(userId = null) {
+  const memberships = await getUserMemberships(userId);
+
+  return memberships.map((m) => ({
+    organization: m.organization,
+    team: m.team,
+    role: m.role,
+  }));
+}
+
+// =========================
+// RESPONSES (private schema)
 // =========================
 
 export async function saveResponse(profile) {
@@ -50,10 +189,7 @@ export async function saveResponse(profile) {
       created_at: new Date().toISOString(),
     };
 
-    const { data, error } = await supabase
-      .from('responses')
-      .insert([payload])
-      .select();
+    const { data, error } = await responsesTable().insert([payload]).select();
 
     if (error) throw error;
 
@@ -65,7 +201,7 @@ export async function saveResponse(profile) {
 }
 
 // =========================
-// FEEDBACK
+// FEEDBACK (public schema)
 // =========================
 
 export async function saveFeedback(feedback) {
@@ -118,15 +254,14 @@ export async function getAllFeedback() {
 }
 
 // =========================
-// TEAMS
+// TEAMS (responses staat in private schema)
 // =========================
 
 export async function getTeamsOverview() {
   if (!ensureSupabase()) return [];
 
   try {
-    const { data, error } = await supabase
-      .from('responses')
+    const { data, error } = await responsesTable()
       .select('organization, team, primary_archetype, created_at')
       .not('team', 'is', null)
       .order('organization', { ascending: true })
@@ -162,8 +297,7 @@ export async function getResponsesByTeam(team, organization = null) {
       return [];
     }
 
-    let query = supabase
-      .from('responses')
+    let query = responsesTable()
       .select('*')
       .eq('team', cleanTeam)
       .order('created_at', { ascending: true });
