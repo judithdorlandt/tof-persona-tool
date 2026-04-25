@@ -4,14 +4,14 @@ function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '
     return (
         <div
             style={{
-                background: 'linear-gradient(135deg, #FFFFFF 0%, #F8F3EE 100%)',
-                border: '1px solid #E8DDD2',
-                borderRadius: 20,
+                background: 'var(--tof-surface)',
+                border: '1px solid var(--tof-border)',
+                borderRadius: 18,
                 padding: 22,
                 display: 'grid',
                 gap: 10,
-                boxShadow: '0 12px 28px rgba(60, 38, 28, 0.06)',
-                minHeight: 132,
+                boxShadow: 'var(--tof-shadow)',
+                minHeight: 136,
                 alignContent: 'start',
                 position: 'relative',
                 overflow: 'hidden',
@@ -25,7 +25,6 @@ function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '
                     width: 4,
                     height: '100%',
                     background: accent,
-                    opacity: 0.95,
                 }}
             />
 
@@ -33,10 +32,10 @@ function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '
                 style={{
                     fontSize: 11,
                     textTransform: 'uppercase',
-                    letterSpacing: 1.6,
-                    color: '#8A7E76',
+                    letterSpacing: 1.8,
+                    color: 'var(--tof-text-muted)',
                     fontWeight: 700,
-                    paddingLeft: 8,
+                    paddingLeft: 10,
                 }}
             >
                 {label}
@@ -45,10 +44,11 @@ function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '
             <div
                 style={{
                     fontFamily: 'var(--tof-font-heading)',
-                    fontSize: 30,
-                    lineHeight: 1.02,
+                    fontSize: 'clamp(24px, 2.6vw, 32px)',
+                    lineHeight: 1.05,
                     color: 'var(--tof-text)',
-                    paddingLeft: 8,
+                    paddingLeft: 10,
+                    wordBreak: 'break-word',
                 }}
             >
                 {value}
@@ -58,9 +58,9 @@ function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '
                 <div
                     style={{
                         fontSize: 13,
-                        lineHeight: 1.55,
+                        lineHeight: 1.6,
                         color: 'var(--tof-text-soft)',
-                        paddingLeft: 8,
+                        paddingLeft: 10,
                     }}
                 >
                     {subtext}
@@ -71,29 +71,31 @@ function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '
 }
 
 export default function TeamStatsCards({ aggregate }) {
-    const dominant = aggregate?.sortedPersonas?.[0]?.name || '-';
-    const topNeed = aggregate?.sortedWorkplaceNeeds?.[0]?.key || '-';
+    const dominant = aggregate?.sortedPersonas?.[0]?.name || '—';
+    const topNeed = aggregate?.sortedWorkplaceNeeds?.[0]?.label
+        || aggregate?.sortedWorkplaceNeeds?.[0]?.key
+        || '—';
 
     return (
         <div
             style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
                 gap: 16,
             }}
         >
             <StatCard
-                label="Aantal reacties"
+                label="Aantal responses"
                 value={aggregate?.teamCount ?? 0}
                 accent="var(--tof-accent-rose)"
-                subtext="Aantal ingevulde profielen in dit dashboard"
+                subtext="Ingevulde profielen in dit dashboard"
             />
 
             <StatCard
                 label="Dominante werkstijl"
                 value={dominant}
                 accent="var(--tof-accent-sage)"
-                subtext="Meest aanwezige primaire werkstijl in het team"
+                subtext="Meest aanwezige primaire werkstijl"
             />
 
             <StatCard

@@ -59,13 +59,13 @@ export function getDynamics(pcts) {
       desc: creatie > structuur + 20
         ? 'Het team genereert veel ideeën maar mist ankerpunten. Zonder structuur verliest creativiteit haar landing.'
         : structuur > creatie + 20
-        ? 'Het team is sterk in uitvoering en kaders, maar kan nieuwe perspectieven mislopen.'
-        : 'Creatie en structuur houden elkaar in evenwicht — een gezonde spanning als ze bewust worden benut.',
+          ? 'Het team is sterk in uitvoering en kaders, maar kan nieuwe perspectieven mislopen.'
+          : 'Creatie en structuur houden elkaar in evenwicht — een gezonde spanning als ze bewust worden benut.',
       tension: creatie > structuur + 20
         ? 'Risico: ideeën starten maar landen niet.'
         : structuur > creatie + 20
-        ? 'Risico: bestaande kaders worden zelden uitgedaagd.'
-        : 'Let op: balans vraagt actieve verbinding tussen beide polen.',
+          ? 'Risico: bestaande kaders worden zelden uitgedaagd.'
+          : 'Let op: balans vraagt actieve verbinding tussen beide polen.',
     },
     {
       label: 'Verbinding vs Individualiteit', left: 'Verbinding', right: 'Individueel',
@@ -73,13 +73,13 @@ export function getDynamics(pcts) {
       desc: verbinding > individueel + 20
         ? 'Het team investeert sterk in relaties. Individuele prestaties kunnen daardoor onderbelicht raken.'
         : individueel > verbinding + 20
-        ? 'Het team werkt graag autonoom. Samenwerking verloopt functioneel maar zelden warm — de onderstroom blijft onbesproken.'
-        : 'Verbinding en individualiteit zijn in balans. Dat vraagt werkruimtes die beide faciliteren.',
+          ? 'Het team werkt graag autonoom. Samenwerking verloopt functioneel maar zelden warm — de onderstroom blijft onbesproken.'
+          : 'Verbinding en individualiteit zijn in balans. Dat vraagt werkruimtes die beide faciliteren.',
       tension: verbinding > individueel + 20
         ? 'Risico: conflict wordt vermeden in plaats van besproken.'
         : individueel > verbinding + 20
-        ? 'Risico: niemand signaleert wat er werkelijk speelt.'
-        : 'Blijf de balans tussen groep en individu bewust volgen.',
+          ? 'Risico: niemand signaleert wat er werkelijk speelt.'
+          : 'Blijf de balans tussen groep en individu bewust volgen.',
     },
     {
       label: 'Executie vs Reflectie', left: 'Executie', right: 'Reflectie',
@@ -87,13 +87,13 @@ export function getDynamics(pcts) {
       desc: executie > reflectie + 20
         ? 'Het team is sterk in actie en resultaat. De kwaliteitscheck achteraf is soms dunner dan gewenst.'
         : reflectie > executie + 20
-        ? 'Het team denkt grondig na. De omzetting van inzicht naar actie kost meer tijd dan nodig.'
-        : 'Actie en reflectie wisselen elkaar af — een rijp patroon, als het bewust is.',
+          ? 'Het team denkt grondig na. De omzetting van inzicht naar actie kost meer tijd dan nodig.'
+          : 'Actie en reflectie wisselen elkaar af — een rijp patroon, als het bewust is.',
       tension: executie > reflectie + 20
         ? 'Risico: snelheid gaat ten koste van kwaliteit en draagvlak.'
         : reflectie > executie + 20
-        ? 'Risico: het team analyseert terwijl de kans voorbijgaat.'
-        : 'Zorg dat reflectie leidt tot beslissing — niet tot uitstel.',
+          ? 'Risico: het team analyseert terwijl de kans voorbijgaat.'
+          : 'Zorg dat reflectie leidt tot beslissing — niet tot uitstel.',
     },
   ];
 }

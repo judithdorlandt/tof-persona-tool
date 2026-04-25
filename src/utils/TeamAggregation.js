@@ -1,4 +1,4 @@
-import { ARCHETYPES } from '../../data';
+import { ARCHETYPES } from '../data';
 
 export const WORKPLACE_KEYS = [
     'focus',

@@ -27,6 +27,7 @@ export default function Nav({
         { key: 'home', label: 'Home' },
         { key: 'intro', label: 'Eerst even uitleg' },
         { key: 'quiz', label: 'Test jezelf' },
+        { key: 'team', label: 'Teamomgeving' },
     ];
 
     const resultItems = hasResult
@@ -220,24 +221,7 @@ export default function Nav({
                                     />
                                     Uitloggen
                                 </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => handleNavigate('login')}
-                                    style={{
-                                        padding: '10px 16px',
-                                        borderRadius: 14,
-                                        border: '1px solid #E2D8CC',
-                                        background: '#FFFFFF',
-                                        color: '#1F1F1F',
-                                        cursor: 'pointer',
-                                        fontSize: 13,
-                                        fontWeight: 500,
-                                    }}
-                                >
-                                    Inloggen
-                                </button>
-                            )}
+                            ) : null}
                         </div>
                     ) : (
                         <button
@@ -314,26 +298,7 @@ export default function Nav({
                             >
                                 Uitloggen ({currentUser.email})
                             </button>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={() => handleNavigate('login')}
-                                style={{
-                                    width: '100%',
-                                    textAlign: 'left',
-                                    padding: '12px 14px',
-                                    borderRadius: 12,
-                                    border: '1px solid #E2D8CC',
-                                    background: '#FFFFFF',
-                                    color: '#1F1F1F',
-                                    cursor: 'pointer',
-                                    fontSize: 14,
-                                    fontWeight: 500,
-                                }}
-                            >
-                                Inloggen
-                            </button>
-                        )}
+                        ) : null}
                     </div>
                 )}
             </div>
