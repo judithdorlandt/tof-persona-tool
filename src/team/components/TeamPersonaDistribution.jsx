@@ -1,12 +1,28 @@
 /**
  * TeamPersonaDistribution — Werkstijlen tab
  *
+ * TWEE LAGEN, ÉÉN VERHAAL:
+ *
+ * 1. WIE ZIT ER (primair, met namen)
+ *    → aggregate.personasByPrimary
+ *    Hero met dominante primaire persona + namen.
+ *    Lijst met andere primair-aanwezige persona's.
+ *    Dit is wat een leidinggevende herkent: "deze mensen lopen rond".
+ *
+ * 2. WELKE ENERGIE DRAAGT DIT TEAM (gewogen, geen namen)
+ *    → aggregate.personasByEnergy
+ *    Subtiele balken die de tweede laag tonen: ook werkstijlen die niet
+ *    primair zijn dragen energie via secundair/tertiair.
+ *
+ * 3. WIE ECHT ONTBREEKT (count=0 én energie<5%)
+ *    → aggregate.missingPersonas
+ *    Strikte definitie zodat een persona nooit tegelijk dominant in
+ *    energie én ontbrekend kan zijn.
+ *
  * Redactioneel premium ontwerp:
- * - Eén signature-statement bovenaan (de dominante persona als titel)
- * - Asymmetrische hiërarchie: top krijgt ruimte, onderkant comprimeert
- * - Geen containers, leeft op het canvas met witte ruimte
- * - Persona-kleuren subtiel: alleen waar identiteit telt
- * - Typografie met echt contrast tussen display, body en eyebrow
+ * - Eén signature-statement bovenaan
+ * - Asymmetrische hiërarchie
+ * - Geen containers, leeft op het canvas
  */
 
 import React from 'react';
@@ -38,36 +54,19 @@ function colorFor(id) {
     return PERSONA_COLORS[id] || 'var(--tof-text)';
 }
 
-function firstName(fullName) {
-    if (!fullName) return '';
-    return String(fullName).trim().split(/\s+/)[0];
-}
-
-function firstNamesFor(personaId, members = []) {
-    return members
-        .filter((m) => m.primary === personaId)
-        .map((m) => firstName(m.name))
-        .filter((n) => n && n !== 'Onbekend')
-        .filter((n, i, arr) => arr.indexOf(n) === i);
-}
-
 export default function TeamPersonaDistribution({ aggregate }) {
     const isMobile = useIsMobile();
-    const allPersonas = aggregate?.sortedPersonas || [];
-    const members = aggregate?.members || [];
-    const teamCount = aggregate?.teamCount || 0;
 
-    const presentPersonas = allPersonas
-        .filter((p) => p.count > 0)
-        .map((p) => ({
-            ...p,
-            percentage: teamCount > 0 ? Math.round((p.count / teamCount) * 100) : 0,
-            names: firstNamesFor(p.id, members),
-        }));
+    // LAAG 1 — wie zit er primair (met namen)
+    const personasByPrimary = aggregate?.personasByPrimary || [];
 
-    const missingPersonas = allPersonas.filter((p) => p.count === 0);
+    // LAAG 2 — welke werkstijl-energie draagt het team
+    const personasByEnergy = aggregate?.personasByEnergy || [];
 
-    if (presentPersonas.length === 0) {
+    // ONTBREKEND — strikt: count=0 én energie<5%
+    const missingPersonas = aggregate?.missingPersonas || [];
+
+    if (personasByPrimary.length === 0) {
         return (
             <div style={{ padding: SPACING.lg, fontSize: 13, color: 'var(--tof-text-muted)' }}>
                 Nog geen werkstijlen beschikbaar.
@@ -75,7 +74,7 @@ export default function TeamPersonaDistribution({ aggregate }) {
         );
     }
 
-    const [hero, ...rest] = presentPersonas;
+    const [hero, ...rest] = personasByPrimary;
 
     return (
         <div
@@ -84,18 +83,23 @@ export default function TeamPersonaDistribution({ aggregate }) {
                 gap: isMobile ? SPACING.lg : SPACING['2xl'],
             }}
         >
-            {/* SIGNATURE — de dominante persona als statement */}
-            <SignatureStatement
-                persona={hero}
-                isMobile={isMobile}
-            />
+            {/* LAAG 1A — SIGNATURE: dominante primaire persona */}
+            <SignatureStatement persona={hero} isMobile={isMobile} />
 
-            {/* SECONDAIRE PERSONA'S — asymmetrisch, met afnemend gewicht */}
+            {/* LAAG 1B — andere primair-aanwezige persona's */}
             {rest.length > 0 ? (
                 <SecondaryList items={rest} isMobile={isMobile} />
             ) : null}
 
-            {/* ONTBREKEND — strategisch, op canvas, geen container */}
+            {/* LAAG 2 — werkstijl-energie van het team */}
+            {personasByEnergy.length > 0 ? (
+                <EnergyDistribution
+                    items={personasByEnergy}
+                    isMobile={isMobile}
+                />
+            ) : null}
+
+            {/* WIE ONTBREEKT — strikte definitie */}
             {missingPersonas.length > 0 ? (
                 <MissingNote missing={missingPersonas} isMobile={isMobile} />
             ) : null}
@@ -104,13 +108,11 @@ export default function TeamPersonaDistribution({ aggregate }) {
 }
 
 // =========================
-// SIGNATURE STATEMENT
+// SIGNATURE — dominante primaire persona als hero
 // =========================
-// De dominante persona als hero-statement.
-// Dit is waar het oog landt.
-
 function SignatureStatement({ persona, isMobile }) {
     const color = colorFor(persona.id);
+    const namesText = formatPeople(persona.names, persona.anonymousCount);
 
     return (
         <div
@@ -121,7 +123,6 @@ function SignatureStatement({ persona, isMobile }) {
                 borderBottom: '1px solid var(--tof-border)',
             }}
         >
-            {/* Eyebrow + percentage als zelfverzekerd statement */}
             <div
                 style={{
                     display: 'flex',
@@ -146,11 +147,10 @@ function SignatureStatement({ persona, isMobile }) {
                         fontVariantNumeric: 'tabular-nums',
                     }}
                 >
-                    {persona.percentage}% van het team
+                    {persona.countPercentage}% van het team
                 </div>
             </div>
 
-            {/* Statement-titel: persona-naam in groot Playfair */}
             <h3
                 style={{
                     margin: 0,
@@ -165,8 +165,7 @@ function SignatureStatement({ persona, isMobile }) {
                 {persona.name}
             </h3>
 
-            {/* Namen direct onder de titel */}
-            {persona.names.length > 0 ? (
+            {namesText ? (
                 <div
                     style={{
                         fontFamily: 'var(--tof-font-body)',
@@ -177,7 +176,7 @@ function SignatureStatement({ persona, isMobile }) {
                 >
                     Gedragen door{' '}
                     <span style={{ color: 'var(--tof-text)', fontWeight: 500 }}>
-                        {formatNamesNatural(persona.names)}
+                        {namesText}
                     </span>
                 </div>
             ) : null}
@@ -186,11 +185,8 @@ function SignatureStatement({ persona, isMobile }) {
 }
 
 // =========================
-// SECONDARY LIST
+// SECONDARY LIST — andere primair-aanwezige persona's
 // =========================
-// De andere aanwezige persona's. Asymmetrisch — top breder, onder smaller.
-// Geen kaarten, gewoon ritmische rijen op het canvas.
-
 function SecondaryList({ items, isMobile }) {
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
@@ -209,10 +205,7 @@ function SecondaryList({ items, isMobile }) {
                 }}
             >
                 {items.map((persona) => (
-                    <SecondaryItem
-                        key={persona.id}
-                        persona={persona}
-                    />
+                    <SecondaryItem key={persona.id} persona={persona} />
                 ))}
             </div>
         </div>
@@ -221,6 +214,7 @@ function SecondaryList({ items, isMobile }) {
 
 function SecondaryItem({ persona }) {
     const color = colorFor(persona.id);
+    const namesText = formatPeople(persona.names, persona.anonymousCount);
 
     return (
         <div
@@ -231,7 +225,6 @@ function SecondaryItem({ persona }) {
                 borderBottom: '1px solid rgba(230, 221, 210, 0.6)',
             }}
         >
-            {/* Naam + percentage */}
             <div
                 style={{
                     display: 'flex',
@@ -277,11 +270,11 @@ function SecondaryItem({ persona }) {
                         color: 'var(--tof-text-muted)',
                     }}
                 >
-                    {persona.percentage}%
+                    {persona.countPercentage}%
                 </div>
             </div>
 
-            {/* Subtiele balk */}
+            {/* Subtiele balk — maximale waarde tonen voor visuele context */}
             <div
                 style={{
                     height: 3,
@@ -292,7 +285,7 @@ function SecondaryItem({ persona }) {
             >
                 <div
                     style={{
-                        width: `${persona.percentage}%`,
+                        width: `${persona.countPercentage}%`,
                         height: '100%',
                         background: color,
                         borderRadius: RADIUS.pill,
@@ -301,8 +294,7 @@ function SecondaryItem({ persona }) {
                 />
             </div>
 
-            {/* Namen */}
-            {persona.names.length > 0 ? (
+            {namesText ? (
                 <div
                     style={{
                         fontFamily: 'var(--tof-font-body)',
@@ -311,7 +303,7 @@ function SecondaryItem({ persona }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    {formatNamesNatural(persona.names)}
+                    {namesText}
                 </div>
             ) : null}
         </div>
@@ -319,10 +311,119 @@ function SecondaryItem({ persona }) {
 }
 
 // =========================
-// MISSING NOTE
+// ENERGY DISTRIBUTION — werkstijl-energie als 2e laag
 // =========================
-// Strategisch element — wat het team mist. Geen container, redactioneel.
+// Toont alle 8 persona's met hun energie-percentage. Geen namen, want
+// energie wordt opgebouwd uit primair + secundair + tertiair gecombineerd.
+// Visueel rustiger dan de primair-lijst — dit is duiding, geen hero.
 
+function EnergyDistribution({ items, isMobile }) {
+    return (
+        <div
+            style={{
+                display: 'grid',
+                gap: SPACING.md,
+                paddingTop: isMobile ? SPACING.sm : SPACING.md,
+                borderTop: '1px solid var(--tof-border)',
+            }}
+        >
+            <div style={{ display: 'grid', gap: SPACING.xs }}>
+                <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
+                    Energie van dit team
+                </div>
+                <p
+                    style={{
+                        margin: 0,
+                        fontFamily: 'var(--tof-font-body)',
+                        fontSize: 13,
+                        lineHeight: 1.5,
+                        color: 'var(--tof-text-soft)',
+                        maxWidth: 540,
+                    }}
+                >
+                    Gewogen werkstijl-energie van alle profielen samen. Ook
+                    werkstijlen die niet primair zijn dragen bij via tweede en
+                    derde voorkeuren.
+                </p>
+            </div>
+
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: isMobile
+                        ? '1fr'
+                        : 'repeat(2, minmax(0, 1fr))',
+                    rowGap: SPACING.sm,
+                    columnGap: isMobile ? SPACING.md : SPACING.xl,
+                }}
+            >
+                {items.map((persona) => (
+                    <EnergyBar key={persona.id} persona={persona} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function EnergyBar({ persona }) {
+    const color = colorFor(persona.id);
+
+    return (
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: '110px 1fr 36px',
+                alignItems: 'center',
+                gap: SPACING.sm,
+            }}
+        >
+            <div
+                style={{
+                    fontFamily: 'var(--tof-font-body)',
+                    fontSize: 13,
+                    color: 'var(--tof-text)',
+                    fontWeight: 500,
+                }}
+            >
+                {persona.name}
+            </div>
+            <div
+                style={{
+                    height: 4,
+                    background: 'rgba(230, 221, 210, 0.5)',
+                    borderRadius: RADIUS.pill,
+                    overflow: 'hidden',
+                }}
+            >
+                <div
+                    style={{
+                        width: `${persona.energyPercentage}%`,
+                        height: '100%',
+                        background: color,
+                        opacity: 0.75,
+                        borderRadius: RADIUS.pill,
+                        transition: 'width 0.5s var(--tof-ease)',
+                    }}
+                />
+            </div>
+            <div
+                style={{
+                    fontFamily: 'var(--tof-font-body)',
+                    fontSize: 12,
+                    fontVariantNumeric: 'tabular-nums',
+                    color: 'var(--tof-text-muted)',
+                    textAlign: 'right',
+                }}
+            >
+                {persona.energyPercentage}%
+            </div>
+        </div>
+    );
+}
+
+// =========================
+// MISSING NOTE — strikte definitie uit aggregate.missingPersonas
+// =========================
 function MissingNote({ missing, isMobile }) {
     return (
         <div
@@ -407,10 +508,19 @@ function MissingNote({ missing, isMobile }) {
 // HELPERS
 // =========================
 
-// Formatteer namen als natuurlijke zin: "Maria, Doris en Thomas"
-function formatNamesNatural(names) {
-    if (names.length === 0) return '';
-    if (names.length === 1) return names[0];
-    if (names.length === 2) return `${names[0]} en ${names[1]}`;
-    return `${names.slice(0, -1).join(', ')} en ${names[names.length - 1]}`;
+// Combineer namen met aantal anonieme respondenten.
+// Voorbeelden:
+//   ["Maria","Doris","Thomas"], 0 → "Maria, Doris en Thomas"
+//   ["Karel","Henk"], 1         → "Karel, Henk en 1 anoniem"
+//   [], 1                       → "1 anoniem"
+//   [], 3                       → "3 anoniem"
+function formatPeople(names = [], anonymousCount = 0) {
+    const parts = [...names];
+    if (anonymousCount > 0) {
+        parts.push(`${anonymousCount} anoniem`);
+    }
+    if (parts.length === 0) return '';
+    if (parts.length === 1) return parts[0];
+    if (parts.length === 2) return `${parts[0]} en ${parts[1]}`;
+    return `${parts.slice(0, -1).join(', ')} en ${parts[parts.length - 1]}`;
 }

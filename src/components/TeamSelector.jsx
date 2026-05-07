@@ -4,6 +4,7 @@ import {
     hasFullTeamAccess,
     getStoredTeamAccess,
     isMakerAccess,
+    isAdminAccess,
 } from '../utils/access';
 import {
     PageShell,
@@ -428,7 +429,7 @@ export default function TeamSelector({
         setPage('teamdashboard');
     }
 
-    if (!hasFullTeamAccess() && !makerMode) {
+    if (!hasFullTeamAccess() && !makerMode && !isAdminAccess()) {
         return (
             <PageShell padding="20px 16px 32px">
                 <SectionCard padding={28}>

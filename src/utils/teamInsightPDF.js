@@ -1,10 +1,11 @@
 /**
  * teamInsightPDF.js
  *
- * Genereert een A5 portrait PDF van de team-insight als deliverable.
- * Vector-output via SVG → PDF (jsPDF + svg2pdf.js) met embedded fonts.
+ * Genereert een A3 portrait poster (twee pagina's) van de team-insight als
+ * deliverable. Vector-output via SVG → PDF (jsPDF + svg2pdf.js) met
+ * embedded fonts.
  *
- * Output: Demo Team 3 - teaminzicht TOF.pdf
+ * Output: <Team> - teaminzicht TOF.pdf
  */
 
 import jsPDF from 'jspdf';
@@ -12,15 +13,15 @@ import { svg2pdf } from 'svg2pdf.js';
 import tofLogo from '../assets/tof-logo.png';
 
 // =========================
-// CONSTANTEN
+// CONSTANTEN — A3 PORTRAIT
 // =========================
 
-// A5 portrait in mm
-const PAGE_W = 148;
-const PAGE_H = 210;
+// A3 portrait in mm
+const PAGE_W = 297;
+const PAGE_H = 420;
 
-// Marges
-const MARGIN = 12;
+// Marges — proportioneel ruimer dan A5
+const MARGIN = 24;
 
 // Kleuren (gelijk aan UI)
 const COLOR = {
@@ -50,39 +51,26 @@ const PERSONA_COLORS = {
 // PUBLIC API
 // =========================
 
-/**
- * Genereer en download de team-insight PDF.
- *
- * @param {Object} args
- * @param {Object} args.aggregate    Output van buildTeamAggregate
- * @param {Object} args.insights     Output van buildTeamInsights
- * @param {string} args.teamName     Bv "Demo Team 3"
- * @param {string} args.organization Bv "TOF"
- */
 export async function generateTeamInsightPDF({
     aggregate,
     insights,
     teamName = 'Team',
     organization = '',
 }) {
-    // 1. Bouw beide SVG's
     const svgVoorkant = buildVoorkantSVG({ aggregate, insights, teamName, organization });
     const svgAchterkant = buildAchterkantSVG({ aggregate, insights, teamName, organization });
 
-    // Voeg tijdelijk toe aan body zodat svg2pdf het kan lezen
     document.body.appendChild(svgVoorkant);
     document.body.appendChild(svgAchterkant);
 
     try {
-        // 2. Maak nieuwe PDF — A5 portrait, mm
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a5',
+            format: 'a3',
             compress: true,
         });
 
-        // 3. Voorkant
         await svg2pdf(svgVoorkant, pdf, {
             x: 0,
             y: 0,
@@ -90,8 +78,7 @@ export async function generateTeamInsightPDF({
             height: PAGE_H,
         });
 
-        // 4. Nieuwe pagina + achterkant
-        pdf.addPage('a5', 'portrait');
+        pdf.addPage('a3', 'portrait');
         await svg2pdf(svgAchterkant, pdf, {
             x: 0,
             y: 0,
@@ -99,7 +86,6 @@ export async function generateTeamInsightPDF({
             height: PAGE_H,
         });
 
-        // 5. Download
         const safeName = (teamName || 'team')
             .replace(/[^\w\s-]/g, '')
             .trim()
@@ -117,41 +103,27 @@ export async function generateTeamInsightPDF({
 // =========================
 
 function buildVoorkantSVG({ aggregate, insights, teamName, organization }) {
-    const SVG_NS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('xmlns', SVG_NS);
-    svg.setAttribute('width', `${PAGE_W}mm`);
-    svg.setAttribute('height', `${PAGE_H}mm`);
-    svg.setAttribute('viewBox', `0 0 ${PAGE_W} ${PAGE_H}`);
-    // Verberg tijdens generatie zonder display:none (svg2pdf moet kunnen meten)
-    svg.style.position = 'fixed';
-    svg.style.top = '-99999px';
-    svg.style.left = '-99999px';
+    const svg = createSVGCanvas();
+    svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
-    // Achtergrond
-    const bg = createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg);
-    svg.appendChild(bg);
-
-    // Bouw secties van boven naar beneden
     let y = MARGIN;
 
     y = drawHeader({ svg, y, teamName, organization, aggregate });
-    y += 6;
+    y += 12;
     y = drawHero({ svg, y, aggregate, insights });
-    y += 6;
+    y += 12;
     y = drawDivider({ svg, y });
-    y += 5;
+    y += 10;
     y = drawDistributionAndMix({ svg, y, aggregate });
-    y += 5;
+    y += 10;
     y = drawDivider({ svg, y });
-    y += 5;
+    y += 10;
     y = drawSignature({ svg, y, aggregate, insights });
-    y += 5;
+    y += 10;
     y = drawDivider({ svg, y });
-    y += 5;
+    y += 10;
     drawLeeglopers({ svg, y, insights });
 
-    // Footer "→ ZIE ACHTERKANT"
     drawFooterHint({ svg });
 
     return svg;
@@ -162,325 +134,54 @@ function buildVoorkantSVG({ aggregate, insights, teamName, organization }) {
 // =========================
 
 function buildAchterkantSVG({ aggregate, insights, teamName, organization }) {
-    const SVG_NS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('xmlns', SVG_NS);
-    svg.setAttribute('width', `${PAGE_W}mm`);
-    svg.setAttribute('height', `${PAGE_H}mm`);
-    svg.setAttribute('viewBox', `0 0 ${PAGE_W} ${PAGE_H}`);
-    svg.style.position = 'fixed';
-    svg.style.top = '-99999px';
-    svg.style.left = '-99999px';
-
-    // Achtergrond
+    const svg = createSVGCanvas();
     svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
     let y = MARGIN;
 
-    // Header
     y = drawAchterkantHeader({ svg, y });
-    y += 6;
-
-    // Titel
+    y += 12;
     y = drawAchterkantTitle({ svg, y });
-    y += 5;
-
-    // Werkplekbehoefte (compacte 1-regel-stijl, alle 9)
+    y += 10;
     y = drawWorkplaceCompact({ svg, y, aggregate });
-    y += 5;
+    y += 10;
+    drawQuickWinsCompact({ svg, y, insights });
 
-    // Quick wins
-    y = drawQuickWinsCompact({ svg, y, insights });
-
-    // Footer met citaat + logo
     drawAchterkantFooter({ svg });
 
     return svg;
 }
 
-// Header: pill linksboven, logo rechtsboven
-function drawAchterkantHeader({ svg, y }) {
-    const pillW = 60;
-    const pillH = 6;
-
-    const pill = createRect(MARGIN, y, pillW, pillH, COLOR.sage);
-    pill.setAttribute('rx', '3');
-    pill.setAttribute('ry', '3');
-    svg.appendChild(pill);
-
-    svg.appendChild(createCircle(MARGIN + 3, y + pillH / 2, 0.7, '#FFFFFF'));
-
-    svg.appendChild(createText({
-        x: MARGIN + 5.5,
-        y: y + pillH / 2 + 1,
-        text: 'JOUW IDEALE WERKPLEKMIX',
-        font: 'Inter',
-        weight: 700,
-        size: 2.6,
-        color: '#FFFFFF',
-        letterSpacing: 0.3,
-    }));
-
-    drawTOFMark(svg, PAGE_W - MARGIN - 6, y + 1, 5);
-
-    return y + pillH;
-}
-
-// Titel: "Wat dit team vraagt van de werkomgeving"
-function drawAchterkantTitle({ svg, y }) {
-    const titleY = y + 8;
-
-    svg.appendChild(createText({
-        x: MARGIN,
-        y: titleY,
-        text: 'Wat dit team vraagt van de werkomgeving',
-        font: 'Playfair Display',
-        weight: 500,
-        size: 6,
-        color: COLOR.text,
-    }));
-
-    return titleY;
-}
-
-// Werkplekbehoefte: alle 9 in compacte 1-regel stijl
-function drawWorkplaceCompact({ svg, y, aggregate }) {
-    const items = (aggregate?.sortedWorkplaceNeeds || []).slice();
-    if (items.length === 0) return y;
-
-    // Bereken percentages
-    const total = items.reduce((sum, item) => sum + Number(item.value || item.count || 0), 0);
-    const enriched = items.map((item) => {
-        const value = Number(item.value || item.count || 0);
-        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-        return { ...item, percentage };
-    });
-
-    const averagePct = enriched.length > 0 ? 100 / enriched.length : 0;
-
-    // Eyebrow
-    svg.appendChild(createText({
-        x: MARGIN,
-        y: y + 4,
-        text: 'WERKPLEKBEHOEFTE',
-        font: 'Inter',
-        weight: 700,
-        size: 2.4,
-        color: COLOR.textMuted,
-        letterSpacing: 0.4,
-    }));
-
-    // Twee-koloms layout
-    const totalWidth = PAGE_W - MARGIN * 2;
-    const gap = 8;
-    const colWidth = (totalWidth - gap) / 2;
-    const colLeftX = MARGIN;
-    const colRightX = MARGIN + colWidth + gap;
-
-    const lineHeight = 6;
-    const startY = y + 9;
-
-    // Verdeel items: linker kolom heeft helft (afgerond naar boven)
-    const halfPoint = Math.ceil(enriched.length / 2);
-    const leftItems = enriched.slice(0, halfPoint);
-    const rightItems = enriched.slice(halfPoint);
-
-    function drawColumn(items, x, w) {
-        let lineY = startY;
-        items.forEach((item) => {
-            const isAbove = item.percentage >= averagePct;
-            const accent = isAbove ? COLOR.sage : COLOR.rose;
-
-            // Label
-            svg.appendChild(createText({
-                x: x,
-                y: lineY,
-                text: item.label,
-                font: 'Inter',
-                weight: 500,
-                size: 2.8,
-                color: COLOR.text,
-            }));
-
-            // Percentage rechts in kolom
-            svg.appendChild(createText({
-                x: x + w,
-                y: lineY,
-                text: `${item.percentage}%`,
-                font: 'Inter',
-                weight: 600,
-                size: 2.8,
-                color: COLOR.textMuted,
-                anchor: 'end',
-            }));
-
-            // Dunne balk eronder
-            const barY = lineY + 1.3;
-            const barH = 0.7;
-
-            svg.appendChild(createRect(x, barY, w, barH, '#EADFD4'));
-            if (item.percentage > 0) {
-                svg.appendChild(createRect(x, barY, w * (item.percentage / 100), barH, accent));
-            }
-
-            lineY += lineHeight;
-        });
-        return lineY;
-    }
-
-    const leftEnd = drawColumn(leftItems, colLeftX, colWidth);
-    const rightEnd = drawColumn(rightItems, colRightX, colWidth);
-
-    return Math.max(leftEnd, rightEnd);
-}
-
-// Quick wins compact
-function drawQuickWinsCompact({ svg, y, insights }) {
-    const wins = insights?.quickWins || [];
-    if (wins.length === 0) return y;
-
-    // Eyebrow
-    svg.appendChild(createText({
-        x: MARGIN,
-        y: y + 4,
-        text: `${wins.length === 1 ? 'EÉN ACTIE' : wins.length + ' ACTIES'} VOOR MORGEN`,
-        font: 'Inter',
-        weight: 700,
-        size: 2.4,
-        color: COLOR.textMuted,
-        letterSpacing: 0.4,
-    }));
-
-    const SOURCE_LABELS = {
-        werkstijlen: 'UIT WERKSTIJLEN',
-        werkplek: 'UIT WERKPLEK',
-        spanning: 'UIT SPANNING',
-        minderheid: 'UIT MINDERHEID',
-        ontbrekend: 'UIT ONTBREKEND',
-        reflectie: 'REFLECTIE',
-    };
-
-    let lineY = y + 9;
-
-    wins.forEach((win, index) => {
-        const item = typeof win === 'string'
-            ? { source: 'reflectie', action: win }
-            : win;
-        const label = SOURCE_LABELS[item.source] || 'REFLECTIE';
-
-        // Nummer (Playfair)
-        svg.appendChild(createText({
-            x: MARGIN,
-            y: lineY + 0.5,
-            text: String(index + 1).padStart(2, '0'),
-            font: 'Playfair Display',
-            weight: 500,
-            size: 4,
-            color: COLOR.sage,
-        }));
-
-        // Source label
-        svg.appendChild(createText({
-            x: MARGIN + 8,
-            y: lineY,
-            text: label,
-            font: 'Inter',
-            weight: 700,
-            size: 2.2,
-            color: COLOR.sage,
-            letterSpacing: 0.4,
-        }));
-
-        // Actie-tekst (wrap)
-        const actionLines = wrapText(item.action, PAGE_W - MARGIN * 2 - 8, 2.8, 'Inter');
-        actionLines.forEach((line, i) => {
-            svg.appendChild(createText({
-                x: MARGIN + 8,
-                y: lineY + 3.5 + i * 3.5,
-                text: line,
-                font: 'Inter',
-                weight: 400,
-                size: 2.8,
-                color: COLOR.text,
-            }));
-        });
-
-        lineY += 3.5 + actionLines.length * 3.5 + 2;
-    });
-
-    return lineY;
-}
-
-// Footer met citaat + logo + tagline (zoals personakaart)
-function drawAchterkantFooter({ svg }) {
-    const footerY = PAGE_H - 30;
-
-    // Citaat — gecentreerd, italic Playfair
-    svg.appendChild(createText({
-        x: PAGE_W / 2,
-        y: footerY,
-        text: '"Een team dat zichzelf herkent, beweegt sneller."',
-        font: 'Playfair Display',
-        weight: 500,
-        size: 3.4,
-        color: COLOR.textSoft,
-        anchor: 'middle',
-        italic: true,
-    }));
-
-    // Logo midden — groter dan in de header
-    const logoSize = 8;
-    drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 5, logoSize);
-
-    // Tagline op één regel
-    svg.appendChild(createText({
-        x: PAGE_W / 2,
-        y: footerY + 18,
-        text: 'Helping teams understand their workplace through insight, design and movement.',
-        font: 'Inter',
-        weight: 400,
-        size: 2.4,
-        color: COLOR.textMuted,
-        anchor: 'middle',
-    }));
-}
-
 // =========================
-// SECTIES
+// SECTIES — VOORKANT
 // =========================
 
-// HEADER: pill linksboven, logo rechtsboven, team-meta eronder
 function drawHeader({ svg, y, teamName, organization, aggregate }) {
-    const pillW = 40;
-    const pillH = 6;
+    const pillW = 80;
+    const pillH = 12;
     const pillY = y;
 
-    // Pill achtergrond — sage met lichte tekst
     const pill = createRect(MARGIN, pillY, pillW, pillH, COLOR.sage);
-    pill.setAttribute('rx', '3');
-    pill.setAttribute('ry', '3');
+    pill.setAttribute('rx', '6');
+    pill.setAttribute('ry', '6');
     svg.appendChild(pill);
 
-    // Pill stip
-    svg.appendChild(createCircle(MARGIN + 3, pillY + pillH / 2, 0.7, '#FFFFFF'));
+    svg.appendChild(createCircle(MARGIN + 6, pillY + pillH / 2, 1.4, '#FFFFFF'));
 
-    // Pill tekst
     svg.appendChild(createText({
-        x: MARGIN + 5.5,
-        y: pillY + pillH / 2 + 1,
+        x: MARGIN + 11,
+        y: pillY + pillH / 2 + 2,
         text: 'TEAMINZICHT',
         font: 'Inter',
         weight: 700,
-        size: 2.6,
+        size: 5.2,
         color: '#FFFFFF',
-        letterSpacing: 0.3,
+        letterSpacing: 0.6,
     }));
 
-    // Logo rechtsboven (TOF-mark)
-    drawTOFMark(svg, PAGE_W - MARGIN - 6, pillY + 1, 5);
+    drawTOFMark(svg, PAGE_W - MARGIN - 12, pillY + 2, 10);
 
-    // Team-meta regel
-    const metaY = pillY + pillH + 8;
+    const metaY = pillY + pillH + 16;
     const metaText = `${teamName}${organization ? ' · ' + organization : ''}`;
     svg.appendChild(createText({
         x: MARGIN,
@@ -488,11 +189,10 @@ function drawHeader({ svg, y, teamName, organization, aggregate }) {
         text: metaText,
         font: 'Inter',
         weight: 400,
-        size: 3,
+        size: 6,
         color: COLOR.textMuted,
     }));
 
-    // Datum rechts
     const today = new Date();
     const dateText = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
     svg.appendChild(createText({
@@ -501,7 +201,7 @@ function drawHeader({ svg, y, teamName, organization, aggregate }) {
         text: dateText,
         font: 'Inter',
         weight: 400,
-        size: 3,
+        size: 6,
         color: COLOR.textMuted,
         anchor: 'end',
     }));
@@ -509,7 +209,6 @@ function drawHeader({ svg, y, teamName, organization, aggregate }) {
     return metaY;
 }
 
-// HERO: dominante werkstijl als statement
 function drawHero({ svg, y, aggregate, insights }) {
     const top = aggregate?.sortedPersonas?.[0];
     if (!top) return y;
@@ -517,11 +216,10 @@ function drawHero({ svg, y, aggregate, insights }) {
     const teamCount = aggregate?.teamCount || 0;
     const personaColor = PERSONA_COLORS[top.id] || COLOR.text;
 
-    const fontSize = 8;
-    const lineH = 9;
+    const fontSize = 16;
+    const lineH = 18;
 
-    // Regel 1: "Jouw dominante teamwerkstijl is:"
-    const titleY = y + 11;
+    const titleY = y + 22;
     svg.appendChild(createText({
         x: MARGIN,
         y: titleY,
@@ -532,7 +230,6 @@ function drawHero({ svg, y, aggregate, insights }) {
         color: COLOR.text,
     }));
 
-    // Regel 2: alleen persona-naam in persona-kleur + italic
     const line2Y = titleY + lineH;
     svg.appendChild(createText({
         x: MARGIN,
@@ -545,8 +242,7 @@ function drawHero({ svg, y, aggregate, insights }) {
         italic: true,
     }));
 
-    // Headline-zin
-    const subY = line2Y + 7;
+    const subY = line2Y + 14;
     const headline = insights?.headline || `Het team werkt vanuit ${top.name.toLowerCase()}.`;
     drawWrappedText({
         svg,
@@ -556,14 +252,13 @@ function drawHero({ svg, y, aggregate, insights }) {
         text: headline,
         font: 'Inter',
         weight: 400,
-        size: 3.2,
+        size: 6.4,
         color: COLOR.textSoft,
-        lineHeight: 4.4,
+        lineHeight: 8.8,
     });
 
-    // Meta onder lead
-    const headlineLines = wrapText(headline, PAGE_W - MARGIN * 2, 3.2, 'Inter');
-    const metaY = subY + headlineLines.length * 4.4 + 3;
+    const headlineLines = wrapText(headline, PAGE_W - MARGIN * 2, 6.4, 'Inter');
+    const metaY = subY + headlineLines.length * 8.8 + 6;
     const reliability = buildReliabilityLabel(teamCount);
     const metaLine = `${teamCount} respons${teamCount === 1 ? '' : 'en'}${reliability ? ' · ' + reliability : ''}`;
     svg.appendChild(createText({
@@ -572,45 +267,42 @@ function drawHero({ svg, y, aggregate, insights }) {
         text: metaLine,
         font: 'Inter',
         weight: 400,
-        size: 2.6,
+        size: 5.2,
         color: COLOR.textMuted,
     }));
 
     return metaY;
 }
 
-// VERDELING + MIX — twee kolommen
 function drawDistributionAndMix({ svg, y, aggregate }) {
     const totalWidth = PAGE_W - MARGIN * 2;
-    const gap = 12;
+    const gap = 24;
     const colWidth = (totalWidth - gap) / 2;
     const colLeftX = MARGIN;
     const colRightX = MARGIN + colWidth + gap;
 
-    // Eyebrows
     svg.appendChild(createText({
         x: colLeftX,
-        y: y + 3,
+        y: y + 6,
         text: 'VERDELING',
         font: 'Inter',
         weight: 700,
-        size: 2.4,
+        size: 4.8,
         color: COLOR.textMuted,
-        letterSpacing: 0.4,
+        letterSpacing: 0.8,
     }));
 
     svg.appendChild(createText({
         x: colRightX,
-        y: y + 3,
+        y: y + 6,
         text: 'JOUW TEAM-MIX',
         font: 'Inter',
         weight: 700,
-        size: 2.4,
+        size: 4.8,
         color: COLOR.textMuted,
-        letterSpacing: 0.4,
+        letterSpacing: 0.8,
     }));
 
-    // Linkerkolom: alle 8 persona's met balken
     const teamCount = aggregate?.teamCount || 0;
     const ARCHETYPE_ORDER = ['maker', 'groeier', 'presteerder', 'denker', 'verbinder', 'teamspeler', 'zekerzoeker', 'vernieuwer'];
     const personasMap = {};
@@ -618,8 +310,8 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
         personasMap[p.id] = p;
     });
 
-    let lineY = y + 8;
-    const lineHeight = 6;
+    let lineY = y + 16;
+    const lineHeight = 12;
 
     ARCHETYPE_ORDER.forEach((id) => {
         const p = personasMap[id];
@@ -627,32 +319,29 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
         const pct = teamCount > 0 ? Math.round((p.count / teamCount) * 100) : 0;
         const color = PERSONA_COLORS[id];
 
-        // Naam links
         svg.appendChild(createText({
             x: colLeftX,
             y: lineY,
             text: p.name,
             font: 'Inter',
             weight: 600,
-            size: 2.8,
+            size: 5.6,
             color: pct === 0 ? COLOR.textMuted : COLOR.text,
         }));
 
-        // Percentage rechts in kolom
         svg.appendChild(createText({
             x: colLeftX + colWidth,
             y: lineY,
             text: `${pct}%`,
             font: 'Inter',
             weight: 600,
-            size: 2.8,
+            size: 5.6,
             color: COLOR.textMuted,
             anchor: 'end',
         }));
 
-        // Balk eronder
-        const barY = lineY + 1.2;
-        const barH = 1;
+        const barY = lineY + 2.4;
+        const barH = 2;
         const barTrackW = colWidth;
 
         svg.appendChild(createRect(colLeftX, barY, barTrackW, barH, '#EADFD4'));
@@ -663,29 +352,26 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
         lineY += lineHeight;
     });
 
-    // Rechterkolom: top 2-3 persona's met namen
     const topPresent = (aggregate?.sortedPersonas || [])
         .filter((p) => p.count > 0)
         .slice(0, 3);
 
-    let mixY = y + 8;
+    let mixY = y + 16;
     const members = aggregate?.members || [];
 
     topPresent.forEach((p) => {
         const color = PERSONA_COLORS[p.id];
 
-        // Persona-naam (klein in kleur)
         svg.appendChild(createText({
             x: colRightX,
             y: mixY,
             text: p.name,
             font: 'Playfair Display',
             weight: 500,
-            size: 3.6,
+            size: 7.2,
             color: color,
         }));
 
-        // Voornamen
         const names = members
             .filter((m) => m.primary === p.id)
             .map((m) => firstName(m.name))
@@ -695,62 +381,58 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
         const namesText = formatNamesNatural(names);
 
         if (namesText) {
-            const namesLines = wrapText(namesText, colWidth, 2.6, 'Inter');
+            const namesLines = wrapText(namesText, colWidth, 5.2, 'Inter');
             namesLines.forEach((line, i) => {
                 svg.appendChild(createText({
                     x: colRightX,
-                    y: mixY + 4 + i * 3.5,
+                    y: mixY + 8 + i * 7,
                     text: line,
                     font: 'Inter',
                     weight: 400,
-                    size: 2.6,
+                    size: 5.2,
                     color: COLOR.textSoft,
                 }));
             });
-            mixY += 4 + namesLines.length * 3.5 + 3;
+            mixY += 8 + namesLines.length * 7 + 6;
         } else {
-            mixY += 8;
+            mixY += 16;
         }
     });
 
     return Math.max(lineY, mixY);
 }
 
-// SIGNATURE: wat dit team in beweging brengt
 function drawSignature({ svg, y, aggregate, insights }) {
     svg.appendChild(createText({
         x: MARGIN,
-        y: y + 3,
+        y: y + 6,
         text: 'WAT DIT TEAM IN BEWEGING BRENGT',
         font: 'Inter',
         weight: 700,
-        size: 2.4,
+        size: 4.8,
         color: COLOR.textMuted,
-        letterSpacing: 0.4,
+        letterSpacing: 0.8,
     }));
 
-    // Dynamische zin op basis van top-2 persona's
     const signatureSentence = buildSignatureSentence(aggregate);
 
     svg.appendChild(createText({
         x: MARGIN,
-        y: y + 9,
+        y: y + 18,
         text: signatureSentence,
         font: 'Playfair Display',
         weight: 500,
-        size: 4,
+        size: 8,
         color: COLOR.text,
         italic: true,
     }));
 
-    return y + 9 + 6;
+    return y + 18 + 12;
 }
 
-// Bouw signature-zin op basis van top-2 persona's
 function buildSignatureSentence(aggregate) {
     const top = (aggregate?.sortedPersonas || []).filter((p) => p.count > 0);
 
-    // Wat brengt elke persona?
     const PERSONA_DRIVE = {
         maker: 'maken',
         groeier: 'ontwikkeling',
@@ -779,66 +461,282 @@ function capitalize(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-// LEEGLOPERS: 3 team-specifieke triggers
 function drawLeeglopers({ svg, y, insights }) {
     svg.appendChild(createText({
         x: MARGIN,
-        y: y + 3,
+        y: y + 6,
         text: 'WAAR HET TEAM OP LEEGLOOPT',
         font: 'Inter',
         weight: 700,
-        size: 2.4,
+        size: 4.8,
         color: COLOR.textMuted,
-        letterSpacing: 0.4,
+        letterSpacing: 0.8,
     }));
 
     const leeglopers = buildLeeglopers(insights);
 
-    let lineY = y + 9;
+    let lineY = y + 18;
     leeglopers.forEach((tekst) => {
-        // Dot als bullet
-        svg.appendChild(createCircle(MARGIN + 1, lineY - 1, 0.5, COLOR.rose));
+        svg.appendChild(createCircle(MARGIN + 2, lineY - 2, 1, COLOR.rose));
 
         svg.appendChild(createText({
-            x: MARGIN + 4,
+            x: MARGIN + 8,
             y: lineY,
             text: tekst,
             font: 'Inter',
             weight: 400,
-            size: 3,
+            size: 6,
             color: COLOR.text,
         }));
 
-        lineY += 5.5;
+        lineY += 11;
     });
 }
 
-// FOOTER: hint naar achterkant rechtsonder
 function drawFooterHint({ svg }) {
     svg.appendChild(createText({
         x: PAGE_W - MARGIN,
-        y: PAGE_H - 6,
+        y: PAGE_H - 12,
         text: 'ZIE ACHTERKANT',
         font: 'Inter',
         weight: 700,
-        size: 2.4,
+        size: 4.8,
         color: COLOR.textMuted,
-        letterSpacing: 0.4,
+        letterSpacing: 0.8,
         anchor: 'end',
     }));
 }
 
-// DIVIDER: dunne lijn
-function drawDivider({ svg, y }) {
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', MARGIN);
-    line.setAttribute('y1', y);
-    line.setAttribute('x2', PAGE_W - MARGIN);
-    line.setAttribute('y2', y);
-    line.setAttribute('stroke', COLOR.border);
-    line.setAttribute('stroke-width', '0.2');
-    svg.appendChild(line);
-    return y;
+// =========================
+// SECTIES — ACHTERKANT
+// =========================
+
+function drawAchterkantHeader({ svg, y }) {
+    const pillW = 120;
+    const pillH = 12;
+
+    const pill = createRect(MARGIN, y, pillW, pillH, COLOR.sage);
+    pill.setAttribute('rx', '6');
+    pill.setAttribute('ry', '6');
+    svg.appendChild(pill);
+
+    svg.appendChild(createCircle(MARGIN + 6, y + pillH / 2, 1.4, '#FFFFFF'));
+
+    svg.appendChild(createText({
+        x: MARGIN + 11,
+        y: y + pillH / 2 + 2,
+        text: 'JOUW IDEALE WERKPLEKMIX',
+        font: 'Inter',
+        weight: 700,
+        size: 5.2,
+        color: '#FFFFFF',
+        letterSpacing: 0.6,
+    }));
+
+    drawTOFMark(svg, PAGE_W - MARGIN - 12, y + 2, 10);
+
+    return y + pillH;
+}
+
+function drawAchterkantTitle({ svg, y }) {
+    const titleY = y + 16;
+    svg.appendChild(createText({
+        x: MARGIN,
+        y: titleY,
+        text: 'Wat dit team vraagt van de werkomgeving',
+        font: 'Playfair Display',
+        weight: 500,
+        size: 12,
+        color: COLOR.text,
+    }));
+    return titleY;
+}
+
+function drawWorkplaceCompact({ svg, y, aggregate }) {
+    const items = (aggregate?.sortedWorkplaceNeeds || []).slice();
+    if (items.length === 0) return y;
+
+    const total = items.reduce((sum, item) => sum + Number(item.value || item.count || 0), 0);
+    const enriched = items.map((item) => {
+        const value = Number(item.value || item.count || 0);
+        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+        return { ...item, percentage };
+    });
+
+    const averagePct = enriched.length > 0 ? 100 / enriched.length : 0;
+
+    svg.appendChild(createText({
+        x: MARGIN,
+        y: y + 8,
+        text: 'WERKPLEKBEHOEFTE',
+        font: 'Inter',
+        weight: 700,
+        size: 4.8,
+        color: COLOR.textMuted,
+        letterSpacing: 0.8,
+    }));
+
+    const totalWidth = PAGE_W - MARGIN * 2;
+    const gap = 16;
+    const colWidth = (totalWidth - gap) / 2;
+    const colLeftX = MARGIN;
+    const colRightX = MARGIN + colWidth + gap;
+
+    const lineHeight = 12;
+    const startY = y + 20;
+
+    const halfPoint = Math.ceil(enriched.length / 2);
+    const leftItems = enriched.slice(0, halfPoint);
+    const rightItems = enriched.slice(halfPoint);
+
+    function drawColumn(items, x, w) {
+        let lineY = startY;
+        items.forEach((item) => {
+            const isAbove = item.percentage >= averagePct;
+            const accent = isAbove ? COLOR.sage : COLOR.rose;
+
+            svg.appendChild(createText({
+                x: x,
+                y: lineY,
+                text: item.label,
+                font: 'Inter',
+                weight: 500,
+                size: 5.6,
+                color: COLOR.text,
+            }));
+
+            svg.appendChild(createText({
+                x: x + w,
+                y: lineY,
+                text: `${item.percentage}%`,
+                font: 'Inter',
+                weight: 600,
+                size: 5.6,
+                color: COLOR.textMuted,
+                anchor: 'end',
+            }));
+
+            const barY = lineY + 2.6;
+            const barH = 1.4;
+
+            svg.appendChild(createRect(x, barY, w, barH, '#EADFD4'));
+            if (item.percentage > 0) {
+                svg.appendChild(createRect(x, barY, w * (item.percentage / 100), barH, accent));
+            }
+
+            lineY += lineHeight;
+        });
+        return lineY;
+    }
+
+    const leftEnd = drawColumn(leftItems, colLeftX, colWidth);
+    const rightEnd = drawColumn(rightItems, colRightX, colWidth);
+
+    return Math.max(leftEnd, rightEnd);
+}
+
+function drawQuickWinsCompact({ svg, y, insights }) {
+    const wins = insights?.quickWins || [];
+    if (wins.length === 0) return y;
+
+    svg.appendChild(createText({
+        x: MARGIN,
+        y: y + 8,
+        text: `${wins.length === 1 ? 'EÉN ACTIE' : wins.length + ' ACTIES'} VOOR MORGEN`,
+        font: 'Inter',
+        weight: 700,
+        size: 4.8,
+        color: COLOR.textMuted,
+        letterSpacing: 0.8,
+    }));
+
+    const SOURCE_LABELS = {
+        werkstijlen: 'UIT WERKSTIJLEN',
+        werkplek: 'UIT WERKPLEK',
+        spanning: 'UIT SPANNING',
+        minderheid: 'UIT MINDERHEID',
+        ontbrekend: 'UIT ONTBREKEND',
+        reflectie: 'REFLECTIE',
+    };
+
+    let lineY = y + 20;
+    const numberColW = 16;
+    const usableW = PAGE_W - MARGIN * 2 - numberColW;
+
+    wins.forEach((win, index) => {
+        const item = typeof win === 'string'
+            ? { source: 'reflectie', action: win }
+            : win;
+        const label = SOURCE_LABELS[item.source] || 'REFLECTIE';
+
+        svg.appendChild(createText({
+            x: MARGIN,
+            y: lineY + 1,
+            text: String(index + 1).padStart(2, '0'),
+            font: 'Playfair Display',
+            weight: 500,
+            size: 8,
+            color: COLOR.sage,
+        }));
+
+        svg.appendChild(createText({
+            x: MARGIN + numberColW,
+            y: lineY,
+            text: label,
+            font: 'Inter',
+            weight: 700,
+            size: 4.4,
+            color: COLOR.sage,
+            letterSpacing: 0.8,
+        }));
+
+        const actionLines = wrapText(item.action, usableW, 5.6, 'Inter');
+        actionLines.forEach((line, i) => {
+            svg.appendChild(createText({
+                x: MARGIN + numberColW,
+                y: lineY + 7 + i * 7,
+                text: line,
+                font: 'Inter',
+                weight: 400,
+                size: 5.6,
+                color: COLOR.text,
+            }));
+        });
+
+        lineY += 7 + actionLines.length * 7 + 4;
+    });
+
+    return lineY;
+}
+
+function drawAchterkantFooter({ svg }) {
+    const footerY = PAGE_H - 56;
+
+    svg.appendChild(createText({
+        x: PAGE_W / 2,
+        y: footerY,
+        text: '"Een team dat zichzelf herkent, beweegt sneller."',
+        font: 'Playfair Display',
+        weight: 500,
+        size: 7,
+        color: COLOR.textSoft,
+        anchor: 'middle',
+        italic: true,
+    }));
+
+    const logoSize = 16;
+    drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 10, logoSize);
+
+    svg.appendChild(createText({
+        x: PAGE_W / 2,
+        y: footerY + 36,
+        text: 'Helping teams understand their workplace through insight, design and movement.',
+        font: 'Inter',
+        weight: 400,
+        size: 4.8,
+        color: COLOR.textMuted,
+        anchor: 'middle',
+    }));
 }
 
 // =========================
@@ -849,17 +747,14 @@ function buildLeeglopers(insights) {
     const t = insights?.workplaceTension || {};
     const out = [];
 
-    // 1. Onderbedien - eerste werkplek
     if (t.underserved && t.underserved.length > 0) {
         out.push(`Te weinig ${t.underserved[0].label.toLowerCase()}`);
     }
 
-    // 2. Overdosis - eerste werkplek
     if (t.oversupplied && t.oversupplied.length > 0) {
         out.push(`Te veel ${t.oversupplied[0].label.toLowerCase()}`);
     }
 
-    // 3. Persona-spanning vanuit kern + verder
     const personas = [
         ...(t.impactSummary?.dominant || []),
         ...(t.impactSummary?.middle || []),
@@ -882,7 +777,6 @@ function buildLeeglopers(insights) {
         }
     }
 
-    // Pad tot 3
     while (out.length < 3) {
         out.push('Werkplek die niet aansluit bij teambehoefte');
     }
@@ -891,8 +785,33 @@ function buildLeeglopers(insights) {
 }
 
 // =========================
-// SVG PRIMITIVES
+// DIVIDER + PRIMITIVES
 // =========================
+
+function drawDivider({ svg, y }) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', MARGIN);
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', PAGE_W - MARGIN);
+    line.setAttribute('y2', y);
+    line.setAttribute('stroke', COLOR.border);
+    line.setAttribute('stroke-width', '0.4');
+    svg.appendChild(line);
+    return y;
+}
+
+function createSVGCanvas() {
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('xmlns', SVG_NS);
+    svg.setAttribute('width', `${PAGE_W}mm`);
+    svg.setAttribute('height', `${PAGE_H}mm`);
+    svg.setAttribute('viewBox', `0 0 ${PAGE_W} ${PAGE_H}`);
+    svg.style.position = 'fixed';
+    svg.style.top = '-99999px';
+    svg.style.left = '-99999px';
+    return svg;
+}
 
 function createRect(x, y, w, h, fill) {
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -913,7 +832,7 @@ function createCircle(cx, cy, r, fill) {
     return c;
 }
 
-function createText({ x, y, text, font = 'Inter', weight = 400, size = 3, color = '#000', anchor = 'start', italic = false, letterSpacing = 0 }) {
+function createText({ x, y, text, font = 'Inter', weight = 400, size = 6, color = '#000', anchor = 'start', italic = false, letterSpacing = 0 }) {
     const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     t.setAttribute('x', x);
     t.setAttribute('y', y);
@@ -928,7 +847,6 @@ function createText({ x, y, text, font = 'Inter', weight = 400, size = 3, color 
     return t;
 }
 
-// TOF logo: PNG embedded via SVG <image> — gegarandeerd correct ten opzichte van origineel
 function drawTOFMark(svg, x, y, size) {
     const img = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     img.setAttribute('x', x);
@@ -940,7 +858,6 @@ function drawTOFMark(svg, x, y, size) {
     svg.appendChild(img);
 }
 
-// Wrap-tekst over meerdere regels
 function drawWrappedText({ svg, x, y, maxWidth, text, font, weight, size, color, italic, lineHeight, anchor = 'start' }) {
     const lines = wrapText(text, maxWidth, size, font);
     lines.forEach((line, i) => {
@@ -959,13 +876,11 @@ function drawWrappedText({ svg, x, y, maxWidth, text, font, weight, size, color,
     return y + lines.length * lineHeight;
 }
 
-// Simpele text-wrap op basis van geschatte teken-breedte
 function wrapText(text, maxWidth, fontSize, font) {
-    // Geschatte breedte per teken (mm) — Inter ~0.55x font-size, Playfair ~0.50x
     const charWidth = (font.includes('Playfair') ? 0.50 : 0.55) * fontSize;
     const charsPerLine = Math.max(10, Math.floor(maxWidth / charWidth));
 
-    const words = text.split(' ');
+    const words = String(text || '').split(' ');
     const lines = [];
     let currentLine = '';
 

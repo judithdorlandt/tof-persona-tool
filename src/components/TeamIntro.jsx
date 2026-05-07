@@ -410,7 +410,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     Afdelingsmanager met meerdere teams?{' '}
                     <button
                         type="button"
-                        onClick={() => setPage('login')}
+                        onClick={() => openAccessModal('any')}
                         style={{
                             background: 'transparent',
                             border: 'none',

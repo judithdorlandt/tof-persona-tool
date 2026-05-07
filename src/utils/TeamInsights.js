@@ -5,11 +5,18 @@
 //   headline         — wat dit team van de werkplek vraagt (één zin)
 //   workplaceTension — waar team behoefte en werkplekaanbod mismatchen
 //                       { underserved: [...], oversupplied: [...] }
-//   quickWins        — 4 werkplek-gerichte acties
+//   quickWins        — werkplek-gerichte acties
 //   highlights       — compat
-//   energy           — bewaard voor Module 2
-//   friction         — bewaard voor Module 2
+//   energy           — bewaard voor Module 2 (op werkstijl-energie)
+//   friction         — bewaard voor Module 2 (op werkstijl-energie)
 //   usage            — bewaard voor Module 2
+//
+// Consistency-regel:
+//   "Dominante persona" in meta + highlights = personasByPrimary[0].
+//   Dat is dezelfde definitie die Tegel + Chip gebruiken in TeamDashboard.
+//   Werkplek-spanning blijft gewogen op energie/full_scores — daar gaat
+//   het om wat het hele profiel van de werkplek vraagt, niet wie er
+//   primair zit.
 
 import { ARCHETYPES } from '../data';
 
@@ -22,8 +29,14 @@ const PERSONA_NEED_THRESHOLD = 3;
 // PUBLIC API
 // =========================
 export function buildTeamInsights(aggregate) {
-    const top = aggregate?.sortedPersonas?.[0];
-    const second = aggregate?.sortedPersonas?.[1];
+    // "Wie zit er primair" — voor headline + meta + highlights
+    const topByPrimary = aggregate?.personasByPrimary?.[0] || null;
+    const secondByPrimary = aggregate?.personasByPrimary?.[1] || null;
+
+    // Werkstijl-energie — voor Module 2 dynamics
+    const topByEnergy = aggregate?.sortedPersonas?.[0] || null;
+    const secondByEnergy = aggregate?.sortedPersonas?.[1] || null;
+
     const topNeed = aggregate?.sortedWorkplaceNeeds?.[0];
     const secondNeed = aggregate?.sortedWorkplaceNeeds?.[1];
     const teamCount = aggregate?.teamCount || 0;
@@ -32,14 +45,25 @@ export function buildTeamInsights(aggregate) {
         headline: buildHeadline(aggregate),
         workplaceTension: buildWorkplaceTension(aggregate),
         quickWins: buildWorkplaceQuickWins(aggregate),
-        highlights: buildHighlights(top, second, topNeed, secondNeed),
+        highlights: buildHighlights(topByPrimary, secondByPrimary, topNeed, secondNeed),
 
-        // Voor Module 2
+        // Voor Module 2 — energie-basis
         energy: buildEnergy(aggregate),
         friction: buildPersonaFriction(aggregate),
         usage: buildUsage(aggregate),
 
-        meta: { teamCount, top, second, topNeed, secondNeed },
+        // Meta levert beide expliciet zodat downstream consumers (PDF, hero, etc.)
+        // weten welke ze nodig hebben. "top" blijft op primair voor consistentie
+        // met het dashboard.
+        meta: {
+            teamCount,
+            top: topByPrimary,
+            second: secondByPrimary,
+            topByEnergy,
+            secondByEnergy,
+            topNeed,
+            secondNeed,
+        },
     };
 }
 
@@ -119,12 +143,6 @@ function buildWorkplaceTension(aggregate) {
     underserved.sort((a, b) => b.percentage - a.percentage);
     oversupplied.sort((a, b) => a.percentage - b.percentage);
 
-    // ========================
-    // IMPACT SUMMARY
-    // ========================
-    // Top 3 personas die het meest geraakt worden door alle onderbediende werkplekken samen.
-    // Plus alle onderbediende werkplekken als check-vraag voor de manager.
-
     const impactSummary = buildImpactSummary({
         underserved,
         oversupplied,
@@ -139,19 +157,11 @@ function buildWorkplaceTension(aggregate) {
 }
 
 // Bouw drie groepen: Dominant / Gemiddeld / Minderheid
-//
-// Regels:
-// - Dominant: top 2, OF top 1 als die ≥ 1.5× top-2 (solo-uitschieter)
-// - Gemiddeld: middelste 4 (na dominant)
-// - Minderheid: onderste 2, mits beide < 10%
-//   - Als minderheid maar 1 persona is: ook minderheid (mits < 10%)
-//   - Als 1 van de onderste 2 ≥ 10%: schuift naar gemiddeld
 function buildImpactSummary({ underserved, oversupplied, members, presentPersonaIds, needs, averagePct, aggregate }) {
     if (presentPersonaIds.size === 0) {
         return null;
     }
 
-    // Alle aanwezige persona's gesorteerd op team-percentage (hoog naar laag)
     const present = (aggregate?.sortedPersonas || [])
         .filter((p) => p.count > 0)
         .map((p) => {
@@ -164,17 +174,15 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
 
     if (present.length === 0) return null;
 
-    // Verzamel namen per persona
     const namesByPersona = {};
     present.forEach((p) => {
         namesByPersona[p.id] = members
             .filter((m) => m.primary === p.id)
             .map((m) => firstName(m.name))
-            .filter((n) => n && n !== 'Onbekend')
+            .filter((n) => n && n !== 'Onbekend' && n !== 'Anoniem')
             .filter((n, i, arr) => arr.indexOf(n) === i);
     });
 
-    // Bouw persona-object met alle metadata
     const enrichPersona = (p, group) => {
         const arch = ARCHETYPES.find((a) => a.id === p.id);
         return {
@@ -187,25 +195,17 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
         };
     };
 
-    // ======================
-    // GROEPSINDELING
-    // ======================
     let dominant = [];
     let middle = [];
     let minority = [];
 
     if (present.length === 1) {
-        // Edge case: maar 1 persona aanwezig
         dominant = [present[0]];
     } else if (present.length === 2) {
-        // 2 persona's: beide dominant
         dominant = present;
     } else {
-        // 3+ persona's: pas regels toe
         const top1 = present[0];
         const top2 = present[1];
-
-        // Solo-uitschieter? top-1 ≥ 1.5× top-2
         const soloDominant = top1.teamPct >= top2.teamPct * 1.5;
 
         if (soloDominant) {
@@ -214,15 +214,10 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
             dominant = [top1, top2];
         }
 
-        // Rest na dominant
         const afterDominant = present.slice(dominant.length);
-
-        // Onderste 2 (of 1) bekijken voor minderheid
-        // Regel: alleen minderheid als alle bottom-N onder 10% zitten
         const tail = afterDominant.slice(-2);
 
         if (tail.length === 1) {
-            // Slechts 1 over na dominant: dat is dan ook midden of minderheid
             if (tail[0].teamPct < 10) {
                 minority = tail;
             } else {
@@ -234,7 +229,6 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
                 minority = tail;
                 middle = afterDominant.slice(0, -2);
             } else {
-                // Niet alle onder 10% → alles wordt gemiddeld
                 middle = afterDominant;
             }
         } else {
@@ -246,7 +240,6 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
     const middleEnriched = middle.map((p) => enrichPersona(p, 'middle'));
     const minorityEnriched = minority.map((p) => enrichPersona(p, 'minority'));
 
-    // Werkplekken voor de check-regel
     const checkWorkplaces = needs
         .filter((n) => n.percentage >= averagePct)
         .map((n) => ({ label: n.label, percentage: n.percentage }));
@@ -264,7 +257,6 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
     };
 }
 
-// Spanning-zinnen per persona (universeel — wat verliest deze persona als werkplek niet aansluit)
 const PERSONA_TENSION = {
     maker: 'Maker komt niet in flow zonder aaneengesloten ruimte om te bouwen.',
     groeier: 'Groeier krijgt geen tijd om het werk te verteren en zich te ontwikkelen.',
@@ -276,7 +268,6 @@ const PERSONA_TENSION = {
     vernieuwer: 'Vernieuwer vindt geen sparringpartner om ideeën te scherpen.',
 };
 
-// Welke aanwezige persona's scoren hoog (>=3) op deze werkplek?
 function impactedPersonas(workplaceKey, presentPersonaIds) {
     return ARCHETYPES
         .filter((arch) => presentPersonaIds.has(arch.id))
@@ -291,9 +282,6 @@ function impactedPersonas(workplaceKey, presentPersonaIds) {
         }));
 }
 
-// Voornamen van teamleden met primary die hoog scoort op deze werkplek
-// Voornamen + persona van teamleden met primary die hoog scoort op deze werkplek.
-// Returnt objects { name, personaId } zodat UI per naam de juiste kleur kan kiezen.
 function impactedNames(workplaceKey, members) {
     const highScoringIds = ARCHETYPES
         .filter((arch) => (arch?.bricksProfile?.[workplaceKey] || 0) >= PERSONA_NEED_THRESHOLD)
@@ -305,7 +293,7 @@ function impactedNames(workplaceKey, members) {
     members.forEach((m) => {
         if (!highScoringIds.includes(m.primary)) return;
         const fname = firstName(m.name);
-        if (!fname || fname === 'Onbekend') return;
+        if (!fname || fname === 'Onbekend' || fname === 'Anoniem') return;
         if (seen.has(fname)) return;
         seen.add(fname);
         result.push({ name: fname, personaId: m.primary });
@@ -319,7 +307,6 @@ function firstName(fullName) {
     return String(fullName).trim().split(/\s+/)[0];
 }
 
-// Formatteer als natuurlijke zin: "X, Y en Z"
 function formatNamesNatural(names) {
     if (names.length === 0) return '';
     if (names.length === 1) return names[0];
@@ -328,9 +315,6 @@ function formatNamesNatural(names) {
 }
 
 function buildUnderservedMessage(need, impacted) {
-    // Standalone spanningszinnen: spanning-gericht, niet persona-gericht.
-    // De persona's worden in de UI als eyebrow getoond, dus de zin hoeft
-    // niet meer met persona-namen te beginnen.
     const tension = {
         focus: 'Het team verliest concentratie in een open omgeving.',
         work: 'Er is geen vaste basis om rustig dagelijks werk te doen.',
@@ -368,22 +352,23 @@ function buildOversuppliedMessage(need) {
 // =========================
 // QUICK WINS
 // =========================
-// =========================
-// QUICK WINS — synthese van werkstijlen + werkplek + spanning + ontbrekend
-// =========================
-// Elke win is gekoppeld aan een eerder tabblad (source). Dat maakt de
-// samenhang zichtbaar: dit komt direct uit wat de gebruiker net heeft gelezen.
-
 function buildWorkplaceQuickWins(aggregate) {
     const wins = [];
     const needs = aggregate?.sortedWorkplaceNeeds || [];
-    const personas = aggregate?.sortedPersonas || [];
-    const topPersona = personas.find((p) => p.count > 0);
-    const missingPersonas = personas.filter((p) => p.count === 0);
+
+    // QuickWins gaan over "wie zit er in dit team" voor de werkstijl-actie,
+    // zodat ze rijmen met het dashboard. Voor de werkstijl-actie kiezen we
+    // de meest voorkomende primaire persona.
+    const personasByPrimary = aggregate?.personasByPrimary || [];
+    const topPersona = personasByPrimary[0] || null;
+
+    // Ontbrekend op basis van strikte definitie uit aggregate
+    const missingPersonas = aggregate?.missingPersonas || [];
+
     const topNeed = needs[0];
     const tension = buildWorkplaceTension(aggregate);
 
-    // WIN 1 — uit WERKSTIJLEN: de dominante persona vraagt iets specifieks
+    // WIN 1 — uit WERKSTIJLEN: de dominante primaire persona vraagt iets
     if (topPersona) {
         const personaActions = {
             maker: `Plan blokken zonder vergaderingen. Makers maken iets af in stilte, niet in onderbrekingen.`,
@@ -397,14 +382,11 @@ function buildWorkplaceQuickWins(aggregate) {
         };
         const action = personaActions[topPersona.id];
         if (action) {
-            wins.push({
-                source: 'werkstijlen',
-                action,
-            });
+            wins.push({ source: 'werkstijlen', action });
         }
     }
 
-    // WIN 2 — uit WERKPLEK: top behoefte krijgt een concrete inrichtingsactie
+    // WIN 2 — uit WERKPLEK
     if (topNeed) {
         const workplaceActions = {
             focus: `Maak een afgeschermde concentratiezone. Geen telefoongesprekken, geen meetings.`,
@@ -419,14 +401,11 @@ function buildWorkplaceQuickWins(aggregate) {
         };
         const action = workplaceActions[topNeed.key];
         if (action) {
-            wins.push({
-                source: 'werkplek',
-                action,
-            });
+            wins.push({ source: 'werkplek', action });
         }
     }
 
-    // WIN 3 — uit SPANNING: onderbediende werkplek raakt specifieke mensen
+    // WIN 3 — uit SPANNING
     if (tension.underserved.length > 0) {
         const first = tension.underserved[0];
         const namesArr = (first.impactedNames || []).map((n) =>
@@ -448,15 +427,13 @@ function buildWorkplaceQuickWins(aggregate) {
         });
     }
 
-    // WIN 4 — uit MINDERHEID: voorkom isolatie
-    // Alleen als er een minderheid is (uit impactSummary)
+    // WIN 4 — uit MINDERHEID
     const minority = tension?.impactSummary?.minority || [];
     if (minority.length > 0) {
         const personaNames = minority.map((p) => p.name);
         const personaText = formatNamesNatural(personaNames);
         const verb = minority.length === 1 ? 'zich geïsoleerd voelt' : 'zich geïsoleerd voelen';
 
-        // Verzamel top-2 werkplekken op basis van bricks-score voor minderheid
         const workplaceScores = {};
         minority.forEach((p) => {
             const arch = ARCHETYPES.find((a) => a.id === p.id);
@@ -482,9 +459,8 @@ function buildWorkplaceQuickWins(aggregate) {
         });
     }
 
-    // WIN 5 — uit ONTBREKEND: strategische werving
+    // WIN 5+ — uit ONTBREKEND (strikte definitie uit aggregate)
     if (missingPersonas.length > 0) {
-        const first = missingPersonas[0];
         const missingActions = {
             maker: `Werf een Maker. Ideeën blijven nu hangen in concepten.`,
             groeier: `Werf een Groeier. Het team mist nieuwsgierigheid om te leren.`,
@@ -495,26 +471,25 @@ function buildWorkplaceQuickWins(aggregate) {
             zekerzoeker: `Werf een Zekerzoeker. Het tegenwicht voor stabiliteit ontbreekt.`,
             vernieuwer: `Werf een Vernieuwer. De impuls om aanpakken los te laten ontbreekt.`,
         };
-        const action = missingActions[first.id];
-        if (action) {
-            wins.push({
-                source: 'ontbrekend',
-                action,
-            });
-        }
+
+        missingPersonas.slice(0, 3).forEach((persona) => {
+            const action = missingActions[persona.id];
+            if (action) {
+                wins.push({ source: 'ontbrekend', action });
+            }
+        });
     } else {
-        // Als er geen ontbrekende persona is, een algemene reflectie-win
         wins.push({
             source: 'reflectie',
             action: `Vul de werkplekken aan die dit team mist. Geen verbouwing nodig — klein en zichtbaar werkt.`,
         });
     }
 
-    return wins.slice(0, 5);
+    return wins.slice(0, 7);
 }
 
 // =========================
-// HIGHLIGHTS (compat)
+// HIGHLIGHTS — gebaseerd op personasByPrimary (consistent met dashboard)
 // =========================
 function buildHighlights(top, second, topNeed, secondNeed) {
     const out = [];
@@ -537,7 +512,7 @@ function buildHighlights(top, second, topNeed, secondNeed) {
 }
 
 // =========================
-// ENERGY & FRICTION — voor Module 2
+// ENERGY & FRICTION — voor Module 2 (energie-basis)
 // =========================
 const DOMINANT_PCT = 30;
 
@@ -607,13 +582,17 @@ function buildPersonaFriction(aggregate) {
 }
 
 function buildUsage(aggregate) {
-    const top = aggregate?.sortedPersonas?.[0];
+    // Bewust op personasByPrimary voor consistentie met dashboard
+    const top = aggregate?.personasByPrimary?.[0]
+        || aggregate?.sortedPersonas?.[0];
     const topNeed = aggregate?.sortedWorkplaceNeeds?.[0];
+    const pct = top?.countPercentage ?? top?.percentage ?? 0;
+
     return [
         {
             situation: 'Voor een teamoverleg',
             title: 'Wat leg je op tafel?',
-            items: top ? [`Het team wordt gedomineerd door ${top.name} (${top.percentage}%).`] : [],
+            items: top ? [`Het team wordt gedomineerd door ${top.name} (${pct}%).`] : [],
         },
         {
             situation: 'Voor een werkplekbeslissing',

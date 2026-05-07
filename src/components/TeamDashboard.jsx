@@ -7,6 +7,10 @@
  * - TileGrid: vier compacte tegels als navigatie
  * - SectionCard daaronder: één detail-blok opent onder de tegels
  * - Geen lange scroll door alle blokken
+ *
+ * Bron-of-truth voor "Werkstijlen"-tegel + "Dominant"-chip:
+ *   aggregate.topPersonaByPrimary (= wie zit er primair in dit team)
+ * NIET aggregate.sortedPersonas (dat is energie-sortering — voor Dynamics).
  */
 
 import React, { useMemo, useState } from 'react';
@@ -44,9 +48,12 @@ const TILES = [
         id: 'personas',
         eyebrow: 'Werkstijlen',
         buildValue: (aggregate) => {
-            const top = aggregate?.sortedPersonas?.[0];
+            // Tegel toont "wie zit er in dit team" — primaire telling.
+            // Anders mismatcht hij met het detail-scherm dat hetzelfde verhaal vertelt.
+            const top = aggregate?.topPersonaByPrimary
+                || aggregate?.personasByPrimary?.[0];
             if (!top) return '—';
-            return `${top.name} ${top.percentage}%`;
+            return `${top.name} ${top.countPercentage}%`;
         },
         buildHint: () => 'Wie zit er in dit team',
         detailTitle: 'Wie zit er in dit team',
@@ -124,7 +131,14 @@ export default function TeamDashboard({
 
     const teamName = resolveTeamName(selectedTeam);
     const organization = resolveOrg(selectedTeam);
-    const dominantPersona = aggregate?.sortedPersonas?.[0]?.name || '';
+
+    // "Dominant" in de chip = wie zit er primair in dit team.
+    // Consistent met de Werkstijlen-tegel.
+    const dominantPersona =
+        aggregate?.topPersonaByPrimary?.name
+        || aggregate?.personasByPrimary?.[0]?.name
+        || '';
+
     const teamCount = aggregate?.teamCount || 0;
     const reliability = buildReliabilityLabel(teamCount);
 
@@ -268,7 +282,6 @@ export default function TeamDashboard({
 // =========================
 // SIGNATURE BLOCK
 // =========================
-// Combineert meta-chips + signature-zin in één compacter blok
 
 function SignatureBlock({ quote, accent, teamCount, organization, dominantPersona, reliability }) {
     return (
