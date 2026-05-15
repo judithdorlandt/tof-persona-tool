@@ -86,9 +86,9 @@ const MODULES = [
             'Kompas voor de komende 3–5 jaar',
         ],
         what: 'Een strategisch kompas voor je hele organisatie. Kan opmaat zijn naar Het Jaartraject — los van elkaar te boeken, geen verplichting.',
-        cta: 'Plan een verkenningsgesprek',
+        cta: 'Bekijk de demo',
         ctaType: 'link',
-        ctaHref: 'https://www.tof.services/contact',
+        ctaHref: 'https://tof-persona-demo.netlify.app/#kompas',
     },
 ];
 

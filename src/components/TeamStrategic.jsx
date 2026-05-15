@@ -1,146 +1,191 @@
 /**
- * TeamStrategic — Module 3: Het Strategisch Kompas
+ * TeamStrategic — Module 3: Het Strategisch Kompas (DASHBOARD)
  *
- * Familie-taal afgestemd op TeamDashboard (Module 1) en TeamDynamics (Module 2):
- *   - HeroBlock direct op canvas (rose accent)
- *   - SectionCard's daaronder voor de inhoudelijke blokken
- *   - InteractiveRow / InnerCard waar het past
+ * Geen sales-content meer: dit is een data-dashboard voor strategic-level
+ * klanten. Toont het kompas voor de organisatie waaraan de gebruiker
+ * gekoppeld is.
  *
- * Toegang: alleen via een strategic-level access code, gevalideerd in TeamIntro.
- * Inhoud: port van het static HTML-prototype (strategisch-kompas.html) naar
- * de standaard AppShell-vormgeving, dezelfde "voelt-als-dashboard"-look.
+ * Familie-taal:
+ *   - PageShell + compact (zoals TeamDashboard / TeamDynamics)
+ *   - HeroBlock met meta-strip
+ *   - SectionCard voor elke pijler:
+ *       1. Trend-radar — 8 trends gewogen
+ *       2. Persona-overlay — wat de team-mix vraagt over 3–5 jaar
+ *       3. Strategische keuzes — 4–7 richtingen voor MT
+ *       4. Jaarritme — momenten om het kompas te herijken
+ *
+ * Data: vandaag hardcoded demo-data voor Demo Team 3, scaffold voor
+ * Supabase-payload klaar (zie src/utils/strategicKompas.js).
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     PageShell,
     HeroBlock,
     PrimaryButton,
     SecondaryButton,
     SectionCard,
-    SectionEyebrow,
-    InnerCard,
     InteractiveRow,
 } from '../ui/AppShell';
 import { SPACING, TYPE } from '../ui/tokens';
+import { getStrategicKompas } from '../utils/strategicKompas';
 
 const ACCENT = 'var(--tof-accent-rose)';
-
-// ─── DATA ────────────────────────────────────────────────────────────────────
-
-const TRENDS = [
-    { num: '01', title: 'Experience based working', body: 'Van "wat je doet" naar "hoe je het ervaart". De werkplek wordt beoordeeld op gevoel, beleving en kwaliteit van de dag — niet op stoel en bureau.' },
-    { num: '02', title: 'Van aanwezigheid naar waarde', body: 'Niet langer "twee dagen kantoor", maar: waarom kom je samen, wat levert dat op, en wat moet de omgeving daarvoor doen?' },
-    { num: '03', title: 'Piekregie — de kamelenweek temmen', body: '75% wil op dinsdag of donderdag op kantoor. Sturen op samenkomst-momenten wordt cruciaal — niet op aantal dagen, maar op kwaliteit van die dagen.' },
-    { num: '04', title: 'DEIB als ontwerp, niet als beleid', body: 'Inclusie verschuift van ambitie naar ontwerpvraagstuk: toegankelijkheid, prikkelarme zones, sociale veiligheid — zichtbaar in keuzes, niet in policy-documenten.' },
-    { num: '05', title: 'Social based working', body: 'De werkplek als sociaal weefsel. Verbinding ontstaat niet vanzelf bij meer aanwezigheid — wel bij betekenisvolle momenten en goede sociale architectuur.' },
-    { num: '06', title: 'Servicerevolutie', body: 'Het kantoor als hospitality-omgeving. Services en beleving — niet vierkante meters — bepalen of de plek aantrekkelijk is voor medewerkers.' },
-    { num: '07', title: 'Van megacampus naar maatwerk', body: 'Kleinere, gerichte locaties dichter bij waar mensen wonen. Het centrale hoofdkantoor maakt plaats voor een netwerk van kleinere, persoonlijkere plekken.' },
-    { num: '08', title: 'AI in de werkplek', body: 'AI als stuurinstrument: continu meten van beleving, frictie en effectiviteit. Niet om medewerkers te controleren, maar om hun omgeving fijner te maken.' },
-];
-
-const STEPS = [
-    { num: '01', name: 'Intake', meta: '60 min · MT / bestuur', body: 'Wat is jullie organisatie-ambitie de komende 3–5 jaar? Welke beweging willen jullie maken? Wat zit er al, wat ontbreekt?' },
-    { num: '02', name: 'Trend-spiegeling', meta: 'Voorbereiding · 2–3 weken', body: 'Welke van de 8 trends raken jullie organisatie het hardst? Welke versterken jullie ambitie, welke kruisen het? Hier komt de buitenwereld scherp binnen.' },
-    { num: '03', name: 'Persona-overlay', meta: 'Uit Module 1 + 2', body: 'Hoe verhouden jullie persona\'s zich tot die trends? Een Maker-zwaar team in een DEIB-gedreven organisatie vraagt iets héél anders dan een Verbinder-zwaar team in een AI-getransformeerde sector.' },
-    { num: '04', name: 'Ontwerpgesprek', meta: 'Halve dag · MT / bestuur', body: 'Trend-radar + persona-overlay komen samen op tafel. We maken keuzes voor leiderschap, werkomgeving, cultuur en technologie — onderbouwd, herkenbaar en uitlegbaar.' },
-    { num: '05', name: 'Het Kompas', meta: 'Levend document · jaarlijks bijgewerkt', body: 'Een ~20-pagina premium PDF plus een éénpager-overzicht voor MT-meetings. Geen plan in een la — een kompas dat jaarlijks meebeweegt met nieuwe trends en nieuwe persona-data.' },
-];
-
-const DELIVERABLES = [
-    { strong: 'Trend-radar', body: '8 trends, gewogen op relevantie voor jullie organisatie' },
-    { strong: 'Persona-overlay', body: 'hoe jullie team-mix verhoudt zich tot die trends' },
-    { strong: 'Strategische keuzes', body: 'voor leiderschap, werkomgeving, cultuur, technologie' },
-    { strong: 'Kompas-éénpager', body: 'printbaar overzicht, klaar voor MT-meeting' },
-    { strong: 'Jaarritme', body: 'vaste momenten om het kompas te herijken' },
-];
-
-const COMPARE_ROWS = [
-    { label: 'Blik', cells: ['Naar binnen — individu', 'Naar binnen — team', 'Van buiten naar binnen'] },
-    { label: 'Tijdshorizon', cells: ['Nu', 'Komende kwartalen', '3–5 jaar'] },
-    { label: 'Deliverable', cells: ['Persona-kaart', 'Team-dynamics rapport', 'Strategisch richtingsdocument'] },
-    { label: 'Doelgroep', cells: ['Iedereen', 'Teamleiders, HR', 'MT, bestuur, huisvesting'] },
-];
-
-const MODULES = [
-    { eyebrow: 'Module 01 · Persona Insight', title: 'Wie ben jij?', body: 'Self-service persona-tool. Individueel inzicht in werkstijl en werkplek­behoefte. Laagdrempelig.', price: '€1.250 / team' },
-    { eyebrow: 'Module 02 · Team Dynamics', title: 'Hoe werken jullie samen?', body: 'Team-rapport plus sessie. Persona-mix, spanningen, werkplek­behoefte. Voor teamleiders.', price: '€5.000 / team' },
-    { eyebrow: 'Module 03 · Strategisch Kompas', title: 'Waar gaan we naartoe?', body: 'Buiten naar binnen — trends + persona\'s vertaald naar strategie. Voor MT en bestuur.', price: '€20.000 / organisatie', current: true },
-];
+const SOFT = '#F4DFDF';
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 
 export default function TeamStrategic({ setPage, selectedTeam }) {
     const orgName = selectedTeam?.organization || '';
+    const teamName = selectedTeam?.team || '';
+
+    const kompas = useMemo(() => getStrategicKompas(orgName), [orgName]);
+
+    if (!kompas) {
+        return (
+            <PageShell compact>
+                <HeroBlock
+                    compact
+                    eyebrow="Module 3 · Strategisch Kompas"
+                    title="Nog geen kompas beschikbaar"
+                    titleAccentColor={ACCENT}
+                    lead={`Er is voor ${orgName || 'deze organisatie'} nog geen Strategisch Kompas opgesteld. Plan een verkenningsgesprek om het traject te starten.`}
+                    actions={
+                        <>
+                            <PrimaryButton
+                                onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
+                                style={{ background: ACCENT, borderColor: ACCENT }}
+                            >
+                                Plan een gesprek
+                            </PrimaryButton>
+                            <SecondaryButton onClick={() => setPage && setPage('team')}>
+                                ← Terug
+                            </SecondaryButton>
+                        </>
+                    }
+                />
+            </PageShell>
+        );
+    }
+
+    const sortedTrends = [...kompas.trends].sort((a, b) => b.weight - a.weight);
+    const topTrend = sortedTrends[0];
 
     return (
         <PageShell compact>
             {/* ── HERO ── */}
             <HeroBlock
                 compact
-                eyebrow="Module 3 · Het Strategisch Kompas"
-                title="Wat de wereld vraagt,"
-                titleAccent="vertaald naar wie je team is."
+                eyebrow={`Module 3 · Strategisch Kompas · ${kompas.team || orgName}`}
+                title="Het kompas voor"
+                titleAccent={kompas.team || orgName}
                 titleAccentColor={ACCENT}
-                lead="Voor MT, bestuur en huisvesting: een levend richtingsdocument dat externe trends koppelt aan jullie team-persona's. Geen plan in een la — een kompas voor de komende drie tot vijf jaar."
+                lead={`Hoe de huidige persona-mix verhoudt zich tot acht externe trends — en wat dat vraagt van leiderschap, werkplek en samenwerking de komende ${kompas.horizon || '3–5 jaar'}.`}
                 actions={
                     <>
-                        <PrimaryButton
-                            onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
-                            style={{ background: ACCENT, borderColor: ACCENT }}
-                        >
-                            Plan een gesprek
-                        </PrimaryButton>
                         <SecondaryButton onClick={() => setPage && setPage('team')}>
-                            ← Terug
+                            ← Terug naar Persona Tool
                         </SecondaryButton>
                     </>
                 }
             />
 
-            {/* Meta-strip, identiek aan TeamDynamics signature-block */}
-            <div style={{
-                display: 'flex',
-                gap: SPACING.sm + 2,
-                flexWrap: 'wrap',
-                fontSize: 12,
-                color: 'var(--tof-text-muted)',
-                letterSpacing: 0.4,
-                textTransform: 'uppercase',
-                fontWeight: 600,
-            }}>
-                <Chip>3–5 jaar</Chip>
-                <Chip>Traject van 8–12 weken</Chip>
-                <Chip>€20.000 / organisatie</Chip>
-                {orgName && <Chip>{orgName}</Chip>}
+            {/* Meta-strip */}
+            <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
+                <Chip>Horizon · {kompas.horizon}</Chip>
+                <Chip>Laatste herijking · {kompas.lastUpdate}</Chip>
+                <Chip>Volgende review · {kompas.nextReview}</Chip>
             </div>
 
-            {/* ── WAAROM MODULE 3 ── */}
-            <SectionCard accent={ACCENT} eyebrow="Waarom Module 3" title="Strategie zonder mensbeeld is een kompas zonder noord.">
+            {/* ── 1. TREND-RADAR ── */}
+            <SectionCard
+                accent={ACCENT}
+                eyebrow="01 · Trend-radar"
+                title={`Acht externe trends, gewogen op ${kompas.team || 'deze organisatie'}.`}
+            >
                 <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0 }}>
-                    Veel strategie-trajecten kijken naar de buitenwereld — trends, markt, technologie. Andere kijken naar binnen — cultuur, leiderschap, teams. Het Strategisch Kompas doet beide. Trends raken organisaties altijd anders, afhankelijk van wie er werkt. Daar zit de waarde.
+                    De top-trend voor dit team is <strong style={{ color: 'var(--tof-text)' }}>{topTrend.name}</strong>. Wat onderaan staat is niet weg — wel minder urgent voor déze persona-mix.
                 </p>
-                <CompareTable />
+                <div style={{ display: 'grid', gap: SPACING.sm + 2 }}>
+                    {sortedTrends.map((t) => (
+                        <TrendBar key={t.id} trend={t} />
+                    ))}
+                </div>
             </SectionCard>
 
-            {/* ── 8 TRENDS ── */}
-            <SectionCard accent={ACCENT} eyebrow="De 8 trends die we volgen" title="De wereld waarin jouw team straks werkt.">
-                <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0 }}>
-                    Gecureerd uit Colliers Insights, WorkWire Trendrapport 2025–2026, Social Based Working en het AI Index Report 2026. Elk jaar herzien, zodat het kompas mee­beweegt.
-                </p>
+            {/* ── 2. PERSONA-OVERLAY ── */}
+            <SectionCard
+                accent={ACCENT}
+                eyebrow="02 · Persona-overlay"
+                title="Wat de team-mix vraagt over drie tot vijf jaar."
+            >
                 <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                    gap: SPACING.md,
+                    background: SOFT,
+                    border: `1px solid ${ACCENT}30`,
+                    borderRadius: 12,
+                    padding: '14px 16px',
+                    fontSize: 13.5,
+                    lineHeight: 1.65,
+                    color: 'var(--tof-text)',
                 }}>
-                    {TRENDS.map((t) => (
-                        <InnerCard key={t.num}>
-                            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                                <span style={{
-                                    ...TYPE.eyebrow,
-                                    color: ACCENT,
-                                    fontSize: 11,
-                                }}>{t.num}</span>
+                    <div style={{
+                        ...TYPE.eyebrow,
+                        color: ACCENT,
+                        fontSize: 10,
+                        marginBottom: 6,
+                    }}>
+                        Dominant aanwezig
+                    </div>
+                    {kompas.personaOverlay.dominant.join(' · ')}
+                </div>
+                <div style={{ display: 'grid', gap: SPACING.sm + 2 }}>
+                    {kompas.personaOverlay.insights.map((line, i) => (
+                        <InteractiveRow key={i} accent={ACCENT} subtle>
+                            <span style={{
+                                ...TYPE.eyebrow,
+                                color: ACCENT,
+                                minWidth: 24,
+                                fontSize: 11,
+                            }}>
+                                {String(i + 1).padStart(2, '0')}
+                            </span>
+                            <p style={{
+                                ...TYPE.body,
+                                margin: 0,
+                                color: 'var(--tof-text-soft)',
+                                fontSize: 14,
+                                flex: 1,
+                            }}>
+                                {line}
+                            </p>
+                        </InteractiveRow>
+                    ))}
+                </div>
+            </SectionCard>
+
+            {/* ── 3. STRATEGISCHE KEUZES ── */}
+            <SectionCard
+                accent={ACCENT}
+                eyebrow="03 · Strategische keuzes"
+                title="Vijf richtingen voor MT en bestuur."
+            >
+                <div style={{ display: 'grid', gap: SPACING.md }}>
+                    {kompas.choices.map((c, i) => (
+                        <div key={i} style={{
+                            background: 'rgba(255,255,255,0.85)',
+                            border: '1px solid #EADFD4',
+                            borderLeft: `3px solid ${ACCENT}`,
+                            borderRadius: 12,
+                            padding: '14px 18px',
+                            display: 'grid',
+                            gap: 6,
+                        }}>
+                            <div style={{
+                                ...TYPE.eyebrow,
+                                color: ACCENT,
+                                fontSize: 10,
+                            }}>
+                                {c.axis}
                             </div>
                             <div style={{
                                 ...TYPE.subhead,
@@ -148,170 +193,60 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                                 color: 'var(--tof-text)',
                                 lineHeight: 1.25,
                             }}>
-                                {t.title}
-                            </div>
-                            <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0, fontSize: 13.5 }}>
-                                {t.body}
-                            </p>
-                        </InnerCard>
-                    ))}
-                </div>
-            </SectionCard>
-
-            {/* ── DE AANPAK ── */}
-            <SectionCard accent={ACCENT} eyebrow="De aanpak" title="In 5 stappen naar jullie kompas.">
-                <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0 }}>
-                    Het Strategisch Kompas wordt gebouwd over 8 tot 12 weken, in nauwe samenwerking met MT of bestuur. Geen losse adviesnota — een levend document dat ingebed wordt in jullie ritme.
-                </p>
-                <div style={{ display: 'grid', gap: SPACING.sm + 2 }}>
-                    {STEPS.map((s) => (
-                        <InteractiveRow key={s.num} accent={ACCENT}>
-                            <div style={{
-                                ...TYPE.eyebrow,
-                                color: ACCENT,
-                                fontSize: 11,
-                                minWidth: 28,
-                            }}>
-                                {s.num}
-                            </div>
-                            <div style={{
-                                display: 'grid',
-                                gap: 4,
-                                flex: 1,
-                                minWidth: 200,
-                            }}>
-                                <div style={{
-                                    ...TYPE.subhead,
-                                    fontSize: 16,
-                                    color: 'var(--tof-text)',
-                                }}>
-                                    {s.name}
-                                </div>
-                                <div style={{
-                                    ...TYPE.eyebrow,
-                                    color: 'var(--tof-text-muted)',
-                                    fontSize: 10,
-                                }}>
-                                    {s.meta}
-                                </div>
+                                {c.title}
                             </div>
                             <p style={{
                                 ...TYPE.body,
                                 color: 'var(--tof-text-soft)',
                                 margin: 0,
-                                flex: 2,
-                                minWidth: 240,
                                 fontSize: 14,
                             }}>
-                                {s.body}
+                                {c.body}
                             </p>
-                        </InteractiveRow>
-                    ))}
-                </div>
-            </SectionCard>
-
-            {/* ── WAT JE IN HANDEN KRIJGT ── */}
-            <SectionCard accent={ACCENT} eyebrow="Wat je in handen krijgt" title="Een document dat MT-meetings opent, niet sluit.">
-                <div style={{ display: 'grid', gap: SPACING.sm + 2 }}>
-                    {DELIVERABLES.map((d, i) => (
-                        <InteractiveRow key={i} accent={ACCENT} subtle>
-                            <div style={{
-                                ...TYPE.subhead,
-                                fontSize: 15,
-                                color: 'var(--tof-text)',
-                                minWidth: 180,
-                            }}>
-                                {d.strong}
-                            </div>
-                            <p style={{
-                                ...TYPE.body,
-                                color: 'var(--tof-text-soft)',
-                                margin: 0,
-                                flex: 1,
-                                minWidth: 240,
-                                fontSize: 14,
-                            }}>
-                                {d.body}
-                            </p>
-                        </InteractiveRow>
-                    ))}
-                </div>
-            </SectionCard>
-
-            {/* ── WAAR MODULE 3 IN PAST ── */}
-            <SectionCard accent={ACCENT} eyebrow="Waar Module 3 in past" title="Drie modules, één verhaal.">
-                <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0 }}>
-                    Module 3 staat op de schouders van Module 1 en 2. Pas als je weet wie er werkt en hoe ze samenwerken, kan je betekenisvol kijken naar waar je heen wilt.
-                </p>
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                    gap: SPACING.md,
-                }}>
-                    {MODULES.map((m, i) => (
-                        <div key={i} style={{
-                            background: m.current ? 'rgba(176,82,82,0.06)' : 'rgba(255,255,255,0.82)',
-                            border: m.current ? `1px solid ${ACCENT}` : '1px solid #EADFD4',
-                            borderRadius: 14,
-                            padding: '16px 18px',
-                            display: 'grid',
-                            gap: SPACING.sm,
-                        }}>
-                            <SectionEyebrow color={m.current ? ACCENT : 'var(--tof-text-muted)'}>
-                                {m.eyebrow}
-                            </SectionEyebrow>
-                            <div style={{
-                                ...TYPE.subhead,
-                                fontSize: 18,
-                                color: 'var(--tof-text)',
-                            }}>
-                                {m.title}
-                            </div>
-                            <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0, fontSize: 13.5 }}>
-                                {m.body}
-                            </p>
-                            <div style={{
-                                ...TYPE.eyebrow,
-                                color: m.current ? ACCENT : 'var(--tof-text)',
-                                fontSize: 12,
-                                marginTop: 4,
-                            }}>
-                                {m.price}
-                            </div>
                         </div>
                     ))}
                 </div>
             </SectionCard>
 
-            {/* ── CTA-rij ── */}
-            <SectionCard accent={ACCENT}>
+            {/* ── 4. JAARRITME ── */}
+            <SectionCard
+                accent={ACCENT}
+                eyebrow="04 · Jaarritme"
+                title="Vier momenten om het kompas te herijken."
+            >
                 <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: SPACING.md,
-                    alignItems: 'flex-start',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                    gap: SPACING.sm + 2,
                 }}>
-                    <SectionEyebrow color={ACCENT}>Vervolgstap</SectionEyebrow>
-                    <h2 style={TYPE.heading}>
-                        Klaar voor een{' '}
-                        <span style={{ color: ACCENT, fontStyle: 'italic' }}>scherper kompas?</span>
-                    </h2>
-                    <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0, maxWidth: 560 }}>
-                        Plan een vrijblijvend gesprek van 30 minuten. We kijken samen of dit traject past bij waar jullie organisatie staat.
-                    </p>
-                    <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap', marginTop: 4 }}>
-                        <PrimaryButton
-                            onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
-                            style={{ background: ACCENT, borderColor: ACCENT }}
-                        >
-                            Plan een gesprek
-                        </PrimaryButton>
-                        <SecondaryButton
-                            onClick={() => window.open('https://www.tof.services', '_blank', 'noopener,noreferrer')}
-                        >
-                            Meer over TOF
-                        </SecondaryButton>
-                    </div>
+                    {kompas.jaarritme.map((m, i) => (
+                        <div key={i} style={{
+                            background: 'var(--tof-surface)',
+                            border: '1px solid var(--tof-border)',
+                            borderTop: `3px solid ${ACCENT}`,
+                            borderRadius: 10,
+                            padding: '14px 16px',
+                            display: 'grid',
+                            gap: 8,
+                        }}>
+                            <div style={{
+                                ...TYPE.eyebrow,
+                                color: ACCENT,
+                                fontSize: 11,
+                            }}>
+                                {m.moment}
+                            </div>
+                            <p style={{
+                                ...TYPE.body,
+                                margin: 0,
+                                fontSize: 13.5,
+                                color: 'var(--tof-text-soft)',
+                                lineHeight: 1.5,
+                            }}>
+                                {m.activity}
+                            </p>
+                        </div>
+                    ))}
                 </div>
             </SectionCard>
         </PageShell>
@@ -331,69 +266,74 @@ function Chip({ children }) {
             color: 'var(--tof-text-muted)',
             letterSpacing: 0.6,
             fontWeight: 600,
+            textTransform: 'uppercase',
         }}>
             {children}
         </span>
     );
 }
 
-function CompareTable() {
-    const headerStyle = {
-        ...TYPE.eyebrow,
-        color: 'var(--tof-text)',
-        padding: '10px 12px',
-        fontSize: 11,
-        borderBottom: '1px solid var(--tof-border)',
-        background: 'rgba(176,82,82,0.04)',
-    };
-
-    const labelStyle = {
-        ...TYPE.eyebrow,
-        color: 'var(--tof-text-muted)',
-        padding: '10px 12px',
-        fontSize: 10,
-        borderBottom: '1px solid var(--tof-border)',
-    };
-
-    const cellStyle = {
-        padding: '10px 12px',
-        borderBottom: '1px solid var(--tof-border)',
-        color: 'var(--tof-text-soft)',
-        fontSize: 13.5,
-    };
-
-    const m3Style = {
-        ...cellStyle,
-        background: 'rgba(176,82,82,0.04)',
-        color: 'var(--tof-text)',
-        fontWeight: 500,
-    };
-
+function TrendBar({ trend }) {
     return (
         <div style={{
             display: 'grid',
-            gridTemplateColumns: '140px 1fr 1fr 1fr',
-            gap: 0,
-            borderTop: '1px solid var(--tof-border)',
-            borderLeft: '1px solid var(--tof-border)',
-            borderRight: '1px solid var(--tof-border)',
-            borderRadius: 10,
-            overflow: 'hidden',
+            gridTemplateColumns: '28px 1fr 56px',
+            alignItems: 'center',
+            gap: SPACING.sm + 2,
+            padding: '10px 12px',
             background: 'var(--tof-surface)',
+            border: '1px solid var(--tof-border)',
+            borderRadius: 10,
         }}>
-            <div style={headerStyle} />
-            <div style={{ ...headerStyle, color: 'var(--tof-text-muted)' }}>Module 1</div>
-            <div style={{ ...headerStyle, color: 'var(--tof-text-muted)' }}>Module 2</div>
-            <div style={{ ...headerStyle, color: ACCENT, fontWeight: 700 }}>Module 3</div>
-
-            {COMPARE_ROWS.map((r, i) => (
-                <React.Fragment key={i}>
-                    <div style={labelStyle}>{r.label}</div>
-                    <div style={cellStyle}>{r.cells[0]}</div>
-                    <div style={cellStyle}>{r.cells[1]}</div>
-                    <div style={m3Style}>{r.cells[2]}</div>
-                </React.Fragment>
-            ))}
+            <span style={{
+                ...TYPE.eyebrow,
+                color: ACCENT,
+                fontSize: 11,
+            }}>
+                {trend.id}
+            </span>
+            <div style={{ display: 'grid', gap: 4 }}>
+                <div style={{
+                    ...TYPE.subhead,
+                    fontSize: 14,
+                    color: 'var(--tof-text)',
+                    lineHeight: 1.2,
+                }}>
+                    {trend.name}
+                </div>
+                <div style={{
+                    height: 6,
+                    background: '#EFE3D6',
+                    borderRadius: 999,
+                    overflow: 'hidden',
+                }}>
+                    <div style={{
+                        height: '100%',
+                        width: `${trend.weight}%`,
+                        background: ACCENT,
+                        borderRadius: 999,
+                        transition: 'width 0.4s ease',
+                    }} />
+                </div>
+                <p style={{
+                    ...TYPE.body,
+                    fontSize: 12.5,
+                    color: 'var(--tof-text-soft)',
+                    margin: '2px 0 0',
+                    lineHeight: 1.45,
+                }}>
+                    {trend.note}
+                </p>
+            </div>
+            <span style={{
+                ...TYPE.eyebrow,
+                color: ACCENT,
+                fontSize: 12,
+                textAlign: 'right',
+                fontWeight: 700,
+            }}>
+                {trend.weight}%
+            </span>
         </div>
     );
 }
