@@ -73,19 +73,19 @@ const MODULES = [
     },
     {
         id: 'strategic',
-        eyebrow: 'Module 3',
-        title: 'Strategisch Team- & Werkplekinzicht',
-        hook: 'Ik werk met vier bestuurders per jaar. Sector, schaal en stijl verschillen. Drie dingen niet: ze zijn eindverantwoordelijk voor wat er gebeurt, ze staan op een kantelpunt, en hun MT klopt op papier maar beweegt in de praktijk niet één kant op.',
+        eyebrow: 'Module 3 · Voor organisaties',
+        title: 'Strategisch Teamkompas',
+        hook: 'Je teams werken. Maar bewegen ze samen één kant op?',
         accent: 'var(--tof-text)',
         soft: '#EDE5D8',
         bullets: [
-            'Koppeling van teamdynamiek aan organisatieambitie',
-            'Strategisch dashboard als kompas voor 3–5 jaar',
-            'Onderbouwing voor werkplek­beleid en leiderschapskeuzes',
-            'Gebaseerd op jouw visie én actuele externe inzichten',
+            'Patronen van alle teams op één strategisch overzicht',
+            'Zie waar werkstijlen, ambitie en werkplek (niet) samenvallen',
+            'Richting voor leiderschap, werkplek en organisatie­ontwerp',
+            'Kompas voor de komende 3–5 jaar',
         ],
-        what: 'Een strategisch richting­document. Op aanvraag en volledig op maat.',
-        cta: 'Neem contact op',
+        what: 'Een strategisch kompas voor je hele organisatie. Kan opmaat zijn naar Het Jaartraject — los van elkaar te boeken, geen verplichting.',
+        cta: 'Plan een verkenningsgesprek',
         ctaType: 'link',
         ctaHref: 'https://www.tof.services/contact',
     },
@@ -978,7 +978,10 @@ function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef 
 
             {isOpen && (
                 <div style={{ padding: '12px 4px 0' }}>
-                    <PrimaryButton onClick={(e) => { e.stopPropagation(); onCta(); }}>
+                    <PrimaryButton
+                        onClick={(e) => { e.stopPropagation(); onCta(); }}
+                        style={{ background: mod.accent, borderColor: mod.accent }}
+                    >
                         {mod.cta}
                     </PrimaryButton>
                 </div>
