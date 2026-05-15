@@ -26,6 +26,7 @@ import {
     listTeamAccesses,
     LEVEL_INSIGHT,
     LEVEL_DYNAMICS,
+    LEVEL_STRATEGIC,
 } from '../utils/access';
 import { validateTeamAccessCode, validateAdminCode, getResponsesByTeam } from '../supabase';
 import {
@@ -74,20 +75,20 @@ const MODULES = [
     {
         id: 'strategic',
         eyebrow: 'Module 3 · Voor organisaties',
-        title: 'Strategisch Team- & Werkplekinzicht',
-        hook: 'Wat vraagt jouw organisatie over drie jaar van teams en werkplek?',
+        title: 'Strategisch Teamkompas',
+        hook: 'Je teams werken. Maar bewegen ze samen één kant op?',
         accent: 'var(--tof-text)',
         soft: '#EDE5D8',
         bullets: [
-            'Koppeling van teamdynamiek aan organisatieambitie',
-            'Strategisch dashboard als kompas voor 3–5 jaar',
-            'Onderbouwing voor werkplek­beleid en leiderschapskeuzes',
-            'Gebaseerd op jouw visie én actuele externe inzichten',
+            'Patronen van alle teams op één strategisch overzicht',
+            'Zie waar werkstijlen, ambitie en werkplek (niet) samenvallen',
+            'Richting voor leiderschap, werkplek en organisatie­ontwerp',
+            'Kompas voor de komende 3–5 jaar',
         ],
-        what: 'Een strategisch richting­document. Op aanvraag en volledig op maat.',
-        cta: 'Neem contact op',
+        what: 'Een strategisch kompas voor je hele organisatie. Kan opmaat zijn naar Het Jaartraject — los van elkaar te boeken, geen verplichting.',
+        cta: 'Bekijk de demo',
         ctaType: 'link',
-        ctaHref: 'https://www.tof.services/contact',
+        ctaHref: 'https://tof-persona-demo.netlify.app/#kompas',
     },
 ];
 
@@ -266,8 +267,15 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
             // Destination: bij 'any' mode → op basis van wat de code ontgrendelt.
             // Bij specifieke mode → vooraf bepaalde destination.
-            const destination = accessModal.destination
-                || (codeLevel === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard');
+            // Strategic-codes routeren altijd naar het Strategisch Kompas, ook
+            // bij een specifieke modal — die kennen we (nog) niet voor Module 3.
+            let destination;
+            if (codeLevel === LEVEL_STRATEGIC) {
+                destination = 'teamstrategic';
+            } else {
+                destination = accessModal.destination
+                    || (codeLevel === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard');
+            }
             setPage(destination);
         } catch (err) {
             console.error('Access flow error:', err);
@@ -978,7 +986,10 @@ function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef 
 
             {isOpen && (
                 <div style={{ padding: '12px 4px 0' }}>
-                    <PrimaryButton onClick={(e) => { e.stopPropagation(); onCta(); }}>
+                    <PrimaryButton
+                        onClick={(e) => { e.stopPropagation(); onCta(); }}
+                        style={{ background: mod.accent, borderColor: mod.accent }}
+                    >
                         {mod.cta}
                     </PrimaryButton>
                 </div>
