@@ -73,9 +73,9 @@ const MODULES = [
     },
     {
         id: 'strategic',
-        eyebrow: 'Module 3 · Voor organisaties',
+        eyebrow: 'Module 3',
         title: 'Strategisch Team- & Werkplekinzicht',
-        hook: 'Wat vraagt jouw organisatie over drie jaar van teams en werkplek?',
+        hook: 'Ik werk met vier bestuurders per jaar. Sector, schaal en stijl verschillen. Drie dingen niet: ze zijn eindverantwoordelijk voor wat er gebeurt, ze staan op een kantelpunt, en hun MT klopt op papier maar beweegt in de praktijk niet één kant op.',
         accent: 'var(--tof-text)',
         soft: '#EDE5D8',
         bullets: [
