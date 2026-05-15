@@ -26,6 +26,7 @@ import {
     listTeamAccesses,
     LEVEL_INSIGHT,
     LEVEL_DYNAMICS,
+    LEVEL_STRATEGIC,
 } from '../utils/access';
 import { validateTeamAccessCode, validateAdminCode, getResponsesByTeam } from '../supabase';
 import {
@@ -266,8 +267,15 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
             // Destination: bij 'any' mode → op basis van wat de code ontgrendelt.
             // Bij specifieke mode → vooraf bepaalde destination.
-            const destination = accessModal.destination
-                || (codeLevel === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard');
+            // Strategic-codes routeren altijd naar het Strategisch Kompas, ook
+            // bij een specifieke modal — die kennen we (nog) niet voor Module 3.
+            let destination;
+            if (codeLevel === LEVEL_STRATEGIC) {
+                destination = 'teamstrategic';
+            } else {
+                destination = accessModal.destination
+                    || (codeLevel === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard');
+            }
             setPage(destination);
         } catch (err) {
             console.error('Access flow error:', err);

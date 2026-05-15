@@ -20,9 +20,12 @@ const ADMIN_ACCESS_KEY = 'tof_admin_access';            // beheerders-toegang
 
 export const LEVEL_INSIGHT = 'insight';
 export const LEVEL_DYNAMICS = 'dynamics';
+export const LEVEL_STRATEGIC = 'strategic';
 
 // Volgorde bepaalt wat hoger is. Index = "power" van het niveau.
-const LEVEL_ORDER = [LEVEL_INSIGHT, LEVEL_DYNAMICS];
+// Strategic > Dynamics > Insight. Wie strategic heeft, heeft ook dynamics en insight.
+// Wie dynamics heeft, heeft ook insight maar NIET strategic.
+const LEVEL_ORDER = [LEVEL_INSIGHT, LEVEL_DYNAMICS, LEVEL_STRATEGIC];
 
 function levelPower(level) {
     const idx = LEVEL_ORDER.indexOf(level);

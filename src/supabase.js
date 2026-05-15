@@ -273,9 +273,14 @@ export async function validateTeamAccessCode(accessCode) {
     if (!data) return null;
 
     // Normaliseer het niveau — codes zonder expliciet level krijgen 'insight' als default.
-    // 'dynamics' = Module 2 (omvat óók Insight). 'insight' = alleen Module 1.
+    // 'strategic' = Module 3 (omvat M1+M2+M3).
+    // 'dynamics' = Module 2 (omvat óók Insight, maar NIET strategic).
+    // 'insight' = alleen Module 1.
     const rawLevel = String(data.level || '').trim().toLowerCase();
-    const level = rawLevel === 'dynamics' ? 'dynamics' : 'insight';
+    const level =
+      rawLevel === 'strategic' ? 'strategic'
+        : rawLevel === 'dynamics' ? 'dynamics'
+          : 'insight';
 
     return {
       ...data,

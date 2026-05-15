@@ -10,6 +10,7 @@ import Quiz from './components/Quiz.jsx';
 import TeamIntro from './components/TeamIntro.jsx';
 import TeamDashboard from './components/TeamDashboard.jsx';
 import TeamDynamics from './components/TeamDynamics.jsx';
+import TeamStrategic from './components/TeamStrategic.jsx';
 import Results from './components/Results.jsx';
 import TeamSelector from './components/TeamSelector.jsx';
 
@@ -75,6 +76,14 @@ export default function App() {
           <TeamDynamics
             setPage={navigate}
             teamResponses={teamResponses}
+            selectedTeam={selectedTeam}
+          />
+        );
+
+      case 'teamstrategic':
+        return (
+          <TeamStrategic
+            setPage={navigate}
             selectedTeam={selectedTeam}
           />
         );
