@@ -29,6 +29,7 @@ import {
 } from '../ui/AppShell';
 import { SPACING, TYPE } from '../ui/tokens';
 import { getStrategicKompas } from '../utils/strategicKompas';
+import { aggregateResponses } from '../utils/strategicScoring';
 
 const ACCENT = 'var(--tof-accent-rose)';
 const SOFT = '#F4DFDF';
@@ -40,6 +41,20 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
     const teamName = selectedTeam?.team || '';
 
     const kompas = useMemo(() => getStrategicKompas(orgName), [orgName]);
+
+    // MT-stemmen: lees Strategic Tool responses uit localStorage, filter op org.
+    // Toekomstig: vervang door Supabase-fetch.
+    const mtAggregation = useMemo(() => {
+        try {
+            const raw = JSON.parse(localStorage.getItem('tof_strategic_responses') || '[]');
+            const filtered = orgName
+                ? raw.filter((r) => (r.profile?.organization || '').trim().toLowerCase() === orgName.toLowerCase())
+                : raw;
+            return aggregateResponses(filtered);
+        } catch {
+            return { count: 0, axes: [], trendWeights: {}, convergenceOverall: 0 };
+        }
+    }, [orgName]);
 
     if (!kompas) {
         return (
@@ -111,6 +126,36 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                         <TrendBar key={t.id} trend={t} />
                     ))}
                 </div>
+            </SectionCard>
+
+            {/* ── 1B. MT-STEMMEN (uit Strategic Tool) ── */}
+            <SectionCard
+                accent={ACCENT}
+                eyebrow="01B · MT-stemmen uit de Strategic Tool"
+                title={mtAggregation.count > 0
+                    ? `${mtAggregation.count} ${mtAggregation.count === 1 ? 'stem' : 'stemmen'} verzameld — convergentie ${mtAggregation.convergenceOverall}%.`
+                    : 'Nog geen MT-input verzameld.'
+                }
+            >
+                {mtAggregation.count === 0 ? (
+                    <>
+                        <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0 }}>
+                            Vraag MT-leden om de Strategic Tool in te vullen. Zodra meerdere stemmen binnenkomen, zie je per as waar het MT convergeert en waar de spanning zit — precies wat het kompas-gesprek waardevol maakt.
+                        </p>
+                        <PrimaryButton
+                            onClick={() => setPage && setPage('strategicintro')}
+                            style={{ background: ACCENT, borderColor: ACCENT, alignSelf: 'flex-start' }}
+                        >
+                            Open de Strategic Tool
+                        </PrimaryButton>
+                    </>
+                ) : (
+                    <div style={{ display: 'grid', gap: SPACING.sm + 2 }}>
+                        {mtAggregation.axes.map((axis, i) => (
+                            <AxisStemmenRow key={axis.id} axis={axis} index={i} />
+                        ))}
+                    </div>
+                )}
             </SectionCard>
 
             {/* ── 2. PERSONA-OVERLAY ── */}
@@ -270,6 +315,109 @@ function Chip({ children }) {
         }}>
             {children}
         </span>
+    );
+}
+
+function AxisStemmenRow({ axis, index }) {
+    const statusColors = {
+        convergent: { bg: '#E4EFE2', text: '#3F5A39', label: 'Convergent' },
+        mixed: { bg: '#FBEFD6', text: '#7A5B1E', label: 'Gemengd' },
+        divergent: { bg: '#F7DADA', text: '#8A3E3E', label: 'Divergent' },
+    };
+    const status = statusColors[axis.status] || statusColors.mixed;
+
+    return (
+        <div style={{
+            background: 'var(--tof-surface)',
+            border: '1px solid var(--tof-border)',
+            borderLeft: `3px solid ${ACCENT}`,
+            borderRadius: 12,
+            padding: '14px 18px',
+            display: 'grid',
+            gap: SPACING.sm,
+        }}>
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: SPACING.md,
+                flexWrap: 'wrap',
+            }}>
+                <div style={{ display: 'grid', gap: 2 }}>
+                    <div style={{
+                        ...TYPE.eyebrow,
+                        color: ACCENT,
+                        fontSize: 10,
+                    }}>
+                        As {index + 1} · {axis.label}
+                    </div>
+                    <div style={{
+                        ...TYPE.subhead,
+                        fontSize: 16,
+                        color: 'var(--tof-text)',
+                        lineHeight: 1.2,
+                    }}>
+                        {axis.dominant ? axis.dominant.label : '—'}
+                    </div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    gap: SPACING.sm,
+                    alignItems: 'center',
+                }}>
+                    <span style={{
+                        background: status.bg,
+                        color: status.text,
+                        padding: '4px 10px',
+                        borderRadius: 999,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: 0.4,
+                        textTransform: 'uppercase',
+                    }}>
+                        {status.label}
+                    </span>
+                    <span style={{
+                        ...TYPE.eyebrow,
+                        color: ACCENT,
+                        fontSize: 14,
+                        fontWeight: 700,
+                    }}>
+                        {axis.dominantShare}%
+                    </span>
+                </div>
+            </div>
+
+            {axis.otherPositions.length > 0 && (
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 6,
+                    fontSize: 12,
+                    color: 'var(--tof-text-soft)',
+                }}>
+                    <span style={{
+                        ...TYPE.eyebrow,
+                        color: 'var(--tof-text-muted)',
+                        fontSize: 10,
+                    }}>
+                        Divergente stemmen:
+                    </span>
+                    {axis.otherPositions.map((p) => (
+                        <span key={p.id} style={{
+                            background: 'var(--tof-bg)',
+                            border: '1px solid var(--tof-border)',
+                            borderRadius: 999,
+                            padding: '3px 10px',
+                            fontSize: 11.5,
+                            color: 'var(--tof-text-soft)',
+                        }}>
+                            {p.label} · {p.share}%
+                        </span>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 }
 

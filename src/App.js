@@ -11,6 +11,9 @@ import TeamIntro from './components/TeamIntro.jsx';
 import TeamDashboard from './components/TeamDashboard.jsx';
 import TeamDynamics from './components/TeamDynamics.jsx';
 import TeamStrategic from './components/TeamStrategic.jsx';
+import StrategicIntro from './components/StrategicIntro.jsx';
+import StrategicQuiz from './components/StrategicQuiz.jsx';
+import StrategicResult from './components/StrategicResult.jsx';
 import Results from './components/Results.jsx';
 import TeamSelector from './components/TeamSelector.jsx';
 
@@ -19,6 +22,7 @@ export default function App() {
   const [resultData, setResultData] = useState(null);
   const [teamResponses, setTeamResponses] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
+  const [strategicResult, setStrategicResult] = useState(null);
 
   function navigate(target) {
     setPage(target);
@@ -85,6 +89,26 @@ export default function App() {
           <TeamStrategic
             setPage={navigate}
             selectedTeam={selectedTeam}
+          />
+        );
+
+      case 'strategicintro':
+        return <StrategicIntro setPage={navigate} />;
+
+      case 'strategicquiz':
+        return (
+          <StrategicQuiz
+            setPage={navigate}
+            setStrategicResult={setStrategicResult}
+            selectedTeam={selectedTeam}
+          />
+        );
+
+      case 'strategicresult':
+        return (
+          <StrategicResult
+            setPage={navigate}
+            strategicResult={strategicResult}
           />
         );
 
