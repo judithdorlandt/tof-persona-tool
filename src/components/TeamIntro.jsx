@@ -86,9 +86,12 @@ const MODULES = [
             'Kompas voor de komende 3–5 jaar',
         ],
         what: 'Een strategisch kompas voor je hele organisatie. Kan opmaat zijn naar Het Jaartraject — los van elkaar te boeken, geen verplichting.',
-        cta: 'Bekijk de demo',
-        ctaType: 'link',
-        ctaHref: 'https://tof-persona-demo.netlify.app/#kompas',
+        cta: 'Start de Strategic Tool',
+        ctaType: 'internal',
+        ctaPage: 'strategicintro',
+        secondaryCta: 'Bekijk de demo',
+        secondaryCtaType: 'link',
+        secondaryCtaHref: 'https://tof-persona-demo.netlify.app/#kompas',
     },
 ];
 
@@ -362,7 +365,12 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                     if (mod.ctaType === 'access-insight') openAccessModal('insight');
                                     else if (mod.ctaType === 'access-dynamics') openAccessModal('dynamics');
                                     else if (mod.ctaType === 'link') window.open(mod.ctaHref, '_blank', 'noopener,noreferrer');
+                                    else if (mod.ctaType === 'internal') setPage(mod.ctaPage);
                                 }}
+                                onSecondaryCta={mod.secondaryCta ? () => {
+                                    if (mod.secondaryCtaType === 'link') window.open(mod.secondaryCtaHref, '_blank', 'noopener,noreferrer');
+                                    else if (mod.secondaryCtaType === 'internal') setPage(mod.secondaryCtaPage);
+                                } : null}
                                 cardRef={(el) => { cardRefs.current[mod.id] = el; }}
                             />
                         );
@@ -875,7 +883,7 @@ function AccessModal({
 
 // ─── MODULE KAART ─────────────────────────────────────────────────────────────
 
-function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef }) {
+function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, onSecondaryCta, cardRef }) {
     return (
         <div
             ref={cardRef}
@@ -985,13 +993,20 @@ function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef 
             </button>
 
             {isOpen && (
-                <div style={{ padding: '12px 4px 0' }}>
+                <div style={{ padding: '12px 4px 0', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <PrimaryButton
                         onClick={(e) => { e.stopPropagation(); onCta(); }}
                         style={{ background: mod.accent, borderColor: mod.accent }}
                     >
                         {mod.cta}
                     </PrimaryButton>
+                    {mod.secondaryCta && onSecondaryCta && (
+                        <SecondaryButton
+                            onClick={(e) => { e.stopPropagation(); onSecondaryCta(); }}
+                        >
+                            {mod.secondaryCta}
+                        </SecondaryButton>
+                    )}
                 </div>
             )}
         </div>
