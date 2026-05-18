@@ -124,10 +124,10 @@ export function grantTeamLevel({ team, organization, level, code = '' }) {
 
 /**
  * Geeft het huidige niveau voor een team terug, of null als er geen toegang is.
- * Admin en Maker hebben altijd Dynamics-niveau.
+ * Admin en Maker hebben altijd Strategic-niveau (volledige toegang).
  */
 export function getTeamLevel(team, organization) {
-    if (isMakerAccess() || isAdminAccess()) return LEVEL_DYNAMICS;
+    if (isMakerAccess() || isAdminAccess()) return LEVEL_STRATEGIC;
 
     migrateLegacyIfNeeded();
     const list = readAccessList();

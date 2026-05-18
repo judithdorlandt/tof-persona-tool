@@ -207,20 +207,21 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
         setAccessError('');
 
         try {
-            // Bij 'any'-mode (centrale code-invoer) eerst proberen als admin-code.
-            // Zo kan de beheerder dezelfde knop gebruiken als gewone gebruikers.
+            // Probeer altijd eerst als admin-code — admin/maker heeft volledige toegang
+            // tot alle modules en kan elke specifieke code-modal "openen" met een
+            // admin-code. De destination volgt dan de modal-context.
             const isAnyMode = accessModal.requiredLevel === null;
 
-            if (isAnyMode) {
-                const adminResult = await validateAdminCode(cleanedInput);
-                if (adminResult) {
-                    grantAdminAccess();
-                    closeAccessModal();
-                    // Beheerder gaat naar teamselector om uit alle teams te kiezen
-                    setPage('teamselector');
-                    setAccessLoading(false);
-                    return;
-                }
+            const adminResult = await validateAdminCode(cleanedInput);
+            if (adminResult) {
+                grantAdminAccess();
+                closeAccessModal();
+                // Bij 'any'-mode → teamselector (kies team).
+                // Bij specifieke modal → de bedoelde destination, zodat een admin
+                // ook bv. de Strategic Tool direct kan openen.
+                setPage(isAnyMode ? 'teamselector' : (accessModal.destination || 'teamselector'));
+                setAccessLoading(false);
+                return;
             }
 
             const accessResult = await validateTeamAccessCode(cleanedInput);
