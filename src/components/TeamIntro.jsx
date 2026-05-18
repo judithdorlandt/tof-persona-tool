@@ -87,8 +87,7 @@ const MODULES = [
         ],
         what: 'Een strategisch kompas voor je hele organisatie. Kan opmaat zijn naar Het Jaartraject — los van elkaar te boeken, geen verplichting.',
         cta: 'Start de Strategic Tool',
-        ctaType: 'internal',
-        ctaPage: 'strategicintro',
+        ctaType: 'access-strategic',
         secondaryCta: 'Bekijk de demo',
         secondaryCtaType: 'link',
         secondaryCtaHref: 'https://tof-persona-demo.netlify.app/#kompas',
@@ -143,10 +142,12 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
     }
 
     function openAccessModal(mode) {
-        // mode: 'insight' | 'dynamics' | 'any'
-        // 'any' = centrale code-invoer, modal accepteert beide en stuurt naar juiste dashboard
+        // mode: 'insight' | 'dynamics' | 'strategic' | 'any'
+        // 'any' = centrale code-invoer, modal accepteert alle niveaus en stuurt naar juiste pagina
         if (mode === 'dynamics') {
             setAccessModal({ requiredLevel: LEVEL_DYNAMICS, destination: 'teamdynamics' });
+        } else if (mode === 'strategic') {
+            setAccessModal({ requiredLevel: LEVEL_STRATEGIC, destination: 'strategicintro' });
         } else if (mode === 'any') {
             setAccessModal({ requiredLevel: null, destination: null });
         } else {
@@ -232,8 +233,15 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             const codeLevel = accessResult.level || LEVEL_INSIGHT;
 
             // Als Module 2 vraagt maar code is alleen insight → blokkeren
-            if (accessModal.requiredLevel === LEVEL_DYNAMICS && codeLevel !== LEVEL_DYNAMICS) {
+            if (accessModal.requiredLevel === LEVEL_DYNAMICS && codeLevel !== LEVEL_DYNAMICS && codeLevel !== LEVEL_STRATEGIC) {
                 setAccessError('Deze code geeft alleen toegang tot Team Insight, niet tot Team Dynamics.');
+                setAccessLoading(false);
+                return;
+            }
+
+            // Module 3 (Strategic Tool) vraagt om strategic-code
+            if (accessModal.requiredLevel === LEVEL_STRATEGIC && codeLevel !== LEVEL_STRATEGIC) {
+                setAccessError('Deze code geeft geen toegang tot de Strategic Tool. Neem contact op om je toegang te activeren.');
                 setAccessLoading(false);
                 return;
             }
@@ -268,16 +276,17 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
             closeAccessModal();
 
-            // Destination: bij 'any' mode → op basis van wat de code ontgrendelt.
-            // Bij specifieke mode → vooraf bepaalde destination.
-            // Strategic-codes routeren altijd naar het Strategisch Kompas, ook
-            // bij een specifieke modal — die kennen we (nog) niet voor Module 3.
-            let destination;
-            if (codeLevel === LEVEL_STRATEGIC) {
-                destination = 'teamstrategic';
-            } else {
-                destination = accessModal.destination
-                    || (codeLevel === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard');
+            // Destination: bij specifieke mode → vooraf bepaalde destination
+            // (bv. 'strategicintro' bij Module 3 button, 'teamdynamics' bij Module 2).
+            // Bij 'any' mode → op basis van wat de code ontgrendelt:
+            //   strategic → teamstrategic dashboard
+            //   dynamics → teamdynamics
+            //   insight → teamdashboard
+            let destination = accessModal.destination;
+            if (!destination) {
+                if (codeLevel === LEVEL_STRATEGIC) destination = 'teamstrategic';
+                else if (codeLevel === LEVEL_DYNAMICS) destination = 'teamdynamics';
+                else destination = 'teamdashboard';
             }
             setPage(destination);
         } catch (err) {
@@ -364,6 +373,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                 onCta={() => {
                                     if (mod.ctaType === 'access-insight') openAccessModal('insight');
                                     else if (mod.ctaType === 'access-dynamics') openAccessModal('dynamics');
+                                    else if (mod.ctaType === 'access-strategic') openAccessModal('strategic');
                                     else if (mod.ctaType === 'link') window.open(mod.ctaHref, '_blank', 'noopener,noreferrer');
                                     else if (mod.ctaType === 'internal') setPage(mod.ctaPage);
                                 }}
@@ -784,6 +794,7 @@ function AccessModal({
     onClose,
 }) {
     const isDynamics = requiredLevel === LEVEL_DYNAMICS;
+    const isStrategic = requiredLevel === LEVEL_STRATEGIC;
     const isAny = requiredLevel === null || requiredLevel === undefined;
 
     let eyebrow, title, lead, accentColor;
@@ -791,7 +802,12 @@ function AccessModal({
     if (isAny) {
         eyebrow = 'Toegangscode';
         title = 'Voer je toegangscode in';
-        lead = 'We herkennen zelf of je toegang hebt tot Team Insight of Team Dynamics — je komt automatisch op het juiste dashboard.';
+        lead = 'We herkennen zelf op welk niveau je toegang hebt — je komt automatisch op de juiste pagina.';
+        accentColor = 'var(--tof-text)';
+    } else if (isStrategic) {
+        eyebrow = 'Module 3';
+        title = 'Toegangscode Strategic Tool';
+        lead = 'De Strategic Tool is beschikbaar voor klanten van Module 3. Voer je toegangscode in om te beginnen.';
         accentColor = 'var(--tof-text)';
     } else if (isDynamics) {
         eyebrow = 'Module 2';
