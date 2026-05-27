@@ -176,19 +176,31 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             // Manager-toegang via team_managers: koppel teams aan ingelogde
             // user zonder code-invoer. Krijgt fromManager-vlag zodat het
             // UI-laagje (YourAccessPanel) er later een badge bij kan tonen.
+            // Als hetzelfde team al via localStorage of memberships in de
+            // lijst staat, voegen we de vlag toe op het bestaande record —
+            // anders verliezen we manager-mode bij duplicaten.
             managedTeams.forEach((m) => {
                 const key = `${m.organization || ''}|${m.team || ''}`;
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    merged.push({
-                        team: m.team,
-                        organization: m.organization,
-                        code: m.code || null,
-                        level: m.level || LEVEL_INSIGHT,
-                        fromDB: true,
-                        fromManager: true,
-                    });
+                if (seen.has(key)) {
+                    const existing = merged.find(
+                        (a) => `${a.organization || ''}|${a.team || ''}` === key
+                    );
+                    if (existing) {
+                        existing.fromManager = true;
+                        existing.fromDB = true;
+                        if (!existing.code && m.code) existing.code = m.code;
+                    }
+                    return;
                 }
+                seen.add(key);
+                merged.push({
+                    team: m.team,
+                    organization: m.organization,
+                    code: m.code || null,
+                    level: m.level || LEVEL_INSIGHT,
+                    fromDB: true,
+                    fromManager: true,
+                });
             });
 
             setTeamAccesses(merged);
@@ -200,6 +212,11 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
     const cardRefs = useRef({});
     const makerMode = isMakerAccess();
+
+    // Auto-open: als de ingelogde manager precies ÉÉN gekoppeld team heeft,
+    // sla deze tussenpagina over en open direct het team-dashboard. Voor
+    // managers met meerdere teams (zoals admin-test) blijft de keuze staan.
+    const autoOpenedRef = useRef(false);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -216,6 +233,16 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
     }, [openId]);
+
+    // Auto-open dashboard voor single-team manager (zie ref hierboven).
+    useEffect(() => {
+        if (autoOpenedRef.current) return;
+        const managerTeams = teamAccesses.filter((a) => a.fromManager);
+        if (managerTeams.length === 1) {
+            autoOpenedRef.current = true;
+            openExistingTeam(managerTeams[0]);
+        }
+    }, [teamAccesses]); // eslint-disable-line react-hooks/exhaustive-deps
 
     function handleToggle(id) {
         setOpenId((prev) => (prev === id ? null : id));
