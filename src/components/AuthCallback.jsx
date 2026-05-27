@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import { getMyManagedTeams } from '../supabase';
+import { getMyManagedTeams, getResponsesByTeam } from '../supabase';
+import { grantTeamLevel, LEVEL_INSIGHT, LEVEL_DYNAMICS } from '../utils/access';
 import {
   PageShell,
   HeroBlock,
@@ -19,7 +20,7 @@ import { TYPE, SPACING } from '../ui/tokens';
  * Wij wachten kort op de sessie en navigeren door naar /home (of laten
  * een fout zien als er iets misgaat).
  */
-export default function AuthCallback({ setPage }) {
+export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponses }) {
   const { session, loading } = useAuth();
   const [waited, setWaited] = useState(false);
 
@@ -30,24 +31,51 @@ export default function AuthCallback({ setPage }) {
   }, []);
 
   // Zodra een sessie verschijnt: bepaal waar we heen gaan.
-  // - Manager (heeft team_managers rijen) → /team (manager-mode UI)
-  // - Gewone user → /home
+  // - 1 manager-team        → direct naar dashboard (skip /team helemaal)
+  // - meerdere manager-teams → /team (manager-mode lijst)
+  // - geen manager-rijen    → /home
   useEffect(() => {
     if (!session || !setPage) return;
     let cancelled = false;
     (async () => {
-      let destination = 'home';
       try {
         const managed = await getMyManagedTeams();
-        if (managed.length > 0) destination = 'team';
+
+        if (managed.length === 1) {
+          // Direct naar dashboard — geen tussenpagina met 3 modules.
+          const t = managed[0];
+          grantTeamLevel({
+            team: t.team,
+            organization: t.organization,
+            level: t.level || LEVEL_INSIGHT,
+            code: t.code,
+          });
+          if (typeof setSelectedTeam === 'function') {
+            setSelectedTeam({ team: t.team, organization: t.organization, code: t.code });
+          }
+          try {
+            const responses = await getResponsesByTeam(t.team, t.organization);
+            if (typeof setTeamResponses === 'function') {
+              setTeamResponses(responses || []);
+            }
+          } catch (_e) {
+            if (typeof setTeamResponses === 'function') setTeamResponses([]);
+          }
+          if (cancelled) return;
+          const destination = t.level === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard';
+          setTimeout(() => { if (!cancelled) setPage(destination); }, 200);
+          return;
+        }
+
+        if (cancelled) return;
+        const destination = managed.length > 1 ? 'team' : 'home';
+        setTimeout(() => { if (!cancelled) setPage(destination); }, 400);
       } catch (_e) {
-        // niet-kritiek; val terug op home
+        if (!cancelled) setTimeout(() => setPage('home'), 400);
       }
-      if (cancelled) return;
-      setTimeout(() => { if (!cancelled) setPage(destination); }, 400);
     })();
     return () => { cancelled = true; };
-  }, [session, setPage]);
+  }, [session, setPage, setSelectedTeam, setTeamResponses]);
 
   if (session) {
     return (

@@ -186,7 +186,13 @@ export default function App() {
         return <Login setPage={navigate} />;
 
       case 'authcallback':
-        return <AuthCallback setPage={navigate} />;
+        return (
+          <AuthCallback
+            setPage={navigate}
+            setSelectedTeam={setSelectedTeam}
+            setTeamResponses={setTeamResponses}
+          />
+        );
 
       case 'admin':
         return <Admin setPage={navigate} />;
