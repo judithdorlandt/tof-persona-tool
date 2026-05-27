@@ -121,6 +121,9 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
     // Herladen wanneer de modal sluit, want na een succesvolle code-invoer is er iets bijgekomen.
     const [teamAccesses, setTeamAccesses] = useState(() => listTeamAccesses());
 
+    // Ingelogde user (null als anoniem). Gebruikt voor de manager-welkomstgroet.
+    const [currentUser, setCurrentUser] = useState(null);
+
     // Combineer localStorage-toegang (anonieme code-flow) met DB-memberships
     // (ingelogde flow). DB-only entries krijgen later automatisch een localStorage
     // grant op het moment dat de user op het team klikt (zie openExistingTeam).
@@ -135,8 +138,9 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             // Niet ingelogd? alleen lokale toegang.
             let dbMemberships = [];
             let managedTeams = [];
+            let user = null;
             try {
-                const user = await getCurrentUser();
+                user = await getCurrentUser();
                 if (user) {
                     dbMemberships = await getMyMemberships();
                     managedTeams = await getMyManagedTeams();
@@ -146,6 +150,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             }
 
             if (cancelled) return;
+            setCurrentUser(user);
 
             // Merge: localStorage entries hebben priority (ze hebben het juiste
             // level uit het oorspronkelijke code-moment). DB-only entries worden
@@ -388,11 +393,60 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
     };
 
     // ── RENDER ────────────────────────────────────────────────────────────────
+    // Manager-mode: minstens één toegang komt uit team_managers (auto-koppeling
+    // via email). Zo'n user is geen prospect — hij komt voor zijn team-resultaten.
+    // We verbergen dan de sales-hero, de drie module-kaarten en het code-invoer-
+    // blok, en laten alleen YourAccessPanel zien.
+    const isManagerMode = teamAccesses.some((a) => a.fromManager);
+    const managerFirstName = (() => {
+        if (!currentUser?.email) return '';
+        const local = currentUser.email.split('@')[0] || '';
+        const first = local.split(/[._-]/)[0] || '';
+        return first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
+    })();
+
     return (
         <PageShell padding={isMobile ? '16px 16px 28px' : '20px 20px 32px'}>
             <div style={{ display: 'grid', gap: isMobile ? 16 : 20, animation: 'tofFadeIn 0.5s ease' }}>
 
-                {/* ── HERO — rose identiteit ── */}
+                {/* ── MANAGER WELKOM (alleen in manager-mode) ── */}
+                {isManagerMode && (
+                    <div style={{
+                        background: 'linear-gradient(145deg, #FDF6F6 0%, #F7F0ED 100%)',
+                        borderRadius: 20,
+                        border: '1px solid rgba(176,82,82,0.14)',
+                        padding: isMobile ? '22px 20px' : '28px 36px',
+                        position: 'relative',
+                        overflow: 'hidden',
+                    }}>
+                        <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'var(--tof-accent-rose)', borderRadius: '4px 0 0 4px' }} />
+                        <div style={{ paddingLeft: isMobile ? 8 : 16, display: 'grid', gap: 8 }}>
+                            <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>
+                                Welkom terug
+                            </div>
+                            <h1 style={{
+                                margin: 0,
+                                fontFamily: "'Playfair Display', serif",
+                                fontWeight: 500,
+                                fontSize: isMobile ? 'clamp(22px, 5vw, 28px)' : 'clamp(24px, 2.4vw, 30px)',
+                                lineHeight: 1.2,
+                                color: '#1f1b18',
+                            }}>
+                                {managerFirstName
+                                    ? <>Hoi {managerFirstName}, <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>jouw team(s) staan klaar.</em></>
+                                    : <>Jouw team(s) <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>staan klaar.</em></>
+                                }
+                            </h1>
+                            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: '#6F6A66', maxWidth: 560 }}>
+                                Klik op een team hieronder om het Team Insight-dashboard te openen.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── HERO + MODULE KAARTEN (verborgen in manager-mode) ── */}
+                {!isManagerMode && (
+                <>
                 <div style={{
                     background: 'linear-gradient(145deg, #FDF6F6 0%, #F7F0ED 100%)',
                     borderRadius: 20,
@@ -471,11 +525,15 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                         );
                     })}
                 </div>
+                </>
+                )}
 
                 {/* ── CONTEXTUELE VOLGORDE ─────────────────────────────── */}
                 {/* Returning users (al toegang) zien hun teams eerst — dat is */}
                 {/* waar ze voor komen. New users zien de code-invoer eerst. */}
-                {/* Manager-met-meerdere-teams flow loopt later via /login (auth). */}
+                {/* Manager-mode (auto-koppeling via team_managers) toont */}
+                {/* alleen YourAccessPanel — geen sales-hero, geen module-kaarten, */}
+                {/* geen code-invoer-blok. */}
                 {(teamAccesses.length > 0 || isAdminAccess()) ? (
                     <>
                         <YourAccessPanel
@@ -492,11 +550,15 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                 setTeamAccesses(listTeamAccesses());
                             }}
                         />
-                        <CodeEntryBlock
-                            isMobile={isMobile}
-                            onOpenCodeModal={() => openAccessModal('any')}
-                            variant="compact"
-                        />
+                        {/* Code-invoer blok blijft zichtbaar voor losse code-flow,
+                            maar niet voor managers — die zijn al gekoppeld via email. */}
+                        {!isManagerMode && (
+                            <CodeEntryBlock
+                                isMobile={isMobile}
+                                onOpenCodeModal={() => openAccessModal('any')}
+                                variant="compact"
+                            />
+                        )}
                     </>
                 ) : (
                     <CodeEntryBlock
