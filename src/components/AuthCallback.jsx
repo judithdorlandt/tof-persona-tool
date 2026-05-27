@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
+import { getMyManagedTeams } from '../supabase';
 import {
   PageShell,
   HeroBlock,
@@ -28,12 +29,24 @@ export default function AuthCallback({ setPage }) {
     return () => clearTimeout(timer);
   }, []);
 
-  // Zodra een sessie verschijnt: door naar home.
+  // Zodra een sessie verschijnt: bepaal waar we heen gaan.
+  // - Manager (heeft team_managers rijen) → /team (manager-mode UI)
+  // - Gewone user → /home
   useEffect(() => {
-    if (session && setPage) {
-      const t = setTimeout(() => setPage('home'), 400);
-      return () => clearTimeout(t);
-    }
+    if (!session || !setPage) return;
+    let cancelled = false;
+    (async () => {
+      let destination = 'home';
+      try {
+        const managed = await getMyManagedTeams();
+        if (managed.length > 0) destination = 'team';
+      } catch (_e) {
+        // niet-kritiek; val terug op home
+      }
+      if (cancelled) return;
+      setTimeout(() => { if (!cancelled) setPage(destination); }, 400);
+    })();
+    return () => { cancelled = true; };
   }, [session, setPage]);
 
   if (session) {
