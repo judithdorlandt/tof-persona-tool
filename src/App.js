@@ -66,7 +66,11 @@ export default function App() {
 
   const handleLogout = useCallback(async () => {
     await signOut();
-    routerNavigate('/');
+    // Naar /login (i.p.v. landing) zodat je direct met een ander
+    // account kunt inloggen — handig voor managers die wisselen
+    // tussen team-accounts, of voor admins die als manager willen
+    // testen.
+    routerNavigate('/login');
   }, [routerNavigate]);
 
   // Drop-in compatible setPage(target) — vervangt useState-versie
