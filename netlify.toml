@@ -1,3 +1,9 @@
 [build]
   command = "CI=false npm run build"
   publish = "build"
+
+# SPA-fallback zodat React Router routes ook werken bij direct laden.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

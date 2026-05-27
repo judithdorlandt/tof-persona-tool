@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
+
+import { useAuth } from './auth/AuthContext';
+import { signOut } from './supabase';
 
 import Landing from './components/Landing.jsx';
 import Nav from './components/Nav.jsx';
@@ -13,16 +17,73 @@ import TeamDynamics from './components/TeamDynamics.jsx';
 import TeamStrategic from './components/TeamStrategic.jsx';
 import Results from './components/Results.jsx';
 import TeamSelector from './components/TeamSelector.jsx';
+import Login from './components/Login.jsx';
+import AuthCallback from './components/AuthCallback.jsx';
+import Admin from './components/Admin.jsx';
+import StrategischKompas from './components/StrategischKompas.jsx';
+
+// Map page-keys naar URL-paths zodat we deep-links krijgen
+// en browser-back/forward natuurlijk werkt.
+const PAGE_TO_PATH = {
+  landing: '/',
+  home: '/home',
+  intro: '/intro',
+  library: '/library',
+  quiz: '/quiz',
+  results: '/results',
+  team: '/team',
+  teamdashboard: '/team/dashboard',
+  teamdynamics: '/team/dynamics',
+  teamselector: '/team/selector',
+  login: '/login',
+  authcallback: '/auth/callback',
+  admin: '/admin',
+  strategischkompas: '/strategisch-kompas',
+};
+
+const PATH_TO_PAGE = Object.entries(PAGE_TO_PATH).reduce((acc, [k, v]) => {
+  acc[v] = k;
+  return acc;
+}, {});
+
+function pathToPage(pathname) {
+  if (PATH_TO_PAGE[pathname]) return PATH_TO_PAGE[pathname];
+  // Fallback: probeer zonder trailing slash
+  const trimmed = pathname.replace(/\/+$/, '') || '/';
+  return PATH_TO_PAGE[trimmed] || 'landing';
+}
 
 export default function App() {
-  const [page, setPage] = useState('landing');
+  const location = useLocation();
+  const routerNavigate = useNavigate();
+  const { user } = useAuth();
+
+  const page = pathToPage(location.pathname);
+
   const [resultData, setResultData] = useState(null);
   const [teamResponses, setTeamResponses] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
 
-  function navigate(target) {
-    setPage(target);
-  }
+  const handleLogout = useCallback(async () => {
+    await signOut();
+    routerNavigate('/');
+  }, [routerNavigate]);
+
+  // Drop-in compatible setPage(target) — vervangt useState-versie
+  // door router-navigatie. Bestaande componenten hoeven niets te weten.
+  const navigate = useCallback(
+    (target) => {
+      const path = PAGE_TO_PATH[target] || '/';
+      routerNavigate(path);
+    },
+    [routerNavigate]
+  );
+
+  // Scroll naar boven bij route-wissel — premium gevoel,
+  // anders blijft de scrollpositie op de vorige pagina hangen.
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location.pathname]);
 
   const renderPage = () => {
     switch (page) {
@@ -98,18 +159,35 @@ export default function App() {
           />
         );
 
+      case 'login':
+        return <Login setPage={navigate} />;
+
+      case 'authcallback':
+        return <AuthCallback setPage={navigate} />;
+
+      case 'admin':
+        return <Admin setPage={navigate} />;
+
+      case 'strategischkompas':
+        return <StrategischKompas setPage={navigate} />;
+
       default:
         return <Landing setPage={navigate} />;
     }
   };
 
+  // Pagina's waar de Nav NIET getoond moet worden — landing en auth-flow.
+  const hideNav = page === 'landing' || page === 'login' || page === 'authcallback';
+
   return (
     <>
-      {page !== 'landing' && (
+      {!hideNav && (
         <Nav
           page={page}
           setPage={navigate}
           hasResult={!!resultData}
+          currentUser={user}
+          onLogout={handleLogout}
         />
       )}
       <main>{renderPage()}</main>
