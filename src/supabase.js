@@ -494,6 +494,151 @@ export async function joinTeamByCode(code) {
 }
 
 // =========================
+// MANAGER ACCESS — team_managers tabel
+// =========================
+// Managers worden vooraf gekoppeld aan een team-code via hun e-mail
+// (zie supabase/001_team_managers.sql). Bij hun eerste magic-link login
+// matcht Supabase de email automatisch en krijgen ze toegang tot
+// alle gekoppelde teams — zonder code in te voeren.
+
+/**
+ * Haalt teams op waar de ingelogde user manager van is, via team_managers.
+ * Joint met team_access_codes om level/team/organization mee te leveren.
+ *
+ * Returnt: [{ code, level, team, organization, role }]
+ * Lege array als niet ingelogd of geen koppelingen.
+ */
+export async function getMyManagedTeams() {
+  if (!ensureSupabase()) return [];
+
+  try {
+    const user = await getCurrentUser();
+    if (!user?.email) return [];
+
+    const { data, error } = await supabase
+      .from('team_managers')
+      .select('role, team_code, team_access_codes!inner(code, level, team, organization, active)')
+      .eq('email', user.email.toLowerCase())
+      .eq('team_access_codes.active', true);
+
+    if (error) {
+      // Tabel bestaat misschien nog niet (SQL nog niet gedraaid) — log en geef [].
+      console.warn('⚠️ getMyManagedTeams:', error.message);
+      return [];
+    }
+
+    return (data || []).map((r) => ({
+      code: r.team_access_codes?.code || r.team_code,
+      level: r.team_access_codes?.level || 'insight',
+      team: r.team_access_codes?.team || null,
+      organization: r.team_access_codes?.organization || null,
+      role: r.role || 'manager',
+    }));
+  } catch (err) {
+    console.warn('⚠️ getMyManagedTeams error:', err?.message || err);
+    return [];
+  }
+}
+
+// ─── Admin-side helpers voor de Managers-tab in Admin.jsx ──────────────────
+
+/**
+ * Lijst ALLE manager-koppelingen, verrijkt met team-naam.
+ * Alleen admin. Sorteert op team_code.
+ *
+ * Returnt: [{ id, email, team_code, role, created_at, team, organization }]
+ */
+export async function adminListTeamManagers() {
+  if (!ensureSupabase()) return [];
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) return [];
+
+    const { data, error } = await supabase
+      .from('team_managers')
+      .select('id, email, team_code, role, created_at, team_access_codes!inner(team, organization)')
+      .order('team_code', { ascending: true });
+
+    if (error) {
+      console.warn('⚠️ adminListTeamManagers:', error.message);
+      return [];
+    }
+
+    return (data || []).map((r) => ({
+      id: r.id,
+      email: r.email,
+      team_code: r.team_code,
+      role: r.role,
+      created_at: r.created_at,
+      team: r.team_access_codes?.team || null,
+      organization: r.team_access_codes?.organization || null,
+    }));
+  } catch (err) {
+    console.warn('⚠️ adminListTeamManagers error:', err?.message || err);
+    return [];
+  }
+}
+
+/**
+ * Koppel een manager (email) aan een team-code.
+ * Idempotent: bij conflict (email, team_code) gebeurt niets.
+ *
+ * Returnt: { row, error }
+ */
+export async function adminAddTeamManager({ email, teamCode, role = 'manager' }) {
+  if (!ensureSupabase()) {
+    return { row: null, error: { message: 'Supabase niet beschikbaar' } };
+  }
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) return { row: null, error: { message: 'Geen admin-rechten' } };
+
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const cleanCode = String(teamCode || '').trim();
+    if (!cleanEmail || !cleanCode) {
+      return { row: null, error: { message: 'Email en team_code zijn verplicht' } };
+    }
+
+    const { data, error } = await supabase
+      .from('team_managers')
+      .upsert(
+        { email: cleanEmail, team_code: cleanCode, role },
+        { onConflict: 'email,team_code', ignoreDuplicates: true }
+      )
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error('❌ adminAddTeamManager:', error.message);
+      return { row: null, error };
+    }
+    return { row: data, error: null };
+  } catch (err) {
+    console.error('❌ adminAddTeamManager error:', err?.message || err);
+    return { row: null, error: { message: err?.message || 'Onbekende fout' } };
+  }
+}
+
+/** Verwijder een manager-koppeling op id. Alleen admin. */
+export async function adminRemoveTeamManager(id) {
+  if (!ensureSupabase()) return { error: { message: 'Supabase niet beschikbaar' } };
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) return { error: { message: 'Geen admin-rechten' } };
+
+    const { error } = await supabase.from('team_managers').delete().eq('id', id);
+    if (error) {
+      console.error('❌ adminRemoveTeamManager:', error.message);
+      return { error };
+    }
+    return { error: null };
+  } catch (err) {
+    console.error('❌ adminRemoveTeamManager error:', err?.message || err);
+    return { error: { message: err?.message || 'Onbekende fout' } };
+  }
+}
+
+// =========================
 // ADMIN GATING (TOF interne tooling — /admin route)
 // =========================
 // Voor de admin-dashboardroute. Voorlopig hardcoded e-maillijst.

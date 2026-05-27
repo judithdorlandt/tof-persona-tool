@@ -35,6 +35,7 @@ import {
     getCurrentUser,
     joinTeamByCode,
     getMyMemberships,
+    getMyManagedTeams,
 } from '../supabase';
 import {
     PageShell,
@@ -133,10 +134,12 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
             // Niet ingelogd? alleen lokale toegang.
             let dbMemberships = [];
+            let managedTeams = [];
             try {
                 const user = await getCurrentUser();
                 if (user) {
                     dbMemberships = await getMyMemberships();
+                    managedTeams = await getMyManagedTeams();
                 }
             } catch (e) {
                 // niet-kritiek, val terug op alleen-localStorage
@@ -161,6 +164,24 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                         code: m.code || null,
                         level: m.level || LEVEL_INSIGHT,
                         fromDB: true,
+                    });
+                }
+            });
+
+            // Manager-toegang via team_managers: koppel teams aan ingelogde
+            // user zonder code-invoer. Krijgt fromManager-vlag zodat het
+            // UI-laagje (YourAccessPanel) er later een badge bij kan tonen.
+            managedTeams.forEach((m) => {
+                const key = `${m.organization || ''}|${m.team || ''}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    merged.push({
+                        team: m.team,
+                        organization: m.organization,
+                        code: m.code || null,
+                        level: m.level || LEVEL_INSIGHT,
+                        fromDB: true,
+                        fromManager: true,
                     });
                 }
             });

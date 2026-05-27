@@ -24,6 +24,9 @@ import {
     getCurrentUser,
     getAllTeamAccessCodes,
     createTeamAccessCode,
+    adminListTeamManagers,
+    adminAddTeamManager,
+    adminRemoveTeamManager,
 } from '../supabase';
 import {
     PageShell,
@@ -49,6 +52,13 @@ export default function Admin({ setPage }) {
     const [justCreated, setJustCreated] = useState(null);
     // justCreated: { code, organization, team, level, leaderEmail }
 
+    // Managers state
+    const [managers, setManagers] = useState([]);
+    const [managerEmailInput, setManagerEmailInput] = useState('');
+    const [managerCodeInput, setManagerCodeInput] = useState('');
+    const [managerError, setManagerError] = useState('');
+    const [managerBusy, setManagerBusy] = useState(false);
+
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
         window.addEventListener('resize', onResize);
@@ -63,9 +73,13 @@ export default function Admin({ setPage }) {
             if (cancelled) return;
             setAuthorized(admin);
             if (admin) {
-                const list = await getAllTeamAccessCodes();
+                const [list, mgrs] = await Promise.all([
+                    getAllTeamAccessCodes(),
+                    adminListTeamManagers(),
+                ]);
                 if (cancelled) return;
                 setTeams(list);
+                setManagers(mgrs);
             }
             setLoading(false);
         }
@@ -112,6 +126,52 @@ export default function Admin({ setPage }) {
             setCreateError(err?.message || 'Onbekende fout.');
         } finally {
             setCreateLoading(false);
+        }
+    }
+
+    async function handleAddManager(e) {
+        e?.preventDefault?.();
+        setManagerError('');
+        const email = managerEmailInput.trim().toLowerCase();
+        const code = managerCodeInput.trim();
+        if (!email || !code) {
+            setManagerError('Email en teamcode zijn verplicht.');
+            return;
+        }
+        if (!email.includes('@')) {
+            setManagerError('Vul een geldig e-mailadres in.');
+            return;
+        }
+        setManagerBusy(true);
+        try {
+            const { error } = await adminAddTeamManager({ email, teamCode: code });
+            if (error) {
+                setManagerError(error.message || 'Koppelen mislukt.');
+                return;
+            }
+            setManagerEmailInput('');
+            setManagerCodeInput('');
+            const refreshed = await adminListTeamManagers();
+            setManagers(refreshed);
+        } catch (err) {
+            setManagerError(err?.message || 'Onbekende fout.');
+        } finally {
+            setManagerBusy(false);
+        }
+    }
+
+    async function handleRemoveManager(id) {
+        setManagerBusy(true);
+        try {
+            const { error } = await adminRemoveTeamManager(id);
+            if (error) {
+                setManagerError(error.message || 'Verwijderen mislukt.');
+                return;
+            }
+            const refreshed = await adminListTeamManagers();
+            setManagers(refreshed);
+        } finally {
+            setManagerBusy(false);
         }
     }
 
@@ -247,6 +307,21 @@ export default function Admin({ setPage }) {
                 <TeamsList
                     isMobile={isMobile}
                     teams={teams}
+                />
+
+                {/* Managers-koppelingen */}
+                <ManagersSection
+                    isMobile={isMobile}
+                    teams={teams}
+                    managers={managers}
+                    emailInput={managerEmailInput}
+                    setEmailInput={setManagerEmailInput}
+                    codeInput={managerCodeInput}
+                    setCodeInput={setManagerCodeInput}
+                    busy={managerBusy}
+                    error={managerError}
+                    onAdd={handleAddManager}
+                    onRemove={handleRemoveManager}
                 />
 
             </div>
@@ -632,6 +707,201 @@ function TeamRow({ isMobile, team }) {
             }}>
                 {team.active ? '● Actief' : '○ Inactief'}
             </div>
+        </div>
+    );
+}
+
+// ─── SUB: Managers ─────────────────────────────────────────────────────────
+
+function ManagersSection({
+    isMobile, teams, managers,
+    emailInput, setEmailInput, codeInput, setCodeInput,
+    busy, error, onAdd, onRemove,
+}) {
+    const inputStyle = {
+        width: '100%',
+        padding: '12px 14px',
+        border: '1px solid var(--tof-border)',
+        borderRadius: 10,
+        fontSize: 15,
+        fontFamily: 'inherit',
+        background: 'var(--tof-bg)',
+        color: 'var(--tof-text)',
+        boxSizing: 'border-box',
+    };
+    const labelStyle = {
+        display: 'block',
+        fontSize: 11,
+        textTransform: 'uppercase',
+        letterSpacing: 1.2,
+        fontWeight: 700,
+        color: 'var(--tof-text-muted)',
+        marginBottom: 6,
+    };
+
+    const activeTeams = (teams || []).filter((t) => t.active);
+
+    return (
+        <div style={{
+            background: 'var(--tof-surface)',
+            border: '1px solid var(--tof-border)',
+            borderRadius: 14,
+            padding: isMobile ? '20px 22px' : '24px 28px',
+            display: 'grid',
+            gap: 16,
+        }}>
+            <div style={{
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: 1.4,
+                fontWeight: 700,
+                color: 'var(--tof-accent-rose)',
+            }}>
+                Managers — directe team-toegang via email
+            </div>
+            <p style={{
+                margin: 0,
+                fontSize: 13,
+                lineHeight: 1.6,
+                color: 'var(--tof-text-soft)',
+            }}>
+                Koppel een manager-email aan een team-code. Bij hun eerste magic-link
+                login zien ze het team(s) automatisch in hun toegangs-overzicht — zonder
+                code in te voeren.
+            </p>
+
+            {/* Form: nieuwe koppeling */}
+            <form onSubmit={onAdd} style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1.4fr 1fr auto',
+                gap: 12,
+                alignItems: 'end',
+            }}>
+                <div>
+                    <label style={labelStyle}>Email manager</label>
+                    <input
+                        type="email"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value)}
+                        placeholder="a.kempeneers@nijkerk.eu"
+                        style={inputStyle}
+                    />
+                </div>
+                <div>
+                    <label style={labelStyle}>Team-code</label>
+                    <select
+                        value={codeInput}
+                        onChange={(e) => setCodeInput(e.target.value)}
+                        style={{ ...inputStyle, cursor: 'pointer' }}
+                    >
+                        <option value="">— kies een team —</option>
+                        {activeTeams.map((t) => (
+                            <option key={t.code} value={t.code}>
+                                {t.code} — {t.team || '(zonder naam)'}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <PrimaryButton type="submit" disabled={busy}>
+                    {busy ? 'Bezig…' : 'Koppel'}
+                </PrimaryButton>
+            </form>
+
+            {error && (
+                <div style={{
+                    background: 'rgba(176,82,82,0.08)',
+                    border: '1px solid rgba(176,82,82,0.24)',
+                    borderRadius: 8,
+                    padding: '10px 14px',
+                    color: 'var(--tof-accent-rose)',
+                    fontSize: 13,
+                }}>
+                    {error}
+                </div>
+            )}
+
+            {/* Lijst gekoppelde managers */}
+            <div style={{
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: 1.4,
+                fontWeight: 700,
+                color: 'var(--tof-text-muted)',
+                marginTop: 6,
+            }}>
+                Gekoppeld ({managers.length})
+            </div>
+
+            {managers.length === 0 ? (
+                <div style={{
+                    padding: 24,
+                    color: 'var(--tof-text-muted)',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    border: '1px dashed var(--tof-border)',
+                    borderRadius: 10,
+                }}>
+                    Nog geen managers gekoppeld. (Of de SQL-migratie is nog niet gedraaid.)
+                </div>
+            ) : (
+                <div style={{ display: 'grid', gap: 8 }}>
+                    {managers.map((m) => (
+                        <ManagerRow
+                            key={m.id}
+                            isMobile={isMobile}
+                            manager={m}
+                            busy={busy}
+                            onRemove={() => onRemove(m.id)}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function ManagerRow({ isMobile, manager, busy, onRemove }) {
+    return (
+        <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1.6fr) minmax(0, 1.4fr) 110px 100px',
+            gap: 12,
+            alignItems: 'center',
+            padding: '12px 14px',
+            background: 'var(--tof-bg)',
+            border: '1px solid var(--tof-border)',
+            borderRadius: 10,
+        }}>
+            <div style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: 'var(--tof-text)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+            }}>
+                {manager.email}
+            </div>
+            <div style={{
+                fontSize: 13,
+                color: 'var(--tof-text-muted)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+            }}>
+                {manager.team || '—'}
+            </div>
+            <div style={{
+                fontSize: 11,
+                color: 'var(--tof-text-muted)',
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                letterSpacing: 0.5,
+            }}>
+                {manager.team_code}
+            </div>
+            <SecondaryButton onClick={onRemove} disabled={busy}>
+                Verwijder
+            </SecondaryButton>
         </div>
     );
 }
