@@ -21,6 +21,11 @@
 import jsPDF from 'jspdf';
 import { svg2pdf } from 'svg2pdf.js';
 import tofLogo from '../assets/tof-logo.png';
+import {
+    TOF_COLORS,
+    TOF_PERSONA_COLORS,
+    setupTofFonts,
+} from './tofPdfBrand';
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -33,29 +38,14 @@ const PAGE_H = 420;
 // Marges — proportioneel ruimer dan A5
 const MARGIN = 24;
 
-// Kleuren — Dynamics gebruikt rose als hoofdaccent
+// Brand-kleuren — gedeeld met persona-kaart en team-insight PDFs.
+// roseSoft is module-specifiek (dynamics-accent) en blijft lokaal.
 const COLOR = {
-    bg: '#F7F3EE',
-    surface: '#FFFFFF',
-    border: '#E6DDD2',
-    text: '#1F1F1F',
-    textSoft: '#555555',
-    textMuted: '#7A7A7A',
-    sage: '#6E8872',
-    rose: '#B05252',
+    ...TOF_COLORS,
     roseSoft: '#E8C8C8',
 };
 
-const PERSONA_COLORS = {
-    maker: '#B05252',
-    groeier: '#C28D6B',
-    presteerder: '#C7A24A',
-    denker: '#6F7F92',
-    verbinder: '#7F9A8A',
-    teamspeler: '#8B7F9A',
-    zekerzoeker: '#7D8A6B',
-    vernieuwer: '#D08C5B',
-};
+const PERSONA_COLORS = TOF_PERSONA_COLORS;
 
 // Source-labels — keys exact gelijk aan TeamDynamics.jsx
 // (anders krijg je "REFLECTIE" voor alles wat geen match is)
@@ -107,6 +97,10 @@ export async function generateTeamDynamicsPDF({
             format: 'a3',
             compress: true,
         });
+
+        // Brand-fonts (Inter + Playfair Display) — matcht persona-kaart en
+        // team-insight. Zonder dit valt svg2pdf terug op default fonts.
+        setupTofFonts(pdf);
 
         await svg2pdf(svgVoorkant, pdf, {
             x: 0,
@@ -642,9 +636,13 @@ function drawLeadershipActions({ svg, y, leadershipWins }) {
         return;
     }
 
-    let lineY = y + 20;
-    const numberColW = 16;
-    const usableW = PAGE_W - MARGIN * 2 - numberColW;
+    // 2-koloms grid: 3 rijen × 2 kolommen — past comfortabel boven de footer
+    const startY = y + 18;
+    const numberColW = 14;
+    const colGap = 14;
+    const colW = (PAGE_W - MARGIN * 2 - colGap) / 2;
+    const bodyW = colW - numberColW;
+    const rowH = 36;        // hoogte per actie — past 2 regels body
 
     leadershipWins.slice(0, 6).forEach((win, index) => {
         const item = typeof win === 'string'
@@ -652,10 +650,15 @@ function drawLeadershipActions({ svg, y, leadershipWins }) {
             : win;
         const sourceLabel = LEADERSHIP_SOURCE_LABELS[item.source] || 'REFLECTIE';
 
+        const col = index % 2;
+        const row = Math.floor(index / 2);
+        const colX = MARGIN + col * (colW + colGap);
+        const rowY = startY + row * rowH;
+
         // Nummer in Playfair rose
         svg.appendChild(createText({
-            x: MARGIN,
-            y: lineY + 1,
+            x: colX,
+            y: rowY + 1,
             text: String(index + 1).padStart(2, '0'),
             font: 'Playfair Display',
             weight: 500,
@@ -665,8 +668,8 @@ function drawLeadershipActions({ svg, y, leadershipWins }) {
 
         // Source-label
         svg.appendChild(createText({
-            x: MARGIN + numberColW,
-            y: lineY,
+            x: colX + numberColW,
+            y: rowY,
             text: sourceLabel,
             font: 'Inter',
             weight: 700,
@@ -675,21 +678,26 @@ function drawLeadershipActions({ svg, y, leadershipWins }) {
             letterSpacing: 0.8,
         }));
 
-        // Actie-tekst
-        const actionLines = wrapText(item.action || '', usableW, 5.8, 'Inter');
+        // Actie-tekst — gelimiteerd tot 3 regels zodat alle 6 acties zonder
+        // overlap binnen rowH (36mm) passen vóór de footer.
+        const maxLines = 3;
+        let actionLines = wrapText(item.action || '', bodyW, 5.6, 'Inter');
+        if (actionLines.length > maxLines) {
+            actionLines = actionLines.slice(0, maxLines);
+            const last = actionLines[maxLines - 1];
+            actionLines[maxLines - 1] = last.replace(/\s+\S+\s*$/, '') + '…';
+        }
         actionLines.forEach((line, i) => {
             svg.appendChild(createText({
-                x: MARGIN + numberColW,
-                y: lineY + 7 + i * 7.4,
+                x: colX + numberColW,
+                y: rowY + 7 + i * 7.2,
                 text: line,
                 font: 'Inter',
                 weight: 400,
-                size: 5.8,
+                size: 5.6,
                 color: COLOR.text,
             }));
         });
-
-        lineY += 7 + actionLines.length * 7.4 + 6;
     });
 }
 

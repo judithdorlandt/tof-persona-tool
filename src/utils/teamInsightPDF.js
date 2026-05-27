@@ -11,6 +11,11 @@
 import jsPDF from 'jspdf';
 import { svg2pdf } from 'svg2pdf.js';
 import tofLogo from '../assets/tof-logo.png';
+import {
+    TOF_COLORS,
+    TOF_PERSONA_COLORS,
+    setupTofFonts,
+} from './tofPdfBrand';
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -23,29 +28,14 @@ const PAGE_H = 420;
 // Marges — proportioneel ruimer dan A5
 const MARGIN = 24;
 
-// Kleuren (gelijk aan UI)
+// Brand-kleuren — gedeeld met persona-kaart en team-dynamics PDFs.
+// sageSoft is module-specifiek (insight-accent) en blijft lokaal.
 const COLOR = {
-    bg: '#F7F3EE',
-    surface: '#FFFFFF',
-    border: '#E6DDD2',
-    text: '#1F1F1F',
-    textSoft: '#555555',
-    textMuted: '#7A7A7A',
-    sage: '#6E8872',
-    rose: '#B05252',
+    ...TOF_COLORS,
     sageSoft: '#C6D9C9',
 };
 
-const PERSONA_COLORS = {
-    maker: '#B05252',
-    groeier: '#C28D6B',
-    presteerder: '#C7A24A',
-    denker: '#6F7F92',
-    verbinder: '#7F9A8A',
-    teamspeler: '#8B7F9A',
-    zekerzoeker: '#7D8A6B',
-    vernieuwer: '#D08C5B',
-};
+const PERSONA_COLORS = TOF_PERSONA_COLORS;
 
 // =========================
 // PUBLIC API
@@ -70,6 +60,10 @@ export async function generateTeamInsightPDF({
             format: 'a3',
             compress: true,
         });
+
+        // Brand-fonts (Inter + Playfair Display) — matcht persona-kaart PDF
+        // en de webapp. Zonder dit valt svg2pdf terug op default fonts.
+        setupTofFonts(pdf);
 
         await svg2pdf(svgVoorkant, pdf, {
             x: 0,
