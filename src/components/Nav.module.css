@@ -1,0 +1,182 @@
+/*
+ * Nav — sticky top bar. Vasthouden in elke pagina.
+ */
+
+.bar {
+  background: var(--tof-surface);
+  border-bottom: 1px solid #EAE3DC;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 14px 20px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ===== Logo button ===== */
+.logoBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.logoImg {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.25;
+}
+.brandTitle {
+  font-family: var(--tof-font-heading);
+  font-weight: 300;
+  color: var(--tof-text);
+  font-size: 1.125rem;
+  letter-spacing: -0.025em;
+}
+.brandWord { margin-right: 0.15em; }
+.brandAccent {
+  font-family: var(--tof-font-heading);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--tof-accent-rose);
+}
+.brandSub {
+  margin-top: 2px;
+  font-family: var(--tof-font-body);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tof-text-muted);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* ===== Desktop nav ===== */
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.navItem {
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid #E2D8CC;
+  background: var(--tof-surface);
+  color: var(--tof-text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.navItem:hover { border-color: var(--tof-accent-rose); }
+.navItemActive {
+  border: 1px solid var(--tof-accent-rose);
+  background: var(--tof-accent-rose);
+  color: #fff;
+}
+.logoutBtn {
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid #E2D8CC;
+  background: var(--tof-surface);
+  color: var(--tof-text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logoutDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7F9A8A;
+  display: inline-block;
+}
+
+/* ===== Mobile menu trigger ===== */
+.menuBtn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #E2D8CC;
+  background: var(--tof-surface);
+  color: var(--tof-text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+.menuBtnOpen {
+  background: var(--tof-accent-rose);
+  color: #fff;
+}
+
+/* ===== Mobile menu panel ===== */
+.menuPanel {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #EFE7DE;
+}
+.menuItem {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #E2D8CC;
+  background: var(--tof-surface);
+  color: var(--tof-text);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.menuItemActive {
+  border: 1px solid var(--tof-accent-rose);
+  background: #FCF1F1;
+  font-weight: 600;
+}
+.menuLogoutBtn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #E2D8CC;
+  background: var(--tof-surface);
+  color: var(--tof-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== Mobile responsive overrides ===== */
+@media (max-width: 819px) {
+  .inner { padding: 12px 14px; }
+  .logoImg { width: 34px; height: 34px; }
+  .brandTitle { font-size: 1rem; }
+  .brandSub { display: none; }
+}

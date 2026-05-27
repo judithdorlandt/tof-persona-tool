@@ -1,6 +1,44 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { ARCHETYPES, QUESTIONS } from '../data';
 import { saveResponse } from '../supabase';
+import styles from './Quiz.module.css';
+
+// Auto-save key. Bump versie als de state-shape verandert.
+const QUIZ_STORAGE_KEY = 'tof-quiz-progress-v1';
+
+function readProgress() {
+    if (typeof window === 'undefined') return null;
+    try {
+        const raw = window.localStorage.getItem(QUIZ_STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return null;
+        // Minimale validatie: step + profile + scores moeten bestaan
+        if (typeof parsed.step !== 'number') return null;
+        if (!parsed.profile || typeof parsed.profile !== 'object') return null;
+        return parsed;
+    } catch (err) {
+        return null;
+    }
+}
+
+function writeProgress(state) {
+    if (typeof window === 'undefined') return;
+    try {
+        window.localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+        // localStorage kan vol of geblokkeerd zijn; geen blokker
+    }
+}
+
+function clearProgress() {
+    if (typeof window === 'undefined') return;
+    try {
+        window.localStorage.removeItem(QUIZ_STORAGE_KEY);
+    } catch (err) {
+        // niets
+    }
+}
 
 function shuffleArray(array) {
     const copy = [...array];
@@ -16,24 +54,40 @@ function createEmptyScores() {
 }
 
 export default function Quiz({ setPage, setResultData }) {
-    const [step, setStep] = useState(-1);
-    const [profile, setProfile] = useState({
-        name: '',
-        org: '',
-        dept: '',
-        has_multiple_teams: '',
-        team: '',
-        invite_code: '',
-        role: '',
-        team_size: '',
-    });
-    const [scores, setScores] = useState(createEmptyScores());
+    // Bij eerste mount restoren uit localStorage als er progress is.
+    const restored = useMemo(() => readProgress(), []);
+    const [resumed, setResumed] = useState(Boolean(restored));
+
+    const [step, setStep] = useState(restored?.step ?? -1);
+    const [profile, setProfile] = useState(
+        restored?.profile ?? {
+            name: '',
+            org: '',
+            dept: '',
+            team: '',
+            invite_code: '',
+            role: '',
+            team_size: '',
+        }
+    );
+    const [scores, setScores] = useState(restored?.scores ?? createEmptyScores());
     const questionTopRef = useRef(null);
     const [selectedAnswers, setSelectedAnswers] = useState([]);
     const [shuffledOptions, setShuffledOptions] = useState([]);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    // Auto-save bij elke wijziging van step/profile/scores.
+    // Pas opslaan zodra de gebruiker iets heeft ingevuld OF al begonnen is.
+    useEffect(() => {
+        const hasMeaningfulProgress =
+            step >= 0 ||
+            (profile.org && profile.org.trim() !== '') ||
+            (profile.dept && profile.dept.trim() !== '');
+        if (!hasMeaningfulProgress) return;
+        writeProgress({ step, profile, scores });
+    }, [step, profile, scores]);
 
     const totalQuestions = QUESTIONS.length;
     const currentQuestion = step >= 0 ? QUESTIONS[step] : null;
@@ -80,30 +134,13 @@ export default function Quiz({ setPage, setResultData }) {
     };
 
     const startQuiz = () => {
-        const hasOrg = profile.org.trim() !== '';
-        const hasDept = profile.dept.trim() !== '';
-        const hasMultipleTeams = profile.has_multiple_teams === 'yes';
-        const hasAnsweredTeamQuestion =
-            profile.has_multiple_teams === 'yes' || profile.has_multiple_teams === 'no';
-        const hasTeam = profile.team.trim() !== '';
-
-        if (!hasOrg) {
+        if (profile.org.trim() === '') {
             setError('Vul je organisatie in.');
             return;
         }
 
-        if (!hasDept) {
+        if (profile.dept.trim() === '') {
             setError('Vul je afdeling in.');
-            return;
-        }
-
-        if (!hasAnsweredTeamQuestion) {
-            setError('Geef aan of jouw afdeling uit meerdere teams bestaat.');
-            return;
-        }
-
-        if (hasMultipleTeams && !hasTeam) {
-            setError('Vul je team in.');
             return;
         }
 
@@ -158,8 +195,8 @@ export default function Quiz({ setPage, setResultData }) {
             }))
             .sort((a, b) => b.score - a.score);
 
-        const normalizedTeam =
-            profile.has_multiple_teams === 'yes' ? profile.team.trim() : profile.dept.trim();
+        // Team is optioneel; valt terug op afdeling als leeg.
+        const normalizedTeam = profile.team.trim() || profile.dept.trim();
 
         const result = {
             ...profile,
@@ -176,6 +213,8 @@ export default function Quiz({ setPage, setResultData }) {
 
         try {
             await saveResponse(result);
+            // Klaar — progress wissen zodat een refresh niet meer terugbrengt.
+            clearProgress();
             setResultData(result);
             setPage('results');
         } catch (err) {
@@ -186,70 +225,78 @@ export default function Quiz({ setPage, setResultData }) {
         }
     };
 
+    // Hervatten met een schone lei: wist localStorage + reset state.
+    const discardResumed = () => {
+        clearProgress();
+        setResumed(false);
+        setStep(-1);
+        setProfile({
+            name: '',
+            org: '',
+            dept: '',
+            team: '',
+            invite_code: '',
+            role: '',
+            team_size: '',
+        });
+        setScores(createEmptyScores());
+    };
+
     if (step === -1) {
         return (
-            <div
-                style={{
-                    minHeight: 'calc(100vh - 88px)',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    justifyContent: 'center',
-                    padding: isMobile ? '16px 16px 28px' : '20px 20px 32px',
-                    background: '#f7f2ec',
-                    boxSizing: 'border-box',
-                }}
-            >
-                <div style={{ width: '100%', maxWidth: 680, display: 'grid', gap: 14 }}>
+            <div className={`fade-up ${styles.page}`}>
+                <div className={styles.stack}>
+
+                    {/* ── Hervatten-banner ─────────────────────────────── */}
+                    {resumed && (
+                        <div className={styles.resumeBanner}>
+                            <span>
+                                <span className={styles.resumeStrong}>Verder gegaan</span> vanaf je vorige sessie.
+                            </span>
+                            <button
+                                type="button"
+                                onClick={discardResumed}
+                                className={styles.resumeDiscard}
+                            >
+                                Begin opnieuw
+                            </button>
+                        </div>
+                    )}
 
                     {/* ── HERO — rode identiteit ──────────────────────── */}
-                    <div style={{
-                        background: '#fff',
-                        borderRadius: 20,
-                        border: '1px solid #e7ddd4',
-                        boxShadow: '0 10px 26px rgba(70,45,35,0.05)',
-                        padding: isMobile ? '22px 18px 20px' : '30px 34px 26px',
-                        position: 'relative',
-                        overflow: 'hidden',
-                    }}>
-                        <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: '#b85c5c', borderRadius: '4px 0 0 4px' }} />
-                        <div style={{ paddingLeft: isMobile ? 8 : 12 }}>
-                            <div style={{ color: '#b85c5c', letterSpacing: 2, fontSize: 11, textTransform: 'uppercase', fontWeight: 700, marginBottom: 10 }}>
-                                03 — Jouw context
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
-                                <h1 style={{ margin: 0, fontFamily: 'Playfair Display', fontWeight: 500, fontSize: isMobile ? 28 : 36, lineHeight: 1.06, color: '#1f1b18' }}>
+                    <div className={styles.hero}>
+                        <div className={styles.heroAccent} />
+                        <div className={styles.heroInner}>
+                            <div className={styles.heroEyebrow}>03 — Jouw context</div>
+                            <div className={styles.heroHeading}>
+                                <h1 className={styles.heroTitle}>
                                     Over jouw{' '}
-                                    <em style={{ color: '#b85c5c', fontStyle: 'italic' }}>context</em>
+                                    <em className={styles.heroTitleAccent}>context</em>
                                 </h1>
-                                {!isMobile && (
-                                    <p style={{ margin: 0, maxWidth: 220, fontSize: 13, lineHeight: 1.6, color: '#777', paddingBottom: 3, flexShrink: 0 }}>
-                                        Organisatie en afdeling zijn verplicht. De rest is optioneel.
-                                    </p>
-                                )}
+                                <p className={styles.heroSub}>
+                                    Alleen <strong>organisatie</strong> en <strong>afdeling</strong> zijn verplicht. De rest helpt voor team-inzicht.
+                                </p>
                             </div>
                         </div>
                     </div>
 
                     {/* ── FORMULIER ───────────────────────────────────── */}
-                    <div style={{
-                        background: 'white',
-                        borderRadius: 18,
-                        padding: isMobile ? '16px 14px' : '20px 22px',
-                        border: '1px solid #e7ddd4',
-                        boxShadow: '0 10px 26px rgba(70,45,35,0.05)',
-                        display: 'grid',
-                        gap: 12,
-                    }}>
-                        {/* Naam — één kolom breed */}
+                    <div className={styles.formCard}>
+
+                        {/* Sectie 1 — Over jou (klein, vriendelijk) */}
                         <FormField
                             label="Voornaam"
                             optional
+                            placeholder="Hoe heet je?"
+                            hint="Fijn voor je persoonlijke resultaat."
                             value={profile.name}
                             onChange={(value) => updateProfileField('name', value)}
                         />
 
-                        {/* Organisatie + Afdeling naast elkaar */}
-                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
+                        <div className={styles.sectionDivider} />
+
+                        {/* Sectie 2 — Over je werk (verplicht + nuttig) */}
+                        <div className={styles.row}>
                             <FormField
                                 label="Organisatie"
                                 required
@@ -266,80 +313,68 @@ export default function Quiz({ setPage, setResultData }) {
                             />
                         </div>
 
-                        {/* Meerdere teams? */}
-                        <ChoiceField
-                            label="Bestaat jouw afdeling uit meerdere teams?"
-                            required
-                            value={profile.has_multiple_teams}
-                            onChange={(value) => {
-                                updateProfileField('has_multiple_teams', value);
-                                if (value === 'no') updateProfileField('team', '');
-                            }}
-                            options={[
-                                { label: 'Ja', value: 'yes' },
-                                { label: 'Nee', value: 'no' },
-                            ]}
+                        <FormField
+                            label="Team"
+                            optional
+                            placeholder="Bijv. 'Marketing Brand' of 'Klantenservice NL'"
+                            hint="Handig voor team-inzicht. Laat leeg als jouw afdeling één team is."
+                            value={profile.team}
+                            onChange={(value) => updateProfileField('team', value)}
                         />
 
-                        {profile.has_multiple_teams === 'yes' && (
+                        {/* Teamcode — opvallend zichtbaar voor wie er een heeft ontvangen */}
+                        <div className={styles.teamCodeBox}>
                             <FormField
-                                label="Team"
-                                required
-                                placeholder="Bijv. directieteam of projectteam"
-                                value={profile.team}
-                                onChange={(value) => updateProfileField('team', value)}
-                            />
-                        )}
-
-                        {/* Rol + Teamgrootte naast elkaar */}
-                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
-                            <FormField
-                                label="Rol"
-                                placeholder="Bijv. teamleider of adviseur"
-                                value={profile.role}
-                                onChange={(value) => updateProfileField('role', value)}
-                            />
-                            <FormField
-                                label="Teamgrootte"
-                                placeholder="Bijv. 5-10"
-                                value={profile.team_size}
-                                onChange={(value) => updateProfileField('team_size', value)}
+                                label="Teamcode"
+                                optional
+                                placeholder="Bijv. NL-2026-ABC"
+                                hint="Heb je een code van je manager gekregen? Vul hem hier in voor team-inzichten."
+                                value={profile.invite_code}
+                                onChange={(value) => updateProfileField('invite_code', value)}
                             />
                         </div>
 
-                        <FormField
-                            label="Teamcode"
-                            placeholder="Alleen invullen als je die hebt ontvangen"
-                            value={profile.invite_code}
-                            onChange={(value) => updateProfileField('invite_code', value)}
-                        />
+                        {/* Sectie 3 — Optioneel: meer details */}
+                        <details className={styles.disclosure}>
+                            <summary className={styles.disclosureSummary}>
+                                <span>
+                                    Meer over jezelf
+                                    <span className={styles.disclosureHint}>(optioneel)</span>
+                                </span>
+                            </summary>
+                            <div className={styles.disclosureBody}>
+                                <div className={styles.row}>
+                                    <FormField
+                                        label="Rol"
+                                        optional
+                                        placeholder="Bijv. teamleider of adviseur"
+                                        value={profile.role}
+                                        onChange={(value) => updateProfileField('role', value)}
+                                    />
+                                    <FormField
+                                        label="Teamgrootte"
+                                        optional
+                                        placeholder="Bijv. 5–10"
+                                        value={profile.team_size}
+                                        onChange={(value) => updateProfileField('team_size', value)}
+                                    />
+                                </div>
+                            </div>
+                        </details>
 
                         {error && (
-                            <div style={{ color: '#b85c5c', fontSize: 13 }}>{error}</div>
+                            <p className={styles.error}>{error}</p>
                         )}
 
-                        <button
-                            type="button"
-                            onClick={startQuiz}
-                            style={{
-                                marginTop: 4,
-                                background: '#b85c5c',
-                                color: 'white',
-                                padding: '13px 22px',
-                                borderRadius: 10,
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 15,
-                                fontWeight: 600,
-                                width: isMobile ? '100%' : 'auto',
-                                boxShadow: '0 4px 14px rgba(176,82,82,0.28)',
-                                transition: 'transform 0.15s, box-shadow 0.15s',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(176,82,82,0.36)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(176,82,82,0.28)'; }}
-                        >
-                            Start de vragen →
-                        </button>
+                        <div className={styles.submitRow}>
+                            <button
+                                type="button"
+                                onClick={startQuiz}
+                                className={styles.submit}
+                            >
+                                Start de vragen →
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -567,65 +602,25 @@ function FormField({
     placeholder = '',
     optional = false,
     required = false,
+    hint = '',
 }) {
     return (
-        <div>
-            <label style={{ display: 'block', marginBottom: 6, fontWeight: 600 }}>
+        <div className={styles.field}>
+            <label className={styles.label}>
                 {label}{' '}
-                {optional && <span style={{ color: '#777', fontWeight: 400 }}>(optioneel)</span>}
-                {required && <span style={{ color: '#b85c5c' }}>*</span>}
+                {optional && <span className={styles.labelOptional}>(optioneel)</span>}
+                {required && <span className={styles.labelRequired}>*</span>}
             </label>
 
             <input
                 type="text"
+                className={styles.input}
                 value={value}
                 placeholder={placeholder}
                 onChange={(e) => onChange(e.target.value)}
-                style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: 10,
-                    border: '1px solid #ddd',
-                    fontSize: 15,
-                    boxSizing: 'border-box',
-                }}
             />
-        </div>
-    );
-}
 
-function ChoiceField({ label, value, onChange, options, required = false }) {
-    return (
-        <div>
-            <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>
-                {label} {required && <span style={{ color: '#b85c5c' }}>*</span>}
-            </label>
-
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                {options.map((option) => {
-                    const active = value === option.value;
-
-                    return (
-                        <button
-                            key={option.value}
-                            type="button"
-                            onClick={() => onChange(option.value)}
-                            style={{
-                                padding: '10px 14px',
-                                borderRadius: 10,
-                                border: active ? '2px solid #b85c5c' : '1px solid #ddd',
-                                background: active ? '#fcf1f1' : 'white',
-                                color: '#1f1b18',
-                                cursor: 'pointer',
-                                fontSize: 14,
-                                fontWeight: 500,
-                            }}
-                        >
-                            {option.label}
-                        </button>
-                    );
-                })}
-            </div>
+            {hint && <p className={styles.hint}>{hint}</p>}
         </div>
     );
 }

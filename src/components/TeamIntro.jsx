@@ -28,7 +28,14 @@ import {
     LEVEL_DYNAMICS,
     LEVEL_STRATEGIC,
 } from '../utils/access';
-import { validateTeamAccessCode, validateAdminCode, getResponsesByTeam } from '../supabase';
+import {
+    validateTeamAccessCode,
+    validateAdminCode,
+    getResponsesByTeam,
+    getCurrentUser,
+    joinTeamByCode,
+    getMyMemberships,
+} from '../supabase';
 import {
     PageShell,
     PrimaryButton,
@@ -74,21 +81,24 @@ const MODULES = [
     },
     {
         id: 'strategic',
-        eyebrow: 'Module 3 · Voor organisaties',
-        title: 'Strategisch Teamkompas',
-        hook: 'Je teams werken. Maar bewegen ze samen één kant op?',
+        eyebrow: 'Module 3 · Voor MT, bestuur, huisvesting',
+        title: 'Het Strategisch Kompas',
+        hook: 'Wat de wereld vraagt, vertaald naar wie je team is.',
         accent: 'var(--tof-text)',
         soft: '#EDE5D8',
         bullets: [
-            'Patronen van alle teams op één strategisch overzicht',
-            'Zie waar werkstijlen, ambitie en werkplek (niet) samenvallen',
-            'Richting voor leiderschap, werkplek en organisatie­ontwerp',
-            'Kompas voor de komende 3–5 jaar',
+            'Trend-radar: 8 gecureerde trends over werk, leiderschap en AI',
+            'Persona-overlay: welke trends raken juist jullie team het hardst',
+            'Strategische keuzes voor leiderschap, werkomgeving en cultuur',
+            'Levend richtingsdocument — jaarlijks bijgewerkt, geen plan in een la',
         ],
-        what: 'Een strategisch kompas voor je hele organisatie. Kan opmaat zijn naar Het Jaartraject — los van elkaar te boeken, geen verplichting.',
-        cta: 'Bekijk de demo',
-        ctaType: 'link',
-        ctaHref: 'https://tof-persona-demo.netlify.app/#kompas',
+        what: 'Een Strategisch Kompas-document (~20 pagina\'s) plus halfdaagse MT-sessie. Traject van 8–12 weken, volledig op maat.',
+        cta: 'Ontdek het Strategisch Kompas',
+        ctaType: 'page',
+        ctaPage: 'strategischkompas',
+        // Live demo — beschikbaar als secundaire link voor wie eerst wil zien.
+        // (Render als 'of bekijk de demo →' onder de primaire CTA wanneer gewenst.)
+        demoHref: 'https://tof-persona-demo.netlify.app/#kompas',
     },
 ];
 
@@ -110,10 +120,56 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
     // Herladen wanneer de modal sluit, want na een succesvolle code-invoer is er iets bijgekomen.
     const [teamAccesses, setTeamAccesses] = useState(() => listTeamAccesses());
 
+    // Combineer localStorage-toegang (anonieme code-flow) met DB-memberships
+    // (ingelogde flow). DB-only entries krijgen later automatisch een localStorage
+    // grant op het moment dat de user op het team klikt (zie openExistingTeam).
     useEffect(() => {
-        if (!accessModal) {
-            setTeamAccesses(listTeamAccesses());
+        if (accessModal) return; // modal open → niet refreshen tijdens invoer
+
+        let cancelled = false;
+
+        async function refreshAccesses() {
+            const localAccesses = listTeamAccesses();
+
+            // Niet ingelogd? alleen lokale toegang.
+            let dbMemberships = [];
+            try {
+                const user = await getCurrentUser();
+                if (user) {
+                    dbMemberships = await getMyMemberships();
+                }
+            } catch (e) {
+                // niet-kritiek, val terug op alleen-localStorage
+            }
+
+            if (cancelled) return;
+
+            // Merge: localStorage entries hebben priority (ze hebben het juiste
+            // level uit het oorspronkelijke code-moment). DB-only entries worden
+            // toegevoegd met fromDB-vlag zodat we ze bij click kunnen granten.
+            const seen = new Set(
+                localAccesses.map((a) => `${a.organization || ''}|${a.team || ''}`)
+            );
+            const merged = [...localAccesses];
+            dbMemberships.forEach((m) => {
+                const key = `${m.organization || ''}|${m.team || ''}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    merged.push({
+                        team: m.team,
+                        organization: m.organization,
+                        code: m.code || null,
+                        level: m.level || LEVEL_INSIGHT,
+                        fromDB: true,
+                    });
+                }
+            });
+
+            setTeamAccesses(merged);
         }
+
+        refreshAccesses();
+        return () => { cancelled = true; };
     }, [accessModal]);
 
     const cardRefs = useRef({});
@@ -165,6 +221,17 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
         if (!entry) return;
 
         try {
+            // DB-only entry? Grant ook localStorage zodat TeamDashboard/TeamDynamics
+            // de toegang correct herkent (die componenten lezen access uit localStorage).
+            if (entry.fromDB) {
+                grantTeamLevel({
+                    team: entry.team,
+                    organization: entry.organization,
+                    level: entry.level || LEVEL_INSIGHT,
+                    code: entry.code,
+                });
+            }
+
             if (typeof setSelectedTeam === 'function') {
                 setSelectedTeam({
                     team: entry.team,
@@ -243,6 +310,20 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                 level: codeLevel,
                 code: accessResult.code,
             });
+
+            // Dual-write: als gebruiker is ingelogd, óók membership in DB aanmaken.
+            // Dit is non-blocking — fouten worden gelogd maar onderbreken de flow niet.
+            // Op termijn (na admin-dashboard) wordt dit de primaire bron van toegang.
+            (async () => {
+                try {
+                    const currentUser = await getCurrentUser();
+                    if (currentUser) {
+                        await joinTeamByCode(cleanedInput);
+                    }
+                } catch (e) {
+                    console.warn('Membership dual-write skipped:', e?.message || e);
+                }
+            })();
 
             // Team-data alvast klaarzetten voor het dashboard
             if (typeof setSelectedTeam === 'function') {
@@ -361,6 +442,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                 onCta={() => {
                                     if (mod.ctaType === 'access-insight') openAccessModal('insight');
                                     else if (mod.ctaType === 'access-dynamics') openAccessModal('dynamics');
+                                    else if (mod.ctaType === 'page' && mod.ctaPage) setPage(mod.ctaPage);
                                     else if (mod.ctaType === 'link') window.open(mod.ctaHref, '_blank', 'noopener,noreferrer');
                                 }}
                                 cardRef={(el) => { cardRefs.current[mod.id] = el; }}
@@ -369,56 +451,53 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     })}
                 </div>
 
-                {/* ── HEB JE EEN CODE? ────────────────────────────────── */}
-                {/* Centrale code-invoer onder de modules. De modal detecteert */}
-                {/* zelf of de code voor Insight of Dynamics is (stap 2: DB-level). */}
-                <CodeEntryBlock
-                    isMobile={isMobile}
-                    onOpenCodeModal={() => openAccessModal('any')}
-                />
-
-                {/* ── JOUW TOEGANG — voor returning users of beheerder ───── */}
-                {(teamAccesses.length > 0 || isAdminAccess()) && (
-                    <YourAccessPanel
-                        teamAccesses={teamAccesses}
+                {/* ── CONTEXTUELE VOLGORDE ─────────────────────────────── */}
+                {/* Returning users (al toegang) zien hun teams eerst — dat is */}
+                {/* waar ze voor komen. New users zien de code-invoer eerst. */}
+                {/* Manager-met-meerdere-teams flow loopt later via /login (auth). */}
+                {(teamAccesses.length > 0 || isAdminAccess()) ? (
+                    <>
+                        <YourAccessPanel
+                            teamAccesses={teamAccesses}
+                            isMobile={isMobile}
+                            onOpenTeam={openExistingTeam}
+                            onLogout={() => {
+                                revokeTeamAccess();
+                                setTeamAccesses([]);
+                            }}
+                            adminMode={isAdminAccess()}
+                            onLogoutAdmin={() => {
+                                revokeAdminAccess();
+                                setTeamAccesses(listTeamAccesses());
+                            }}
+                        />
+                        <CodeEntryBlock
+                            isMobile={isMobile}
+                            onOpenCodeModal={() => openAccessModal('any')}
+                            variant="compact"
+                        />
+                    </>
+                ) : (
+                    <CodeEntryBlock
                         isMobile={isMobile}
-                        onOpenTeam={openExistingTeam}
-                        onLogout={() => {
-                            revokeTeamAccess();
-                            setTeamAccesses([]);
-                        }}
-                        adminMode={isAdminAccess()}
-                        onLogoutAdmin={() => {
-                            revokeAdminAccess();
-                            setTeamAccesses(listTeamAccesses());
-                        }}
+                        onOpenCodeModal={() => openAccessModal('any')}
+                        variant="prominent"
                     />
                 )}
 
                 {/* ── FOOTER NAVIGATIE ────────────────────────────────── */}
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{
+                    display: 'flex',
+                    gap: 16,
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    paddingTop: 4,
+                }}>
                     <SecondaryButton onClick={() => setPage('home')}>Terug naar home</SecondaryButton>
-                    <SecondaryButton onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}>
-                        Plan een gesprek
-                    </SecondaryButton>
-                </div>
-
-                {/* ── SUBTIELE MANAGER-LINK ──────────────────────────── */}
-                {/* Bewust klein en onopvallend — alleen relevant voor afdelingsmanagers */}
-                {/* met een account. Teamleiders hebben hier niks aan en worden er niet */}
-                {/* door afgeleid. */}
-                <div
-                    style={{
-                        paddingTop: 8,
-                        fontSize: 13,
-                        color: 'var(--tof-text-muted)',
-                        lineHeight: 1.6,
-                    }}
-                >
-                    Afdelingsmanager met meerdere teams?{' '}
                     <button
                         type="button"
-                        onClick={() => openAccessModal('any')}
+                        onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
                         style={{
                             background: 'transparent',
                             border: 'none',
@@ -432,7 +511,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                             textUnderlineOffset: 3,
                         }}
                     >
-                        Manager login →
+                        Vragen? Plan een gesprek →
                     </button>
                 </div>
 
@@ -459,7 +538,57 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 // Dit vervangt de onduidelijkheid van "welke module-knop moet ik?" — je voert
 // gewoon je code in en het systeem brengt je naar het juiste dashboard.
 
-function CodeEntryBlock({ isMobile, onOpenCodeModal }) {
+function CodeEntryBlock({ isMobile, onOpenCodeModal, variant = 'prominent' }) {
+    const isCompact = variant === 'compact';
+
+    // Compact variant — voor returning users die al toegang hebben.
+    // Subtieler, zonder rose-accent, met andere copy ("nieuwe code" ipv "ontvangen?").
+    if (isCompact) {
+        return (
+            <div
+                style={{
+                    background: 'transparent',
+                    border: '1px dashed var(--tof-border)',
+                    borderRadius: 12,
+                    padding: isMobile ? '12px 14px' : '12px 18px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 12,
+                    flexWrap: 'wrap',
+                }}
+            >
+                <p
+                    style={{
+                        margin: 0,
+                        fontSize: 13,
+                        lineHeight: 1.55,
+                        color: 'var(--tof-text-muted)',
+                    }}
+                >
+                    Nieuwe code ontvangen? Voeg een team toe aan je toegang.
+                </p>
+                <button
+                    type="button"
+                    onClick={onOpenCodeModal}
+                    style={{
+                        background: 'transparent',
+                        border: '1px solid var(--tof-border)',
+                        borderRadius: 8,
+                        padding: '7px 14px',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: 'var(--tof-text)',
+                        cursor: 'pointer',
+                    }}
+                >
+                    Code invoeren →
+                </button>
+            </div>
+        );
+    }
+
+    // Prominent variant — voor new users die nog geen toegang hebben.
     return (
         <div
             style={{

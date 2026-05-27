@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
+import styles from './Landing.module.css';
 
 export default function Landing({ setPage }) {
     const [isVisible, setIsVisible] = useState(false);
@@ -12,111 +13,42 @@ export default function Landing({ setPage }) {
 
     function handleEnter() {
         setIsLeaving(true);
-
         setTimeout(() => {
             setPage('home');
         }, 420);
     }
 
+    // Dynamische waarden (fade/translate) blijven inline — alles statisch
+    // in Landing.module.css.
+    const stageStyle = {
+        transform: isVisible && !isLeaving ? 'translateY(0px)' : 'translateY(18px)',
+        opacity: isVisible && !isLeaving ? 1 : 0,
+    };
+
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                background: '#F7F3EE',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '24px',
-                boxSizing: 'border-box',
-                opacity: isLeaving ? 0 : 1,
-                transition: 'opacity 0.42s ease',
-            }}
-        >
-            <div
-                style={{
-                    display: 'grid',
-                    justifyItems: 'center',
-                    gap: 20,
-                    textAlign: 'center',
-                    maxWidth: 680,
-                    transform: isVisible && !isLeaving ? 'translateY(0px)' : 'translateY(18px)',
-                    opacity: isVisible && !isLeaving ? 1 : 0,
-                    transition: 'opacity 0.8s ease, transform 0.8s ease',
-                }}
-            >
+        <div className={styles.wrapper} style={{ opacity: isLeaving ? 0 : 1 }}>
+            <div className={styles.stage} style={stageStyle}>
                 <button
                     type="button"
+                    className={styles.logoButton}
                     onClick={handleEnter}
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: 0,
-                        borderRadius: 16,
-                    }}
+                    aria-label="Begin de Persona Tool"
                 >
-                    <img
-                        src={tofLogo}
-                        alt="TOF logo"
-                        style={{
-                            width: 'min(34vw, 180px)',
-                            height: 'auto',
-                            objectFit: 'contain',
-                            display: 'block',
-                            transition: 'transform 0.2s ease',
-                        }}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.transform = 'scale(1.04)';
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.transform = 'scale(1)';
-                        }}
-                    />
+                    <img src={tofLogo} alt="TOF logo" className={styles.logo} />
                 </button>
 
-                <div
-                    style={{
-                        fontFamily: '"Playfair Display", serif',
-                        fontWeight: 300,
-                        fontSize: 'clamp(30px, 5vw, 56px)',
-                        letterSpacing: '-0.025em',
-                        lineHeight: 1.05,
-                        color: '#1F1F1F',
-                    }}
-                >
-                    <span style={{ marginRight: '0.15em' }}>The Office</span>
-                    <span
-                        style={{
-                            fontStyle: 'italic',
-                            color: '#B05252',
-                        }}
-                    >
-                        Factory
-                    </span>
+                <div className={styles.title}>
+                    <span className={styles.titleSpace}>The Office</span>
+                    <span className={styles.titleAccent}>Factory</span>
                 </div>
 
-                <p
-                    style={{
-                        margin: 0,
-                        maxWidth: 560,
-                        color: '#7A7A7A',
-                        fontSize: 'clamp(14px, 2vw, 17px)',
-                        lineHeight: 1.7,
-                    }}
-                >
+                <p className={styles.subtitle}>
                     Inzicht in werkstijl, teamdynamiek en werkplek.
                 </p>
 
-                <div
-                    style={{
-                        marginTop: 6,
-                        fontSize: 13,
-                        color: '#A79B92',
-                        letterSpacing: '0.04em',
-                    }}
-                >
-                    klik op het logo
-                </div>
+                <button type="button" className={styles.cta} onClick={handleEnter}>
+                    Begin bij jezelf  →
+                </button>
             </div>
         </div>
     );

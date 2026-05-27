@@ -1,0 +1,89 @@
+/*
+ * Landing — premium minimalist intro.
+ *
+ * Eerste CSS Module van het project. Patroon om de rest stapsgewijs
+ * naar over te zetten:
+ *   1. Alle statische opmaak in een .module.css bestand
+ *   2. Inline styles in JSX behouden ENKEL voor dynamische waarden
+ *      (animation state, runtime sizes, etc.)
+ *   3. Tokens via var(--tof-*) zodat brand-changes op één plek landen.
+ */
+
+.wrapper {
+  min-height: 100vh;
+  background: var(--tof-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  transition: opacity 0.42s ease;
+}
+
+.stage {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  text-align: center;
+  max-width: 680px;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.logoButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 16px;
+}
+
+.logo {
+  width: min(34vw, 180px);
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.2s ease;
+}
+.logoButton:hover .logo {
+  transform: scale(1.04);
+}
+
+.title {
+  font-family: var(--tof-font-heading);
+  font-weight: 300;
+  font-size: clamp(30px, 5vw, 56px);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--tof-text);
+}
+.titleSpace { margin-right: 0.15em; }
+.titleAccent {
+  font-style: italic;
+  color: var(--tof-accent-rose);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 560px;
+  color: var(--tof-text-muted);
+  font-size: clamp(14px, 2vw, 17px);
+  line-height: 1.7;
+}
+
+.cta {
+  margin-top: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 14px;
+  font-family: var(--tof-font-heading);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--tof-accent-rose);
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+.cta:hover {
+  border-bottom-color: var(--tof-accent-rose);
+}

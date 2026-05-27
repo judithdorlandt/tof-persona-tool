@@ -1,0 +1,294 @@
+/*
+ * Quiz — Pagina 03: jouw context (step -1 / startformulier).
+ * Rose-rode identiteit, sluit aan op Intro.module.css (sage).
+ *
+ * Alleen het startformulier is gemigreerd; de vragen-rendering
+ * (step >= 0) blijft voorlopig inline — volgende migratiestap.
+ */
+
+/* ===== Page wrapper ===== */
+.page {
+  min-height: calc(100vh - 88px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px 20px 32px;
+  background: var(--tof-bg);
+  box-sizing: border-box;
+}
+
+.stack {
+  width: 100%;
+  max-width: 680px;
+  display: grid;
+  gap: 14px;
+}
+
+/* ===== Hervatten-banner ===== */
+.resumeBanner {
+  background: #FFF8EC;
+  border: 1px solid #E8DDC4;
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #6B5A2C;
+}
+
+.resumeStrong { font-weight: 600; }
+
+.resumeDiscard {
+  background: transparent;
+  border: none;
+  color: var(--tof-accent-rose);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
+/* ===== Hero ===== */
+.hero {
+  background: var(--tof-surface);
+  border-radius: 20px;
+  border: 1px solid var(--tof-border);
+  box-shadow: var(--tof-shadow);
+  padding: 30px 34px 26px;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroAccent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--tof-accent-rose);
+  border-radius: 4px 0 0 4px;
+}
+
+.heroInner { padding-left: 12px; }
+
+.heroEyebrow {
+  color: var(--tof-accent-rose);
+  letter-spacing: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.heroHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: var(--tof-font-heading);
+  font-weight: 500;
+  font-size: clamp(28px, 3.2vw, 36px);
+  line-height: 1.06;
+  color: var(--tof-text);
+}
+
+.heroTitleAccent {
+  color: var(--tof-accent-rose);
+  font-style: italic;
+}
+
+.heroSub {
+  margin: 0;
+  max-width: 240px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--tof-text-muted);
+  padding-bottom: 3px;
+  flex-shrink: 0;
+}
+
+/* ===== Formulier-card ===== */
+.formCard {
+  background: var(--tof-surface);
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid var(--tof-border);
+  box-shadow: var(--tof-shadow);
+  display: grid;
+  gap: 14px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--tof-text-muted);
+  margin: 4px 0 -4px;
+}
+
+.sectionDivider {
+  height: 1px;
+  background: var(--tof-border);
+  margin: 4px 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ===== FormField ===== */
+.field { display: block; }
+
+.label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--tof-text);
+}
+
+.labelOptional {
+  color: var(--tof-text-muted);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.labelRequired { color: var(--tof-accent-rose); }
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  background: var(--tof-surface);
+  color: var(--tof-text);
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--tof-accent-rose);
+  box-shadow: 0 0 0 3px rgba(176, 82, 82, 0.12);
+}
+
+.hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--tof-text-muted);
+}
+
+/* ===== Teamcode highlight-box ===== */
+.teamCodeBox {
+  background: #EDF4EF;
+  border: 1px solid var(--tof-sage-soft);
+  border-left: 3px solid var(--tof-accent-sage);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+/* ===== Disclosure (Meer details) ===== */
+.disclosure {
+  background: var(--tof-bg);
+  border: 1px solid var(--tof-border);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.disclosureSummary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tof-text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  user-select: none;
+}
+
+.disclosureSummary::-webkit-details-marker { display: none; }
+
+.disclosureSummary::after {
+  content: '+';
+  font-size: 18px;
+  color: var(--tof-text-muted);
+  font-weight: 400;
+  transition: transform 0.2s ease;
+}
+
+.disclosure[open] .disclosureSummary::after {
+  content: '–';
+}
+
+.disclosureHint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--tof-text-muted);
+  margin-left: 6px;
+}
+
+.disclosureBody {
+  padding: 4px 16px 16px;
+  display: grid;
+  gap: 12px;
+}
+
+/* ===== Error + submit ===== */
+.error {
+  color: var(--tof-accent-rose);
+  font-size: 13px;
+  margin: 0;
+}
+
+.submitRow {
+  margin-top: 4px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit {
+  background: var(--tof-accent-rose);
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(176, 82, 82, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(176, 82, 82, 0.36);
+}
+
+/* ===== Mobiele aanpassingen ===== */
+@media (max-width: 767px) {
+  .page { padding: 16px 16px 28px; }
+  .stack { gap: 12px; }
+  .hero { padding: 22px 18px 20px; }
+  .heroInner { padding-left: 8px; }
+  .heroSub { display: none; }
+  .formCard { padding: 16px 14px; }
+  .row { grid-template-columns: 1fr; }
+  .submit { width: 100%; }
+  .submitRow { justify-content: stretch; }
+}
