@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
 
 import { useAuth } from './auth/AuthContext';
-import { signOut } from './supabase';
+import { signOut, getMyManagedTeams } from './supabase';
 
 import Landing from './components/Landing.jsx';
 import Nav from './components/Nav.jsx';
@@ -63,6 +63,25 @@ export default function App() {
   const [resultData, setResultData] = useState(null);
   const [teamResponses, setTeamResponses] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
+
+  // Manager-vlag: is de ingelogde user een team-manager (rij in
+  // team_managers)? Wordt eenmalig opgehaald per sessie en gebruikt
+  // door Nav om irrelevante items (Home/Intro/Quiz/Resultaat) te
+  // verbergen.
+  const [isManager, setIsManager] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) { setIsManager(false); return; }
+    (async () => {
+      try {
+        const managed = await getMyManagedTeams();
+        if (!cancelled) setIsManager(managed.length > 0);
+      } catch (_e) {
+        if (!cancelled) setIsManager(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user]);
 
   const handleLogout = useCallback(async () => {
     await signOut();
@@ -191,6 +210,7 @@ export default function App() {
           setPage={navigate}
           hasResult={!!resultData}
           currentUser={user}
+          isManager={isManager}
           onLogout={handleLogout}
         />
       )}

@@ -13,6 +13,7 @@ export default function Nav({
     setPage,
     hasResult = false,
     currentUser = null,
+    isManager = false,
     onLogout,
 }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 820);
@@ -28,13 +29,20 @@ export default function Nav({
         if (!isMobile) setMenuOpen(false);
     }, [isMobile]);
 
-    const baseItems = [
-        { key: 'home', label: 'Home' },
-        { key: 'intro', label: 'Eerst even uitleg' },
-        { key: 'quiz', label: 'Test jezelf' },
-        { key: 'team', label: 'Teamomgeving' },
-    ];
-    const resultItems = hasResult
+    // Manager-mode: een ingelogde team-manager heeft geen behoefte aan de
+    // marketing-flow (Home/Intro/Quiz). We tonen alleen "Mijn team(s)" en
+    // — als hij óók admin is — "Admin". Niet-managers zien de volledige nav.
+    const baseItems = isManager
+        ? [
+            { key: 'team', label: 'Mijn team' },
+        ]
+        : [
+            { key: 'home', label: 'Home' },
+            { key: 'intro', label: 'Eerst even uitleg' },
+            { key: 'quiz', label: 'Test jezelf' },
+            { key: 'team', label: 'Teamomgeving' },
+        ];
+    const resultItems = (hasResult && !isManager)
         ? [
             { key: 'results', label: 'Resultaat' },
             { key: 'library', label: "Persona's" },
@@ -67,7 +75,7 @@ export default function Nav({
                 <div className={styles.row}>
                     <button
                         type="button"
-                        onClick={() => handleNavigate('home')}
+                        onClick={() => handleNavigate(isManager ? 'team' : 'home')}
                         className={styles.logoBtn}
                     >
                         <img src={tofLogo} alt="TOF logo" className={styles.logoImg} />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
-import { supabase } from '../supabase';
+import { supabase, getMyManagedTeams } from '../supabase';
 import { grantTeamAccess } from '../utils/access';
 import {
   PageShell,
@@ -20,6 +20,26 @@ export default function Home({ setPage }) {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Managers horen niet op de marketing/home — stuur ze direct door
+  // naar /team (manager-mode). Vangt twee scenario's op:
+  //   1. AuthCallback heeft (om welke reden dan ook) niet correct
+  //      gerouteerd na login.
+  //   2. Een manager klikt later in de nav op "Home" — ook dan terug.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const managed = await getMyManagedTeams();
+        if (!cancelled && managed.length > 0 && typeof setPage === 'function') {
+          setPage('team');
+        }
+      } catch (_e) {
+        // niet-kritiek
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [setPage]);
 
   function openTeamLock() {
     setShowLock(true);
