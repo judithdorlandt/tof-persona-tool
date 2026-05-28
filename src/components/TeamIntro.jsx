@@ -293,7 +293,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                 });
             }
 
-            const responses = await getResponsesByTeam(entry.team, entry.organization);
+            const responses = await getResponsesByTeam(entry.team, entry.organization, entry.code);
             if (typeof setTeamResponses === 'function') {
                 setTeamResponses(responses || []);
             }
@@ -391,7 +391,8 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             // Module 2 leunt op hetzelfde dataset, dus we laden sowieso.
             const responses = await getResponsesByTeam(
                 accessResult.team,
-                accessResult.organization
+                accessResult.organization,
+                accessResult.code
             );
             if (typeof setTeamResponses === 'function') {
                 setTeamResponses(responses || []);

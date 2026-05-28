@@ -54,7 +54,7 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
             setSelectedTeam({ team: t.team, organization: t.organization, code: t.code });
           }
           try {
-            const responses = await getResponsesByTeam(t.team, t.organization);
+            const responses = await getResponsesByTeam(t.team, t.organization, t.code);
             if (typeof setTeamResponses === 'function') {
               setTeamResponses(responses || []);
             }

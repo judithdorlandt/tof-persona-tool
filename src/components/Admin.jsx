@@ -27,6 +27,7 @@ import {
     adminListTeamManagers,
     adminAddTeamManager,
     adminRemoveTeamManager,
+    getResponsesByTeam,
 } from '../supabase';
 import {
     PageShell,
@@ -36,7 +37,7 @@ import {
 
 // ─── HOOFDCOMPONENT ─────────────────────────────────────────────────────────
 
-export default function Admin({ setPage }) {
+export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
     const [loading, setLoading] = useState(true);
     const [authorized, setAuthorized] = useState(false);
@@ -307,6 +308,9 @@ export default function Admin({ setPage }) {
                 <TeamsList
                     isMobile={isMobile}
                     teams={teams}
+                    setPage={setPage}
+                    setSelectedTeam={setSelectedTeam}
+                    setTeamResponses={setTeamResponses}
                 />
 
                 {/* Managers-koppelingen */}
@@ -609,7 +613,7 @@ The Office Factory
 
 // ─── SUB: Lijst ────────────────────────────────────────────────────────────
 
-function TeamsList({ isMobile, teams }) {
+function TeamsList({ isMobile, teams, setPage, setSelectedTeam, setTeamResponses }) {
     return (
         <div style={{
             background: 'var(--tof-surface)',
@@ -641,7 +645,14 @@ function TeamsList({ isMobile, teams }) {
             ) : (
                 <div style={{ display: 'grid', gap: 10 }}>
                     {teams.map((t) => (
-                        <TeamRow key={t.code} isMobile={isMobile} team={t} />
+                        <TeamRow
+                            key={t.code}
+                            isMobile={isMobile}
+                            team={t}
+                            setPage={setPage}
+                            setSelectedTeam={setSelectedTeam}
+                            setTeamResponses={setTeamResponses}
+                        />
                     ))}
                 </div>
             )}
@@ -649,15 +660,44 @@ function TeamsList({ isMobile, teams }) {
     );
 }
 
-function TeamRow({ isMobile, team }) {
+function TeamRow({ isMobile, team, setPage, setSelectedTeam, setTeamResponses }) {
     const moduleLabel = team.level === 'dynamics' ? 'Dynamics' : 'Insight';
     const moduleColor = team.level === 'dynamics' ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage)';
     const inactiveStyle = !team.active ? { opacity: 0.45 } : {};
+    const [viewBusy, setViewBusy] = useState(false);
+
+    const handleView = async () => {
+        if (viewBusy) return;
+        setViewBusy(true);
+        try {
+            if (typeof setSelectedTeam === 'function') {
+                setSelectedTeam({
+                    team: team.team,
+                    organization: team.organization,
+                    code: team.code,
+                    level: team.level,
+                });
+            }
+            try {
+                const responses = await getResponsesByTeam(team.team, team.organization, team.code);
+                if (typeof setTeamResponses === 'function') {
+                    setTeamResponses(responses || []);
+                }
+            } catch (_e) {
+                if (typeof setTeamResponses === 'function') setTeamResponses([]);
+            }
+            if (typeof setPage === 'function') {
+                setPage(team.level === 'dynamics' ? 'teamdynamics' : 'teamdashboard');
+            }
+        } finally {
+            setViewBusy(false);
+        }
+    };
 
     return (
         <div style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1.4fr) 120px 120px 100px',
+            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1.4fr) 120px 120px 100px 110px',
             gap: 12,
             alignItems: 'center',
             padding: '12px 14px',
@@ -707,6 +747,25 @@ function TeamRow({ isMobile, team }) {
             }}>
                 {team.active ? '● Actief' : '○ Inactief'}
             </div>
+            <button
+                type="button"
+                onClick={handleView}
+                disabled={!team.active || viewBusy}
+                style={{
+                    padding: '8px 12px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    background: 'var(--tof-surface)',
+                    border: '1px solid var(--tof-border)',
+                    borderRadius: 8,
+                    cursor: (team.active && !viewBusy) ? 'pointer' : 'not-allowed',
+                    color: 'var(--tof-text)',
+                    fontFamily: 'inherit',
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {viewBusy ? '…' : 'Bekijk →'}
+            </button>
         </div>
     );
 }

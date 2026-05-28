@@ -195,7 +195,13 @@ export default function App() {
         );
 
       case 'admin':
-        return <Admin setPage={navigate} />;
+        return (
+          <Admin
+            setPage={navigate}
+            setSelectedTeam={setSelectedTeam}
+            setTeamResponses={setTeamResponses}
+          />
+        );
 
       case 'strategischkompas':
         return <StrategischKompas setPage={navigate} />;

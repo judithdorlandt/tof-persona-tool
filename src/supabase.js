@@ -262,7 +262,7 @@ export async function getTeamsOverview() {
 
 }
 
-export async function getResponsesByTeam(team, organization = null) {
+export async function getResponsesByTeam(team, organization = null, code = null) {
 
   if (!ensureSupabase()) return [];
 
@@ -272,35 +272,87 @@ export async function getResponsesByTeam(team, organization = null) {
 
     const cleanOrganization = String(organization || '').trim();
 
-    if (!cleanTeam) {
+    const cleanCode = String(code || '').trim();
 
-      console.error('❌ Fetch team responses error: team ontbreekt');
+    if (!cleanTeam && !cleanCode) {
+
+      console.error('❌ Fetch team responses error: team én code ontbreken');
 
       return [];
 
     }
 
-    let query = supabase
+    // Dual matching: eerst op invite_code (1-op-1 match, geen typo-gevoelig),
+    // dan op team+organization namen als fallback voor legacy responses
+    // zonder code. Dedup op id zodat dezelfde response niet dubbel telt.
+    const seen = new Set();
+    const results = [];
 
-      .schema('private').from('responses')
+    if (cleanCode) {
 
-      .select('*')
+      const { data: codeData, error: codeErr } = await supabase
 
-      .eq('team', cleanTeam)
+        .schema('private').from('responses')
 
-      .order('created_at', { ascending: true });
+        .select('*')
 
-    if (cleanOrganization) {
+        .eq('invite_code', cleanCode)
 
-      query = query.eq('organization', cleanOrganization);
+        .order('created_at', { ascending: true });
+
+      if (codeErr) throw codeErr;
+
+      (codeData || []).forEach((r) => {
+
+        if (r.id != null && !seen.has(r.id)) {
+
+          seen.add(r.id);
+
+          results.push(r);
+
+        }
+
+      });
 
     }
 
-    const { data, error } = await query;
+    if (cleanTeam) {
 
-    if (error) throw error;
+      let query = supabase
 
-    return data || [];
+        .schema('private').from('responses')
+
+        .select('*')
+
+        .eq('team', cleanTeam)
+
+        .order('created_at', { ascending: true });
+
+      if (cleanOrganization) {
+
+        query = query.eq('organization', cleanOrganization);
+
+      }
+
+      const { data: nameData, error: nameErr } = await query;
+
+      if (nameErr) throw nameErr;
+
+      (nameData || []).forEach((r) => {
+
+        if (r.id != null && !seen.has(r.id)) {
+
+          seen.add(r.id);
+
+          results.push(r);
+
+        }
+
+      });
+
+    }
+
+    return results;
 
   } catch (err) {
 
@@ -687,24 +739,35 @@ export async function getAllTeamAccessCodes() {
     if (!codes || codes.length === 0) return [];
 
     // Verrijk met response-tellingen vanuit private.responses.
+    // Dual matching: tellen op invite_code (1-op-1) plus op team+org-namen
+    // als fallback voor legacy responses. Dedup op id zodat een response
+    // die op beide manieren matcht niet dubbel telt.
     const enriched = await Promise.all(
       codes.map(async (c) => {
-        let response_count = 0;
-        if (c.team) {
-          try {
+        const ids = new Set();
+        try {
+          if (c.code) {
+            const { data: codeRows } = await supabase
+              .schema('private')
+              .from('responses')
+              .select('id')
+              .eq('invite_code', c.code);
+            (codeRows || []).forEach((r) => { if (r.id != null) ids.add(r.id); });
+          }
+          if (c.team) {
             let query = supabase
               .schema('private')
               .from('responses')
-              .select('id', { count: 'exact', head: true })
+              .select('id')
               .eq('team', c.team);
             if (c.organization) query = query.eq('organization', c.organization);
-            const { count } = await query;
-            response_count = count || 0;
-          } catch (_e) {
-            response_count = 0;
+            const { data: nameRows } = await query;
+            (nameRows || []).forEach((r) => { if (r.id != null) ids.add(r.id); });
           }
+        } catch (_e) {
+          // Bij fout: 0 tonen i.p.v. de hele lijst stuk laten gaan
         }
-        return { ...c, response_count };
+        return { ...c, response_count: ids.size };
       })
     );
 
