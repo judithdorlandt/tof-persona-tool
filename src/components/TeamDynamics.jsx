@@ -47,7 +47,9 @@ export default function TeamDynamics({
     selectedTeam,
     setPage,
 }) {
-    const [activeId, setActiveId] = useState(null);
+    // Standaard staat de eerste tegel (Dynamics) open — zo zien
+    // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
+    const [activeId, setActiveId] = useState('dynamics');
 
     const teamName = resolveTeamName(selectedTeam);
     const organization = resolveOrg(selectedTeam);

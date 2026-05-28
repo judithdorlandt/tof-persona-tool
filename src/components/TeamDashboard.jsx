@@ -121,7 +121,9 @@ export default function TeamDashboard({
     selectedTeam,
     setPage,
 }) {
-    const [activeId, setActiveId] = useState(null);
+    // Standaard staat de eerste tegel (Werkstijlen) open — zo zien
+    // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
+    const [activeId, setActiveId] = useState('personas');
 
     const aggregate = useMemo(
         () => buildTeamAggregate(teamResponses),
