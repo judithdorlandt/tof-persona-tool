@@ -346,9 +346,11 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
         lineY += lineHeight;
     });
 
+    // Alle primair-aanwezige archetypes tonen (geen .slice meer) — anders
+    // mist een team met >3 verschillende werkstijlen een deel van zijn
+    // leden. Sortering uit sortedPersonas blijft behouden.
     const topPresent = (aggregate?.sortedPersonas || [])
-        .filter((p) => p.count > 0)
-        .slice(0, 3);
+        .filter((p) => p.count > 0);
 
     let mixY = y + 16;
     const members = aggregate?.members || [];
@@ -366,13 +368,21 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
             color: color,
         }));
 
-        const names = members
-            .filter((m) => m.primary === p.id)
+        // Echte namen apart van anoniemen tellen. Anders zou dedup
+        // meerdere "Anoniem"-respondenten samenvouwen tot één label.
+        const membersForArchetype = members.filter((m) => m.primary === p.id);
+        const realNames = membersForArchetype
+            .filter((m) => !m.isAnonymous)
             .map((m) => firstName(m.name))
             .filter((n) => n && n !== 'Onbekend')
             .filter((n, i, arr) => arr.indexOf(n) === i);
+        const anonymousCount = membersForArchetype.filter((m) => m.isAnonymous).length;
 
-        const namesText = formatNamesNatural(names);
+        const nameParts = [...realNames];
+        if (anonymousCount === 1) nameParts.push('Anoniem');
+        else if (anonymousCount > 1) nameParts.push(`${anonymousCount} anoniem`);
+
+        const namesText = formatNamesNatural(nameParts);
 
         if (namesText) {
             const namesLines = wrapText(namesText, colWidth, 5.2, 'Inter');
