@@ -204,7 +204,11 @@ function drawHeader({ svg, y, teamName, organization, aggregate }) {
 }
 
 function drawHero({ svg, y, aggregate, insights }) {
-    const top = aggregate?.sortedPersonas?.[0];
+    // Gebruik personasByPrimary (= sortering op aantal mensen primair),
+    // niet sortedPersonas (= gewogen energie-sortering). Anders kan de
+    // "dominante werkstijl" iets anders aanwijzen dan het hoogste
+    // percentage in de verdelingstabel — dat leest als bug.
+    const top = aggregate?.personasByPrimary?.[0] || aggregate?.sortedPersonas?.[0];
     if (!top) return y;
 
     const teamCount = aggregate?.teamCount || 0;
@@ -346,21 +350,36 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
         lineY += lineHeight;
     });
 
-    // Alle primair-aanwezige archetypes tonen (geen .slice meer) — anders
-    // mist een team met >3 verschillende werkstijlen een deel van zijn
-    // leden. Sortering uit sortedPersonas blijft behouden.
-    const topPresent = (aggregate?.sortedPersonas || [])
-        .filter((p) => p.count > 0);
-
-    let mixY = y + 16;
+    // Alle primair-aanwezige archetypes tonen, gesorteerd op aantal
+    // mensen primair (= personasByPrimary). Eerder werd sortedPersonas
+    // (energie) gebruikt — daardoor stond bv. Denker met 1 persoon
+    // boven Groeier met 4 als hun energie hoger lag. Verwarrend.
+    const topPresent = aggregate?.personasByPrimary || [];
     const members = aggregate?.members || [];
 
-    topPresent.forEach((p) => {
+    // Bij >4 archetypes splitsen we de rechter kolom in twee sub-kolommen,
+    // anders loopt de mix-kolom veel verder naar beneden dan de verdeling
+    // en krijg je een onevenwichtige pagina ("halve pagina"-effect).
+    const useTwoSubCols = topPresent.length > 4;
+    const subGap = useTwoSubCols ? 14 : 0;
+    const subColWidth = useTwoSubCols ? (colWidth - subGap) / 2 : colWidth;
+    const subColRightX = colRightX + subColWidth + subGap;
+    const splitIdx = useTwoSubCols
+        ? Math.ceil(topPresent.length / 2)
+        : topPresent.length;
+
+    let mixY1 = y + 16;
+    let mixY2 = y + 16;
+
+    topPresent.forEach((p, idx) => {
         const color = PERSONA_COLORS[p.id];
+        const inLeftSubCol = idx < splitIdx;
+        const xPos = inLeftSubCol ? colRightX : subColRightX;
+        const curY = inLeftSubCol ? mixY1 : mixY2;
 
         svg.appendChild(createText({
-            x: colRightX,
-            y: mixY,
+            x: xPos,
+            y: curY,
             text: p.name,
             font: 'Playfair Display',
             weight: 500,
@@ -384,12 +403,13 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
 
         const namesText = formatNamesNatural(nameParts);
 
+        let advance;
         if (namesText) {
-            const namesLines = wrapText(namesText, colWidth, 5.2, 'Inter');
+            const namesLines = wrapText(namesText, subColWidth, 5.2, 'Inter');
             namesLines.forEach((line, i) => {
                 svg.appendChild(createText({
-                    x: colRightX,
-                    y: mixY + 8 + i * 7,
+                    x: xPos,
+                    y: curY + 8 + i * 7,
                     text: line,
                     font: 'Inter',
                     weight: 400,
@@ -397,13 +417,16 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
                     color: COLOR.textSoft,
                 }));
             });
-            mixY += 8 + namesLines.length * 7 + 6;
+            advance = 8 + namesLines.length * 7 + 6;
         } else {
-            mixY += 16;
+            advance = 16;
         }
+
+        if (inLeftSubCol) mixY1 += advance;
+        else mixY2 += advance;
     });
 
-    return Math.max(lineY, mixY);
+    return Math.max(lineY, mixY1, mixY2);
 }
 
 function drawSignature({ svg, y, aggregate, insights }) {
@@ -435,7 +458,9 @@ function drawSignature({ svg, y, aggregate, insights }) {
 }
 
 function buildSignatureSentence(aggregate) {
-    const top = (aggregate?.sortedPersonas || []).filter((p) => p.count > 0);
+    // Volg dezelfde sortering als hero en mix: aantal mensen primair,
+    // niet gewogen energie. Zo blijft het hele PDF-verhaal coherent.
+    const top = aggregate?.personasByPrimary || [];
 
     const PERSONA_DRIVE = {
         maker: 'maken',
