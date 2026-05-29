@@ -364,6 +364,105 @@ export async function getResponsesByTeam(team, organization = null, code = null)
 
 }
 
+// Geaggregeerd: alle responses voor één organisatie. Dual matching:
+// match op organization-naam OF op invite_code (lijst van team-codes van
+// die organisatie). Dedup op id zodat een response die op beide manieren
+// matcht niet dubbel telt. Caller geeft de codes mee, opgehaald uit
+// getAllTeamAccessCodes.
+export async function getResponsesByOrganization(organization, codes = []) {
+
+  if (!ensureSupabase()) return [];
+
+  try {
+
+    const cleanOrg = String(organization || '').trim();
+
+    const cleanCodes = (Array.isArray(codes) ? codes : [])
+
+      .map((c) => String(c || '').trim())
+
+      .filter((c) => c);
+
+    if (!cleanOrg && cleanCodes.length === 0) {
+
+      console.error('❌ Fetch organization responses error: organization én codes ontbreken');
+
+      return [];
+
+    }
+
+    const seen = new Set();
+
+    const results = [];
+
+    if (cleanCodes.length > 0) {
+
+      const { data: codeData, error: codeErr } = await supabase
+
+        .schema('private').from('responses')
+
+        .select('*')
+
+        .in('invite_code', cleanCodes)
+
+        .order('created_at', { ascending: true });
+
+      if (codeErr) throw codeErr;
+
+      (codeData || []).forEach((r) => {
+
+        if (r.id != null && !seen.has(r.id)) {
+
+          seen.add(r.id);
+
+          results.push(r);
+
+        }
+
+      });
+
+    }
+
+    if (cleanOrg) {
+
+      const { data: orgData, error: orgErr } = await supabase
+
+        .schema('private').from('responses')
+
+        .select('*')
+
+        .eq('organization', cleanOrg)
+
+        .order('created_at', { ascending: true });
+
+      if (orgErr) throw orgErr;
+
+      (orgData || []).forEach((r) => {
+
+        if (r.id != null && !seen.has(r.id)) {
+
+          seen.add(r.id);
+
+          results.push(r);
+
+        }
+
+      });
+
+    }
+
+    return results;
+
+  } catch (err) {
+
+    console.error('❌ Fetch organization responses error:', err?.message || err);
+
+    return [];
+
+  }
+
+}
+
 // =========================
 
 // ACCESS CODE CHECK

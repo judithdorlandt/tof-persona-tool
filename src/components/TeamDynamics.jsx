@@ -46,6 +46,14 @@ export default function TeamDynamics({
     teamResponses = [],
     selectedTeam,
     setPage,
+    // Wanneer true: render alleen de tegels + detail-paneel (geen
+    // PageShell, geen Hero, geen Signature). Gebruikt door
+    // AdminOrganizations om Dynamics geaggregeerd binnen het organisatie-
+    // detail te tonen zonder dubbele page chrome.
+    embedded = false,
+    // Wanneer true: skip de hasTeamLevel-check. Bedoeld voor admin-vlakke
+    // weergaven zoals het organisatie-inzicht.
+    forceAccess = false,
 }) {
     // Standaard staat de eerste tegel (Dynamics) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
@@ -56,8 +64,8 @@ export default function TeamDynamics({
     const team = resolveTeamKey(selectedTeam);
 
     const hasAccess = useMemo(
-        () => hasTeamLevel(team, organization, LEVEL_DYNAMICS),
-        [team, organization]
+        () => forceAccess || hasTeamLevel(team, organization, LEVEL_DYNAMICS),
+        [forceAccess, team, organization]
     );
 
     const scores = useMemo(() => buildPersonaScores(teamResponses), [teamResponses]);
@@ -139,6 +147,20 @@ export default function TeamDynamics({
 
     // ── GEEN DATA ────────────────────────────────────────────
     if (!teamResponses || teamResponses.length === 0) {
+        if (embedded) {
+            return (
+                <div style={{
+                    padding: 32,
+                    textAlign: 'center',
+                    color: 'var(--tof-text-muted)',
+                    background: 'var(--tof-surface)',
+                    border: '1px solid var(--tof-border)',
+                    borderRadius: 14,
+                }}>
+                    Geen responses om Dynamics op te baseren.
+                </div>
+            );
+        }
         return (
             <PageShell>
                 <HeroBlock
@@ -233,58 +255,8 @@ export default function TeamDynamics({
     }
 
     // ── DASHBOARD ────────────────────────────────────────────
-    return (
-        <PageShell compact>
-            {/* HERO */}
-            <HeroBlock
-                compact
-                eyebrow="02 — Team Dynamics"
-                title="Team Dynamics voor"
-                titleAccent={teamName}
-                titleAccentColor={ACCENT}
-                lead="Waar samenwerking schuurt, waarom tempo en reflectie botsen, en wat dat vraagt van leiderschap."
-                actions={
-                    <>
-                        <PrimaryButton
-                            onClick={() => generateTeamDynamicsPDF({
-                                aggregate: pdfAggregate,
-                                dynamicsAxes,
-                                tensions,
-                                leadershipWins,
-                                teamName,
-                                organization,
-                                headline: signatureLine || '',
-                            })}
-                            style={{ background: ACCENT }}
-                        >
-                            Download als PDF
-                        </PrimaryButton>
-                        <SecondaryButton
-                            onClick={() => setPage('teamdashboard')}
-                        >
-                            ← Naar Team Insight
-                        </SecondaryButton>
-                        {isAdminAccess() ? (
-                            <SecondaryButton onClick={() => setPage('team')}>
-                                Ander team
-                            </SecondaryButton>
-                        ) : null}
-                    </>
-                }
-            />
-
-            {/* SIGNATURE + META */}
-            <SignatureBlock
-                quote={signatureLine}
-                accent={ACCENT}
-                teamCount={teamResponses.length}
-                organization={organization}
-                dominantPersona={topPersona?.name}
-                dominantColor={topPersonaId ? PERSONA_COLORS[topPersonaId] : ACCENT}
-                tensionsCount={tensions.length}
-                reliability={reliability}
-            />
-
+    const tilesAndDetail = (
+        <>
             {/* TILES */}
             <TileGrid columns={4}>
                 {TILES.map((tile) => (
@@ -351,6 +323,66 @@ export default function TeamDynamics({
                     </div>
                 </SectionCard>
             ) : null}
+        </>
+    );
+
+    if (embedded) {
+        return tilesAndDetail;
+    }
+
+    return (
+        <PageShell compact>
+            {/* HERO */}
+            <HeroBlock
+                compact
+                eyebrow="02 — Team Dynamics"
+                title="Team Dynamics voor"
+                titleAccent={teamName}
+                titleAccentColor={ACCENT}
+                lead="Waar samenwerking schuurt, waarom tempo en reflectie botsen, en wat dat vraagt van leiderschap."
+                actions={
+                    <>
+                        <PrimaryButton
+                            onClick={() => generateTeamDynamicsPDF({
+                                aggregate: pdfAggregate,
+                                dynamicsAxes,
+                                tensions,
+                                leadershipWins,
+                                teamName,
+                                organization,
+                                headline: signatureLine || '',
+                            })}
+                            style={{ background: ACCENT }}
+                        >
+                            Download als PDF
+                        </PrimaryButton>
+                        <SecondaryButton
+                            onClick={() => setPage('teamdashboard')}
+                        >
+                            ← Naar Team Insight
+                        </SecondaryButton>
+                        {isAdminAccess() ? (
+                            <SecondaryButton onClick={() => setPage('team')}>
+                                Ander team
+                            </SecondaryButton>
+                        ) : null}
+                    </>
+                }
+            />
+
+            {/* SIGNATURE + META */}
+            <SignatureBlock
+                quote={signatureLine}
+                accent={ACCENT}
+                teamCount={teamResponses.length}
+                organization={organization}
+                dominantPersona={topPersona?.name}
+                dominantColor={topPersonaId ? PERSONA_COLORS[topPersonaId] : ACCENT}
+                tensionsCount={tensions.length}
+                reliability={reliability}
+            />
+
+            {tilesAndDetail}
         </PageShell>
     );
 }

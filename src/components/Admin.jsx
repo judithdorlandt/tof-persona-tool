@@ -18,7 +18,7 @@
  *  - Voortgangsbalken per team
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     isCurrentUserAdmin,
     getCurrentUser,
@@ -28,12 +28,27 @@ import {
     adminAddTeamManager,
     adminRemoveTeamManager,
     getResponsesByTeam,
+    getResponsesByOrganization,
 } from '../supabase';
 import {
     PageShell,
+    HeroBlock,
     PrimaryButton,
     SecondaryButton,
+    SectionCard,
+    SectionEyebrow,
+    TileGrid,
+    Tile,
 } from '../ui/AppShell';
+import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
+
+import { buildTeamAggregate } from '../utils/TeamAggregation';
+import { buildTeamInsights } from '../utils/TeamInsights';
+import { TILES } from './TeamDashboard.jsx';
+import TeamDynamics from './TeamDynamics.jsx';
+
+const INSIGHT_ACCENT = MODULE.insight.accent;
+const DYNAMICS_ACCENT = MODULE.dynamics.accent;
 
 // ─── HOOFDCOMPONENT ─────────────────────────────────────────────────────────
 
@@ -59,6 +74,41 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     const [managerCodeInput, setManagerCodeInput] = useState('');
     const [managerError, setManagerError] = useState('');
     const [managerBusy, setManagerBusy] = useState(false);
+
+    // Organisatie-detail state — null = overzicht, anders = detail-view
+    const [selectedOrg, setSelectedOrg] = useState(null);
+
+    // Organisaties afgeleid uit teams + managers — één entry per unieke
+    // organisation-naam, met team-, response- en manager-tellingen.
+    const organizations = useMemo(() => {
+        const map = new Map();
+        (teams || []).forEach((t) => {
+            const org = (t.organization || '').trim();
+            if (!org) return;
+            if (!map.has(org)) {
+                map.set(org, {
+                    name: org,
+                    teamCount: 0,
+                    responseCount: 0,
+                    managerCount: 0,
+                    teams: [],
+                });
+            }
+            const entry = map.get(org);
+            entry.teamCount += 1;
+            entry.responseCount += Number(t.response_count || 0);
+            entry.teams.push(t);
+        });
+        (managers || []).forEach((m) => {
+            const org = (m.organization || '').trim();
+            if (org && map.has(org)) {
+                map.get(org).managerCount += 1;
+            }
+        });
+        return Array.from(map.values()).sort((a, b) =>
+            a.name.localeCompare(b.name, 'nl', { sensitivity: 'base' })
+        );
+    }, [teams, managers]);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -228,7 +278,35 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
         );
     }
 
-    // ── Admin view ────────────────────────────────────────────────────────
+    // ── Detail-weergave per organisatie ────────────────────────────────
+    if (selectedOrg) {
+        const orgEntry = organizations.find((o) => o.name === selectedOrg);
+        if (orgEntry) {
+            return (
+                <OrganizationDetail
+                    org={orgEntry}
+                    managers={managers}
+                    managerForm={{
+                        emailInput: managerEmailInput,
+                        setEmailInput: setManagerEmailInput,
+                        codeInput: managerCodeInput,
+                        setCodeInput: setManagerCodeInput,
+                        busy: managerBusy,
+                        error: managerError,
+                        onAdd: handleAddManager,
+                        onRemove: handleRemoveManager,
+                    }}
+                    isMobile={isMobile}
+                    onBack={() => setSelectedOrg(null)}
+                    setPage={setPage}
+                    setSelectedTeam={setSelectedTeam}
+                    setTeamResponses={setTeamResponses}
+                />
+            );
+        }
+    }
+
+    // ── Admin overzicht ────────────────────────────────────────────────
     return (
         <PageShell>
             <div style={{ display: 'grid', gap: isMobile ? 20 : 28 }}>
@@ -304,28 +382,11 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                     />
                 )}
 
-                {/* Team-lijst */}
-                <TeamsList
+                {/* Organisaties — klik om in te duiken */}
+                <OrganizationsList
                     isMobile={isMobile}
-                    teams={teams}
-                    setPage={setPage}
-                    setSelectedTeam={setSelectedTeam}
-                    setTeamResponses={setTeamResponses}
-                />
-
-                {/* Managers-koppelingen */}
-                <ManagersSection
-                    isMobile={isMobile}
-                    teams={teams}
-                    managers={managers}
-                    emailInput={managerEmailInput}
-                    setEmailInput={setManagerEmailInput}
-                    codeInput={managerCodeInput}
-                    setCodeInput={setManagerCodeInput}
-                    busy={managerBusy}
-                    error={managerError}
-                    onAdd={handleAddManager}
-                    onRemove={handleRemoveManager}
+                    organizations={organizations}
+                    onSelect={setSelectedOrg}
                 />
 
             </div>
@@ -611,9 +672,9 @@ The Office Factory
     );
 }
 
-// ─── SUB: Lijst ────────────────────────────────────────────────────────────
+// ─── SUB: Organisaties lijst (overzicht) ───────────────────────────────────
 
-function TeamsList({ isMobile, teams, setPage, setSelectedTeam, setTeamResponses }) {
+function OrganizationsList({ isMobile, organizations, onSelect }) {
     return (
         <div style={{
             background: 'var(--tof-surface)',
@@ -630,29 +691,69 @@ function TeamsList({ isMobile, teams, setPage, setSelectedTeam, setTeamResponses
                 fontWeight: 700,
                 color: 'var(--tof-text-muted)',
             }}>
-                Alle teams ({teams.length})
+                Organisaties ({organizations.length})
             </div>
 
-            {teams.length === 0 ? (
+            {organizations.length === 0 ? (
                 <div style={{
                     padding: 24,
                     color: 'var(--tof-text-muted)',
                     fontSize: 14,
                     textAlign: 'center',
                 }}>
-                    Nog geen teams aangemaakt.
+                    Nog geen organisaties met teams.
                 </div>
             ) : (
                 <div style={{ display: 'grid', gap: 10 }}>
-                    {teams.map((t) => (
-                        <TeamRow
-                            key={t.code}
-                            isMobile={isMobile}
-                            team={t}
-                            setPage={setPage}
-                            setSelectedTeam={setSelectedTeam}
-                            setTeamResponses={setTeamResponses}
-                        />
+                    {organizations.map((org) => (
+                        <button
+                            key={org.name}
+                            type="button"
+                            onClick={() => onSelect(org.name)}
+                            style={{
+                                textAlign: 'left',
+                                background: 'var(--tof-bg)',
+                                border: '1px solid var(--tof-border)',
+                                borderRadius: 10,
+                                padding: '14px 16px',
+                                cursor: 'pointer',
+                                display: 'grid',
+                                gridTemplateColumns: isMobile
+                                    ? '1fr'
+                                    : 'minmax(0, 1.4fr) 90px 110px 110px 80px',
+                                gap: 12,
+                                alignItems: 'center',
+                                fontFamily: 'inherit',
+                            }}
+                        >
+                            <div style={{
+                                fontFamily: 'var(--tof-font-heading)',
+                                fontSize: 18,
+                                color: 'var(--tof-text)',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                            }}>
+                                {org.name}
+                            </div>
+                            <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
+                                {org.teamCount} {org.teamCount === 1 ? 'team' : 'teams'}
+                            </div>
+                            <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
+                                {org.responseCount} {org.responseCount === 1 ? 'response' : 'responses'}
+                            </div>
+                            <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
+                                {org.managerCount} {org.managerCount === 1 ? 'manager' : 'managers'}
+                            </div>
+                            <div style={{
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: INSIGHT_ACCENT,
+                                textAlign: 'right',
+                            }}>
+                                Bekijk →
+                            </div>
+                        </button>
                     ))}
                 </div>
             )}
@@ -660,112 +761,422 @@ function TeamsList({ isMobile, teams, setPage, setSelectedTeam, setTeamResponses
     );
 }
 
-function TeamRow({ isMobile, team, setPage, setSelectedTeam, setTeamResponses }) {
-    const moduleLabel = team.level === 'dynamics' ? 'Dynamics' : 'Insight';
-    const moduleColor = team.level === 'dynamics' ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage)';
-    const inactiveStyle = !team.active ? { opacity: 0.45 } : {};
-    const [viewBusy, setViewBusy] = useState(false);
+// ─── SUB: Organisatie-detail ───────────────────────────────────────────────
 
-    const handleView = async () => {
-        if (viewBusy) return;
-        setViewBusy(true);
+function OrganizationDetail({
+    org, managers, managerForm, isMobile, onBack,
+    setPage, setSelectedTeam, setTeamResponses,
+}) {
+    const [responses, setResponses] = useState([]);
+    const [loadingResponses, setLoadingResponses] = useState(true);
+    const [activeTileId, setActiveTileId] = useState('personas');
+    const [openingTeamCode, setOpeningTeamCode] = useState(null);
+    const [moduleSel, setModuleSel] = useState('insight');
+
+    const moduleAccent = moduleSel === 'dynamics' ? DYNAMICS_ACCENT : INSIGHT_ACCENT;
+
+    useEffect(() => {
+        let cancelled = false;
+        setLoadingResponses(true);
+        (async () => {
+            const codes = (org?.teams || []).map((t) => t.code).filter(Boolean);
+            const data = await getResponsesByOrganization(org.name, codes);
+            if (cancelled) return;
+            setResponses(data || []);
+            setLoadingResponses(false);
+        })();
+        return () => { cancelled = true; };
+    }, [org]);
+
+    const aggregate = useMemo(() => buildTeamAggregate(responses), [responses]);
+    const insights = useMemo(() => buildTeamInsights(aggregate), [aggregate]);
+
+    // Per-team aggregaten voor vergelijkings-blok.
+    const teamSummaries = useMemo(() => {
+        return (org?.teams || []).map((t) => {
+            const forTeam = responses.filter((r) => {
+                if (r.invite_code && r.invite_code === t.code) return true;
+                if (r.team && t.team && r.team === t.team
+                    && (!r.organization || r.organization === t.organization)) {
+                    return true;
+                }
+                return false;
+            });
+            const agg = buildTeamAggregate(forTeam);
+            const top = agg?.topPersonaByPrimary || agg?.personasByPrimary?.[0];
+            return {
+                team: t,
+                responseCount: forTeam.length,
+                dominant: top ? `${top.name} ${top.countPercentage}%` : '—',
+                responses: forTeam,
+            };
+        }).sort((a, b) => b.responseCount - a.responseCount);
+    }, [org, responses]);
+
+    // Managers en team-codes gefilterd op deze organisatie.
+    const orgCodes = useMemo(
+        () => new Set((org?.teams || []).map((t) => t.code).filter(Boolean)),
+        [org]
+    );
+    const orgManagers = useMemo(
+        () => (managers || []).filter((m) => orgCodes.has(m.team_code)),
+        [managers, orgCodes]
+    );
+
+    const activeTile = TILES.find((t) => t.id === activeTileId);
+
+    function handleTileClick(id) {
+        setActiveTileId((prev) => (prev === id ? null : id));
+    }
+
+    async function handleViewTeam(summary) {
+        if (openingTeamCode) return;
+        setOpeningTeamCode(summary.team.code);
         try {
             if (typeof setSelectedTeam === 'function') {
                 setSelectedTeam({
-                    team: team.team,
-                    organization: team.organization,
-                    code: team.code,
-                    level: team.level,
+                    team: summary.team.team,
+                    organization: summary.team.organization,
+                    code: summary.team.code,
+                    level: summary.team.level,
                 });
             }
-            try {
-                const responses = await getResponsesByTeam(team.team, team.organization, team.code);
-                if (typeof setTeamResponses === 'function') {
-                    setTeamResponses(responses || []);
-                }
-            } catch (_e) {
-                if (typeof setTeamResponses === 'function') setTeamResponses([]);
+            const data = summary.responses && summary.responses.length > 0
+                ? summary.responses
+                : await getResponsesByTeam(summary.team.team, summary.team.organization, summary.team.code);
+            if (typeof setTeamResponses === 'function') {
+                setTeamResponses(data || []);
             }
             if (typeof setPage === 'function') {
-                setPage(team.level === 'dynamics' ? 'teamdynamics' : 'teamdashboard');
+                setPage(summary.team.level === 'dynamics' ? 'teamdynamics' : 'teamdashboard');
             }
         } finally {
-            setViewBusy(false);
+            setOpeningTeamCode(null);
         }
-    };
+    }
 
     return (
-        <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1.4fr) 120px 120px 100px 110px',
-            gap: 12,
-            alignItems: 'center',
-            padding: '12px 14px',
-            background: 'var(--tof-bg)',
-            border: '1px solid var(--tof-border)',
-            borderRadius: 10,
-            ...inactiveStyle,
-        }}>
-            <div style={{ display: 'grid', gap: 2, minWidth: 0 }}>
-                <div style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: 'var(--tof-text)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                }}>
-                    {team.organization || '—'} {team.team ? `· ${team.team}` : ''}
-                </div>
-                <div style={{
-                    fontSize: 11,
-                    color: 'var(--tof-text-muted)',
-                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-                    letterSpacing: 0.5,
-                }}>
-                    {team.code}
-                </div>
-            </div>
-            <div style={{
-                fontSize: 11,
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: 1.2,
-                color: moduleColor,
-            }}>
-                {moduleLabel}
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                {team.response_count} {team.response_count === 1 ? 'response' : 'responses'}
-            </div>
-            <div style={{
-                fontSize: 11,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: 1.2,
-                color: team.active ? 'var(--tof-accent-sage)' : 'var(--tof-text-muted)',
-            }}>
-                {team.active ? '● Actief' : '○ Inactief'}
-            </div>
+        <PageShell compact>
             <button
                 type="button"
-                onClick={handleView}
-                disabled={!team.active || viewBusy}
+                onClick={onBack}
                 style={{
-                    padding: '8px 12px',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    background: 'var(--tof-surface)',
-                    border: '1px solid var(--tof-border)',
-                    borderRadius: 8,
-                    cursor: (team.active && !viewBusy) ? 'pointer' : 'not-allowed',
-                    color: 'var(--tof-text)',
+                    background: 'transparent',
+                    border: 'none',
+                    padding: 0,
+                    fontSize: 13,
+                    color: 'var(--tof-text-muted)',
+                    cursor: 'pointer',
                     fontFamily: 'inherit',
-                    whiteSpace: 'nowrap',
+                    textAlign: 'left',
+                    width: 'fit-content',
                 }}
             >
-                {viewBusy ? '…' : 'Bekijk →'}
+                ← Terug naar Admin
             </button>
+
+            <HeroBlock
+                compact
+                eyebrow="TOF — ADMIN · ORGANISATIE"
+                title="Organisatie-inzicht voor"
+                titleAccent={org.name}
+                titleAccentColor={moduleAccent}
+                lead={`Geaggregeerd over ${org.teamCount} ${org.teamCount === 1 ? 'team' : 'teams'} en ${responses.length} ${responses.length === 1 ? 'response' : 'responses'}.`}
+            />
+
+            <ModuleToggle
+                value={moduleSel}
+                onChange={setModuleSel}
+                isMobile={isMobile}
+            />
+
+            {loadingResponses ? (
+                <div style={{ padding: 32, textAlign: 'center', color: 'var(--tof-text-muted)' }}>
+                    Responses laden…
+                </div>
+            ) : (
+                <>
+                    {moduleSel === 'insight' ? (
+                        <>
+                            <TileGrid columns={4}>
+                                {TILES.map((tile) => (
+                                    <Tile
+                                        key={tile.id}
+                                        eyebrow={tile.eyebrow}
+                                        value={tile.buildValue(aggregate, insights)}
+                                        hint={tile.buildHint(aggregate, insights)}
+                                        accent={INSIGHT_ACCENT}
+                                        isActive={activeTileId === tile.id}
+                                        onClick={() => handleTileClick(tile.id)}
+                                    />
+                                ))}
+                            </TileGrid>
+
+                            {activeTile ? (
+                                <SectionCard accent={INSIGHT_ACCENT} padding={0}>
+                                    <div style={{
+                                        padding: '22px 22px 8px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'flex-start',
+                                        gap: SPACING.md,
+                                    }}>
+                                        <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
+                                            <SectionEyebrow color={INSIGHT_ACCENT}>
+                                                {activeTile.eyebrow}
+                                            </SectionEyebrow>
+                                            <h2 style={{ ...TYPE.heading, fontSize: 24 }}>
+                                                {activeTile.detailTitle}
+                                            </h2>
+                                            {activeTile.detailLead(aggregate, insights) ? (
+                                                <p style={{ ...TYPE.body, maxWidth: 620 }}>
+                                                    {activeTile.detailLead(aggregate, insights)}
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTileId(null)}
+                                            style={{
+                                                background: 'transparent',
+                                                border: '1px solid var(--tof-border)',
+                                                borderRadius: RADIUS.pill,
+                                                padding: '4px 12px',
+                                                fontSize: 12,
+                                                color: 'var(--tof-text-muted)',
+                                                cursor: 'pointer',
+                                                fontFamily: 'var(--tof-font-body)',
+                                                fontWeight: 500,
+                                                flexShrink: 0,
+                                            }}
+                                        >
+                                            Sluiten ✕
+                                        </button>
+                                    </div>
+                                    <div style={{ padding: '0 22px 22px' }}>
+                                        {activeTile.render(aggregate, insights)}
+                                    </div>
+                                </SectionCard>
+                            ) : null}
+                        </>
+                    ) : (
+                        <TeamDynamics
+                            embedded
+                            forceAccess
+                            teamResponses={responses}
+                            selectedTeam={{
+                                team: org.name,
+                                organization: org.name,
+                                code: null,
+                                level: 'dynamics',
+                            }}
+                            setPage={setPage}
+                        />
+                    )}
+
+                    {/* ── Teams in deze organisatie ── */}
+                    <SectionCard padding={isMobile ? '20px 22px' : '24px 28px'}>
+                        <div style={{ display: 'grid', gap: 14 }}>
+                            <div style={{
+                                fontSize: 11,
+                                textTransform: 'uppercase',
+                                letterSpacing: 1.4,
+                                fontWeight: 700,
+                                color: 'var(--tof-text-muted)',
+                            }}>
+                                Teams in deze organisatie ({teamSummaries.length})
+                            </div>
+
+                            <div style={{ display: 'grid', gap: 10 }}>
+                                {teamSummaries.map((s) => {
+                                    const inactive = !s.team.active;
+                                    const busy = openingTeamCode === s.team.code;
+                                    return (
+                                        <div
+                                            key={s.team.code}
+                                            style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: isMobile
+                                                    ? '1fr'
+                                                    : 'minmax(0, 1.4fr) 120px 160px 110px',
+                                                gap: 12,
+                                                alignItems: 'center',
+                                                padding: '12px 14px',
+                                                background: 'var(--tof-bg)',
+                                                border: '1px solid var(--tof-border)',
+                                                borderRadius: 10,
+                                                opacity: inactive ? 0.5 : 1,
+                                            }}
+                                        >
+                                            <div style={{ display: 'grid', gap: 2, minWidth: 0 }}>
+                                                <div style={{
+                                                    fontSize: 14,
+                                                    fontWeight: 600,
+                                                    color: 'var(--tof-text)',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                }}>
+                                                    {s.team.team || '—'}
+                                                </div>
+                                                <div style={{
+                                                    fontSize: 11,
+                                                    color: 'var(--tof-text-muted)',
+                                                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                                                    letterSpacing: 0.5,
+                                                }}>
+                                                    {s.team.code}
+                                                </div>
+                                            </div>
+                                            <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
+                                                {s.responseCount} {s.responseCount === 1 ? 'response' : 'responses'}
+                                            </div>
+                                            <div style={{ fontSize: 13, color: 'var(--tof-text)' }}>
+                                                {s.dominant}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleViewTeam(s)}
+                                                disabled={inactive || busy || s.responseCount === 0}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    fontSize: 12,
+                                                    fontWeight: 600,
+                                                    background: 'var(--tof-surface)',
+                                                    border: '1px solid var(--tof-border)',
+                                                    borderRadius: 8,
+                                                    cursor: (inactive || busy || s.responseCount === 0)
+                                                        ? 'not-allowed'
+                                                        : 'pointer',
+                                                    color: 'var(--tof-text)',
+                                                    fontFamily: 'inherit',
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                            >
+                                                {busy ? '…' : 'Bekijk team →'}
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </SectionCard>
+
+                    {/* ── Managers van deze organisatie ── */}
+                    <ManagersSection
+                        isMobile={isMobile}
+                        teams={org.teams}
+                        managers={orgManagers}
+                        emailInput={managerForm.emailInput}
+                        setEmailInput={managerForm.setEmailInput}
+                        codeInput={managerForm.codeInput}
+                        setCodeInput={managerForm.setCodeInput}
+                        busy={managerForm.busy}
+                        error={managerForm.error}
+                        onAdd={managerForm.onAdd}
+                        onRemove={managerForm.onRemove}
+                    />
+
+                    {/* ── Bestuurder (placeholder voor toekomstige functie) ── */}
+                    <BestuurderPlaceholder isMobile={isMobile} orgName={org.name} />
+                </>
+            )}
+        </PageShell>
+    );
+}
+
+// ─── SUB: Module-toggle ────────────────────────────────────────────────────
+
+function ModuleToggle({ value, onChange, isMobile }) {
+    const options = [
+        { id: 'insight', label: '01 — Team Insight', accent: INSIGHT_ACCENT },
+        { id: 'dynamics', label: '02 — Team Dynamics', accent: DYNAMICS_ACCENT },
+    ];
+
+    return (
+        <div
+            role="tablist"
+            aria-label="Module"
+            style={{
+                display: 'inline-flex',
+                gap: 4,
+                padding: 4,
+                background: 'var(--tof-surface)',
+                border: '1px solid var(--tof-border)',
+                borderRadius: 999,
+                width: 'fit-content',
+            }}
+        >
+            {options.map((opt) => {
+                const active = value === opt.id;
+                return (
+                    <button
+                        key={opt.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={active}
+                        onClick={() => onChange(opt.id)}
+                        style={{
+                            padding: isMobile ? '8px 14px' : '10px 18px',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            fontFamily: 'inherit',
+                            border: 'none',
+                            borderRadius: 999,
+                            cursor: 'pointer',
+                            background: active ? opt.accent : 'transparent',
+                            color: active ? '#fff' : 'var(--tof-text-muted)',
+                            letterSpacing: 0.3,
+                            transition: 'background 0.15s, color 0.15s',
+                        }}
+                    >
+                        {opt.label}
+                    </button>
+                );
+            })}
+        </div>
+    );
+}
+
+// ─── SUB: Bestuurder placeholder ───────────────────────────────────────────
+
+function BestuurderPlaceholder({ isMobile, orgName }) {
+    return (
+        <div style={{
+            background: 'var(--tof-surface)',
+            border: '1px dashed var(--tof-border)',
+            borderRadius: 14,
+            padding: isMobile ? '20px 22px' : '24px 28px',
+            display: 'grid',
+            gap: 8,
+        }}>
+            <div style={{
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: 1.4,
+                fontWeight: 700,
+                color: 'var(--tof-text-muted)',
+            }}>
+                Bestuurder
+            </div>
+            <div style={{
+                fontFamily: 'var(--tof-font-heading)',
+                fontSize: 18,
+                color: 'var(--tof-text)',
+            }}>
+                Komt binnenkort
+            </div>
+            <p style={{
+                margin: 0,
+                fontSize: 13,
+                lineHeight: 1.55,
+                color: 'var(--tof-text-soft)',
+                maxWidth: 620,
+            }}>
+                Hier kun je straks een bestuurder of directielid koppelen aan
+                <strong> {orgName}</strong>. Hij of zij krijgt op organisatie-niveau
+                dezelfde inzichten als een manager binnen één team.
+            </p>
         </div>
     );
 }

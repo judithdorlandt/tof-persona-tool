@@ -43,7 +43,7 @@ const ACCENT = MODULE.insight.accent;
 // TILE DEFINITIONS
 // =========================
 
-const TILES = [
+export const TILES = [
     {
         id: 'personas',
         eyebrow: 'Werkstijlen',
