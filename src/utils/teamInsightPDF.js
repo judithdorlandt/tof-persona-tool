@@ -46,9 +46,10 @@ export async function generateTeamInsightPDF({
     insights,
     teamName = 'Team',
     organization = '',
+    mode = 'team', // 'team' | 'organization'
 }) {
-    const svgVoorkant = buildVoorkantSVG({ aggregate, insights, teamName, organization });
-    const svgAchterkant = buildAchterkantSVG({ aggregate, insights, teamName, organization });
+    const svgVoorkant = buildVoorkantSVG({ aggregate, insights, teamName, organization, mode });
+    const svgAchterkant = buildAchterkantSVG({ aggregate, insights, teamName, organization, mode });
 
     document.body.appendChild(svgVoorkant);
     document.body.appendChild(svgAchterkant);
@@ -84,7 +85,8 @@ export async function generateTeamInsightPDF({
             .replace(/[^\w\s-]/g, '')
             .trim()
             .slice(0, 50);
-        const fileName = `${safeName} - teaminzicht TOF.pdf`;
+        const suffix = mode === 'organization' ? 'organisatie-inzicht' : 'teaminzicht';
+        const fileName = `${safeName} - ${suffix} TOF.pdf`;
         pdf.save(fileName);
     } finally {
         document.body.removeChild(svgVoorkant);
@@ -96,27 +98,27 @@ export async function generateTeamInsightPDF({
 // SVG BUILDER — VOORKANT
 // =========================
 
-function buildVoorkantSVG({ aggregate, insights, teamName, organization }) {
+function buildVoorkantSVG({ aggregate, insights, teamName, organization, mode = 'team' }) {
     const svg = createSVGCanvas();
     svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
     let y = MARGIN;
 
-    y = drawHeader({ svg, y, teamName, organization, aggregate });
+    y = drawHeader({ svg, y, teamName, organization, aggregate, mode });
     y += 12;
-    y = drawHero({ svg, y, aggregate, insights });
+    y = drawHero({ svg, y, aggregate, insights, mode });
     y += 12;
     y = drawDivider({ svg, y });
     y += 10;
-    y = drawDistributionAndMix({ svg, y, aggregate });
+    y = drawDistributionAndMix({ svg, y, aggregate, mode });
     y += 10;
     y = drawDivider({ svg, y });
     y += 10;
-    y = drawSignature({ svg, y, aggregate, insights });
+    y = drawSignature({ svg, y, aggregate, insights, mode });
     y += 10;
     y = drawDivider({ svg, y });
     y += 10;
-    drawLeeglopers({ svg, y, insights });
+    drawLeeglopers({ svg, y, insights, mode });
 
     drawFooterHint({ svg });
 
@@ -127,7 +129,7 @@ function buildVoorkantSVG({ aggregate, insights, teamName, organization }) {
 // SVG BUILDER — ACHTERKANT
 // =========================
 
-function buildAchterkantSVG({ aggregate, insights, teamName, organization }) {
+function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode = 'team' }) {
     const svg = createSVGCanvas();
     svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
@@ -135,13 +137,13 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization }) {
 
     y = drawAchterkantHeader({ svg, y });
     y += 12;
-    y = drawAchterkantTitle({ svg, y });
+    y = drawAchterkantTitle({ svg, y, mode });
     y += 10;
     y = drawWorkplaceCompact({ svg, y, aggregate });
     y += 10;
     drawQuickWinsCompact({ svg, y, insights });
 
-    drawAchterkantFooter({ svg });
+    drawAchterkantFooter({ svg, mode });
 
     return svg;
 }
@@ -150,8 +152,8 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization }) {
 // SECTIES — VOORKANT
 // =========================
 
-function drawHeader({ svg, y, teamName, organization, aggregate }) {
-    const pillW = 80;
+function drawHeader({ svg, y, teamName, organization, aggregate, mode = 'team' }) {
+    const pillW = mode === 'organization' ? 110 : 80;
     const pillH = 12;
     const pillY = y;
 
@@ -165,7 +167,7 @@ function drawHeader({ svg, y, teamName, organization, aggregate }) {
     svg.appendChild(createText({
         x: MARGIN + 11,
         y: pillY + pillH / 2 + 2,
-        text: 'TEAMINZICHT',
+        text: mode === 'organization' ? 'ORGANISATIE-INZICHT' : 'TEAMINZICHT',
         font: 'Inter',
         weight: 700,
         size: 5.2,
@@ -203,7 +205,8 @@ function drawHeader({ svg, y, teamName, organization, aggregate }) {
     return metaY;
 }
 
-function drawHero({ svg, y, aggregate, insights }) {
+function drawHero({ svg, y, aggregate, insights, mode = 'team' }) {
+    const isOrg = mode === 'organization';
     // Gebruik personasByPrimary (= sortering op aantal mensen primair),
     // niet sortedPersonas (= gewogen energie-sortering). Anders kan de
     // "dominante werkstijl" iets anders aanwijzen dan het hoogste
@@ -221,7 +224,7 @@ function drawHero({ svg, y, aggregate, insights }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: titleY,
-        text: 'Jouw dominante teamwerkstijl is:',
+        text: isOrg ? 'Dominante werkstijl in de organisatie:' : 'Jouw dominante teamwerkstijl is:',
         font: 'Playfair Display',
         weight: 500,
         size: fontSize,
@@ -241,7 +244,7 @@ function drawHero({ svg, y, aggregate, insights }) {
     }));
 
     const subY = line2Y + 14;
-    const headline = insights?.headline || `Het team werkt vanuit ${top.name.toLowerCase()}.`;
+    const headline = insights?.headline || `${isOrg ? 'De organisatie' : 'Het team'} werkt vanuit ${top.name.toLowerCase()}.`;
     drawWrappedText({
         svg,
         x: MARGIN,
@@ -272,7 +275,11 @@ function drawHero({ svg, y, aggregate, insights }) {
     return metaY;
 }
 
-function drawDistributionAndMix({ svg, y, aggregate }) {
+function drawDistributionAndMix({ svg, y, aggregate, mode = 'team' }) {
+    const isOrg = mode === 'organization';
+    // Org-mode heeft veel meer namen → kleinere tekst zodat het past.
+    const nameFontSize = isOrg ? 4 : 5.2;
+    const nameLineH = isOrg ? 5 : 7;
     const totalWidth = PAGE_W - MARGIN * 2;
     const gap = 24;
     const colWidth = (totalWidth - gap) / 2;
@@ -293,7 +300,7 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
     svg.appendChild(createText({
         x: colRightX,
         y: y + 6,
-        text: 'JOUW TEAM-MIX',
+        text: isOrg ? 'ORGANISATIE-MIX' : 'JOUW TEAM-MIX',
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -405,19 +412,19 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
 
         let advance;
         if (namesText) {
-            const namesLines = wrapText(namesText, subColWidth, 5.2, 'Inter');
+            const namesLines = wrapText(namesText, subColWidth, nameFontSize, 'Inter');
             namesLines.forEach((line, i) => {
                 svg.appendChild(createText({
                     x: xPos,
-                    y: curY + 8 + i * 7,
+                    y: curY + 8 + i * nameLineH,
                     text: line,
                     font: 'Inter',
                     weight: 400,
-                    size: 5.2,
+                    size: nameFontSize,
                     color: COLOR.textSoft,
                 }));
             });
-            advance = 8 + namesLines.length * 7 + 6;
+            advance = 8 + namesLines.length * nameLineH + 6;
         } else {
             advance = 16;
         }
@@ -429,11 +436,12 @@ function drawDistributionAndMix({ svg, y, aggregate }) {
     return Math.max(lineY, mixY1, mixY2);
 }
 
-function drawSignature({ svg, y, aggregate, insights }) {
+function drawSignature({ svg, y, aggregate, insights, mode = 'team' }) {
+    const isOrg = mode === 'organization';
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 6,
-        text: 'WAT DIT TEAM IN BEWEGING BRENGT',
+        text: isOrg ? 'WAT DEZE ORGANISATIE IN BEWEGING BRENGT' : 'WAT DIT TEAM IN BEWEGING BRENGT',
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -441,7 +449,7 @@ function drawSignature({ svg, y, aggregate, insights }) {
         letterSpacing: 0.8,
     }));
 
-    const signatureSentence = buildSignatureSentence(aggregate);
+    const signatureSentence = buildSignatureSentence(aggregate, mode);
 
     svg.appendChild(createText({
         x: MARGIN,
@@ -457,10 +465,13 @@ function drawSignature({ svg, y, aggregate, insights }) {
     return y + 18 + 12;
 }
 
-function buildSignatureSentence(aggregate) {
+function buildSignatureSentence(aggregate, mode = 'team') {
     // Volg dezelfde sortering als hero en mix: aantal mensen primair,
     // niet gewogen energie. Zo blijft het hele PDF-verhaal coherent.
     const top = aggregate?.personasByPrimary || [];
+    const isOrg = mode === 'organization';
+    const subject = isOrg ? 'deze organisatie' : 'dit team';
+    const subjectShort = isOrg ? 'Een organisatie' : 'Een team';
 
     const PERSONA_DRIVE = {
         maker: 'maken',
@@ -473,16 +484,16 @@ function buildSignatureSentence(aggregate) {
         vernieuwer: 'vernieuwing',
     };
 
-    if (top.length === 0) return 'Een team in beweging.';
+    if (top.length === 0) return `${subjectShort} in beweging.`;
 
     if (top.length === 1) {
         const drive = PERSONA_DRIVE[top[0].id] || top[0].name.toLowerCase();
-        return `${capitalize(drive)} — daar bouwt dit team op.`;
+        return `${capitalize(drive)} — daar bouwt ${subject} op.`;
     }
 
     const drive1 = PERSONA_DRIVE[top[0].id] || top[0].name.toLowerCase();
     const drive2 = PERSONA_DRIVE[top[1].id] || top[1].name.toLowerCase();
-    return `${capitalize(drive1)} en ${drive2} — daar bouwt dit team op.`;
+    return `${capitalize(drive1)} en ${drive2} — daar bouwt ${subject} op.`;
 }
 
 function capitalize(s) {
@@ -490,11 +501,11 @@ function capitalize(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function drawLeeglopers({ svg, y, insights }) {
+function drawLeeglopers({ svg, y, insights, mode = 'team' }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 6,
-        text: 'WAAR HET TEAM OP LEEGLOOPT',
+        text: mode === 'organization' ? 'WAAR DE ORGANISATIE OP LEEGLOOPT' : 'WAAR HET TEAM OP LEEGLOOPT',
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -502,7 +513,7 @@ function drawLeeglopers({ svg, y, insights }) {
         letterSpacing: 0.8,
     }));
 
-    const leeglopers = buildLeeglopers(insights);
+    const leeglopers = buildLeeglopers(insights, mode);
 
     let lineY = y + 18;
     leeglopers.forEach((tekst) => {
@@ -567,12 +578,14 @@ function drawAchterkantHeader({ svg, y }) {
     return y + pillH;
 }
 
-function drawAchterkantTitle({ svg, y }) {
+function drawAchterkantTitle({ svg, y, mode = 'team' }) {
     const titleY = y + 16;
     svg.appendChild(createText({
         x: MARGIN,
         y: titleY,
-        text: 'Wat dit team vraagt van de werkomgeving',
+        text: mode === 'organization'
+            ? 'Wat deze organisatie vraagt van de werkomgeving'
+            : 'Wat dit team vraagt van de werkomgeving',
         font: 'Playfair Display',
         weight: 500,
         size: 12,
@@ -738,13 +751,16 @@ function drawQuickWinsCompact({ svg, y, insights }) {
     return lineY;
 }
 
-function drawAchterkantFooter({ svg }) {
+function drawAchterkantFooter({ svg, mode = 'team' }) {
     const footerY = PAGE_H - 56;
+    const isOrg = mode === 'organization';
 
     svg.appendChild(createText({
         x: PAGE_W / 2,
         y: footerY,
-        text: '"Een team dat zichzelf herkent, beweegt sneller."',
+        text: isOrg
+            ? '"Een organisatie die zichzelf herkent, beweegt sneller."'
+            : '"Een team dat zichzelf herkent, beweegt sneller."',
         font: 'Playfair Display',
         weight: 500,
         size: 7,
@@ -759,7 +775,9 @@ function drawAchterkantFooter({ svg }) {
     svg.appendChild(createText({
         x: PAGE_W / 2,
         y: footerY + 36,
-        text: 'Helping teams understand their workplace through insight, design and movement.',
+        text: isOrg
+            ? 'Helping organisations understand their workplace through insight, design and movement.'
+            : 'Helping teams understand their workplace through insight, design and movement.',
         font: 'Inter',
         weight: 400,
         size: 4.8,
@@ -772,7 +790,7 @@ function drawAchterkantFooter({ svg }) {
 // LEEGLOPER LOGICA
 // =========================
 
-function buildLeeglopers(insights) {
+function buildLeeglopers(insights, mode = 'team') {
     const t = insights?.workplaceTension || {};
     const out = [];
 
@@ -807,7 +825,9 @@ function buildLeeglopers(insights) {
     }
 
     while (out.length < 3) {
-        out.push('Werkplek die niet aansluit bij teambehoefte');
+        out.push(mode === 'organization'
+            ? 'Werkplek die niet aansluit bij behoefte van de organisatie'
+            : 'Werkplek die niet aansluit bij teambehoefte');
     }
 
     return out.slice(0, 3);
@@ -948,3 +968,27 @@ function buildReliabilityLabel(count) {
     if (count < 6) return 'Groeiend';
     return 'Sterk beeld';
 }
+
+// =========================
+// SHARED EXPORTS — voor organizationInsightPDF.js etc.
+// =========================
+export {
+    PAGE_W as PDF_PAGE_W,
+    PAGE_H as PDF_PAGE_H,
+    MARGIN as PDF_MARGIN,
+    COLOR as PDF_COLOR,
+    PERSONA_COLORS as PDF_PERSONA_COLORS,
+    createSVGCanvas,
+    createRect,
+    createCircle,
+    createText,
+    drawTOFMark,
+    drawWrappedText,
+    wrapText,
+    firstName,
+    formatNamesNatural,
+    buildReliabilityLabel,
+    drawDivider,
+    drawAchterkantHeader,
+    buildLeeglopers,
+};

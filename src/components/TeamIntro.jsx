@@ -578,22 +578,9 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                 setTeamAccesses(listTeamAccesses());
                             }}
                         />
-                        {/* Code-invoer blok blijft zichtbaar voor losse code-flow,
-                            maar niet voor managers — die zijn al gekoppeld via email. */}
-                        {!isManagerMode && (
-                            <CodeEntryBlock
-                                isMobile={isMobile}
-                                onOpenCodeModal={() => openAccessModal('any')}
-                                variant="compact"
-                            />
-                        )}
                     </>
                 ) : (
-                    <CodeEntryBlock
-                        isMobile={isMobile}
-                        onOpenCodeModal={() => openAccessModal('any')}
-                        variant="prominent"
-                    />
+                    <MagicLinkRequestBlock isMobile={isMobile} />
                 )}
 
                 {/* ── FOOTER NAVIGATIE ────────────────────────────────── */}
@@ -644,62 +631,11 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
     );
 }
 
-// ─── CODE ENTRY BLOCK ────────────────────────────────────────────────────────
-// Onder de modules: één duidelijke ingang voor wie een code heeft ontvangen.
-// Dit vervangt de onduidelijkheid van "welke module-knop moet ik?" — je voert
-// gewoon je code in en het systeem brengt je naar het juiste dashboard.
+// ─── MAGIC-LINK REQUEST BLOCK ────────────────────────────────────────────────
+// Voor nieuwe gebruikers zonder toegang: vraag een magic-link aan via /login.
+// Vervangt de oude code-invoer flow (codes lopen nu via magic-link login).
 
-function CodeEntryBlock({ isMobile, onOpenCodeModal, variant = 'prominent' }) {
-    const isCompact = variant === 'compact';
-
-    // Compact variant — voor returning users die al toegang hebben.
-    // Subtieler, zonder rose-accent, met andere copy ("nieuwe code" ipv "ontvangen?").
-    if (isCompact) {
-        return (
-            <div
-                style={{
-                    background: 'transparent',
-                    border: '1px dashed var(--tof-border)',
-                    borderRadius: 12,
-                    padding: isMobile ? '12px 14px' : '12px 18px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: 12,
-                    flexWrap: 'wrap',
-                }}
-            >
-                <p
-                    style={{
-                        margin: 0,
-                        fontSize: 13,
-                        lineHeight: 1.55,
-                        color: 'var(--tof-text-muted)',
-                    }}
-                >
-                    Nieuwe code ontvangen? Voeg een team toe aan je toegang.
-                </p>
-                <button
-                    type="button"
-                    onClick={onOpenCodeModal}
-                    style={{
-                        background: 'transparent',
-                        border: '1px solid var(--tof-border)',
-                        borderRadius: 8,
-                        padding: '7px 14px',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: 'var(--tof-text)',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Code invoeren →
-                </button>
-            </div>
-        );
-    }
-
-    // Prominent variant — voor new users die nog geen toegang hebben.
+function MagicLinkRequestBlock({ isMobile }) {
     return (
         <div
             style={{
@@ -725,7 +661,7 @@ function CodeEntryBlock({ isMobile, onOpenCodeModal, variant = 'prominent' }) {
                         color: 'var(--tof-accent-rose)',
                     }}
                 >
-                    Heb je een toegangscode ontvangen?
+                    Al een samenwerking met TOF? Log in met magic-link
                 </div>
                 <p
                     style={{
@@ -735,11 +671,11 @@ function CodeEntryBlock({ isMobile, onOpenCodeModal, variant = 'prominent' }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    Voer hem hier in — je komt automatisch op het juiste dashboard.
+                    Magic-link toegang is alleen beschikbaar voor teams waarmee we een traject zijn gestart. Nog geen samenwerking? Plan eerst een gesprek hieronder.
                 </p>
             </div>
-            <PrimaryButton onClick={onOpenCodeModal}>
-                Code invoeren
+            <PrimaryButton onClick={() => { window.location.href = '/login'; }}>
+                Naar inloggen →
             </PrimaryButton>
         </div>
     );

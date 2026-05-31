@@ -29,6 +29,9 @@ import {
     adminRemoveTeamManager,
     getResponsesByTeam,
     getResponsesByOrganization,
+    adminListOrgObservations,
+    adminAddOrgObservation,
+    adminRemoveOrgObservation,
 } from '../supabase';
 import {
     PageShell,
@@ -44,6 +47,8 @@ import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 
 import { buildTeamAggregate } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
+import { generateTeamInsightPDF } from '../utils/teamInsightPDF';
+import { generateOrganisatieLandschapPDF as generateOrganizationInsightPDF } from '../utils/organisatieLandschap/OrganisatieLandschap';
 import { TILES } from './TeamDashboard.jsx';
 import TeamDynamics from './TeamDynamics.jsx';
 
@@ -772,6 +777,11 @@ function OrganizationDetail({
     const [activeTileId, setActiveTileId] = useState('personas');
     const [openingTeamCode, setOpeningTeamCode] = useState(null);
     const [moduleSel, setModuleSel] = useState('insight');
+    // Eigen observaties per organisatie — handmatige input naast data-driven inzichten.
+    const [observations, setObservations] = useState([]);
+    const [obsForm, setObsForm] = useState({ leegloper: '', werkt_goed: '' });
+    const [obsBusy, setObsBusy] = useState(false);
+    const [obsError, setObsError] = useState(null);
 
     const moduleAccent = moduleSel === 'dynamics' ? DYNAMICS_ACCENT : INSIGHT_ACCENT;
 
@@ -787,6 +797,49 @@ function OrganizationDetail({
         })();
         return () => { cancelled = true; };
     }, [org]);
+
+    // Laad observaties wanneer organisatie wijzigt.
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            const data = await adminListOrgObservations(org.name);
+            if (cancelled) return;
+            setObservations(data || []);
+        })();
+        return () => { cancelled = true; };
+    }, [org]);
+
+    async function handleAddObservation(category) {
+        const content = (obsForm[category] || '').trim();
+        if (!content) return;
+        setObsBusy(true);
+        setObsError(null);
+        const { row, error } = await adminAddOrgObservation({
+            organization: org.name,
+            category,
+            content,
+        });
+        setObsBusy(false);
+        if (error) {
+            setObsError(error.message || 'Toevoegen mislukt.');
+            return;
+        }
+        if (row) {
+            setObservations((prev) => [...prev, row]);
+            setObsForm((prev) => ({ ...prev, [category]: '' }));
+        }
+    }
+
+    async function handleRemoveObservation(id) {
+        setObsBusy(true);
+        const { error } = await adminRemoveOrgObservation(id);
+        setObsBusy(false);
+        if (error) {
+            setObsError(error.message || 'Verwijderen mislukt.');
+            return;
+        }
+        setObservations((prev) => prev.filter((o) => o.id !== id));
+    }
 
     const aggregate = useMemo(() => buildTeamAggregate(responses), [responses]);
     const insights = useMemo(() => buildTeamInsights(aggregate), [aggregate]);
@@ -809,6 +862,7 @@ function OrganizationDetail({
                 responseCount: forTeam.length,
                 dominant: top ? `${top.name} ${top.countPercentage}%` : '—',
                 responses: forTeam,
+                aggregate: agg,
             };
         }).sort((a, b) => b.responseCount - a.responseCount);
     }, [org, responses]);
@@ -882,6 +936,22 @@ function OrganizationDetail({
                 titleAccent={org.name}
                 titleAccentColor={moduleAccent}
                 lead={`Geaggregeerd over ${org.teamCount} ${org.teamCount === 1 ? 'team' : 'teams'} en ${responses.length} ${responses.length === 1 ? 'response' : 'responses'}.`}
+                actions={
+                    moduleSel === 'insight' && responses.length > 0 ? (
+                        <PrimaryButton
+                            onClick={() => generateOrganizationInsightPDF({
+                                aggregate,
+                                insights,
+                                teamSummaries,
+                                organizationName: org.name,
+                                observations,
+                            })}
+                            style={{ background: INSIGHT_ACCENT }}
+                        >
+                            Download als PDF
+                        </PrimaryButton>
+                    ) : null
+                }
             />
 
             <ModuleToggle
@@ -1062,6 +1132,17 @@ function OrganizationDetail({
                         </div>
                     </SectionCard>
 
+                    {/* ── Eigen observaties (handmatig per organisatie) ── */}
+                    <ObservationsSection
+                        observations={observations}
+                        form={obsForm}
+                        setForm={setObsForm}
+                        busy={obsBusy}
+                        error={obsError}
+                        onAdd={handleAddObservation}
+                        onRemove={handleRemoveObservation}
+                    />
+
                     {/* ── Managers van deze organisatie ── */}
                     <ManagersSection
                         isMobile={isMobile}
@@ -1177,6 +1258,183 @@ function BestuurderPlaceholder({ isMobile, orgName }) {
                 <strong> {orgName}</strong>. Hij of zij krijgt op organisatie-niveau
                 dezelfde inzichten als een manager binnen één team.
             </p>
+        </div>
+    );
+}
+
+// ─── SUB: Eigen observaties ───────────────────────────────────────────────
+// Handmatige input naast data-driven inzichten. Twee categorieën: leegloper
+// (akoestiek, no-shows, niet nakomen afspraken) en werkt_goed (sterktes,
+// patronen). Verschijnen in de organisatie-PDF.
+
+const OBSERVATION_CATEGORIES = [
+    {
+        key: 'leegloper',
+        label: 'Waar de organisatie op leegloopt',
+        helper: 'Bv. akoestiek, no-shows, niet nakomen van afspraken.',
+        accent: 'var(--tof-accent-rose)',
+        placeholder: 'akoestiek op de werkvloer',
+    },
+    {
+        key: 'werkt_goed',
+        label: 'Wat werkt goed in de organisatie',
+        helper: 'Bv. open feedbackcultuur, snelle besluitvorming.',
+        accent: 'var(--tof-accent-sage)',
+        placeholder: 'open feedbackcultuur tussen teams',
+    },
+];
+
+function ObservationsSection({ observations, form, setForm, busy, error, onAdd, onRemove }) {
+    const inputStyle = {
+        width: '100%',
+        padding: '12px 14px',
+        border: '1px solid var(--tof-border)',
+        borderRadius: 10,
+        fontSize: 15,
+        fontFamily: 'inherit',
+        background: 'var(--tof-bg)',
+        color: 'var(--tof-text)',
+        boxSizing: 'border-box',
+    };
+
+    return (
+        <div style={{
+            background: 'var(--tof-surface)',
+            border: '1px solid var(--tof-border)',
+            borderRadius: 14,
+            padding: '24px 28px',
+            display: 'grid',
+            gap: 20,
+        }}>
+            <div>
+                <div style={{
+                    fontSize: 11,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1.4,
+                    fontWeight: 700,
+                    color: '#A37A4E',
+                    marginBottom: 4,
+                }}>
+                    Eigen observaties — handmatig per organisatie
+                </div>
+                <p style={{
+                    margin: 0,
+                    fontSize: 13,
+                    lineHeight: 1.6,
+                    color: 'var(--tof-text-soft)',
+                }}>
+                    Naast de data-driven inzichten uit de persona-responses kun je
+                    hier zelf observaties toevoegen die in de organisatie-PDF
+                    verschijnen.
+                </p>
+            </div>
+
+            {OBSERVATION_CATEGORIES.map((cat) => {
+                const items = (observations || []).filter((o) => o.category === cat.key);
+                return (
+                    <div key={cat.key} style={{
+                        display: 'grid',
+                        gap: 12,
+                        paddingTop: 8,
+                        borderTop: '1px dashed var(--tof-border)',
+                    }}>
+                        <div>
+                            <div style={{
+                                fontSize: 11,
+                                textTransform: 'uppercase',
+                                letterSpacing: 1.2,
+                                fontWeight: 700,
+                                color: cat.accent,
+                                marginBottom: 4,
+                            }}>
+                                {cat.label}
+                            </div>
+                            <div style={{
+                                fontSize: 12,
+                                color: 'var(--tof-text-muted)',
+                            }}>
+                                {cat.helper}
+                            </div>
+                        </div>
+
+                        {items.length > 0 && (
+                            <ul style={{
+                                listStyle: 'none',
+                                margin: 0,
+                                padding: 0,
+                                display: 'grid',
+                                gap: 6,
+                            }}>
+                                {items.map((it) => (
+                                    <li key={it.id} style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        gap: 12,
+                                        padding: '10px 14px',
+                                        background: 'var(--tof-bg)',
+                                        border: '1px solid var(--tof-border)',
+                                        borderRadius: 10,
+                                    }}>
+                                        <span style={{ fontSize: 14, color: 'var(--tof-text)' }}>
+                                            {it.content}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => onRemove(it.id)}
+                                            disabled={busy}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                color: 'var(--tof-text-muted)',
+                                                fontSize: 13,
+                                                cursor: busy ? 'not-allowed' : 'pointer',
+                                                padding: '4px 8px',
+                                            }}
+                                            title="Verwijderen"
+                                        >
+                                            ✕
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                        <form
+                            onSubmit={(e) => { e.preventDefault(); onAdd(cat.key); }}
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: '1fr auto',
+                                gap: 10,
+                            }}
+                        >
+                            <input
+                                type="text"
+                                value={form[cat.key] || ''}
+                                onChange={(e) => setForm((p) => ({ ...p, [cat.key]: e.target.value }))}
+                                placeholder={cat.placeholder}
+                                style={inputStyle}
+                                disabled={busy}
+                            />
+                            <PrimaryButton type="submit" disabled={busy || !(form[cat.key] || '').trim()}>
+                                Toevoegen
+                            </PrimaryButton>
+                        </form>
+                    </div>
+                );
+            })}
+
+            {error && (
+                <div style={{
+                    fontSize: 13,
+                    color: 'var(--tof-accent-rose)',
+                    padding: '8px 12px',
+                    background: 'rgba(192, 95, 95, 0.08)',
+                    borderRadius: 8,
+                }}>
+                    {error}
+                </div>
+            )}
         </div>
     );
 }

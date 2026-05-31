@@ -790,6 +790,88 @@ export async function adminRemoveTeamManager(id) {
 }
 
 // =========================
+// ORGANISATIE-OBSERVATIES (admin handmatige input)
+// =========================
+// Per organisatie kunnen TOF-admins observaties toevoegen die naast
+// de data-driven insights getoond worden (bv. akoestiek, no-shows).
+// Categorieën: 'leegloper' | 'werkt_goed'.
+
+export async function adminListOrgObservations(organization) {
+  if (!ensureSupabase()) return [];
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) return [];
+    const { data, error } = await supabase
+      .from('organization_observations')
+      .select('id, organization, category, content, sort_order, created_at')
+      .eq('organization', organization)
+      .order('category', { ascending: true })
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true });
+    if (error) {
+      console.warn('⚠️ adminListOrgObservations:', error.message);
+      return [];
+    }
+    return data || [];
+  } catch (err) {
+    console.warn('⚠️ adminListOrgObservations error:', err?.message || err);
+    return [];
+  }
+}
+
+export async function adminAddOrgObservation({ organization, category, content }) {
+  if (!ensureSupabase()) {
+    return { row: null, error: { message: 'Supabase niet beschikbaar' } };
+  }
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) return { row: null, error: { message: 'Geen admin-rechten' } };
+
+    const org = String(organization || '').trim();
+    const cat = String(category || '').trim();
+    const txt = String(content || '').trim();
+    if (!org || !cat || !txt) {
+      return { row: null, error: { message: 'Organisatie, categorie en tekst zijn verplicht' } };
+    }
+    if (!['leegloper', 'werkt_goed'].includes(cat)) {
+      return { row: null, error: { message: `Onbekende categorie: ${cat}` } };
+    }
+
+    const { data, error } = await supabase
+      .from('organization_observations')
+      .insert({ organization: org, category: cat, content: txt })
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error('❌ adminAddOrgObservation:', error.message);
+      return { row: null, error };
+    }
+    return { row: data, error: null };
+  } catch (err) {
+    console.error('❌ adminAddOrgObservation error:', err?.message || err);
+    return { row: null, error: { message: err?.message || 'Onbekende fout' } };
+  }
+}
+
+export async function adminRemoveOrgObservation(id) {
+  if (!ensureSupabase()) return { error: { message: 'Supabase niet beschikbaar' } };
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) return { error: { message: 'Geen admin-rechten' } };
+    const { error } = await supabase.from('organization_observations').delete().eq('id', id);
+    if (error) {
+      console.error('❌ adminRemoveOrgObservation:', error.message);
+      return { error };
+    }
+    return { error: null };
+  } catch (err) {
+    console.error('❌ adminRemoveOrgObservation error:', err?.message || err);
+    return { error: { message: err?.message || 'Onbekende fout' } };
+  }
+}
+
+// =========================
 // ADMIN GATING (TOF interne tooling — /admin route)
 // =========================
 // Voor de admin-dashboardroute. Voorlopig hardcoded e-maillijst.
