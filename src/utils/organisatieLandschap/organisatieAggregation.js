@@ -41,6 +41,16 @@ export function prepareOrganisatieData({
         .map((t) => buildTeamRow(t))
         .sort((a, b) => b.n - a.n);
 
+    // Reconciliatie respondenten: het organisatietotaal (aggregate.teamCount)
+    // telt álle responses; de teamrijen tellen alleen responses die aan een
+    // team gekoppeld konden worden. Het verschil maken we expliciet zichtbaar
+    // i.p.v. het stil weg te laten.
+    const linkedRespondents = teamRows.reduce((s, r) => s + r.n, 0);
+    const unlinkedRespondents = Math.max(0, totalRespondents - linkedRespondents);
+    // Theoretisch kan een response aan meerdere teams matchen (dubbeltelling);
+    // dan is linked > totaal. Dat signaleren we apart.
+    const overlapRespondents = Math.max(0, linkedRespondents - totalRespondents);
+
     const dominantStyle = computeDominantStyle(aggregate);
     const topNeed = computeTopWorkplaceNeed(aggregate);
     const workplaceNeeds = computeWorkplaceNeeds(aggregate, 5);
@@ -64,6 +74,9 @@ export function prepareOrganisatieData({
             day: 'numeric', month: 'long', year: 'numeric',
         }),
         totalRespondents,
+        linkedRespondents,
+        unlinkedRespondents,
+        overlapRespondents,
         totalTeams: allTeams.length,
         activeTeamCount: activeTeams.length,
         inactiveTeamCount: inactiveTeams.length,
@@ -71,6 +84,7 @@ export function prepareOrganisatieData({
         dominantStyle,
         topNeed,
         workplaceNeeds,
+        workplaceSpread: computeWorkplaceSpread(workplaceNeeds),
         leeglopers,
         leegloperObservations,
         werktGoedObservations,
@@ -78,11 +92,15 @@ export function prepareOrganisatieData({
         orgRow,
         lowReliabilityTeams,
         // Voor duiding: dominante persona's organisatiebreed (top 2).
+        // pct + count erbij zodat de drijfveer-conclusie navolgbaar is tegen
+        // de organisatie-rij in de heatmap.
         topPersonas: (aggregate?.personasByPrimary || []).slice(0, 2).map((p) => ({
             id: p.id,
-            name: p.name,
+            name: p.name || ARCHETYPE_NAME[p.id] || p.id,
             drive: PERSONA_DRIVE[p.id] || (p.name || '').toLowerCase(),
             color: PERSONA_COLORS[p.id],
+            pct: Number.isFinite(p.countPercentage) ? p.countPercentage : null,
+            count: p.count || 0,
         })),
         // Voor signature/quote.
         signatureSentence: buildSignatureSentence(aggregate),
@@ -99,8 +117,8 @@ function buildOrgRow(aggregate) {
     const map = new Map(personas.map((p) => [p.id, p]));
     const cells = ARCHETYPE_ORDER.map((id) => {
         const p = map.get(id);
-        if (!p) return { id, pct: null };
-        return { id, pct: n > 0 ? Math.round((p.count / n) * 100) : 0 };
+        if (!p) return { id, pct: null, count: 0 };
+        return { id, pct: n > 0 ? Math.round((p.count / n) * 100) : 0, count: p.count || 0 };
     });
     return { name: 'ORGANISATIE', n, cells, isOrg: true };
 }
@@ -111,9 +129,9 @@ function buildTeamRow(t) {
     const map = new Map(personas.map((p) => [p.id, p]));
     const cells = ARCHETYPE_ORDER.map((id) => {
         const p = map.get(id);
-        if (!p) return { id, pct: null };           // niet voorgekomen
-        if (n === 0) return { id, pct: null };
-        return { id, pct: Math.round((p.count / n) * 100) };
+        if (!p) return { id, pct: null, count: 0 };           // niet voorgekomen
+        if (n === 0) return { id, pct: null, count: 0 };
+        return { id, pct: Math.round((p.count / n) * 100), count: p.count || 0 };
     });
     return {
         name: getTeamName(t),
@@ -135,33 +153,46 @@ function computeDominantStyle(aggregate) {
     };
 }
 
+// Eén definitie voor "aandeel in voorkeur": het percentage dat de aggregatie al
+// berekent als value / totaal-van-álle-werkplekvoorkeuren (gewogen). We hergebruiken
+// dat hier overal, zodat hetzelfde begrip op pagina 2, 4 en 5 hetzelfde getal toont.
+// (Voorheen normaliseerde pagina 4/5 over alleen de top-5, waardoor "Samenwerkplekken"
+//  als 22% verscheen terwijl pagina 2 het op 14% — aandeel van het geheel — toonde.)
+function pctOfTotal(it) {
+    if (it == null) return 0;
+    if (Number.isFinite(it.percentage)) return Math.round(it.percentage);
+    return 0;
+}
+
 function computeTopWorkplaceNeed(aggregate) {
     const items = aggregate?.sortedWorkplaceNeeds || [];
     if (items.length === 0) return { label: '—', value: 0, pct: 0 };
-    const total = items.reduce(
-        (s, it) => s + Number(it.value || it.count || 0), 0,
-    );
     const top = items[0];
-    const v = Number(top.value || top.count || 0);
     return {
         label: top.label || top.name || '—',
-        value: v,
-        pct: total > 0 ? Math.round((v / total) * 100) : 0,
+        value: Number(top.value || top.count || 0),
+        pct: pctOfTotal(top),
     };
 }
 
 function computeWorkplaceNeeds(aggregate, take = 5) {
     const items = (aggregate?.sortedWorkplaceNeeds || []).slice(0, take);
-    const total = items.reduce(
-        (s, it) => s + Number(it.value || it.count || 0), 0,
-    );
-    return items.map((it) => {
-        const value = Number(it.value || it.count || 0);
-        return {
-            label: it.label || it.name || '—',
-            pct: total > 0 ? Math.round((value / total) * 100) : 0,
-        };
-    });
+    return items.map((it) => ({
+        label: it.label || it.name || '—',
+        pct: pctOfTotal(it),
+    }));
+}
+
+// Spreiding over de top-5 — als die klein is, is de behoefte breed en gespreid
+// en is "één type wint" een te stellige lezing.
+function computeWorkplaceSpread(needs) {
+    const pcts = (needs || []).map((n) => n.pct).filter((p) => Number.isFinite(p));
+    if (pcts.length < 2) return { min: 0, max: 0, range: 0, close: false };
+    const min = Math.min(...pcts);
+    const max = Math.max(...pcts);
+    const range = max - min;
+    // ≤5 procentpunt verschil over 5 typen = praktisch gelijk verdeeld.
+    return { min, max, range, close: range <= 5 };
 }
 
 function computeLeeglopers(aggregate, insights) {
@@ -238,12 +269,15 @@ export function buildLeadershipDirections(data) {
         out.push(`Bespreek expliciet: ${data.leeglopers[0].toLowerCase()}.`);
     }
     if (data.topPersonas?.length >= 2) {
+        const a = data.topPersonas[0];
+        const b = data.topPersonas[1];
         out.push(
-            `Twee drijfveren staan voorop in de organisatie: ${data.topPersonas[0].drive} en ${data.topPersonas[1].drive}. Maak ruimte voor beide — niet één onderdrukken.`,
+            `Twee drijfveren springen eruit: ${a.drive} (${a.name}${a.pct != null ? `, ${a.pct}% primair` : ''}) en ${b.drive} (${b.name}${b.pct != null ? `, ${b.pct}% primair` : ''}). Maak ruimte voor beide — onderdruk geen van twee.`,
         );
     } else if (data.topPersonas?.length === 1) {
+        const a = data.topPersonas[0];
         out.push(
-            `De dominante drijfveer is ${data.topPersonas[0].drive}. Toets in gesprek of teams met andere drijfveren zich nog gezien voelen.`,
+            `De dominante drijfveer is ${a.drive} (${a.name}${a.pct != null ? `, ${a.pct}% primair` : ''}). Toets in gesprek of teams met andere drijfveren zich nog gezien voelen.`,
         );
     }
     if (data.lowReliabilityTeams?.length >= 3) {
@@ -256,14 +290,30 @@ export function buildLeadershipDirections(data) {
 
 export function buildEnvironmentDirections(data) {
     const out = [];
-    const top = data.workplaceNeeds?.slice(0, 3) || [];
-    top.forEach((n) => {
-        out.push(
-            `Investeer in ${n.label.toLowerCase()} — ${n.pct}% van de voorkeur ligt hier.`,
-        );
-    });
-    if (out.length === 0) {
+    const needs = data.workplaceNeeds || [];
+    const spread = data.workplaceSpread || { close: false, min: 0, max: 0 };
+
+    if (needs.length === 0) {
         out.push('Te weinig data om concrete investeringskeuzes te onderbouwen.');
+        return out;
+    }
+
+    if (spread.close) {
+        // Behoefte is breed en gespreid — de spreiding zelf is het signaal.
+        const labels = needs.slice(0, 3).map((n) => n.label.toLowerCase()).join(', ');
+        out.push(
+            `De voorkeuren liggen dicht bij elkaar (${spread.min}–${spread.max}% van het geheel). De behoefte is breed: geen enkel werkplektype springt eruit.`,
+        );
+        out.push(
+            `Investeer in een mix van werkplekken, niet in één type. Het meest genoemd: ${labels}.`,
+        );
+    } else {
+        // Wél een duidelijke top — benoem die, met het echte aandeel.
+        needs.slice(0, 3).forEach((n) => {
+            out.push(
+                `Investeer in ${n.label.toLowerCase()} — ${n.pct}% van álle werkplek-voorkeur ligt hier.`,
+            );
+        });
     }
     return out;
 }

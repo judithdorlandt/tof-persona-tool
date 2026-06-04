@@ -38,7 +38,7 @@ export function buildHeatmapSVG({ data, copy }) {
     drawLegendTopRight(svg, y - 14, copy);
     y += SPACING.lg;
     drawHeatmap(svg, y, data, copy);
-    drawHeatmapFootnote(svg, copy);
+    drawHeatmapFootnote(svg, data, copy);
     drawPageFooter(svg, { pageNum: 3 });
     return svg;
 }
@@ -54,7 +54,7 @@ function drawTitleBlock(svg, y, copy) {
     }));
     // Subtekst max 60% van pagina-breedte (anders botst hij met de
     // KLEURINTENSITEIT-legenda rechtsboven).
-    const subBaseline = titleBaseline + 2.82 + TYPE_V9.bodySoft.size;
+    const subBaseline = titleBaseline + 4 + TYPE_V9.bodySoft.size;
     drawWrapped({
         svg, x: MARGIN, y: subBaseline,
         maxWidth: USABLE_W * 0.60,
@@ -110,16 +110,27 @@ function drawHeatmap(svg, y, data, copy) {
     const personaAreaW = USABLE_W - teamColW - nColW - relColW;
     const cellW = personaAreaW / ARCHETYPE_ORDER.length;
 
-    // Layout
+    // Layout — voetnoot (2-3 regels) + footer-chrome krijgen vaste ruimte
+    // zodat de tabel daar nooit overheen loopt.
     const headerH = 12;
-    const footerReserved = 28;
+    const hasUnlinked = data.unlinkedRespondents > 0;
+    const hasLowRel = (data.lowReliabilityTeams || []).length > 0;
+    // Voetnoot stapelt 1–3 regels (afronding+betrouwbaarheid, lage-n-demping,
+    // niet-gekoppeld). Reserveer exact ruimte zodat de tabel er nooit overheen loopt.
+    const noteLines = 1 + (hasLowRel ? 1 : 0) + (hasUnlinked ? 1 : 0);
+    const footerReserved = 13 + (noteLines - 1) * 4 + 2;
     const heatmapTop = y + headerH;
     const heatmapBottom = PAGE_H - MARGIN - footerReserved;
     const rows = data.teamRows;
     const orgGap = SPACING.md;
-    const rowCount = rows.length + 1;
-    const availH = heatmapBottom - heatmapTop - orgGap;
-    const rowH = Math.max(7, Math.min(11, availH / rowCount));
+
+    // Row-units: teamrijen (1 elk) + optionele niet-gekoppeld-rij (1) +
+    // org-totaalrij (1.2× zwaarder). Zo klopt de hoogte-reservering exact.
+    const orgUnits = 1.2;
+    const units = rows.length + (hasUnlinked ? 1 : 0) + orgUnits;
+    const gapCount = hasUnlinked ? 2 : 1;            // gap vóór unlinked + vóór org
+    const availH = heatmapBottom - heatmapTop - orgGap * gapCount;
+    const rowH = Math.max(5.0, Math.min(11, availH / units));
 
     drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy);
 
@@ -132,6 +143,25 @@ function drawHeatmap(svg, y, data, copy) {
         });
         cursorY += rowH;
     });
+
+    // Niet-gekoppelde respondenten — expliciete reconciliatie-rij zodat de som
+    // van de teamrijen aansluit op het organisatietotaal.
+    if (hasUnlinked) {
+        cursorY += orgGap;
+        drawDataRow(svg, {
+            x: MARGIN, y: cursorY, h: rowH,
+            teamColW, nColW, relColW, cellW,
+            row: {
+                name: copy.heatmap.unlinkedRowLabel,
+                n: data.unlinkedRespondents,
+                cells: data.orgRow.cells.map((c) => ({ ...c, pct: null })),
+                reliability: null,
+                isOrg: false,
+            },
+            isOrg: false, zebra: false, isUnlinked: true, copy,
+        });
+        cursorY += rowH;
+    }
 
     // Org-rij — totaalrij krijgt eigen sage-band in drawDataRow.
     cursorY += orgGap;
@@ -175,11 +205,16 @@ function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy) {
 }
 
 function drawDataRow(svg, {
-    x, y, h, teamColW, nColW, relColW, cellW, row, isOrg, zebra, copy,
+    x, y, h, teamColW, nColW, relColW, cellW, row, isOrg, zebra, isUnlinked, copy,
 }) {
-    const rowOpacity = !isOrg && row.reliability?.id === 'laag' ? 0.65 : 1;
+    const lowReliability = !isOrg && !isUnlinked && row.reliability?.id === 'laag';
+    const rowOpacity = lowReliability ? 0.65 : 1;
 
     if (zebra) svg.appendChild(rect(x, y, USABLE_W, h - 0.8, '#F2EBE0'));
+    if (isUnlinked) {
+        // Subtiele neutrale band — reconciliatie-rij, geen team.
+        svg.appendChild(rect(x, y, USABLE_W, h - 0.8, C.cellZero, { opacity: 0.5 }));
+    }
     if (isOrg) {
         // Echte totaalrij: 1.5pt sage bovenrand + 8% sage achtergrond + bold body.
         svg.appendChild(rect(x, y, USABLE_W, h - 0.8, SAGE, { opacity: 0.08 }));
@@ -194,7 +229,8 @@ function drawDataRow(svg, {
         font: isOrg ? 'Playfair Display' : 'Inter',
         weight: isOrg ? 500 : 500,
         size: isOrg ? 4.23 : 3.18,
-        color: isOrg ? SAGE : C.text,
+        color: isOrg ? SAGE : (isUnlinked ? C.textMuted : C.text),
+        italic: isUnlinked,
         lineHeight: isOrg ? 4.5 : 3.6, maxLines: 1, ellipsis: true,
     });
 
@@ -203,13 +239,13 @@ function drawDataRow(svg, {
         x: x + teamColW + nColW / 2, y: y + h / 2 + 1,
         content: String(row.n),
         font: 'Inter', weight: isOrg ? 700 : 500, size: 3.3,
-        color: isOrg ? SAGE : C.textSoft,
+        color: isOrg ? SAGE : (isUnlinked ? C.textMuted : C.textSoft),
         anchor: 'middle',
         opacity: rowOpacity < 1 ? rowOpacity : null,
     }));
 
     // V14: dot uniform muted (label draagt al de betekenis), 4pt diameter (~0.7mm radius).
-    if (!isOrg && row.reliability) {
+    if (!isOrg && !isUnlinked && row.reliability) {
         const cx = x + teamColW + nColW + 4;
         const cy = y + h / 2 + 0.4;
         const dot = reliabilityDotFor(row.n);
@@ -239,12 +275,12 @@ function drawDataRow(svg, {
         drawCell(svg, {
             x: cx + 1, y: y + 0.8, w: cellW - 2, h: h - 2.4,
             pct: c.pct, color: PERSONA_COLORS[ARCHETYPE_ORDER[ci]],
-            isOrg, opacity: rowOpacity,
+            isOrg, opacity: rowOpacity, lowReliability,
         });
     });
 }
 
-function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity }) {
+function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability }) {
     if (pct === null || pct === undefined) return;
     if (pct === 0) {
         svg.appendChild(rect(x, y, w, h, C.cellZero, {
@@ -259,11 +295,16 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity }) {
         }));
         return;
     }
-    const op = Math.max(0.18, Math.min(0.95, pct / 100));
+    // C2: bij lage betrouwbaarheid plafonneren we de kleurintensiteit, zodat
+    // 100% uit één respondent niet net zo "hard" oogt als 100% uit een robuust
+    // team. Het cijfer blijft staan; de footnote legt de demping uit.
+    const rawOp = Math.max(0.18, Math.min(0.95, pct / 100));
+    const op = lowReliability ? Math.min(rawOp, 0.30) : rawOp;
     svg.appendChild(rect(x, y, w, h, color, {
         opacity: opacity != null ? op * opacity : op,
     }));
-    const labelColor = pct >= 55 ? '#fff' : C.text;
+    const labelColor = (!lowReliability && pct >= 55) ? '#fff'
+        : (lowReliability ? C.textMuted : C.text);
     svg.appendChild(text({
         x: x + w / 2, y: y + h / 2 + 1.2,
         content: `${pct}`,
@@ -273,14 +314,29 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity }) {
     }));
 }
 
-function drawHeatmapFootnote(svg, copy) {
-    // Noot boven de footer-chrome — standaard tracking, geen letter-spacing,
-    // enkelvoudige spaties rond '·' zodat hij niet uitgespateerd oogt.
-    const noteY = PAGE_H - MARGIN - 10;
-    svg.appendChild(text({
-        x: MARGIN, y: noteY,
-        content: `${copy.heatmap.roundingNote} · ${copy.heatmap.reliabilityHelp}`,
-        font: 'Inter', weight: 400, size: 2.9, color: C.textMuted,
-        italic: true, letterSpacing: 0,
-    }));
+function drawHeatmapFootnote(svg, data, copy) {
+    // A3-fix: NIET italic. Er is geen Inter-italic font geregistreerd, dus
+    // italic-Inter viel terug op een WinAnsi-standaardfont waarin '≥' (U+2265)
+    // kapot rendert (→ "e). Met de embedded Inter Regular (non-italic) renderen
+    // ≥, ≤, – en · correct.
+    const lineH = 4.0;
+    const baseY = PAGE_H - MARGIN - 10;
+
+    // Stack van onder naar boven; alleen relevante regels tonen.
+    const lines = [`${copy.heatmap.roundingNote} · ${copy.heatmap.reliabilityHelp}`];
+    if ((data.lowReliabilityTeams || []).length > 0) {
+        lines.push(copy.heatmap.lowReliabilityNote);
+    }
+    if (data.unlinkedRespondents > 0) {
+        lines.push(copy.heatmap.unlinkedNote(data.unlinkedRespondents));
+    }
+
+    lines.forEach((content, i) => {
+        svg.appendChild(text({
+            x: MARGIN, y: baseY - i * lineH,
+            content,
+            font: 'Inter', weight: 400, size: 2.9, color: C.textMuted,
+            letterSpacing: 0,
+        }));
+    });
 }

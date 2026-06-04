@@ -42,7 +42,7 @@ function drawTitleBlock(svg, y, copy) {
         content: copy.patronen.title,
         ...TYPE_V9.h2,
     }));
-    const subBaseline = titleBaseline + 2.82 + TYPE_V9.bodySoft.size;
+    const subBaseline = titleBaseline + 4 + TYPE_V9.bodySoft.size;
     svg.appendChild(text({
         x: MARGIN, y: subBaseline,
         content: copy.patronen.subtitle,
@@ -74,15 +74,20 @@ function drawThreeColumns(svg, y, data, copy) {
     drawWerkomgevingColumn({
         svg, x: rightX, y, w: rightW,
         needs: data.workplaceNeeds,
+        spread: data.workplaceSpread,
         copy,
     });
 }
 
 function drawLeftStack({ svg, x, y, w, leeglopers, observations, werktGoed, copy }) {
     // V14: vergrendel "Wat werkt goed" boven de methodologische noot.
-    // Reserveer 35mm aan de onderkant ongeacht hoe lang de andere secties zijn.
+    // B3-fix: hoogte schaalt mee met het aantal punten, zodat álle observaties
+    // zichtbaar zijn (voorheen vielen punt 5–6 onder de pagina weg).
     const methodNoteTop = PAGE_H - MARGIN - 16 - 6;       // = methodNoteBoxY
-    const werktGoedH = 35;
+    const werktGoedCount = (werktGoed && werktGoed.length) || 1;
+    const werktGoedHeaderH = 13;                          // eyebrow + subtitel
+    const werktGoedItemH = 5.6;                           // compacte regel + gap
+    const werktGoedH = Math.max(35, werktGoedHeaderH + werktGoedCount * werktGoedItemH);
     const werktGoedY = methodNoteTop - SPACING.md - werktGoedH;
 
     let ly = y;
@@ -109,7 +114,7 @@ function drawLeftStack({ svg, x, y, w, leeglopers, observations, werktGoed, copy
         });
     }
 
-    // 3. WAT WERKT GOED — vaste Y boven methodologische noot, beide items zichtbaar
+    // 3. WAT WERKT GOED — vaste Y boven methodologische noot, álle punten zichtbaar
     drawSectionWithBullets({
         svg, x, y: werktGoedY, w,
         eyebrow: copy.patronen.cols.werkt.title.toUpperCase(),
@@ -117,14 +122,17 @@ function drawLeftStack({ svg, x, y, w, leeglopers, observations, werktGoed, copy
         items: werktGoed.length > 0 ? werktGoed : null,
         emptyText: copy.patronen.cols.werkt.empty,
         bulletStyle: 'filled-sage',
+        compact: true,
     });
 }
 
 function drawSectionWithBullets({
-    svg, x, y, w, eyebrow, subtitle, items, emptyText, bulletStyle,
+    svg, x, y, w, eyebrow, subtitle, items, emptyText, bulletStyle, compact = false,
 }) {
     const SAGE = COLOR_FAMILIES.accent.rust;
     const ROSE = COLOR_FAMILIES.accent.frictie;
+    const itemLineHeight = compact ? 4.6 : 5.4;
+    const itemGap = compact ? SPACING.xs : SPACING.sm;
 
     svg.appendChild(text({
         x, y, content: eyebrow,
@@ -164,9 +172,9 @@ function drawSectionWithBullets({
             maxWidth: w - 7,
             content: capitalizeFirst(tekst),
             ...TYPE_V9.body,
-            lineHeight: 5.4,
+            lineHeight: itemLineHeight,
         });
-        ly = endY + SPACING.sm;
+        ly = endY + itemGap;
     });
     return ly;
 }
@@ -243,7 +251,7 @@ function _unused_drawLeegloperColumn({ svg, x, y, w, leeglopers, observations, c
 //   [Staaf, volle breedte, sage-gevuld, 8pt hoog]
 //   [12pt witruimte vóór volgende rij]
 // Onder alle rijen: 0—50—100 x-as in textMuted, 0.5pt lijn.
-function drawWerkomgevingColumn({ svg, x, y, w, needs, copy }) {
+function drawWerkomgevingColumn({ svg, x, y, w, needs, spread, copy }) {
     const SAGE = COLOR_FAMILIES.accent.rust;
     const PT = 0.353;
     const barH = 8 * PT;                       // 8pt = 2.82mm
@@ -305,8 +313,20 @@ function drawWerkomgevingColumn({ svg, x, y, w, needs, copy }) {
         x: x + w / 2, y: axisY + 9,
         content: copy.patronen.cols.vraagt.scaleLabel,
         font: 'Inter', weight: 400, size: 2.6, color: C.textMuted,
-        italic: true, anchor: 'middle',
+        italic: false, anchor: 'middle',
     }));
+
+    // C1: als de top-5 dicht bij elkaar ligt, lees het als brede behoefte —
+    // geen "winnaar". Eerlijk benoemen i.p.v. één type uitvergroten.
+    if (spread && spread.close) {
+        drawWrapped({
+            svg, x, y: axisY + 14,
+            maxWidth: w,
+            content: copy.patronen.cols.vraagt.spreadNote,
+            font: 'Inter', weight: 400, size: 2.7, color: C.textMuted,
+            lineHeight: 3.8, maxLines: 2,
+        });
+    }
 }
 
 // LEGACY: vervangen door drawLeftStack — niet meer aangeroepen.

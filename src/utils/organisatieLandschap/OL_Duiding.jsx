@@ -47,7 +47,7 @@ function drawTitleBlock(svg, y, copy) {
         content: copy.duiding.title,
         ...TYPE_V9.h2,
     }));
-    const subBaseline = titleBaseline + 2.82 + TYPE_V9.bodySoft.size;
+    const subBaseline = titleBaseline + 4 + TYPE_V9.bodySoft.size;
     svg.appendChild(text({
         x: MARGIN, y: subBaseline,
         content: copy.duiding.subtitle,

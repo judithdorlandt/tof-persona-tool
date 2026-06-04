@@ -48,8 +48,10 @@ function drawH2(svg, y, title) {
         content: title,
         ...TYPE_V9.h2,
     }));
-    // 6pt witruimte tussen titel-descender en eyebrow van lead (per spec)
-    return baseline + 2.12;
+    // B2-fix: de eyebrow "WAT ZIE JE" wordt op de teruggegeven y getekend en
+    // zijn glyphs lopen ~2.8mm omhóóg. De h2-descender zit ~2mm ónder de baseline.
+    // Met +2.12 overlapte de eyebrow de titel. Geef een ruime, schone tussenruimte.
+    return baseline + 6.5;
 }
 
 function drawLead(svg, y, data, copy) {

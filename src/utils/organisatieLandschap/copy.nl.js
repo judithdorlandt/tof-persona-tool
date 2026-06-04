@@ -39,7 +39,7 @@ export const COPY_NL = {
         kpiUnits: {
             respondents: (n) => n === 1 ? 'persoon' : 'personen',
             dominantStyle: (count) => count ? `${count} mensen primair` : '—',
-            topNeed: (pct) => `${pct}% van werkplek-voorkeur`,
+            topNeed: (pct) => `${pct}% van álle werkplek-voorkeur`,
         },
         leadIntro: 'Wat zie je in dit rapport',
         leadFallback:
@@ -67,6 +67,14 @@ export const COPY_NL = {
         },
         orgRowLabel: 'ORGANISATIE',
         orgRowReliability: 'n.v.t.',  // fix #6 page 2 — vervangt zachte em-dash
+        // Respondenten zonder team-koppeling — expliciet zichtbaar zodat het
+        // organisatietotaal en de som van de teamrijen op elkaar aansluiten.
+        unlinkedRowLabel: 'Niet aan een team gekoppeld',
+        unlinkedNote: (n) =>
+            `${n} ${n === 1 ? 'respondent telt' : 'respondenten tellen'} mee in het organisatietotaal, maar ${n === 1 ? 'is' : 'zijn'} niet aan een specifiek team gekoppeld. Daardoor sluit de som van de teamrijen aan op het totaal.`,
+        // Lage betrouwbaarheid: celkleur gedempt zodat één respondent niet als
+        // "harde" 100% leest.
+        lowReliabilityNote: 'Bij lage betrouwbaarheid is de celkleur gedempt — bij een enkele respondent kan één keuze al 100% vormen.',
         // Fix #1 page 2: gebruik plain ASCII ≥ via ">=" → veiligst over alle fonts.
         // Alternatief: U+2265 als font ondersteunt. We gebruiken n>=10 = hoog
         // zodat encoding nooit faalt.
@@ -97,8 +105,9 @@ export const COPY_NL = {
             },
             vraagt: {
                 title: 'Wat de werkomgeving vraagt',
-                subtitle: 'Top-5 werkplek-typen, gewogen naar voorkeur.',
+                subtitle: 'Top-5 werkplek-typen, als aandeel van álle voorkeur.',
                 scaleLabel: 'Aandeel in voorkeur',
+                spreadNote: 'De verschillen zijn klein: lees dit als een brede, gespreide behoefte — geen enkel type wint.',
             },
             werkt: {
                 title: 'Wat werkt goed',
