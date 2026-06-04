@@ -83,6 +83,11 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     // Organisatie-detail state — null = overzicht, anders = detail-view
     const [selectedOrg, setSelectedOrg] = useState(null);
 
+    // Echte (gededupliceerde) response-telling per organisatie, opgehaald via
+    // getResponsesByOrganization zodat de overzichtslijst hetzelfde getal toont
+    // als de organisatie-detailpagina. Keyed op org-naam.
+    const [orgResponseCounts, setOrgResponseCounts] = useState({});
+
     // Organisaties afgeleid uit teams + managers — één entry per unieke
     // organisation-naam, met team-, response- en manager-tellingen.
     const organizations = useMemo(() => {
@@ -114,6 +119,27 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
             a.name.localeCompare(b.name, 'nl', { sensitivity: 'base' })
         );
     }, [teams, managers]);
+
+    // Haal per organisatie de echte (over de hele org gededupliceerde)
+    // response-telling op. Dit komt overeen met wat de detailpagina toont,
+    // i.t.t. de som van per-team-tellingen (die org-getagde responses zonder
+    // matchende teamcode mist en dubbeltellingen kan bevatten).
+    useEffect(() => {
+        let cancelled = false;
+        async function loadCounts() {
+            const entries = await Promise.all(
+                organizations.map(async (org) => {
+                    const codes = (org.teams || []).map((t) => t.code).filter(Boolean);
+                    const data = await getResponsesByOrganization(org.name, codes);
+                    return [org.name, (data || []).length];
+                })
+            );
+            if (cancelled) return;
+            setOrgResponseCounts(Object.fromEntries(entries));
+        }
+        if (organizations.length > 0) loadCounts();
+        return () => { cancelled = true; };
+    }, [organizations]);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -391,6 +417,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                 <OrganizationsList
                     isMobile={isMobile}
                     organizations={organizations}
+                    responseCounts={orgResponseCounts}
                     onSelect={setSelectedOrg}
                 />
 
@@ -679,7 +706,7 @@ The Office Factory
 
 // ─── SUB: Organisaties lijst (overzicht) ───────────────────────────────────
 
-function OrganizationsList({ isMobile, organizations, onSelect }) {
+function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSelect }) {
     return (
         <div style={{
             background: 'var(--tof-surface)',
@@ -745,7 +772,10 @@ function OrganizationsList({ isMobile, organizations, onSelect }) {
                                 {org.teamCount} {org.teamCount === 1 ? 'team' : 'teams'}
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                {org.responseCount} {org.responseCount === 1 ? 'response' : 'responses'}
+                                {(() => {
+                                    const count = responseCounts[org.name] ?? org.responseCount;
+                                    return `${count} ${count === 1 ? 'response' : 'responses'}`;
+                                })()}
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
                                 {org.managerCount} {org.managerCount === 1 ? 'manager' : 'managers'}
