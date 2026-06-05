@@ -52,6 +52,23 @@ export const COPY_NL = {
             note: (count) =>
                 `${count} ${count === 1 ? 'team heeft' : 'teams hebben'} nog geen respons ingestuurd. Deze ontbreken in de heatmap en patronen.`,
         },
+        // Leeswijzer-blok dat de vrijgekomen ruimte vult wanneer alle teams
+        // hebben gereageerd. Legenda-omschrijvingen afgeleid van de drijfveren.
+        measurement: {
+            eyebrow: 'OVER DEZE METING',
+            intro: 'Elke respondent vult een korte vragenlijst in en krijgt één dominante werkstijl. Dit rapport telt die werkstijlen op tot een beeld per team en voor de hele organisatie. De acht werkstijlen:',
+            // Keyed op archetype-id; builder koppelt aan ARCHETYPE_NAME.
+            legend: {
+                maker: 'maakt graag iets tastbaars af',
+                groeier: 'zoekt groei en nieuwe vaardigheden',
+                presteerder: 'stuurt op doelen en resultaat',
+                denker: 'zoekt rust, diepgang en concentratie',
+                verbinder: 'brengt mensen en samenwerking bij elkaar',
+                teamspeler: 'hecht aan een betrouwbaar, hecht team',
+                zekerzoeker: 'houdt van structuur en zekerheid',
+                vernieuwer: 'bedenkt nieuwe wegen en ideeën',
+            },
+        },
     },
 
     // ── Pagina 2 — Werkstijl per team (heatmap)
@@ -75,10 +92,11 @@ export const COPY_NL = {
         // Lage betrouwbaarheid: celkleur gedempt zodat één respondent niet als
         // "harde" 100% leest.
         lowReliabilityNote: 'Bij lage betrouwbaarheid is de celkleur gedempt — bij een enkele respondent kan één keuze al 100% vormen.',
-        // Fix #1 page 2: gebruik plain ASCII ≥ via ">=" → veiligst over alle fonts.
-        // Alternatief: U+2265 als font ondersteunt. We gebruiken n>=10 = hoog
-        // zodat encoding nooit faalt.
-        reliabilityHelp: 'n < 5 = laag · 5–9 = midden · n ≥ 10 = hoog',
+        // De gebundelde Inter/Playfair zijn subsets ZONDER ≥ (U+2265) / ≤ (U+2264)
+        // — die glyphs renderen nooit, ongeacht italic/normaal. Daarom de drempels
+        // in woorden i.p.v. wiskundige tekens; leest bovendien prettiger voor een
+        // bestuurlijke lezer. (· – é zitten wél in de subset en blijven dus staan.)
+        reliabilityHelp: 'minder dan 5 = laag · 5–9 = midden · 10 of meer = hoog',
         // Fix #5 page 2: rij-totalen kunnen door afronding op 99–101% uitkomen.
         roundingNote: 'Rij-totalen kunnen door afronding optellen tot 99–101%.',
         // Fix #2 page 2: legenda-uitleg ipv arbitraire kleur.
@@ -92,12 +110,17 @@ export const COPY_NL = {
         },
     },
 
-    // ── Pagina 3 — Patronen organisatiebreed
+    // ── Pagina 4 — Patronen organisatiebreed (kwantitatief)
     patronen: {
-        eyebrow: 'PAGINA 3 — PATRONEN',
+        eyebrow: 'PAGINA 4 — PATRONEN',
         title: 'Patronen in de organisatie',
         subtitle:
-            'Waar de organisatie op leegloopt, wat de werkomgeving vraagt, en wat goed werkt.',
+            'Wat de werkomgeving vraagt, en waar de organisatie op leegloopt — gemeten in de data.',
+        // ── Pagina 5 — Kwalitatief beeld
+        qualEyebrow: 'PAGINA 5 — KWALITATIEF BEELD',
+        qualTitle: 'Signalen uit observatie en gesprek',
+        qualSubtitle:
+            'Wat goed werkt en waar de spanning zit — opgehaald uit observatie en gesprekken.',
         cols: {
             leegloopt: {
                 title: 'Waar de organisatie op leegloopt',
@@ -116,13 +139,17 @@ export const COPY_NL = {
             },
         },
         signalsBlock: {
-            eyebrow: 'KWALITATIEVE SIGNALEN',
+            eyebrow: 'Kwalitatieve signalen',
             source: 'Bron: observatie en gesprekken (geen meting).',
         },
         // Fix #6 page 4: eigen kader voor methodologische noot.
         methodNoteEyebrow: 'METHODOLOGISCHE NOOT',
+        // Kwantitatieve pagina: alleen de meet-herkomst.
         methodNote:
-            'Data uit de persona-vragenlijst (kwantitatief, n = aantal respondenten) plus eigen observaties van TOF (kwalitatief). Kwalitatieve signalen vragen om verificatie in gesprek — ze duiden, ze bewijzen niet.',
+            'Data uit de persona-vragenlijst — kwantitatief, n = aantal respondenten per categorie.',
+        // Kwalitatieve pagina: voorbehoud onderaan.
+        qualCaveat:
+            'Bron: observatie en gesprekken. Deze signalen duiden, ze bewijzen niet — verificatie in gesprek blijft nodig.',
     },
 
     // ── Pagina 4 — Duiding & richting
@@ -144,7 +171,13 @@ export const COPY_NL = {
             title: 'Teams die ruimte verdienen',
             subtitle: 'Lage respons of weinig zichtbaarheid in de data.',
             empty: 'Alle teams hebben voldoende data voor analyse.',
+            // Verwijzing onderaan de kaart wanneer niet alle teams passen.
+            moreOnNext: (n) =>
+                `Nog ${n} ${n === 1 ? 'team' : 'teams'} — zie volgende pagina`,
         },
+        // Vervolgpagina wanneer de teams-lijst niet in de kaart past.
+        continuationSubtitle:
+            'Vervolg — overige teams die aandacht verdienen.',
         tagline: 'Een organisatie die zichzelf herkent, beweegt sneller.',
     },
 

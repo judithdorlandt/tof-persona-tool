@@ -88,7 +88,21 @@ function buildHeadline(aggregate) {
         return `Dit team vraagt vooral om ${needs[0].label.toLowerCase()}.`;
     }
 
-    return 'Dit team heeft een gemengde werkplekbehoefte — geen enkele categorie springt er duidelijk uit.';
+    // Geen categorie boven de drempel: de behoeften liggen dicht bij elkaar.
+    // Maak de basis voor de acties expliciet — de winst zit niet in een
+    // verschil van één procentpunt, maar in de balans tussen relatief veel
+    // en relatief weinig gevraagde plekken (vraag versus aanbod).
+    const base = 'Dit team heeft een gemengde werkplekbehoefte — geen enkele categorie springt er duidelijk uit.';
+    const tension = buildWorkplaceTension(aggregate);
+    const under = tension.underserved?.[0];
+    const over = tension.oversupplied?.[0];
+    if (under && over) {
+        return `${base} De winst zit in de balans: relatief veel vraag naar ${under.label.toLowerCase()}, weinig naar ${over.label.toLowerCase()}.`;
+    }
+    if (under) {
+        return `${base} De grootste relatieve vraag ligt bij ${under.label.toLowerCase()}.`;
+    }
+    return base;
 }
 
 // =========================
@@ -408,16 +422,15 @@ function buildWorkplaceQuickWins(aggregate) {
     // WIN 3 — uit SPANNING
     if (tension.underserved.length > 0) {
         const first = tension.underserved[0];
-        const namesArr = (first.impactedNames || []).map((n) =>
-            typeof n === 'string' ? n : n.name
-        );
-        const namesText = namesArr.length > 0
-            ? namesArr.slice(0, 2).join(' en ')
-            : 'het team';
-
+        // Bewust niet op persoonsnaam: de behoefte volgt uit de werkstijl
+        // (bricksProfile), niet uit een individuele werkplekvoorkeur. We
+        // benoemen het patroon — de werkstijl die vastloopt — niet "de pijn
+        // van persoon X".
+        const arch = first.impactedPersonas?.[0];
+        const who = arch ? `${arch.name.toLowerCase()}s` : 'teamleden';
         wins.push({
             source: 'spanning',
-            action: `Bescherm ${first.label.toLowerCase()} voor ${namesText}. Daar zit de pijn als het kantoor het niet biedt.`,
+            action: `Bescherm ${first.label.toLowerCase()}. De vraag ligt hier bovengemiddeld terwijl het kantoor het vaak niet biedt — juist ${who} lopen dan vast.`,
         });
     } else if (tension.oversupplied.length > 0) {
         const first = tension.oversupplied[0];

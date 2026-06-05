@@ -55,6 +55,30 @@ import TeamDynamics from './TeamDynamics.jsx';
 const INSIGHT_ACCENT = MODULE.insight.accent;
 const DYNAMICS_ACCENT = MODULE.dynamics.accent;
 
+// Genormaliseerde sleutel voor team-matching: lege waarden → '', anders
+// getrimd + lowercase. Zo gelden "TEAM-A ", "team-a" en "Team-A" als gelijk.
+function normKey(s) {
+    return String(s ?? '').trim().toLowerCase();
+}
+
+// Bepaalt of een response bij een team hoort. Match op team-code óf op teamnaam
+// (binnen dezelfde organisatie), beide genormaliseerd zodat hoofdletter- en
+// spatieverschillen geen responses meer "los" laten vallen.
+function responseMatchesTeam(r, t) {
+    const rCode = normKey(r.invite_code);
+    const tCode = normKey(t.code);
+    if (rCode && tCode && rCode === tCode) return true;
+
+    const rTeam = normKey(r.team);
+    const tTeam = normKey(t.team);
+    if (rTeam && tTeam && rTeam === tTeam) {
+        const rOrg = normKey(r.organization);
+        const tOrg = normKey(t.organization);
+        if (!rOrg || rOrg === tOrg) return true;
+    }
+    return false;
+}
+
 // ─── HOOFDCOMPONENT ─────────────────────────────────────────────────────────
 
 export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
@@ -575,7 +599,7 @@ ${info.code}
 Deze code vraag je elk teamlid in te vullen bij de persona-tool. Daardoor weet de tool dat hun antwoorden bij jullie team horen.
 
 WAT JE TEAMLEDEN DOEN (15 minuten per persoon)
-1. Open: https://app.tof.services/quiz
+1. Open: https://tof-persona-tool.netlify.app/quiz
 2. Vul de quiz in — ze beantwoorden ~30 stellingen
 3. Bij "Teamcode" vullen ze in: ${info.code}
 4. Ze krijgen direct hun persoonlijke persona als resultaat
@@ -877,14 +901,7 @@ function OrganizationDetail({
     // Per-team aggregaten voor vergelijkings-blok.
     const teamSummaries = useMemo(() => {
         return (org?.teams || []).map((t) => {
-            const forTeam = responses.filter((r) => {
-                if (r.invite_code && r.invite_code === t.code) return true;
-                if (r.team && t.team && r.team === t.team
-                    && (!r.organization || r.organization === t.organization)) {
-                    return true;
-                }
-                return false;
-            });
+            const forTeam = responses.filter((r) => responseMatchesTeam(r, t));
             const agg = buildTeamAggregate(forTeam);
             const top = agg?.topPersonaByPrimary || agg?.personasByPrimary?.[0];
             return {
@@ -895,6 +912,39 @@ function OrganizationDetail({
                 aggregate: agg,
             };
         }).sort((a, b) => b.responseCount - a.responseCount);
+    }, [org, responses]);
+
+    // ── TIJDELIJKE DIAGNOSE: welke responses koppelen NIET aan een team?
+    // Toont per niet-gematchte response waarom de match faalt, zodat de
+    // "X niet aan een team gekoppeld" in het rapport te verklaren is.
+    // TODO: verwijderen zodra de oorzaak bekend is.
+    useEffect(() => {
+        const teams = org?.teams || [];
+        if (!teams.length || !responses.length) return;
+
+        const unmatched = responses.filter(
+            (r) => !teams.some((t) => responseMatchesTeam(r, t)),
+        );
+        // eslint-disable-next-line no-console
+        console.log(
+            `[ORG-DIAGNOSE] ${org?.name || '?'} — totaal ${responses.length}, `
+            + `niet gekoppeld: ${unmatched.length}`,
+        );
+        if (unmatched.length > 0) {
+            // eslint-disable-next-line no-console
+            console.table(unmatched.map((r) => ({
+                name: r.name || '(anoniem)',
+                invite_code: r.invite_code ?? '(leeg)',
+                team: r.team ?? '(leeg)',
+                organization: r.organization ?? '(leeg)',
+            })));
+            const codeSet = new Set(teams.map((t) => t.code).filter(Boolean));
+            const teamSet = new Set(teams.map((t) => t.team).filter(Boolean));
+            // eslint-disable-next-line no-console
+            console.log('[ORG-DIAGNOSE] geregistreerde team-codes:', [...codeSet]);
+            // eslint-disable-next-line no-console
+            console.log('[ORG-DIAGNOSE] geregistreerde team-namen:', [...teamSet]);
+        }
     }, [org, responses]);
 
     // Managers en team-codes gefilterd op deze organisatie.

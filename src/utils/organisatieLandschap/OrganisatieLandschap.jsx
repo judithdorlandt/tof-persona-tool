@@ -21,6 +21,7 @@ import { buildHeroSVG } from './OL_Hero';
 import { buildHeatmapSVG } from './OL_Heatmap';
 import { buildPatronenSVG } from './OL_Patronen';
 import { buildDuidingSVG } from './OL_Duiding';
+import { drawPageFooter } from './OL_Chrome';
 
 export async function generateOrganisatieLandschapPDF({
     aggregate,
@@ -34,15 +35,23 @@ export async function generateOrganisatieLandschapPDF({
     });
     const copy = COPY_NL;
 
-    // 5 pagina's — pagina 1 (cover) bevat brand+org in één;
-    // pagina 2-5 hebben gedeelde header/footer-chrome.
-    const pages = [
+    // Pagina-builders geven óf één SVG óf een array van SVG's terug (Patronen
+    // en Duiding kunnen uitlopen naar vervolgpagina's wanneer de inhoud niet op
+    // één pagina past). We platten ze hier en nummeren de footers dynamisch.
+    const groups = [
         buildCoverSVG({ data, copy }),                // 1 — TOF cover voor Module 1
-        buildHeroSVG({ data, copy }),                 // 2 — kerncijfers
-        buildHeatmapSVG({ data, copy }),              // 3 — werkstijl per team
-        buildPatronenSVG({ data, copy }),             // 4 — patronen
-        buildDuidingSVG({ data, copy }),              // 5 — duiding
+        buildHeroSVG({ data, copy }),                 // kerncijfers
+        buildHeatmapSVG({ data, copy }),              // werkstijl per team
+        buildPatronenSVG({ data, copy }),             // patronen (1+ pagina's)
+        buildDuidingSVG({ data, copy }),              // duiding (1+ pagina's)
     ];
+    const pages = groups.flatMap((g) => (Array.isArray(g) ? g : [g]));
+
+    // Footer per pagina, behalve de cover (index 0 heeft een eigen layout).
+    const totalPages = pages.length;
+    pages.forEach((svg, i) => {
+        if (i > 0) drawPageFooter(svg, { pageNum: i + 1, totalPages });
+    });
 
     // svg2pdf heeft SVG nodes nodig die in de DOM zitten voor layoutmeting.
     pages.forEach((p) => document.body.appendChild(p));

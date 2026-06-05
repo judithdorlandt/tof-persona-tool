@@ -17,34 +17,35 @@ import { drawTOFMark } from '../teamInsightPDF';
 
 const C = COLOR_FAMILIES.neutral;
 
-/** Header — small eyebrow label + date, with paginatitel below. */
+/** Header — small eyebrow label + date, with paginatitel below.
+ *  V24: compacter + hoger — eyebrow/datum op MARGIN+3, lijn op MARGIN+7. */
 export function drawPageHeader(svg, { date, pageTitle }) {
     // Label links
     svg.appendChild(text({
-        x: MARGIN, y: MARGIN + 4,
+        x: MARGIN, y: MARGIN + 3,
         content: 'MODULE 1 · INSIGHTS',
         ...TYPE_V9.eyebrow,
     }));
     // Datum rechts
     svg.appendChild(text({
-        x: PAGE_W - MARGIN, y: MARGIN + 4,
+        x: PAGE_W - MARGIN, y: MARGIN + 3,
         content: date,
         ...TYPE_V9.footer,
         anchor: 'end',
     }));
     // Hairline scheiding
-    const lineY = MARGIN + 9;
+    const lineY = MARGIN + 7;
     svg.appendChild(line(MARGIN, lineY, PAGE_W - MARGIN, lineY, C.border, 0.3));
 
     // Paginatitel (klein, sage) onder de lijn — alleen tonen als anders dan H2.
     if (pageTitle) {
         svg.appendChild(text({
-            x: MARGIN, y: lineY + 6,
+            x: MARGIN, y: lineY + 5,
             content: pageTitle,
             font: 'Inter', weight: 600, size: 3.4, color: COLOR_FAMILIES.accent.rust,
             letterSpacing: 0.4,
         }));
-        return lineY + 6 + SPACING.md;
+        return lineY + 5 + SPACING.md;
     }
     // Geen pageTitle → header eindigt direct na de lijn.
     return lineY + SPACING.md;
@@ -74,4 +75,4 @@ export function drawPageFooter(svg, { pageNum, totalPages = 5 }) {
 }
 
 /** De Y-waarde waar pagina-content begint na de header. */
-export const CONTENT_TOP = MARGIN + 9 + 6 + SPACING.md;
+export const CONTENT_TOP = MARGIN + 7 + 5 + SPACING.md;

@@ -12,8 +12,8 @@
 export const PAGE_W = 297;
 export const PAGE_H = 210;
 
-// +15% t.o.v. v9 → 22mm rondom. Premium-rapport = extra ademruimte.
-export const MARGIN = 22;
+// V24: 16mm rondom — krappere maar voldoende marges, groter inhoudsvlak.
+export const MARGIN = 16;
 export const USABLE_W = PAGE_W - 2 * MARGIN;
 export const USABLE_H = PAGE_H - 2 * MARGIN;
 

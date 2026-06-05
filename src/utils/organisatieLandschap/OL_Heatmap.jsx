@@ -22,10 +22,19 @@ import {
 import {
     createCanvas, rect, text, drawWrapped, line, circle,
 } from './svgPrimitives';
-import { drawPageHeader, drawPageFooter, CONTENT_TOP } from './OL_Chrome';
+import { drawPageHeader } from './OL_Chrome';
 
 const C = COLOR_FAMILIES.neutral;
 const SAGE = COLOR_FAMILIES.accent.rust;
+
+// Voetnoot-geometrie — onderaan verankerd, boven de footer-lijn (PAGE_H-MARGIN+2).
+// Gedeeld door de tabel-layout (drawHeatmap) en het tekenen (drawHeatmapFootnote)
+// zodat beide exact dezelfde onderkant respecteren → geen overlap mogelijk.
+const FN_LINE_H = 3.8;
+const FN_SIZE = 2.9;
+// V24: ruimer boven de footer-lijn (PAGE_H-MARGIN+2) zodat de voetnoten
+// het paginanummer/logo nooit raken.
+const FN_BOTTOM_BASELINE = PAGE_H - MARGIN - 6;
 
 export function buildHeatmapSVG({ data, copy }) {
     const svg = createCanvas();
@@ -34,12 +43,15 @@ export function buildHeatmapSVG({ data, copy }) {
     // V12: pageTitle weglaten — anders staat hij identiek aan de H2.
     let y = drawPageHeader(svg, { date: data.date, pageTitle: null });
 
+    // V24: legenda uitgelijnd met de titel-bovenkant (hoger), zodat de tabel
+    // eerder kan beginnen. Pre-tabel-gap verkleind van lg → sm.
+    const titleTopY = y;
     y = drawTitleBlock(svg, y, copy);
-    drawLegendTopRight(svg, y - 14, copy);
-    y += SPACING.lg;
+    drawLegendTopRight(svg, titleTopY, copy);
+    y += SPACING.sm;
     drawHeatmap(svg, y, data, copy);
     drawHeatmapFootnote(svg, data, copy);
-    drawPageFooter(svg, { pageNum: 3 });
+    // Footer wordt centraal door de orchestrator getekend (dynamische nummering).
     return svg;
 }
 
@@ -61,7 +73,7 @@ function drawTitleBlock(svg, y, copy) {
         content: copy.heatmap.subtitle,
         ...TYPE_V9.bodySoft,
     });
-    return subBaseline + SPACING.lg;
+    return subBaseline + SPACING.md;
 }
 
 // Fix #2: grijswaarde-schaal met uitleg
@@ -78,7 +90,9 @@ function drawLegendTopRight(svg, y, copy) {
 
     const sw = 13;
     const sh = 4;
-    [0.12, 0.30, 0.50, 0.72, 1].forEach((op, i) => {
+    // Swatches volgen exact dezelfde lineaire schaal als de cellen (0%→1.0):
+    // 0.12 + (pct/100) * 0.88 op 0/25/50/75/100%.
+    [0.12, 0.34, 0.56, 0.78, 1].forEach((op, i) => {
         const sx = legX + i * (sw + 1.5);
         // Grijswaarde — neutraal, niet persona-gekleurd
         svg.appendChild(rect(sx, legY + 3, sw, sh, '#5C544B', { opacity: op }));
@@ -110,26 +124,27 @@ function drawHeatmap(svg, y, data, copy) {
     const personaAreaW = USABLE_W - teamColW - nColW - relColW;
     const cellW = personaAreaW / ARCHETYPE_ORDER.length;
 
-    // Layout — voetnoot (2-3 regels) + footer-chrome krijgen vaste ruimte
-    // zodat de tabel daar nooit overheen loopt.
     const headerH = 12;
     const hasUnlinked = data.unlinkedRespondents > 0;
-    const hasLowRel = (data.lowReliabilityTeams || []).length > 0;
-    // Voetnoot stapelt 1–3 regels (afronding+betrouwbaarheid, lage-n-demping,
-    // niet-gekoppeld). Reserveer exact ruimte zodat de tabel er nooit overheen loopt.
-    const noteLines = 1 + (hasLowRel ? 1 : 0) + (hasUnlinked ? 1 : 0);
-    const footerReserved = 13 + (noteLines - 1) * 4 + 2;
     const heatmapTop = y + headerH;
-    const heatmapBottom = PAGE_H - MARGIN - footerReserved;
     const rows = data.teamRows;
     const orgGap = SPACING.md;
+
+    // Het footnote-blok is ONDERAAN verankerd (boven de footer). De tabel-band
+    // loopt tot SPACING.lg bóven dat blok. Daardoor staan de ORGANISATIE-
+    // totaalrij en de voetnoten altijd gescheiden en vrij — ongeacht het aantal
+    // teams of voetnootregels. De rijhoogte schaalt mee zodat alles past.
+    // V24: ruimere scheiding (xl) tussen de ORGANISATIE-totaalrij en het
+    // voetnoot-blok — totaalrij vrij, dan voetnoten, dan footer.
+    const fnLines = buildFootnoteLines(data, copy);
+    const bandBottom = footnoteBlockTop(fnLines.length) - SPACING.xl;
 
     // Row-units: teamrijen (1 elk) + optionele niet-gekoppeld-rij (1) +
     // org-totaalrij (1.2× zwaarder). Zo klopt de hoogte-reservering exact.
     const orgUnits = 1.2;
     const units = rows.length + (hasUnlinked ? 1 : 0) + orgUnits;
-    const gapCount = hasUnlinked ? 2 : 1;            // gap vóór unlinked + vóór org
-    const availH = heatmapBottom - heatmapTop - orgGap * gapCount;
+    const gapCount = (hasUnlinked ? 1 : 0) + 1;      // gap vóór unlinked + vóór org
+    const availH = bandBottom - heatmapTop - orgGap * gapCount;
     const rowH = Math.max(5.0, Math.min(11, availH / units));
 
     drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy);
@@ -295,10 +310,13 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
         }));
         return;
     }
+    // De celintensiteit volgt EXACT dezelfde schaal als de legenda-voorbeelden:
+    // 0% → opacity 0.12 (lichtste swatch), 100% → opacity 1.0 (donkerste swatch).
+    // Zo komt een cel van 100% visueel overeen met de "hoog"-swatch in de legenda.
     // C2: bij lage betrouwbaarheid plafonneren we de kleurintensiteit, zodat
     // 100% uit één respondent niet net zo "hard" oogt als 100% uit een robuust
     // team. Het cijfer blijft staan; de footnote legt de demping uit.
-    const rawOp = Math.max(0.18, Math.min(0.95, pct / 100));
+    const rawOp = 0.12 + Math.min(1, Math.max(0, pct / 100)) * 0.88;
     const op = lowReliability ? Math.min(rawOp, 0.30) : rawOp;
     svg.appendChild(rect(x, y, w, h, color, {
         opacity: opacity != null ? op * opacity : op,
@@ -314,15 +332,8 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
     }));
 }
 
-function drawHeatmapFootnote(svg, data, copy) {
-    // A3-fix: NIET italic. Er is geen Inter-italic font geregistreerd, dus
-    // italic-Inter viel terug op een WinAnsi-standaardfont waarin '≥' (U+2265)
-    // kapot rendert (→ "e). Met de embedded Inter Regular (non-italic) renderen
-    // ≥, ≤, – en · correct.
-    const lineH = 4.0;
-    const baseY = PAGE_H - MARGIN - 10;
-
-    // Stack van onder naar boven; alleen relevante regels tonen.
+// Voetnootregels — alleen relevante regels, onder→boven gestapeld.
+function buildFootnoteLines(data, copy) {
     const lines = [`${copy.heatmap.roundingNote} · ${copy.heatmap.reliabilityHelp}`];
     if ((data.lowReliabilityTeams || []).length > 0) {
         lines.push(copy.heatmap.lowReliabilityNote);
@@ -330,12 +341,27 @@ function drawHeatmapFootnote(svg, data, copy) {
     if (data.unlinkedRespondents > 0) {
         lines.push(copy.heatmap.unlinkedNote(data.unlinkedRespondents));
     }
+    return lines;
+}
 
+// Visuele bovenkant van het footnote-blok bij `noteLines` regels — de tabel-band
+// stopt hierboven zodat tabel en voetnoten elkaar nooit raken.
+function footnoteBlockTop(noteLines) {
+    const topBaseline = FN_BOTTOM_BASELINE - (noteLines - 1) * FN_LINE_H;
+    return topBaseline - FN_SIZE;
+}
+
+function drawHeatmapFootnote(svg, data, copy) {
+    // Geen ≥/≤ in de strings — de gebundelde font-subsets missen die glyphs.
+    // NIET italic: er is geen Inter-italic geregistreerd (zou terugvallen op een
+    // WinAnsi-standaardfont). Onderaan verankerd op FN_BOTTOM_BASELINE; regels
+    // stapelen van onder naar boven.
+    const lines = buildFootnoteLines(data, copy);
     lines.forEach((content, i) => {
         svg.appendChild(text({
-            x: MARGIN, y: baseY - i * lineH,
+            x: MARGIN, y: FN_BOTTOM_BASELINE - i * FN_LINE_H,
             content,
-            font: 'Inter', weight: 400, size: 2.9, color: C.textMuted,
+            font: 'Inter', weight: 400, size: FN_SIZE, color: C.textMuted,
             letterSpacing: 0,
         }));
     });

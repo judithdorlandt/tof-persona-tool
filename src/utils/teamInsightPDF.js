@@ -115,10 +115,6 @@ function buildVoorkantSVG({ aggregate, insights, teamName, organization, mode = 
     y = drawDivider({ svg, y });
     y += 10;
     y = drawSignature({ svg, y, aggregate, insights, mode });
-    y += 10;
-    y = drawDivider({ svg, y });
-    y += 10;
-    drawLeeglopers({ svg, y, insights, mode });
 
     drawFooterHint({ svg });
 
@@ -140,6 +136,16 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
     y = drawAchterkantTitle({ svg, y, mode });
     y += 10;
     y = drawWorkplaceCompact({ svg, y, aggregate });
+    y += 12;
+    y = drawDivider({ svg, y });
+    y += 10;
+    // "Waar het team op leegloopt" verhuist van pagina 1 naar hier: het
+    // hoort thematisch bij de werkplekbehoefte (vraag → spanning → actie)
+    // en vult de voorheen lege onderhelft van pagina 2, terwijl pagina 1
+    // lucht krijgt onder de team-mix.
+    y = drawLeeglopers({ svg, y, insights, mode });
+    y += 12;
+    y = drawDivider({ svg, y });
     y += 10;
     drawQuickWinsCompact({ svg, y, insights });
 
@@ -357,12 +363,31 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team' }) {
         lineY += lineHeight;
     });
 
+    // Afrondingsnoot: de verdeling rondt af op hele procenten, dus de
+    // kolom telt niet altijd exact op tot 100% (org-rapport doet dit ook).
+    svg.appendChild(createText({
+        x: colLeftX,
+        y: lineY + 2,
+        text: 'Percentages zijn afgerond; de som ligt tussen 99 en 101%.',
+        font: 'Inter',
+        weight: 400,
+        size: 4.4,
+        color: COLOR.textMuted,
+    }));
+    lineY += 8;
+
     // Alle primair-aanwezige archetypes tonen, gesorteerd op aantal
     // mensen primair (= personasByPrimary). Eerder werd sortedPersonas
     // (energie) gebruikt — daardoor stond bv. Denker met 1 persoon
     // boven Groeier met 4 als hun energie hoger lag. Verwarrend.
     const topPresent = aggregate?.personasByPrimary || [];
     const members = aggregate?.members || [];
+
+    // Zelfde voornaam in twee werkstijlen = twee verschillende personen
+    // (elke respondent heeft precies één primaire werkstijl). Maak ze
+    // onderscheidbaar met een achternaam-initiaal, zodat de lezer niet
+    // denkt dat iemand twee werkstijlen heeft.
+    const displayName = buildDisplayNameResolver(members);
 
     // Bij >4 archetypes splitsen we de rechter kolom in twee sub-kolommen,
     // anders loopt de mix-kolom veel verder naar beneden dan de verdeling
@@ -399,7 +424,7 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team' }) {
         const membersForArchetype = members.filter((m) => m.primary === p.id);
         const realNames = membersForArchetype
             .filter((m) => !m.isAnonymous)
-            .map((m) => firstName(m.name))
+            .map((m) => displayName(m.name))
             .filter((n) => n && n !== 'Onbekend')
             .filter((n, i, arr) => arr.indexOf(n) === i);
         const anonymousCount = membersForArchetype.filter((m) => m.isAnonymous).length;
@@ -531,6 +556,8 @@ function drawLeeglopers({ svg, y, insights, mode = 'team' }) {
 
         lineY += 11;
     });
+
+    return lineY;
 }
 
 function drawFooterHint({ svg }) {
@@ -693,12 +720,12 @@ function drawQuickWinsCompact({ svg, y, insights }) {
     }));
 
     const SOURCE_LABELS = {
-        werkstijlen: 'UIT WERKSTIJLEN',
-        werkplek: 'UIT WERKPLEK',
-        spanning: 'UIT SPANNING',
-        minderheid: 'UIT MINDERHEID',
-        ontbrekend: 'UIT ONTBREKEND',
-        reflectie: 'REFLECTIE',
+        werkstijlen: 'WAT DE WERKSTIJLEN VRAGEN',
+        werkplek: 'WAT DE WERKPLEK VRAAGT',
+        spanning: 'WAAR VRAAG EN AANBOD SCHUREN',
+        minderheid: 'VOOR DE KLEINE GROEPEN',
+        ontbrekend: 'WELKE WERKSTIJL ONTBREEKT',
+        reflectie: 'ZELF AAN DE SLAG',
     };
 
     let lineY = y + 20;
@@ -953,6 +980,30 @@ function wrapText(text, maxWidth, fontSize, font) {
 function firstName(fullName) {
     if (!fullName) return '';
     return String(fullName).trim().split(/\s+/)[0];
+}
+
+// Geeft een resolver die per volledige naam de weergavenaam teruggeeft.
+// Komt een voornaam bij meerdere verschillende personen voor, dan voegt
+// hij een achternaam-initiaal toe ("Claudia B.") zodat ze onderscheidbaar
+// zijn. Bij identieke volledige namen onder twee werkstijlen kan dat niet
+// — dat duidt op een echte dubbele invoer en moet bij de bron worden
+// gecontroleerd; de telling wordt hier bewust niet aangepast.
+function buildDisplayNameResolver(members) {
+    const fullByFirst = {};
+    (members || []).forEach((m) => {
+        if (m.isAnonymous) return;
+        const fn = firstName(m.name);
+        if (!fn || fn === 'Onbekend') return;
+        (fullByFirst[fn] = fullByFirst[fn] || new Set()).add(String(m.name).trim());
+    });
+    return (fullName) => {
+        const fn = firstName(fullName);
+        const fulls = fullByFirst[fn];
+        if (!fulls || fulls.size <= 1) return fn;
+        const parts = String(fullName).trim().split(/\s+/);
+        const surname = parts.length > 1 ? parts[parts.length - 1] : '';
+        return surname ? `${fn} ${surname[0].toUpperCase()}.` : fn;
+    };
 }
 
 function formatNamesNatural(names) {
