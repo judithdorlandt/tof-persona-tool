@@ -104,6 +104,35 @@ export async function signOut() {
 }
 
 // =========================
+// PDF DOWNLOAD LOGGING
+// =========================
+
+export async function logPdfDownload(teamId) {
+  if (!ensureSupabase()) {
+    return { ok: false, error: 'Supabase niet beschikbaar' };
+  }
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { ok: false, error: 'Geen actieve sessie' };
+    }
+
+    const { error } = await supabase
+      .from('pdf_downloads')
+      .insert({ user_id: user.id, team_id: teamId });
+
+    if (error) throw error;
+
+    return { ok: true };
+  } catch (err) {
+    console.error('❌ PDF download log error:', err?.message || err);
+    return { ok: false, error: err?.message || 'Loggen mislukt' };
+  }
+}
+
+// =========================
 // RESPONSES
 // =========================
 

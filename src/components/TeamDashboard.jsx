@@ -36,6 +36,7 @@ import { buildTeamAggregate } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
 import { hasTeamLevel, LEVEL_DYNAMICS, isAdminAccess } from '../utils/access';
 import { generateTeamInsightPDF } from '../utils/teamInsightPDF';
+import { logPdfDownload } from '../supabase';
 
 const ACCENT = MODULE.insight.accent;
 
@@ -166,12 +167,16 @@ export default function TeamDashboard({
                 actions={
                     <>
                         <PrimaryButton
-                            onClick={() => generateTeamInsightPDF({
-                                aggregate,
-                                insights,
-                                teamName,
-                                organization,
-                            })}
+                            onClick={() => {
+                                generateTeamInsightPDF({
+                                    aggregate,
+                                    insights,
+                                    teamName,
+                                    organization,
+                                });
+                                // Log op de achtergrond — mag stil falen.
+                                logPdfDownload(selectedTeam?.code || null);
+                            }}
                             style={{ background: ACCENT }}
                         >
                             Download als PDF
