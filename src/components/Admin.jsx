@@ -23,6 +23,7 @@ import {
     isCurrentUserAdmin,
     getCurrentUser,
     sendMagicLink,
+    logPdfDownload,
     getAllTeamAccessCodes,
     createTeamAccessCode,
     adminListTeamManagers,
@@ -1028,13 +1029,17 @@ function OrganizationDetail({
                 actions={
                     moduleSel === 'insight' && responses.length > 0 ? (
                         <PrimaryButton
-                            onClick={() => generateOrganizationInsightPDF({
-                                aggregate,
-                                insights,
-                                teamSummaries,
-                                organizationName: org.name,
-                                observations,
-                            })}
+                            onClick={() => {
+                                generateOrganizationInsightPDF({
+                                    aggregate,
+                                    insights,
+                                    teamSummaries,
+                                    organizationName: org.name,
+                                    observations,
+                                });
+                                // Log op de achtergrond — mag stil falen.
+                                logPdfDownload(`admin-rapport-${org.name}`);
+                            }}
                             style={{ background: INSIGHT_ACCENT }}
                         >
                             Download als PDF

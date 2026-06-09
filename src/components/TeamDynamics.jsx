@@ -35,6 +35,7 @@ import {
     getSignatureLine,
 } from '../insights';
 import { generateTeamDynamicsPDF } from '../utils/teamDynamicsPDF';
+import { logPdfDownload } from '../supabase';
 import { PERSONA_COLORS, TENSION_PAIRS, LEADERSHIP_MAP, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, getReliability, collectPersonaPeople, collectFirstNames, findMentionedPersona, formatNames, formatPeople, describeAxis } from './teamDynamicsLogic';
 
 const ACCENT = MODULE.dynamics.accent;
@@ -343,15 +344,19 @@ export default function TeamDynamics({
                 actions={
                     <>
                         <PrimaryButton
-                            onClick={() => generateTeamDynamicsPDF({
-                                aggregate: pdfAggregate,
-                                dynamicsAxes,
-                                tensions,
-                                leadershipWins,
-                                teamName,
-                                organization,
-                                headline: signatureLine || '',
-                            })}
+                            onClick={() => {
+                                generateTeamDynamicsPDF({
+                                    aggregate: pdfAggregate,
+                                    dynamicsAxes,
+                                    tensions,
+                                    leadershipWins,
+                                    teamName,
+                                    organization,
+                                    headline: signatureLine || '',
+                                });
+                                // Log op de achtergrond — mag stil falen.
+                                logPdfDownload(`dynamics-${selectedTeam?.code || ''}`);
+                            }}
                             style={{ background: ACCENT }}
                         >
                             Download als PDF
