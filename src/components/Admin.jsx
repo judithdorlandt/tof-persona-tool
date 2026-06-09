@@ -589,6 +589,14 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
         : 'Livia'; // placeholder voorbeeld
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
+    // Persoonlijke deelnemer-link: organisatie én teamcode zitten in de URL,
+    // zodat de quiz die automatisch herkent en voorvult. Teamleden hoeven
+    // niets meer over te typen.
+    const quizUrl =
+        `https://tof-persona-tool.netlify.app/quiz` +
+        `?org=${encodeURIComponent(info.organization || '')}` +
+        `&code=${encodeURIComponent(info.code || '')}`;
+
     const mailBody = `Beste ${capitalize(recipientName)},
 
 Fijn dat we deze stap samen zetten. Hieronder alles wat je nodig hebt om jouw team aan de slag te laten gaan.
@@ -596,12 +604,12 @@ Fijn dat we deze stap samen zetten. Hieronder alles wat je nodig hebt om jouw te
 JULLIE TEAMCODE
 ${info.code}
 
-Deze code vraag je elk teamlid in te vullen bij de persona-tool. Daardoor weet de tool dat hun antwoorden bij jullie team horen.
+Deze code zit al verwerkt in de link hieronder, zodat de tool de antwoorden automatisch aan jullie team koppelt.
 
 WAT JE TEAMLEDEN DOEN (15 minuten per persoon)
-1. Open: https://tof-persona-tool.netlify.app/quiz
-2. Vul de quiz in — ze beantwoorden ~30 stellingen
-3. Bij "Teamcode" vullen ze in: ${info.code}
+1. Open de persoonlijke teamlink: ${quizUrl}
+2. Organisatie, afdeling en teamcode staan al ingevuld — alleen voornaam toevoegen
+3. Vul de quiz in — ze beantwoorden ~30 stellingen
 4. Ze krijgen direct hun persoonlijke persona als resultaat
 
 WAT JIJ ALS LEIDINGGEVENDE STRAKS DOET

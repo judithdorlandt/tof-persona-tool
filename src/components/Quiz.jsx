@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { ARCHETYPES, QUESTIONS } from '../data';
 import { saveResponse } from '../supabase';
+import QuizAanmelding from './QuizAanmelding.jsx';
 import styles from './Quiz.module.css';
 
 // Auto-save key. Bump versie als de state-shape verandert.
@@ -56,7 +57,6 @@ function createEmptyScores() {
 export default function Quiz({ setPage, setResultData }) {
     // Bij eerste mount restoren uit localStorage als er progress is.
     const restored = useMemo(() => readProgress(), []);
-    const [resumed, setResumed] = useState(Boolean(restored));
 
     const [step, setStep] = useState(restored?.step ?? -1);
     const [profile, setProfile] = useState(
@@ -125,28 +125,6 @@ export default function Quiz({ setPage, setResultData }) {
         if (step < 0) return 0;
         return ((step + 1) / totalQuestions) * 100;
     }, [step, totalQuestions]);
-
-    const updateProfileField = (field, value) => {
-        setProfile((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    };
-
-    const startQuiz = () => {
-        if (profile.org.trim() === '') {
-            setError('Vul je organisatie in.');
-            return;
-        }
-
-        if (profile.dept.trim() === '') {
-            setError('Vul je afdeling in.');
-            return;
-        }
-
-        setError('');
-        setStep(0);
-    };
 
     const toggleAnswer = (option) => {
         const exists = selectedAnswers.some((item) => item.text === option.text);
@@ -225,159 +203,15 @@ export default function Quiz({ setPage, setResultData }) {
         }
     };
 
-    // Hervatten met een schone lei: wist localStorage + reset state.
-    const discardResumed = () => {
-        clearProgress();
-        setResumed(false);
-        setStep(-1);
-        setProfile({
-            name: '',
-            org: '',
-            dept: '',
-            team: '',
-            invite_code: '',
-            role: '',
-            team_size: '',
-        });
-        setScores(createEmptyScores());
-    };
-
     if (step === -1) {
         return (
-            <div className={`fade-up ${styles.page}`}>
-                <div className={styles.stack}>
-
-                    {/* ── Hervatten-banner ─────────────────────────────── */}
-                    {resumed && (
-                        <div className={styles.resumeBanner}>
-                            <span>
-                                <span className={styles.resumeStrong}>Verder gegaan</span> vanaf je vorige sessie.
-                            </span>
-                            <button
-                                type="button"
-                                onClick={discardResumed}
-                                className={styles.resumeDiscard}
-                            >
-                                Begin opnieuw
-                            </button>
-                        </div>
-                    )}
-
-                    {/* ── HERO — rode identiteit ──────────────────────── */}
-                    <div className={styles.hero}>
-                        <div className={styles.heroAccent} />
-                        <div className={styles.heroInner}>
-                            <div className={styles.heroEyebrow}>03 — Jouw context</div>
-                            <div className={styles.heroHeading}>
-                                <h1 className={styles.heroTitle}>
-                                    Over jouw{' '}
-                                    <em className={styles.heroTitleAccent}>context</em>
-                                </h1>
-                                <p className={styles.heroSub}>
-                                    Alleen <strong>organisatie</strong> en <strong>afdeling</strong> zijn verplicht. De rest helpt voor team-inzicht.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ── FORMULIER ───────────────────────────────────── */}
-                    <div className={styles.formCard}>
-
-                        {/* Sectie 1 — Over jou (klein, vriendelijk) */}
-                        <FormField
-                            label="Voornaam"
-                            optional
-                            placeholder="Hoe heet je?"
-                            hint="Fijn voor je persoonlijke resultaat."
-                            value={profile.name}
-                            onChange={(value) => updateProfileField('name', value)}
-                        />
-
-                        <div className={styles.sectionDivider} />
-
-                        {/* Sectie 2 — Over je werk (verplicht + nuttig) */}
-                        <div className={styles.row}>
-                            <FormField
-                                label="Organisatie"
-                                required
-                                placeholder="Jouw organisatie"
-                                value={profile.org}
-                                onChange={(value) => updateProfileField('org', value)}
-                            />
-                            <FormField
-                                label="Afdeling"
-                                required
-                                placeholder="Bijv. HR of Finance"
-                                value={profile.dept}
-                                onChange={(value) => updateProfileField('dept', value)}
-                            />
-                        </div>
-
-                        <FormField
-                            label="Team"
-                            optional
-                            placeholder="Bijv. 'Marketing Brand' of 'Klantenservice NL'"
-                            hint="Handig voor team-inzicht. Laat leeg als jouw afdeling één team is."
-                            value={profile.team}
-                            onChange={(value) => updateProfileField('team', value)}
-                        />
-
-                        {/* Teamcode — opvallend zichtbaar voor wie er een heeft ontvangen */}
-                        <div className={styles.teamCodeBox}>
-                            <FormField
-                                label="Teamcode"
-                                optional
-                                placeholder="Bijv. NL-2026-ABC"
-                                hint="Heb je een code van je manager gekregen? Vul hem hier in voor team-inzichten."
-                                value={profile.invite_code}
-                                onChange={(value) => updateProfileField('invite_code', value)}
-                            />
-                        </div>
-
-                        {/* Sectie 3 — Optioneel: meer details */}
-                        <details className={styles.disclosure}>
-                            <summary className={styles.disclosureSummary}>
-                                <span>
-                                    Meer over jezelf
-                                    <span className={styles.disclosureHint}>(optioneel)</span>
-                                </span>
-                            </summary>
-                            <div className={styles.disclosureBody}>
-                                <div className={styles.row}>
-                                    <FormField
-                                        label="Rol"
-                                        optional
-                                        placeholder="Bijv. teamleider of adviseur"
-                                        value={profile.role}
-                                        onChange={(value) => updateProfileField('role', value)}
-                                    />
-                                    <FormField
-                                        label="Teamgrootte"
-                                        optional
-                                        placeholder="Bijv. 5–10"
-                                        value={profile.team_size}
-                                        onChange={(value) => updateProfileField('team_size', value)}
-                                    />
-                                </div>
-                            </div>
-                        </details>
-
-                        {error && (
-                            <p className={styles.error}>{error}</p>
-                        )}
-
-                        <div className={styles.submitRow}>
-                            <button
-                                type="button"
-                                onClick={startQuiz}
-                                className={styles.submit}
-                            >
-                                Start de vragen →
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <QuizAanmelding
+                onSubmit={(p) => {
+                    setProfile((prev) => ({ ...prev, ...p }));
+                    setError('');
+                    setStep(0);
+                }}
+            />
         );
     }
 
@@ -591,36 +425,6 @@ export default function Quiz({ setPage, setResultData }) {
                     </div>
                 </div>
             </div>
-        </div>
-    );
-}
-
-function FormField({
-    label,
-    value,
-    onChange,
-    placeholder = '',
-    optional = false,
-    required = false,
-    hint = '',
-}) {
-    return (
-        <div className={styles.field}>
-            <label className={styles.label}>
-                {label}{' '}
-                {optional && <span className={styles.labelOptional}>(optioneel)</span>}
-                {required && <span className={styles.labelRequired}>*</span>}
-            </label>
-
-            <input
-                type="text"
-                className={styles.input}
-                value={value}
-                placeholder={placeholder}
-                onChange={(e) => onChange(e.target.value)}
-            />
-
-            {hint && <p className={styles.hint}>{hint}</p>}
         </div>
     );
 }

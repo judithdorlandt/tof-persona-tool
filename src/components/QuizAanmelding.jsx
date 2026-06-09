@@ -21,7 +21,18 @@ import { supabase } from '../supabase';
  *                   { name, org, dept, team, invite_code }
  */
 export default function QuizAanmelding({ organisatie = '', onSubmit }) {
-  const orgVast = String(organisatie || '').trim();
+  // URL-parameters uit de uitnodigingsmail: ?org=...&code=...
+  // Hiermee weet de tool meteen om welke organisatie + team het gaat.
+  const urlParams = useMemo(() => {
+    if (typeof window === 'undefined') return { org: '', code: '' };
+    const p = new URLSearchParams(window.location.search);
+    return {
+      org: String(p.get('org') || '').trim(),
+      code: String(p.get('code') || '').trim(),
+    };
+  }, []);
+
+  const orgVast = String(organisatie || '').trim() || urlParams.org;
 
   const [rijen, setRijen] = useState([]); // [{ organization, team, code }]
   const [laden, setLaden] = useState(true);
@@ -85,6 +96,21 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
       actief = false;
     };
   }, [orgVast]);
+
+  // Teamcode uit de URL: zodra de codes geladen zijn de bijbehorende
+  // organisatie + afdeling automatisch voorselecteren.
+  useEffect(() => {
+    if (!urlParams.code || form.afdeling) return;
+    const match = rijen.find((r) => r.code === urlParams.code);
+    if (match) {
+      setForm((f) => ({
+        ...f,
+        organisatie: match.organization,
+        afdeling: match.team,
+        teamcode: match.code,
+      }));
+    }
+  }, [rijen, urlParams.code, form.afdeling]);
 
   // Unieke organisaties (alleen relevant als er geen vaste organisatie is).
   const organisaties = useMemo(() => {
