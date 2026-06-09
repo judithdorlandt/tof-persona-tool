@@ -32,10 +32,10 @@ export default function Login({ setPage }) {
     }
 
     setStatus('sending');
-    const { error } = await sendMagicLink(cleanEmail);
+    const { ok, error } = await sendMagicLink(cleanEmail);
 
-    if (error) {
-      setErrorMessage(error.message || 'Er ging iets mis. Probeer het opnieuw.');
+    if (!ok) {
+      setErrorMessage(error || 'Er ging iets mis. Probeer het opnieuw.');
       setStatus('error');
       return;
     }

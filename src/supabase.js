@@ -38,13 +38,13 @@ function ensureSupabase() {
  */
 export async function sendMagicLink(email) {
   if (!ensureSupabase()) {
-    return { error: { message: 'Supabase niet beschikbaar' } };
+    return { ok: false, error: 'Supabase niet beschikbaar' };
   }
 
   try {
     const cleanEmail = String(email || '').trim().toLowerCase();
     if (!cleanEmail) {
-      return { error: { message: 'Vul een geldig e-mailadres in.' } };
+      return { ok: false, error: 'Vul een geldig e-mailadres in.' };
     }
 
     const { error } = await supabase.auth.signInWithOtp({
@@ -56,13 +56,13 @@ export async function sendMagicLink(email) {
 
     if (error) {
       console.error('❌ Magic-link error:', error.message);
-      return { error };
+      return { ok: false, error: error.message || 'Versturen mislukt.' };
     }
 
-    return { error: null };
+    return { ok: true, error: null };
   } catch (err) {
     console.error('❌ Magic-link error:', err?.message || err);
-    return { error: { message: err?.message || 'Onbekende fout' } };
+    return { ok: false, error: err?.message || 'Onbekende fout' };
   }
 }
 
