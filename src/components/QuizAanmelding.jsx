@@ -268,6 +268,9 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
         <label style={S.label}>
           Organisatie <span style={S.required}>*</span>
         </label>
+          {orgVast ? (
+            <input style={S.readonly} value={orgVast} readOnly />
+          ) : (
           <select
             style={S.input}
             value={form.organisatie}
@@ -284,6 +287,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
               </option>
             ))}
           </select>
+          )}
         {/* Afdeling — dropdown uit Supabase */}
         <label style={S.label}>
           Afdeling <span style={S.required}>*</span>
