@@ -779,7 +779,10 @@ function drawQuickWinsCompact({ svg, y, insights }) {
 }
 
 function drawAchterkantFooter({ svg, mode = 'team' }) {
-    const footerY = PAGE_H - 56;
+    // Footer compacter en lager geplaatst zodat hij niet overlapt met de
+    // quick-wins erboven. Blok loopt van quote (PAGE_H-40) tot tagline
+    // (PAGE_H-14), dus ~26mm hoog met nog 14mm marge tot de onderrand.
+    const footerY = PAGE_H - 40;
     const isOrg = mode === 'organization';
 
     svg.appendChild(createText({
@@ -790,24 +793,24 @@ function drawAchterkantFooter({ svg, mode = 'team' }) {
             : '"Een team dat zichzelf herkent, beweegt sneller."',
         font: 'Playfair Display',
         weight: 500,
-        size: 7,
+        size: 6.4,
         color: COLOR.textSoft,
         anchor: 'middle',
         italic: true,
     }));
 
-    const logoSize = 16;
-    drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 10, logoSize);
+    const logoSize = 13;
+    drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 7, logoSize);
 
     svg.appendChild(createText({
         x: PAGE_W / 2,
-        y: footerY + 36,
+        y: footerY + 26,
         text: isOrg
             ? 'Helping organisations understand their workplace through insight, design and movement.'
             : 'Helping teams understand their workplace through insight, design and movement.',
         font: 'Inter',
         weight: 400,
-        size: 4.8,
+        size: 4.6,
         color: COLOR.textMuted,
         anchor: 'middle',
     }));
