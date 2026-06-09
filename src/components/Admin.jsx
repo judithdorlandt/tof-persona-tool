@@ -22,6 +22,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
     isCurrentUserAdmin,
     getCurrentUser,
+    sendMagicLink,
     getAllTeamAccessCodes,
     createTeamAccessCode,
     adminListTeamManagers,
@@ -1677,10 +1678,32 @@ function ManagersSection({
 }
 
 function ManagerRow({ isMobile, manager, busy, onRemove }) {
+    const [linkStatus, setLinkStatus] = useState('idle'); // idle | sending | sent | error
+    const [linkMessage, setLinkMessage] = useState('');
+
+    async function handleSendLink() {
+        setLinkStatus('sending');
+        setLinkMessage('');
+        const { ok, error } = await sendMagicLink(manager.email);
+        if (ok) {
+            setLinkStatus('sent');
+            setLinkMessage('Magic link verstuurd.');
+        } else {
+            setLinkStatus('error');
+            setLinkMessage(error || 'Versturen mislukt.');
+        }
+    }
+
+    const sending = linkStatus === 'sending';
+
+    let linkLabel = 'Stuur magic link';
+    if (sending) linkLabel = 'Bezig…';
+    else if (linkStatus === 'sent') linkLabel = 'Opnieuw sturen';
+
     return (
         <div style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1.6fr) minmax(0, 1.4fr) 110px 100px',
+            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1.6fr) minmax(0, 1.4fr) 110px 150px 100px',
             gap: 12,
             alignItems: 'center',
             padding: '12px 14px',
@@ -1714,6 +1737,21 @@ function ManagerRow({ isMobile, manager, busy, onRemove }) {
                 letterSpacing: 0.5,
             }}>
                 {manager.team_code}
+            </div>
+            <div style={{ display: 'grid', gap: 4 }}>
+                <SecondaryButton onClick={handleSendLink} disabled={busy || sending}>
+                    {linkLabel}
+                </SecondaryButton>
+                {linkMessage && (
+                    <span style={{
+                        fontSize: 11,
+                        color: linkStatus === 'error'
+                            ? 'var(--tof-accent-rose)'
+                            : 'var(--tof-text-muted)',
+                    }}>
+                        {linkMessage}
+                    </span>
+                )}
             </div>
             <SecondaryButton onClick={onRemove} disabled={busy}>
                 Verwijder
