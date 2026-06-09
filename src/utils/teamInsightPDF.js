@@ -785,19 +785,21 @@ function drawAchterkantFooter({ svg, mode = 'team' }) {
     const footerY = PAGE_H - 40;
     const isOrg = mode === 'organization';
 
-    svg.appendChild(createText({
-        x: PAGE_W / 2,
-        y: footerY,
-        text: isOrg
-            ? '"Een organisatie die zichzelf herkent, beweegt sneller."'
-            : '"Een team dat zichzelf herkent, beweegt sneller."',
-        font: 'Playfair Display',
-        weight: 500,
-        size: 6.4,
-        color: COLOR.textSoft,
-        anchor: 'middle',
-        italic: true,
-    }));
+    // Quote alleen in het organisatie-rapport; in de team-insight PDF
+    // liep hij door de quick-wins-tekst erboven heen.
+    if (isOrg) {
+        svg.appendChild(createText({
+            x: PAGE_W / 2,
+            y: footerY,
+            text: '"Een organisatie die zichzelf herkent, beweegt sneller."',
+            font: 'Playfair Display',
+            weight: 500,
+            size: 6.4,
+            color: COLOR.textSoft,
+            anchor: 'middle',
+            italic: true,
+        }));
+    }
 
     const logoSize = 13;
     drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 7, logoSize);
