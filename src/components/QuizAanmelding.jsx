@@ -70,8 +70,6 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
         .order('organization', { ascending: true })
         .order('team', { ascending: true });
 
-      if (orgVast) query = query.eq('organization', orgVast);
-
       const { data, error } = await query;
       if (!actief) return;
 
@@ -95,7 +93,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     return () => {
       actief = false;
     };
-  }, [orgVast]);
+  }, []);
 
   // Teamcode uit de URL: zodra de codes geladen zijn de bijbehorende
   // organisatie + afdeling automatisch voorselecteren.
@@ -266,13 +264,10 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
         <div style={S.eyebrow}>Test jezelf — aanmelden</div>
         <h1 style={S.title}>Kies je team</h1>
 
-        {/* Organisatie — vast óf keuze */}
+        {/* Organisatie — dropdown, met voorgeselecteerde waarde via ?org= parameter */}
         <label style={S.label}>
           Organisatie <span style={S.required}>*</span>
         </label>
-        {orgVast ? (
-          <input style={S.readonly} value={orgVast} readOnly />
-        ) : (
           <select
             style={S.input}
             value={form.organisatie}
@@ -289,8 +284,6 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
               </option>
             ))}
           </select>
-        )}
-
         {/* Afdeling — dropdown uit Supabase */}
         <label style={S.label}>
           Afdeling <span style={S.required}>*</span>
