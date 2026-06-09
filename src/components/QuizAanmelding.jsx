@@ -330,6 +330,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
           Voornaam <span style={S.optional}>(optioneel)</span>
         </label>
         <input style={S.input} value={form.voornaam} onChange={wijzig('voornaam')} placeholder="Hoe heet je?" />
+        <p style={S.hint}>Leuk voor je persoonlijke persona als je je naam invult!</p>        
 
         <label style={S.label}>
           Team <span style={S.optional}>(optioneel)</span>
