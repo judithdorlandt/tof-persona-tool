@@ -67,6 +67,38 @@ export async function sendMagicLink(email) {
 }
 
 /**
+ * Logt in met e-mail + wachtwoord (alleen gebruikt op de admin-pagina).
+ * Vereist dat er voor het account een wachtwoord is ingesteld in Supabase.
+ */
+export async function signInWithPassword(email, password) {
+  if (!ensureSupabase()) {
+    return { ok: false, error: 'Supabase niet beschikbaar' };
+  }
+
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  if (!cleanEmail || !password) {
+    return { ok: false, error: 'Vul je e-mailadres en wachtwoord in.' };
+  }
+
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password,
+    });
+
+    if (error) {
+      console.error('❌ signInWithPassword error:', error.message);
+      return { ok: false, error: error.message || 'Inloggen mislukt.' };
+    }
+
+    return { ok: true, error: null };
+  } catch (err) {
+    console.error('❌ signInWithPassword error:', err?.message || err);
+    return { ok: false, error: err?.message || 'Onbekende fout' };
+  }
+}
+
+/**
  * Verifieert een magic-link op basis van token_hash + type uit de URL.
  *
  * Dit is de "veilige variant" die NIET automatisch verbruikt wordt bij het

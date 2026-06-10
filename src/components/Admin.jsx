@@ -19,10 +19,12 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
 import {
     isCurrentUserAdmin,
     getCurrentUser,
     sendMagicLink,
+    signInWithPassword,
     logPdfDownload,
     getAllTeamAccessCodes,
     createTeamAccessCode,
@@ -84,6 +86,7 @@ function responseMatchesTeam(r, t) {
 // ─── HOOFDCOMPONENT ─────────────────────────────────────────────────────────
 
 export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
+    const { user, loading: authLoading } = useAuth();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
     const [loading, setLoading] = useState(true);
     const [authorized, setAuthorized] = useState(false);
@@ -173,10 +176,14 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    // Gating + teams laden
+    // Gating + teams laden. Re-runt zodra de sessie verandert (bv. na
+    // wachtwoord-login hieronder), zodat de admin-check opnieuw draait.
     useEffect(() => {
         let cancelled = false;
         async function bootstrap() {
+            // Wacht tot AuthContext de sessie heeft bepaald.
+            if (authLoading) return;
+            setLoading(true);
             const admin = await isCurrentUserAdmin();
             if (cancelled) return;
             setAuthorized(admin);
@@ -193,7 +200,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
         }
         bootstrap();
         return () => { cancelled = true; };
-    }, []);
+    }, [user, authLoading]);
 
     async function handleCreate(e) {
         e?.preventDefault?.();
@@ -295,6 +302,11 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     }
 
     if (!authorized) {
+        // Niet ingelogd → toon wachtwoord-login (alleen op de admin-pagina).
+        if (!user) {
+            return <AdminLogin />;
+        }
+        // Wel ingelogd, maar geen admin-rechten.
         return (
             <PageShell>
                 <div style={{
@@ -447,6 +459,124 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                     onSelect={setSelectedOrg}
                 />
 
+            </div>
+        </PageShell>
+    );
+}
+
+// ─── SUB: Admin-login (e-mail + wachtwoord) ─────────────────────────────────
+// Alleen op /admin. Na een geslaagde login werkt AuthContext de sessie bij,
+// waardoor de admin-check in Admin opnieuw draait en het dashboard verschijnt.
+
+function AdminLogin() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [busy, setBusy] = useState(false);
+    const [error, setError] = useState('');
+
+    const inputStyle = {
+        width: '100%',
+        padding: '12px 14px',
+        border: '1px solid var(--tof-border)',
+        borderRadius: 10,
+        fontSize: 15,
+        fontFamily: 'inherit',
+        background: 'var(--tof-bg)',
+        color: 'var(--tof-text)',
+        boxSizing: 'border-box',
+    };
+    const labelStyle = {
+        display: 'block',
+        fontSize: 11,
+        textTransform: 'uppercase',
+        letterSpacing: 1.2,
+        fontWeight: 700,
+        color: 'var(--tof-text-muted)',
+        marginBottom: 6,
+    };
+
+    async function handleSubmit(e) {
+        e?.preventDefault?.();
+        setError('');
+        setBusy(true);
+        const result = await signInWithPassword(email, password);
+        if (!result.ok) {
+            setError(result.error || 'Inloggen mislukt.');
+            setBusy(false);
+            return;
+        }
+        // Geslaagd: AuthContext pikt de sessie op → Admin re-runt de check.
+        // busy bewust aan laten zodat de knop niet flikkert tijdens de overgang.
+    }
+
+    return (
+        <PageShell>
+            <div style={{
+                maxWidth: 460,
+                margin: '60px auto',
+                padding: 32,
+                background: 'var(--tof-surface)',
+                border: '1px solid var(--tof-border)',
+                borderRadius: 14,
+            }}>
+                <div style={{
+                    fontSize: 11,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1.6,
+                    fontWeight: 700,
+                    color: 'var(--tof-accent-rose)',
+                    marginBottom: 12,
+                }}>
+                    TOF Admin
+                </div>
+                <h1 style={{
+                    margin: '0 0 20px',
+                    fontFamily: "'Playfair Display', serif",
+                    fontWeight: 500,
+                    fontSize: 28,
+                }}>
+                    Inloggen.
+                </h1>
+
+                <form onSubmit={handleSubmit} noValidate>
+                    <label htmlFor="admin-email" style={labelStyle}>E-mailadres</label>
+                    <input
+                        id="admin-email"
+                        type="email"
+                        inputMode="email"
+                        autoComplete="username"
+                        autoFocus
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); if (error) setError(''); }}
+                        placeholder="naam@tof.services"
+                        style={{ ...inputStyle, marginBottom: 16 }}
+                    />
+
+                    <label htmlFor="admin-password" style={labelStyle}>Wachtwoord</label>
+                    <input
+                        id="admin-password"
+                        type="password"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => { setPassword(e.target.value); if (error) setError(''); }}
+                        placeholder="••••••••"
+                        style={{ ...inputStyle, marginBottom: error ? 8 : 20 }}
+                    />
+
+                    {error ? (
+                        <p role="alert" style={{
+                            color: 'var(--tof-accent-rose)',
+                            fontSize: 13,
+                            margin: '0 0 16px',
+                        }}>
+                            {error}
+                        </p>
+                    ) : null}
+
+                    <PrimaryButton type="submit" disabled={busy}>
+                        {busy ? 'Bezig met inloggen…' : 'Inloggen →'}
+                    </PrimaryButton>
+                </form>
             </div>
         </PageShell>
     );
