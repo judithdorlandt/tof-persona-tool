@@ -50,9 +50,10 @@ const PATH_TO_PAGE = Object.entries(PAGE_TO_PATH).reduce((acc, [k, v]) => {
 
 function pathToPage(pathname) {
   if (PATH_TO_PAGE[pathname]) return PATH_TO_PAGE[pathname];
-  // Fallback: probeer zonder trailing slash
-  const trimmed = pathname.replace(/\/+$/, '') || '/';
-  return PATH_TO_PAGE[trimmed] || 'landing';
+  // Normaliseer: dubbele slashes inklappen (bv. //auth/confirm door een
+  // SiteURL met trailing slash in de Supabase-template) en trailing slash weg.
+  const normalized = pathname.replace(/\/{2,}/g, '/').replace(/\/+$/, '') || '/';
+  return PATH_TO_PAGE[normalized] || 'landing';
 }
 
 export default function App() {
