@@ -99,12 +99,18 @@ export async function signInWithPassword(email, password) {
 }
 
 /**
- * Verifieert een magic-link op basis van token_hash + type uit de URL.
+ * Verifieert een magic-link op basis van token_hash uit de URL.
  *
  * Dit is de "veilige variant" die NIET automatisch verbruikt wordt bij het
  * openen van de link. Pas wanneer de gebruiker zelf op de knop klikt, roepen
  * we deze functie aan. Daardoor verbruiken automatische e-mailscanners
  * (Microsoft Safe Links e.d.) de token niet voortijdig.
+ *
+ * Het juiste OTP-`type` verschilt per Supabase-flow ('email' voor
+ * signInWithOtp, 'magiclink', 'recovery', 'signup', ...). Een verkeerde type
+ * verbruikt de token NIET (Supabase vindt simpelweg geen match), dus we
+ * proberen de kandidaten op volgorde tot er één matcht. Zo werkt de pagina
+ * ongeacht welke email-template Supabase precies gebruikt heeft.
  */
 export async function verifyMagicLink(tokenHash, type) {
   if (!ensureSupabase()) {
@@ -116,22 +122,31 @@ export async function verifyMagicLink(tokenHash, type) {
     return { ok: false, error: 'Geen geldige token in de link.' };
   }
 
-  try {
-    const { error } = await supabase.auth.verifyOtp({
-      token_hash: cleanHash,
-      type: type || 'magiclink',
-    });
+  // Begin met het type uit de URL, val daarna terug op de overige kandidaten.
+  const candidates = [type, 'email', 'magiclink', 'recovery', 'signup']
+    .filter(Boolean)
+    .filter((t, i, arr) => arr.indexOf(t) === i);
 
-    if (error) {
-      console.error('❌ verifyOtp error:', error.message);
-      return { ok: false, error: error.message || 'Verifiëren mislukt.' };
+  let lastError = null;
+
+  for (const t of candidates) {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: cleanHash,
+        type: t,
+      });
+      if (!error) {
+        return { ok: true, error: null };
+      }
+      lastError = error;
+    } catch (err) {
+      lastError = err;
     }
-
-    return { ok: true, error: null };
-  } catch (err) {
-    console.error('❌ verifyOtp error:', err?.message || err);
-    return { ok: false, error: err?.message || 'Onbekende fout' };
   }
+
+  const message = lastError?.message || 'Verifiëren mislukt.';
+  console.error('❌ verifyOtp error:', message);
+  return { ok: false, error: message };
 }
 
 /** Haalt de huidige sessie op (null als niet ingelogd). */
