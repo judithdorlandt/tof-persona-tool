@@ -19,6 +19,7 @@ import Results from './components/Results.jsx';
 import TeamSelector from './components/TeamSelector.jsx';
 import Login from './components/Login.jsx';
 import AuthCallback from './components/AuthCallback.jsx';
+import AuthConfirm from './components/AuthConfirm.jsx';
 import Admin from './components/Admin.jsx';
 import StrategischKompas from './components/StrategischKompas.jsx';
 
@@ -37,6 +38,7 @@ const PAGE_TO_PATH = {
   teamselector: '/team/selector',
   login: '/login',
   authcallback: '/auth/callback',
+  authconfirm: '/auth/confirm',
   admin: '/admin',
   strategischkompas: '/strategisch-kompas',
 };
@@ -194,6 +196,9 @@ export default function App() {
           />
         );
 
+      case 'authconfirm':
+        return <AuthConfirm setPage={navigate} />;
+
       case 'admin':
         return (
           <Admin
@@ -212,7 +217,7 @@ export default function App() {
   };
 
   // Pagina's waar de Nav NIET getoond moet worden — landing en auth-flow.
-  const hideNav = page === 'landing' || page === 'login' || page === 'authcallback';
+  const hideNav = page === 'landing' || page === 'login' || page === 'authcallback' || page === 'authconfirm';
 
   return (
     <>

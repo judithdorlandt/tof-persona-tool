@@ -66,6 +66,42 @@ export async function sendMagicLink(email) {
   }
 }
 
+/**
+ * Verifieert een magic-link op basis van token_hash + type uit de URL.
+ *
+ * Dit is de "veilige variant" die NIET automatisch verbruikt wordt bij het
+ * openen van de link. Pas wanneer de gebruiker zelf op de knop klikt, roepen
+ * we deze functie aan. Daardoor verbruiken automatische e-mailscanners
+ * (Microsoft Safe Links e.d.) de token niet voortijdig.
+ */
+export async function verifyMagicLink(tokenHash, type) {
+  if (!ensureSupabase()) {
+    return { ok: false, error: 'Supabase niet beschikbaar' };
+  }
+
+  const cleanHash = String(tokenHash || '').trim();
+  if (!cleanHash) {
+    return { ok: false, error: 'Geen geldige token in de link.' };
+  }
+
+  try {
+    const { error } = await supabase.auth.verifyOtp({
+      token_hash: cleanHash,
+      type: type || 'magiclink',
+    });
+
+    if (error) {
+      console.error('❌ verifyOtp error:', error.message);
+      return { ok: false, error: error.message || 'Verifiëren mislukt.' };
+    }
+
+    return { ok: true, error: null };
+  } catch (err) {
+    console.error('❌ verifyOtp error:', err?.message || err);
+    return { ok: false, error: err?.message || 'Onbekende fout' };
+  }
+}
+
 /** Haalt de huidige sessie op (null als niet ingelogd). */
 export async function getCurrentSession() {
   if (!ensureSupabase()) return null;
