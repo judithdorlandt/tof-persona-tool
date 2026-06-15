@@ -20,7 +20,7 @@ export const WERKPLEKTYPEN = [
   {
     id: 'standaard',
     label: 'Standaard werkplekken',
-    voorbeeldplekken: ['Eenpersoonswerkplek (open/gesloten)', 'Tweepersoonswerkplek (open/gesloten)', 'Meerpersoonswerkplek open — routinematig werk'],
+    voorbeeldplekken: ['Eenpersoonswerkplek (open/gesloten)', 'Tweepersoonswerkplek (open/gesloten)', 'Meerpersoonswerkplek open'],
   },
   {
     id: 'concentratie',
