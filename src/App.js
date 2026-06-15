@@ -23,6 +23,10 @@ import AuthConfirm from './components/AuthConfirm.jsx';
 import Admin from './components/Admin.jsx';
 import StrategischKompas from './components/StrategischKompas.jsx';
 
+// EXPERIMENTEEL — werkplekbehoefteprofiel, achter een feature-flag.
+import WerkplekProfiel from './experimental/WerkplekProfiel.jsx';
+import { WERKPLEKPROFIEL_ENABLED } from './experimental/featureFlag';
+
 // Map page-keys naar URL-paths zodat we deep-links krijgen
 // en browser-back/forward natuurlijk werkt.
 const PAGE_TO_PATH = {
@@ -41,6 +45,8 @@ const PAGE_TO_PATH = {
   authconfirm: '/auth/confirm',
   admin: '/admin',
   strategischkompas: '/strategisch-kompas',
+  // EXPERIMENTEEL — alleen actief als de feature-flag aanstaat.
+  ...(WERKPLEKPROFIEL_ENABLED ? { teamwerkplekprofiel: '/team/werkplekprofiel' } : {}),
 };
 
 const PATH_TO_PAGE = Object.entries(PAGE_TO_PATH).reduce((acc, [k, v]) => {
@@ -211,6 +217,17 @@ export default function App() {
 
       case 'strategischkompas':
         return <StrategischKompas setPage={navigate} />;
+
+      case 'teamwerkplekprofiel':
+        return WERKPLEKPROFIEL_ENABLED ? (
+          <WerkplekProfiel
+            setPage={navigate}
+            teamResponses={teamResponses}
+            selectedTeam={selectedTeam}
+          />
+        ) : (
+          <Landing setPage={navigate} />
+        );
 
       default:
         return <Landing setPage={navigate} />;

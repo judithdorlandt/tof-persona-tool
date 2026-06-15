@@ -38,6 +38,10 @@ import { hasTeamLevel, LEVEL_DYNAMICS, isAdminAccess } from '../utils/access';
 import { generateTeamInsightPDF } from '../utils/teamInsightPDF';
 import { logPdfDownload } from '../supabase';
 
+// EXPERIMENTEEL — link naar het werkplekbehoefteprofiel, alleen als de flag aanstaat.
+import { WERKPLEKPROFIEL_ENABLED } from '../experimental/featureFlag';
+import WerkplekProfielInline from '../experimental/WerkplekProfielInline';
+
 const ACCENT = MODULE.insight.accent;
 
 // =========================
@@ -72,7 +76,12 @@ export const TILES = [
         buildHint: () => 'Wat vraagt dit team',
         detailTitle: 'Wat vraagt dit team van de werkplek',
         detailLead: () => '',
-        render: (aggregate) => <TeamWorkplaceNeeds aggregate={aggregate} />,
+        render: (aggregate) =>
+            WERKPLEKPROFIEL_ENABLED ? (
+                <WerkplekProfielInline aggregate={aggregate} />
+            ) : (
+                <TeamWorkplaceNeeds aggregate={aggregate} />
+            ),
     },
     {
         id: 'tension',
