@@ -34,6 +34,13 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
 
   const orgVast = String(organisatie || '').trim() || urlParams.org;
 
+  // Komt de bezoeker via een uitnodigingslink? Manager-links bevatten altijd
+  // ?org= én ?code=. Zonder link mag de bezoeker alleen demo-organisaties zien;
+  // echte organisaties (Gemeente Nijkerk, The Office Factory, …) blijven dan
+  // afgeschermd.
+  const viaLink = Boolean(urlParams.org || urlParams.code);
+  const isDemoOrg = (naam) => String(naam || '').toLowerCase().includes('demo');
+
   const [rijen, setRijen] = useState([]); // [{ organization, team, code }]
   const [laden, setLaden] = useState(true);
   const [fout, setFout] = useState('');
@@ -110,18 +117,35 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     }
   }, [rijen, urlParams.code, form.afdeling]);
 
+  // Zichtbare rijen: zonder uitnodigingslink alleen demo-organisaties tonen,
+  // zodat een vrije bezoeker geen echte organisaties kan zien of kiezen.
+  const zichtbareRijen = useMemo(
+    () => (viaLink ? rijen : rijen.filter((r) => isDemoOrg(r.organization))),
+    [rijen, viaLink]
+  );
+
   // Unieke organisaties (alleen relevant als er geen vaste organisatie is).
   const organisaties = useMemo(() => {
-    const set = new Set(rijen.map((r) => r.organization).filter(Boolean));
+    const set = new Set(zichtbareRijen.map((r) => r.organization).filter(Boolean));
     return [...set].sort((a, b) => a.localeCompare(b, 'nl'));
-  }, [rijen]);
+  }, [zichtbareRijen]);
 
   // Afdelingen binnen de gekozen organisatie.
   const afdelingen = useMemo(() => {
     const org = form.organisatie;
     if (!org) return [];
-    return rijen.filter((r) => r.organization === org);
-  }, [rijen, form.organisatie]);
+    return zichtbareRijen.filter((r) => r.organization === org);
+  }, [zichtbareRijen, form.organisatie]);
+
+  // Demo-modus (zonder link): bij één afdeling geen keuze bieden, maar de
+  // afdeling + teamcode automatisch invullen.
+  const afdelingVast = !viaLink && afdelingen.length === 1;
+
+  useEffect(() => {
+    if (!afdelingVast || form.afdeling) return;
+    const a = afdelingen[0];
+    setForm((f) => ({ ...f, afdeling: a.team, teamcode: a.code }));
+  }, [afdelingVast, afdelingen, form.afdeling]);
 
   function kiesOrganisatie(e) {
     const org = e.target.value;
@@ -288,10 +312,13 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
             ))}
           </select>
           )}
-        {/* Afdeling — dropdown uit Supabase */}
+        {/* Afdeling — dropdown uit Supabase, of vast (readonly) in demo-modus */}
         <label style={S.label}>
           Afdeling <span style={S.required}>*</span>
         </label>
+        {afdelingVast ? (
+          <input style={S.readonly} value={form.afdeling} readOnly />
+        ) : (
         <select
           style={S.input}
           value={form.afdeling}
@@ -314,6 +341,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
             </option>
           ))}
         </select>
+        )}
 
         {/* Teamcode — automatisch ingevuld */}
         <label style={S.label}>Teamcode</label>
