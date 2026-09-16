@@ -16,6 +16,18 @@ import {
     TOF_PERSONA_COLORS,
     setupTofFonts,
 } from './tofPdfBrand';
+// EXPERIMENTEEL — voorbeeldplekken ("soort plek") per werkplektype, achter de
+// feature-flag. Alleen kwalitatieve illustratie van het SOORT plek; geen aantallen.
+import { WERKPLEKTYPEN } from '../experimental/werkplekmix';
+import { WERKPLEKPROFIEL_ENABLED } from '../experimental/featureFlag';
+
+// De PDF-werkplekbehoefte gebruikt labels die exact matchen met WERKPLEKTYPEN
+// (Concentratieplekken, Standaard werkplekken, ...). Zo koppelen we per label
+// de bijbehorende voorbeeldplekken.
+const VOORBEELDPLEKKEN_BY_LABEL = WERKPLEKTYPEN.reduce((acc, t) => {
+    acc[t.label] = t.voorbeeldplekken;
+    return acc;
+}, {});
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -132,21 +144,21 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
     let y = MARGIN;
 
     y = drawAchterkantHeader({ svg, y });
-    y += 12;
+    y += 10;
     y = drawAchterkantTitle({ svg, y, mode });
-    y += 10;
+    y += 8;
     y = drawWorkplaceCompact({ svg, y, aggregate });
-    y += 12;
+    y += 8;
     y = drawDivider({ svg, y });
-    y += 10;
+    y += 8;
     // "Waar het team op leegloopt" verhuist van pagina 1 naar hier: het
     // hoort thematisch bij de werkplekbehoefte (vraag → spanning → actie)
     // en vult de voorheen lege onderhelft van pagina 2, terwijl pagina 1
     // lucht krijgt onder de team-mix.
     y = drawLeeglopers({ svg, y, insights, mode });
-    y += 12;
+    y += 8;
     y = drawDivider({ svg, y });
-    y += 10;
+    y += 8;
     drawQuickWinsCompact({ svg, y, insights });
 
     drawAchterkantFooter({ svg, mode });
@@ -540,7 +552,7 @@ function drawLeeglopers({ svg, y, insights, mode = 'team' }) {
 
     const leeglopers = buildLeeglopers(insights, mode);
 
-    let lineY = y + 18;
+    let lineY = y + 16;
     leeglopers.forEach((tekst) => {
         svg.appendChild(createCircle(MARGIN + 2, lineY - 2, 1, COLOR.rose));
 
@@ -554,7 +566,7 @@ function drawLeeglopers({ svg, y, insights, mode = 'team' }) {
             color: COLOR.text,
         }));
 
-        lineY += 11;
+        lineY += 9;
     });
 
     return lineY;
@@ -651,8 +663,8 @@ function drawWorkplaceCompact({ svg, y, aggregate }) {
     const colLeftX = MARGIN;
     const colRightX = MARGIN + colWidth + gap;
 
-    const lineHeight = 12;
-    const startY = y + 20;
+    const lineHeight = 10;
+    const startY = y + 18;
 
     const halfPoint = Math.ceil(enriched.length / 2);
     const leftItems = enriched.slice(0, halfPoint);
@@ -693,7 +705,35 @@ function drawWorkplaceCompact({ svg, y, aggregate }) {
                 svg.appendChild(createRect(x, barY, w * (item.percentage / 100), barH, accent));
             }
 
-            lineY += lineHeight;
+            let advance = lineHeight;
+
+            // EXPERIMENTEEL — kleine "soort plek"-regel onder het type, achter de
+            // flag. Volledig uitgeschreven; past het niet op één regel, dan zakt
+            // het netjes naar de volgende regel (geen afkapping).
+            const plekken = WERKPLEKPROFIEL_ENABLED
+                ? VOORBEELDPLEKKEN_BY_LABEL[item.label]
+                : null;
+            if (plekken && plekken.length > 0) {
+                const txt = plekken.slice(0, 3).join(' · ');
+                const lines = wrapText(txt, w, 3.8, 'Inter');
+                const plekLineH = 4.2;
+                lines.forEach((line, i) => {
+                    svg.appendChild(createText({
+                        x: x,
+                        y: barY + 5 + i * plekLineH,
+                        text: line,
+                        font: 'Inter',
+                        weight: 400,
+                        size: 3.8,
+                        color: COLOR.textMuted,
+                    }));
+                });
+                // Beetje lucht onder elk type-blok, zodat de voorbeeldplekken
+                // niet tegen het volgende type aan plakken (niet te ruim).
+                advance = lineHeight + lines.length * plekLineH + 2.5;
+            }
+
+            lineY += advance;
         });
         return lineY;
     }
@@ -728,7 +768,7 @@ function drawQuickWinsCompact({ svg, y, insights }) {
         reflectie: 'ZELF AAN DE SLAG',
     };
 
-    let lineY = y + 20;
+    let lineY = y + 16;
     const numberColW = 16;
     const usableW = PAGE_W - MARGIN * 2 - numberColW;
 
@@ -763,7 +803,7 @@ function drawQuickWinsCompact({ svg, y, insights }) {
         actionLines.forEach((line, i) => {
             svg.appendChild(createText({
                 x: MARGIN + numberColW,
-                y: lineY + 7 + i * 7,
+                y: lineY + 6 + i * 6.4,
                 text: line,
                 font: 'Inter',
                 weight: 400,
@@ -772,7 +812,7 @@ function drawQuickWinsCompact({ svg, y, insights }) {
             }));
         });
 
-        lineY += 7 + actionLines.length * 7 + 4;
+        lineY += 6 + actionLines.length * 6.4 + 3;
     });
 
     return lineY;

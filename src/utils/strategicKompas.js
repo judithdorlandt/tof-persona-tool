@@ -24,11 +24,33 @@
  *     ],
  *     jaarritme: [
  *       { moment, activity }
- *     ]
+ *     ],
+ *
+ *     // ── Kwalitatieve input uit Module 3 (open antwoorden, geen scores) ──
+ *     // Wordt door Judith gelezen en in het ontwerpgesprek tot weging en
+ *     // keuzes gemaakt. GEEN automatische uitslag of trend-scores.
+ *     intake: {
+ *       submittedAt,    // 'mei 2026'
+ *       filledBy,       // naam en rol invuller
+ *       teamcode,       // koppelt aan de persona-data van dezelfde organisatie
+ *       ambition,       // organisatie en ambitie
+ *       movement,       // de beweging die ze willen maken
+ *       mtBehaviour,    // MT en gedrag
+ *       workplace,      // werkomgeving
+ *       direction,      // richting 3–5 jaar
+ *     },
+ *     review: {         // na 3 maanden, zelfde idee, korter
+ *       submittedAt,
+ *       changed,        // wat is veranderd
+ *       mixShift,       // is de team-samenstelling/persona-mix verschoven
+ *       choiceLanding,  // welke keuze is nog niet gemaakt / hoe landen ze
+ *       notes,
+ *     }
  *   }
  *
- * Helper:
+ * Helpers:
  *   getStrategicKompas(organization?) → bovenstaande shape of null
+ *   EMPTY_INTAKE / EMPTY_REVIEW       → lege shape-skeletten voor de formulieren
  *
  *   Nu probeert hij eerst een match op organization-name uit DEMO_DATA.
  *   Later kan dit een Supabase-fetch worden (zie SUPABASE-block onderin).
@@ -97,6 +119,27 @@ const DEMO_TEAM_3 = {
         { moment: 'Q3', activity: 'Werkplek-evaluatie — wat heeft sociale architectuur opgeleverd?' },
         { moment: 'Q4', activity: 'Trends-update + jaaroverzicht — nieuw kompas voor volgend jaar.' },
     ],
+
+    // Kwalitatieve intake — open antwoorden, gelezen in het ontwerpgesprek.
+    intake: {
+        submittedAt: 'mei 2026',
+        filledBy: 'Demo Manager, MT-lid',
+        teamcode: 'DEMO-TEAM-3',
+        ambition: 'We willen van een uitvoerende organisatie naar een wendbare, lerende organisatie waarin teams meer eigen richting nemen.',
+        movement: 'Van sturen op aanwezigheid naar sturen op waarde en verbinding — de komende drie tot vijf jaar.',
+        mtBehaviour: 'Het MT beslist daadkrachtig, maar reflectie en het benoemen van onderliggende spanningen blijven achter.',
+        workplace: 'De huidige werkomgeving is ingericht op vaste werkplekken; ons werk vraagt om meer ruimte voor ontmoeting en samenwerking.',
+        direction: 'Over 3–5 jaar willen we kunnen zeggen dat verschillen in werkstijl een ontwerpkeuze zijn geworden, geen wrijving.',
+    },
+
+    // Vervolg na 3 maanden — korter, zelfde idee.
+    review: {
+        submittedAt: 'augustus 2026',
+        changed: 'Het MT benoemt spanningen nu vaker hardop; in de organisatie is een eerste pilot met samenwerkplekken gestart.',
+        mixShift: 'Twee nieuwe groeiers erbij, één denker vertrokken — de mix is iets beweeglijker geworden.',
+        choiceLanding: 'De keuze om op kwaliteit van samenkomst te sturen in plaats van aanwezigheid is nog niet echt gemaakt.',
+        notes: 'Behoefte aan een concreet ritme voor reflectie-momenten in het MT.',
+    },
 };
 
 // Mapping organization-name → kompas. Hardcoded voor nu.
@@ -105,6 +148,29 @@ const DEMO_INDEX = {
     'demo': DEMO_TEAM_3,
     'demo team 3': DEMO_TEAM_3,
     'the office factory': DEMO_TEAM_3,
+};
+
+// ─── SHAPE-SKELETTEN — gebruikt door de Module 3-formulieren ─────────────────
+// Eén bron van waarheid: de intake- en review-formulieren bouwen hun payload
+// op basis van deze skeletten, zodat de opgeslagen vorm exact de shape volgt.
+
+export const EMPTY_INTAKE = {
+    submittedAt: '',
+    filledBy: '',
+    teamcode: '',
+    ambition: '',
+    movement: '',
+    mtBehaviour: '',
+    workplace: '',
+    direction: '',
+};
+
+export const EMPTY_REVIEW = {
+    submittedAt: '',
+    changed: '',
+    mixShift: '',
+    choiceLanding: '',
+    notes: '',
 };
 
 // ─── PUBLIC API ──────────────────────────────────────────────────────────────

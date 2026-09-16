@@ -216,6 +216,89 @@ export async function logPdfDownload(teamId) {
 }
 
 // =========================
+// STRATEGISCH KOMPAS — Module 3 intake & review (kwalitatief)
+// =========================
+// De intake- en review-formulieren leveren open antwoorden die Judith
+// leest en in het ontwerpgesprek tot weging en keuzes maakt. GEEN
+// automatische uitslag. We bewaren de ruwe payload (exact de intake-/
+// review-shape uit utils/strategicKompas.js) gekoppeld aan de teamcode.
+//
+// Persistentie: tabel `strategic_kompas_intake` (zie
+// supabase/004_strategic_kompas_intake.sql). Lukt de insert niet — tabel
+// bestaat nog niet, of geen verbinding — dan valt het terug op localStorage
+// zodat de inzending niet verloren gaat. De gebruiker krijgt altijd een
+// bevestiging.
+
+const KOMPAS_LOCAL_KEY = 'tof_strategic_kompas_submissions';
+
+function persistKompasLocally(entry) {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return false;
+    const raw = window.localStorage.getItem(KOMPAS_LOCAL_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    list.push(entry);
+    window.localStorage.setItem(KOMPAS_LOCAL_KEY, JSON.stringify(list));
+    return true;
+  } catch (err) {
+    console.warn('⚠️ Kompas lokaal opslaan mislukt:', err?.message || err);
+    return false;
+  }
+}
+
+/**
+ * Slaat een Module 3-inzending op, gekoppeld aan de teamcode.
+ *
+ * @param {'intake'|'review'} kind  welk blok dit is
+ * @param {string} teamcode         koppelt aan de persona-data van dezelfde org
+ * @param {object} payload          exact de intake-/review-shape
+ *
+ * Returnt: { ok, persisted: 'supabase'|'local', error }
+ */
+async function saveKompasSubmission(kind, teamcode, payload) {
+  const cleanCode = String(teamcode || '').trim();
+  const submittedAt = new Date().toISOString();
+  const entry = { kind, teamcode: cleanCode, payload, submitted_at: submittedAt };
+
+  if (ensureSupabase()) {
+    try {
+      const { error } = await supabase
+        .from('strategic_kompas_intake')
+        .insert({
+          teamcode: cleanCode,
+          kind,
+          payload,
+          submitted_at: submittedAt,
+        });
+
+      if (!error) {
+        return { ok: true, persisted: 'supabase', error: null };
+      }
+      console.warn(`⚠️ Kompas ${kind} → Supabase mislukt, val terug op lokaal:`, error.message);
+    } catch (err) {
+      console.warn(`⚠️ Kompas ${kind} → Supabase error, val terug op lokaal:`, err?.message || err);
+    }
+  }
+
+  // Fallback: lokaal bewaren zodat de inzending niet verloren gaat.
+  const localOk = persistKompasLocally(entry);
+  return {
+    ok: localOk,
+    persisted: localOk ? 'local' : null,
+    error: localOk ? null : 'Opslaan mislukt.',
+  };
+}
+
+/** Slaat een ingevulde Module 3-intake op. payload volgt de intake-shape. */
+export async function saveStrategicKompasIntake(teamcode, payload) {
+  return saveKompasSubmission('intake', teamcode, payload);
+}
+
+/** Slaat een 3-maanden-review op. payload volgt de review-shape. */
+export async function saveStrategicKompasReview(teamcode, payload) {
+  return saveKompasSubmission('review', teamcode, payload);
+}
+
+// =========================
 // RESPONSES
 // =========================
 

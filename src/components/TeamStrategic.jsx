@@ -119,6 +119,36 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                 eyebrow="02 · Persona-overlay"
                 title="Wat de team-mix vraagt over drie tot vijf jaar."
             >
+                {/* Eigen ambitie uit de intake — zodat de richting van de
+                    organisatie zichtbaar staat naast de trend- en persona-analyse.
+                    Alleen tonen als er een intake is ingevuld. */}
+                {kompas.intake?.ambition ? (
+                    <div style={{
+                        background: 'var(--tof-surface)',
+                        border: '1px solid var(--tof-border)',
+                        borderLeft: `3px solid ${ACCENT}`,
+                        borderRadius: 12,
+                        padding: '14px 16px',
+                    }}>
+                        <div style={{
+                            ...TYPE.eyebrow,
+                            color: 'var(--tof-text-muted)',
+                            fontSize: 10,
+                            marginBottom: 6,
+                        }}>
+                            Eigen ambitie · uit de intake
+                        </div>
+                        <p style={{
+                            ...TYPE.body,
+                            margin: 0,
+                            color: 'var(--tof-text)',
+                            fontSize: 14,
+                            lineHeight: 1.6,
+                        }}>
+                            {kompas.intake.ambition}
+                        </p>
+                    </div>
+                ) : null}
                 <div style={{
                     background: SOFT,
                     border: `1px solid ${ACCENT}30`,

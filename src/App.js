@@ -10,7 +10,6 @@ import Nav from './components/Nav.jsx';
 import Home from './components/Home.jsx';
 import Intro from './components/Intro.jsx';
 import Library from './components/Library.jsx';
-import Quiz from './components/Quiz.jsx';
 import TeamIntro from './components/TeamIntro.jsx';
 import TeamDashboard from './components/TeamDashboard.jsx';
 import TeamDynamics from './components/TeamDynamics.jsx';
@@ -22,10 +21,15 @@ import AuthCallback from './components/AuthCallback.jsx';
 import AuthConfirm from './components/AuthConfirm.jsx';
 import Admin from './components/Admin.jsx';
 import StrategischKompas from './components/StrategischKompas.jsx';
+import StrategischKompasIntake from './components/StrategischKompasIntake.jsx';
+import StrategischKompasReview from './components/StrategischKompasReview.jsx';
 
 // EXPERIMENTEEL — werkplekbehoefteprofiel, achter een feature-flag.
 import WerkplekProfiel from './experimental/WerkplekProfiel.jsx';
-import { WERKPLEKPROFIEL_ENABLED } from './experimental/featureFlag';
+import { WERKPLEKPROFIEL_ENABLED, QUIZTEST_ENABLED } from './experimental/featureFlag';
+
+// EXPERIMENTEEL — verkorte testvariant van de vragenlijst, achter een flag.
+import QuizTest from './experimental/quizTest/QuizTest.jsx';
 
 // Map page-keys naar URL-paths zodat we deep-links krijgen
 // en browser-back/forward natuurlijk werkt.
@@ -45,8 +49,11 @@ const PAGE_TO_PATH = {
   authconfirm: '/auth/confirm',
   admin: '/admin',
   strategischkompas: '/strategisch-kompas',
+  strategischkompasintake: '/strategisch-kompas/intake',
+  strategischkompasreview: '/strategisch-kompas/review',
   // EXPERIMENTEEL — alleen actief als de feature-flag aanstaat.
   ...(WERKPLEKPROFIEL_ENABLED ? { teamwerkplekprofiel: '/team/werkplekprofiel' } : {}),
+  ...(QUIZTEST_ENABLED ? { quiztest: '/quiz-test' } : {}),
 };
 
 const PATH_TO_PAGE = Object.entries(PAGE_TO_PATH).reduce((acc, [k, v]) => {
@@ -132,12 +139,10 @@ export default function App() {
         return <Library />;
 
       case 'quiz':
-        return (
-          <Quiz
-            setPage={navigate}
-            setResultData={setResultData}
-          />
-        );
+        // De verkorte quiz (voorheen "QuizTest") is nu de echte vragenlijst.
+        // Hij slaat zelf op in Supabase en toont het profiel intern, dus
+        // setResultData is hier niet meer nodig.
+        return <QuizTest setPage={navigate} />;
 
       case 'results':
         return resultData ? (
@@ -217,6 +222,19 @@ export default function App() {
 
       case 'strategischkompas':
         return <StrategischKompas setPage={navigate} />;
+
+      case 'strategischkompasintake':
+        return <StrategischKompasIntake setPage={navigate} />;
+
+      case 'strategischkompasreview':
+        return <StrategischKompasReview setPage={navigate} />;
+
+      case 'quiztest':
+        return QUIZTEST_ENABLED ? (
+          <QuizTest setPage={navigate} />
+        ) : (
+          <Landing setPage={navigate} />
+        );
 
       case 'teamwerkplekprofiel':
         return WERKPLEKPROFIEL_ENABLED ? (
