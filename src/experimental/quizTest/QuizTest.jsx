@@ -382,10 +382,11 @@ export default function QuizTest({ setPage }) {
         savedRef.current = true;
         setSaveError('');
         (async () => {
-            const saved = await saveResponse(scherpResult);
-            if (!saved) {
+            try {
+                await saveResponse(scherpResult);
+            } catch (err) {
                 savedRef.current = false; // mislukt → volgende render mag opnieuw
-                setSaveError('Je resultaat kon niet worden opgeslagen. Ververs de pagina om het opnieuw te proberen.');
+                setSaveError(err?.message || 'Je resultaat kon niet worden opgeslagen. Ververs de pagina om het opnieuw te proberen.');
             }
         })();
     }, [phase, scherpResult]);

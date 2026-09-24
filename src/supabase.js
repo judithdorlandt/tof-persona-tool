@@ -7,11 +7,24 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-console.log('SUPABASE URL:', supabaseUrl);
-console.log('SUPABASE KEY:', supabaseAnonKey ? '✅ loaded' : '❌ missing');
-
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('❌ Supabase env vars ontbreken');
+}
+
+// Vertaalt de drie fouten die je hier realistisch tegenkomt naar iets
+// leesbaars. Voorkomt "stil falen": de aanroeper toont deze tekst.
+function describeError(err) {
+  const msg = String(err?.message || err || '').toLowerCase();
+  if (msg.includes('schema') && (msg.includes('not') || msg.includes('exist'))) {
+    return 'De database is even niet bereikbaar (schema). Probeer het zo opnieuw.';
+  }
+  if (msg.includes('permission') || msg.includes('denied') || msg.includes('row-level') || msg.includes('policy')) {
+    return 'Je resultaat kon niet worden opgeslagen (geen rechten). Neem contact op als dit blijft.';
+  }
+  if (msg.includes('column') || msg.includes('does not exist')) {
+    return 'Er ging iets mis bij het opslaan (veld ontbreekt). Neem contact op als dit blijft.';
+  }
+  return 'Je resultaat kon niet worden opgeslagen. Ververs de pagina om het opnieuw te proberen.';
 }
 
 export const supabase =
@@ -334,7 +347,7 @@ export async function saveResponse(profile) {
     return data;
   } catch (err) {
     console.error('❌ Response error:', err?.message || err);
-    return null;
+    throw new Error(describeError(err));
   }
 }
 
@@ -365,7 +378,7 @@ export async function saveFeedback(feedback) {
     return data;
   } catch (err) {
     console.error('❌ Feedback error:', err?.message || err);
-    return null;
+    throw new Error(describeError(err));
   }
 }
 
