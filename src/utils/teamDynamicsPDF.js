@@ -62,6 +62,13 @@ const PERSONA_COLORS = TOF_PERSONA_COLORS;
 // Alle zichtbare tekst staat hier; de teken-functies hardcoden niets.
 // Font-subsets missen >= en <=; gebruik die glyphs nooit. · – — é mogen wel.
 // Geen cursief voor niet-Latin1-tekst: er is geen Inter-italic gebundeld.
+
+// De PDF tekent hoogstens zes acties (slice(0, 6)), dus 1..6 volstaat.
+const ACTION_COUNT_WORDS = {
+    nl: ['EÉN', 'TWEE', 'DRIE', 'VIER', 'VIJF', 'ZES'],
+    en: ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'],
+};
+
 const DYNAMICS_COPY = {
     nl: {
         fileSuffix: 'teamdynamics',
@@ -87,7 +94,10 @@ const DYNAMICS_COPY = {
         backTitle: 'Waar regie helpt en wat te doen',
         adviceEyebrow: 'PER SPANNING — WAT VRAAGT REGIE',
         adviceEmpty: 'Geen actieve spanningen om regie op te voeren.',
-        actionsEyebrow: 'ZES ACTIES VOOR LEIDERSCHAP',
+        actionsEyebrow: (n) =>
+            n > 0
+                ? `${ACTION_COUNT_WORDS.nl[n - 1] || n} ${n === 1 ? 'ACTIE' : 'ACTIES'} VOOR LEIDERSCHAP`
+                : 'ACTIES VOOR LEIDERSCHAP',
         actionsEmpty: 'Nog geen acties beschikbaar.',
         // Keys zijn logica-ids uit TeamDynamics.jsx — niet vertalen, alleen de
         // waarden. Een onbekende source valt terug op `sourceFallback`.
@@ -124,7 +134,10 @@ const DYNAMICS_COPY = {
         backTitle: 'Where direction helps and what to do',
         adviceEyebrow: 'PER TENSION — WHAT NEEDS DIRECTION',
         adviceEmpty: 'No active tensions to give direction to.',
-        actionsEyebrow: 'SIX ACTIONS FOR LEADERSHIP',
+        actionsEyebrow: (n) =>
+            n > 0
+                ? `${ACTION_COUNT_WORDS.en[n - 1] || n} ${n === 1 ? 'ACTION' : 'ACTIONS'} FOR LEADERSHIP`
+                : 'ACTIONS FOR LEADERSHIP',
         actionsEmpty: 'No actions available yet.',
         sourceLabels: {
             dynamics: 'FROM THE DYNAMICS',
@@ -705,10 +718,13 @@ function drawTensionAdvice({ svg, y, tensions, c }) {
 }
 
 function drawLeadershipActions({ svg, y, leadershipWins, c }) {
+    // Tel wat er straks écht getekend wordt, niet wat er aangeleverd is.
+    const shown = Math.min(leadershipWins?.length || 0, 6);
+
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 8,
-        text: c.actionsEyebrow,
+        text: c.actionsEyebrow(shown),
         font: 'Inter',
         weight: 700,
         size: 4.8,
