@@ -48,8 +48,12 @@ function ensureSupabase() {
  * Stuurt een magic-link mail naar het opgegeven e-mailadres.
  * De gebruiker klikt de link en komt terug op /auth/callback waar
  * de Supabase SDK automatisch de session aanmaakt.
+ *
+ * `metadata` wordt als user_metadata meegestuurd. Let op: Supabase zet dat
+ * alleen bij het AANMAKEN van een nieuwe gebruiker — bestaande accounts
+ * behouden hun huidige metadata.
  */
-export async function sendMagicLink(email) {
+export async function sendMagicLink(email, metadata = null) {
   if (!ensureSupabase()) {
     return { ok: false, error: 'Supabase niet beschikbaar' };
   }
@@ -64,6 +68,7 @@ export async function sendMagicLink(email) {
       email: cleanEmail,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        ...(metadata ? { data: metadata } : {}),
       },
     });
 

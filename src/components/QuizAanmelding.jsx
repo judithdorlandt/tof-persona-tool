@@ -137,6 +137,16 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     return zichtbareRijen.filter((r) => r.organization === org);
   }, [zichtbareRijen, form.organisatie]);
 
+  // Demo-modus (zonder link): is er maar één zichtbare organisatie, dan valt
+  // er niets te kiezen — meteen invullen in plaats van een dropdown met één
+  // optie tonen.
+  const organisatieVast = !viaLink && !orgVast && organisaties.length === 1;
+
+  useEffect(() => {
+    if (!organisatieVast || form.organisatie) return;
+    setForm((f) => ({ ...f, organisatie: organisaties[0] }));
+  }, [organisatieVast, organisaties, form.organisatie]);
+
   // Demo-modus (zonder link): bij één afdeling geen keuze bieden, maar de
   // afdeling + teamcode automatisch invullen.
   const afdelingVast = !viaLink && afdelingen.length === 1;
@@ -146,6 +156,11 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     const a = afdelingen[0];
     setForm((f) => ({ ...f, afdeling: a.team, teamcode: a.code }));
   }, [afdelingVast, afdelingen, form.afdeling]);
+
+  // Solo-modus: iemand test de tool voor zichzelf, zonder uitnodigingslink.
+  // Organisatie, afdeling en teamcode staan dan vast — dat is administratie,
+  // geen keuze. Die velden verbergen we; alleen "wie ben jij" blijft over.
+  const soloModus = organisatieVast && afdelingVast;
 
   function kiesOrganisatie(e) {
     const org = e.target.value;
@@ -286,89 +301,102 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     <div className="fade-up" style={S.page}>
       <form onSubmit={verstuur} style={S.card}>
         <div style={S.eyebrow}>Test jezelf — aanmelden</div>
-        <h1 style={S.title}>Kies je team</h1>
+        <h1 style={S.title}>{soloModus ? 'Even over jou' : 'Kies je team'}</h1>
 
-        {/* Organisatie — dropdown, met voorgeselecteerde waarde via ?org= parameter */}
-        <label style={S.label}>
-          Organisatie <span style={S.required}>*</span>
-        </label>
-          {orgVast ? (
-            <input style={S.readonly} value={orgVast} readOnly />
-          ) : (
-          <select
-            style={S.input}
-            value={form.organisatie}
-            onChange={kiesOrganisatie}
-            required
-            disabled={laden}
-          >
-            <option value="" disabled>
-              {laden ? 'Organisaties laden…' : 'Kies je organisatie…'}
-            </option>
-            {organisaties.map((org) => (
-              <option key={org} value={org}>
-                {org}
-              </option>
-            ))}
-          </select>
-          )}
-        {/* Afdeling — dropdown uit Supabase, of vast (readonly) in demo-modus */}
-        <label style={S.label}>
-          Afdeling <span style={S.required}>*</span>
-        </label>
-        {afdelingVast ? (
-          <input style={S.readonly} value={form.afdeling} readOnly />
+        {soloModus ? (
+          <p style={{ ...S.hint, marginTop: 0 }}>
+            Je doet de test voor jezelf. Twee vragen vooraf, dan ga je van start.
+          </p>
         ) : (
-        <select
-          style={S.input}
-          value={form.afdeling}
-          onChange={kiesAfdeling}
-          required
-          disabled={laden || !form.organisatie}
-        >
-          <option value="" disabled>
-            {laden
-              ? 'Afdelingen laden…'
-              : !form.organisatie
-              ? 'Kies eerst een organisatie…'
-              : afdelingen.length === 0
-              ? 'Geen teams gevonden'
-              : 'Kies je afdeling…'}
-          </option>
-          {afdelingen.map((a) => (
-            <option key={a.code} value={a.team}>
-              {a.team}
-            </option>
-          ))}
-        </select>
-        )}
+          <>
+            {/* Organisatie — dropdown, met voorgeselecteerde waarde via ?org= parameter */}
+            <label style={S.label}>
+              Organisatie <span style={S.required}>*</span>
+            </label>
+            {orgVast ? (
+              <input style={S.readonly} value={orgVast} readOnly />
+            ) : (
+              <select
+                style={S.input}
+                value={form.organisatie}
+                onChange={kiesOrganisatie}
+                required
+                disabled={laden}
+              >
+                <option value="" disabled>
+                  {laden ? 'Organisaties laden…' : 'Kies je organisatie…'}
+                </option>
+                {organisaties.map((org) => (
+                  <option key={org} value={org}>
+                    {org}
+                  </option>
+                ))}
+              </select>
+            )}
 
-        {/* Teamcode — automatisch ingevuld */}
-        <label style={S.label}>Teamcode</label>
-        <input
-          style={S.readonly}
-          value={form.teamcode}
-          placeholder="Verschijnt na keuze afdeling"
-          readOnly
-        />
-        <p style={S.hint}>Wordt automatisch ingevuld zodra je een afdeling kiest.</p>
+            {/* Afdeling — dropdown uit Supabase, of vast (readonly) in demo-modus */}
+            <label style={S.label}>
+              Afdeling <span style={S.required}>*</span>
+            </label>
+            {afdelingVast ? (
+              <input style={S.readonly} value={form.afdeling} readOnly />
+            ) : (
+              <select
+                style={S.input}
+                value={form.afdeling}
+                onChange={kiesAfdeling}
+                required
+                disabled={laden || !form.organisatie}
+              >
+                <option value="" disabled>
+                  {laden
+                    ? 'Afdelingen laden…'
+                    : !form.organisatie
+                    ? 'Kies eerst een organisatie…'
+                    : afdelingen.length === 0
+                    ? 'Geen teams gevonden'
+                    : 'Kies je afdeling…'}
+                </option>
+                {afdelingen.map((a) => (
+                  <option key={a.code} value={a.team}>
+                    {a.team}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Teamcode — automatisch ingevuld */}
+            <label style={S.label}>Teamcode</label>
+            <input
+              style={S.readonly}
+              value={form.teamcode}
+              placeholder="Verschijnt na keuze afdeling"
+              readOnly
+            />
+            <p style={S.hint}>Wordt automatisch ingevuld zodra je een afdeling kiest.</p>
+          </>
+        )}
 
         {/* Optionele velden */}
         <label style={S.label}>
           Voornaam <span style={S.optional}>(optioneel)</span>
         </label>
         <input style={S.input} value={form.voornaam} onChange={wijzig('voornaam')} placeholder="Hoe heet je?" />
-        <p style={S.hint}>Leuk voor je persoonlijke persona als je je naam invult!</p>        
+        <p style={S.hint}>Leuk voor je persoonlijke persona als je je naam invult!</p>
 
-        <label style={S.label}>
-          Team <span style={S.optional}>(optioneel)</span>
-        </label>
-        <input
-          style={S.input}
-          value={form.team}
-          onChange={wijzig('team')}
-          placeholder="Laat leeg als je afdeling één team is"
-        />
+        {!soloModus && (
+          <>
+            <label style={S.label}>
+              Team <span style={S.optional}>(optioneel)</span>
+            </label>
+            <input
+              style={S.input}
+              value={form.team}
+              onChange={wijzig('team')}
+              placeholder="Laat leeg als je afdeling één team is"
+            />
+          </>
+        )}
 
         <label style={S.label}>
           Meer over jezelf <span style={S.optional}>(optioneel)</span>

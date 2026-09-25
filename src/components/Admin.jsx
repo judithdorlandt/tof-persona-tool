@@ -451,6 +451,9 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                     />
                 )}
 
+                {/* Individuele tester uitnodigen — los van teams */}
+                <InviteTesterCard isMobile={isMobile} />
+
                 {/* Organisaties — klik om in te duiken */}
                 <OrganizationsList
                     isMobile={isMobile}
@@ -861,6 +864,249 @@ The Office Factory
                         <PrimaryButton onClick={handleCopy}>
                             {copied ? '✓ Gekopieerd' : 'Kopieer mail-tekst'}
                         </PrimaryButton>
+                    </div>
+                </div>
+            </details>
+        </div>
+    );
+}
+
+// ─── SUB: Individuele tester uitnodigen ────────────────────────────────────
+// Voor "kom de tool zelf even proberen"-uitnodigingen: geen team, geen code,
+// alleen een persoonlijke inlog. De uitgenodigde krijgt een account met
+// user_metadata.invite_kind = 'individual', waardoor AuthCallback hem na het
+// inloggen direct de quiz in stuurt.
+
+const TESTER_LOGIN_URL = 'https://tof-persona-tool.netlify.app/login?tester=1';
+const INVITE_COOLDOWN_SECONDS = 60;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function buildTesterMail(name, email) {
+    const greeting = name.trim() ? name.trim() : 'jij';
+    return `Beste ${greeting},
+
+Ik laat je graag zelf ervaren waar onze persona-tool over gaat. Je bent er een kwartiertje mee bezig.
+
+ZO WERKT HET
+1. Open deze link: ${TESTER_LOGIN_URL}
+2. Vul je e-mailadres in (${email || 'je eigen adres'}) — je krijgt meteen een inloglink in je mailbox
+3. Klik die link aan en je staat direct in de vragenlijst
+4. Na negen vragen zie je je eigen persona
+
+Geen wachtwoord nodig. Je antwoorden blijven van jou.
+
+Benieuwd naar wat dit voor een heel team laat zien? Bel of mail gerust.
+
+Hartelijke groet,
+Judith
+The Office Factory
++31 6 8389 4556 · judith@tof.services`;
+}
+
+function InviteTesterCard({ isMobile }) {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+    const [message, setMessage] = useState('');
+    const [cooldown, setCooldown] = useState(0);
+    const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        if (cooldown <= 0) return undefined;
+        const timer = setTimeout(() => setCooldown((c) => c - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [cooldown]);
+
+    const cleanEmail = email.trim().toLowerCase();
+    const mailBody = buildTesterMail(name, cleanEmail);
+
+    async function handleSend() {
+        if (!EMAIL_PATTERN.test(cleanEmail)) {
+            setStatus('error');
+            setMessage('Vul een geldig e-mailadres in.');
+            return;
+        }
+
+        setStatus('sending');
+        setMessage('');
+
+        const result = await sendMagicLink(cleanEmail, {
+            invite_kind: 'individual',
+            full_name: name.trim() || null,
+        });
+
+        if (result.ok) {
+            setStatus('sent');
+            setMessage(`Inlogmail verstuurd naar ${cleanEmail}. De link is één uur geldig.`);
+            setCooldown(INVITE_COOLDOWN_SECONDS);
+        } else {
+            setStatus('error');
+            setMessage(result.error || 'Versturen mislukt. Gebruik de mailtekst hieronder.');
+        }
+    }
+
+    function handleCopyMail() {
+        navigator.clipboard.writeText(mailBody).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    }
+
+    const sending = status === 'sending';
+    const disabled = sending || cooldown > 0;
+
+    let buttonLabel = 'Stuur inlogmail';
+    if (sending) buttonLabel = 'Bezig…';
+    else if (cooldown > 0) buttonLabel = `Opnieuw over ${cooldown}s`;
+
+    const inputStyle = {
+        width: '100%',
+        padding: '11px 14px',
+        border: '1px solid var(--tof-border)',
+        borderRadius: 10,
+        background: 'var(--tof-bg)',
+        fontSize: 14,
+        fontFamily: 'inherit',
+        color: 'var(--tof-text)',
+        boxSizing: 'border-box',
+        outline: 'none',
+    };
+    const labelStyle = {
+        display: 'block',
+        fontSize: 11,
+        textTransform: 'uppercase',
+        letterSpacing: 1.2,
+        fontWeight: 700,
+        color: 'var(--tof-text-muted)',
+        marginBottom: 6,
+    };
+
+    return (
+        <div style={{
+            background: 'var(--tof-surface)',
+            border: '1px solid var(--tof-border)',
+            borderRadius: 14,
+            padding: isMobile ? '20px 22px' : '24px 28px',
+            display: 'grid',
+            gap: 16,
+        }}>
+            <div>
+                <div style={{
+                    fontSize: 11,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1.4,
+                    fontWeight: 700,
+                    color: 'var(--tof-accent-rose)',
+                    marginBottom: 6,
+                }}>
+                    Individuele tester uitnodigen
+                </div>
+                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tof-text-soft)', maxWidth: 620 }}>
+                    Geen team, geen code — alleen een persoonlijke inlog. Na het klikken op de
+                    link in de mail komt de ontvanger direct in de vragenlijst en ziet daarna
+                    zijn eigen persona.
+                </p>
+            </div>
+
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                gap: 14,
+            }}>
+                <div>
+                    <label style={labelStyle}>Voornaam (optioneel)</label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Bv. Maarten"
+                        style={inputStyle}
+                    />
+                </div>
+                <div>
+                    <label style={labelStyle}>E-mail</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (status !== 'idle') {
+                                setStatus('idle');
+                                setMessage('');
+                            }
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !disabled) handleSend();
+                        }}
+                        placeholder="naam@organisatie.nl"
+                        style={inputStyle}
+                    />
+                </div>
+            </div>
+
+            {message && (
+                <div style={{
+                    background: status === 'error'
+                        ? 'rgba(176,82,82,0.08)'
+                        : 'rgba(110,136,114,0.12)',
+                    border: `1px solid ${status === 'error' ? 'rgba(176,82,82,0.24)' : 'transparent'}`,
+                    borderRadius: 8,
+                    padding: '10px 14px',
+                    fontSize: 13,
+                    color: status === 'error' ? 'var(--tof-accent-rose)' : 'var(--tof-text)',
+                }}>
+                    {message}
+                </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <PrimaryButton type="button" onClick={handleSend} disabled={disabled}>
+                    {buttonLabel}
+                </PrimaryButton>
+                <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>
+                    Lukt versturen niet? Mail de tekst hieronder zelf.
+                </span>
+            </div>
+
+            <details>
+                <summary style={{
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'var(--tof-accent-rose)',
+                    listStyle: 'none',
+                }}>
+                    Mailtekst en link zelf versturen ↓
+                </summary>
+                <div style={{ marginTop: 14, display: 'grid', gap: 10 }}>
+                    <textarea
+                        value={mailBody}
+                        readOnly
+                        rows={isMobile ? 12 : 16}
+                        style={{
+                            width: '100%',
+                            padding: 14,
+                            fontFamily: 'inherit',
+                            fontSize: 13,
+                            lineHeight: 1.5,
+                            border: '1px solid var(--tof-border)',
+                            borderRadius: 8,
+                            background: 'var(--tof-bg)',
+                            color: 'var(--tof-text)',
+                            resize: 'vertical',
+                            boxSizing: 'border-box',
+                        }}
+                    />
+                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                        <PrimaryButton type="button" onClick={handleCopyMail}>
+                            {copied ? '✓ Gekopieerd' : 'Kopieer mailtekst'}
+                        </PrimaryButton>
+                        <SecondaryButton
+                            type="button"
+                            onClick={() => navigator.clipboard.writeText(TESTER_LOGIN_URL)}
+                        >
+                            Kopieer alleen de link
+                        </SecondaryButton>
                     </div>
                 </div>
             </details>

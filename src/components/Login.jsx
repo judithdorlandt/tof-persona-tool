@@ -16,6 +16,10 @@ import { TYPE, SPACING, RADIUS, useIsMobile } from '../ui/tokens';
  */
 export default function Login({ setPage }) {
   const isMobile = useIsMobile();
+  // ?tester=1 komt uit een persoonlijke uitnodiging om de tool zelf te
+  // proberen. Nieuwe accounts krijgen dan invite_kind 'individual', zodat
+  // AuthCallback ze na het inloggen direct de quiz in stuurt.
+  const isTesterInvite = new URLSearchParams(window.location.search).get('tester') === '1';
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'error'
   const [errorMessage, setErrorMessage] = useState('');
@@ -32,7 +36,10 @@ export default function Login({ setPage }) {
     }
 
     setStatus('sending');
-    const { ok, error } = await sendMagicLink(cleanEmail);
+    const { ok, error } = await sendMagicLink(
+      cleanEmail,
+      isTesterInvite ? { invite_kind: 'individual' } : null
+    );
 
     if (!ok) {
       setErrorMessage(error || 'Er ging iets mis. Probeer het opnieuw.');
@@ -78,8 +85,8 @@ export default function Login({ setPage }) {
   return (
     <PageShell>
       <HeroBlock
-        eyebrow="INLOGGEN"
-        title="Welkom terug."
+        eyebrow={isTesterInvite ? 'FIJN DAT JE ER BENT' : 'INLOGGEN'}
+        title={isTesterInvite ? 'Even zelf ervaren.' : 'Welkom terug.'}
         lead="Vul je e-mailadres in. We sturen je een link om met één klik in te loggen — geen wachtwoord nodig."
       />
 

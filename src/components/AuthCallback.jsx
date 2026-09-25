@@ -31,6 +31,7 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
   }, []);
 
   // Zodra een sessie verschijnt: bepaal waar we heen gaan.
+  // - individuele tester    → direct naar de quiz (zie sendIndividualInvite)
   // - 1 manager-team        → direct naar dashboard (skip /team helemaal)
   // - meerdere manager-teams → /team (manager-mode lijst)
   // - geen manager-rijen    → /home
@@ -39,6 +40,13 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
     let cancelled = false;
     (async () => {
       try {
+        // Uitgenodigd om de tool zelf te proberen: die heeft geen team,
+        // dus stuur hem meteen de quiz in in plaats van naar /home.
+        if (session.user?.user_metadata?.invite_kind === 'individual') {
+          setTimeout(() => { if (!cancelled) setPage('quiz'); }, 200);
+          return;
+        }
+
         const managed = await getMyManagedTeams();
 
         if (managed.length === 1) {
