@@ -1,4 +1,4 @@
-import { ARCHETYPES } from '../data';
+import { getArchetypes } from '../i18n/archetypes';
 
 export const WORKPLACE_KEYS = [
     'focus',
@@ -41,11 +41,12 @@ export const WORKPLACE_COLORS = {
 // persona nooit tegelijk dominant in energie én ontbrekend kan zijn.
 export const MISSING_ENERGY_THRESHOLD_PCT = 5;
 
-export function getArchetype(id) {
-    return ARCHETYPES.find((a) => a.id === id) || null;
+export function getArchetype(id, lang = 'nl') {
+    return getArchetypes(lang).find((a) => a.id === id) || null;
 }
 
-export function buildTeamAggregate(teamResponses = []) {
+export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
+    const ARCHETYPES = getArchetypes(lang);
     const safeResponses = Array.isArray(teamResponses) ? teamResponses : [];
 
     const personaCounts = {};        // Aantal mensen met deze persona als primair
@@ -115,7 +116,7 @@ export function buildTeamAggregate(teamResponses = []) {
         // ── workplaceTotals: gewogen door volledige profiel ────
         if (hasFullScores) {
             Object.entries(fullScores).forEach(([id, value]) => {
-                const archetype = getArchetype(id);
+                const archetype = getArchetype(id, lang);
                 const bricksProfile = archetype?.bricksProfile || {};
                 const numericValue = Number(value || 0);
 
@@ -132,7 +133,7 @@ export function buildTeamAggregate(teamResponses = []) {
 
             weightedPersonas.forEach(({ id, weight }) => {
                 if (!id) return;
-                const archetype = getArchetype(id);
+                const archetype = getArchetype(id, lang);
                 const bricksProfile = archetype?.bricksProfile || {};
 
                 WORKPLACE_KEYS.forEach((key) => {
@@ -268,7 +269,7 @@ export function buildTeamAggregate(teamResponses = []) {
 
     const sortedScores = Object.entries(totalScores)
         .map(([id, value]) => {
-            const archetype = getArchetype(id);
+            const archetype = getArchetype(id, lang);
             return {
                 id,
                 name: archetype?.name || id,

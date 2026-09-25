@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
-import { ARCHETYPES, QUESTIONS } from '../data';
+import { ARCHETYPE_ORDER, QUESTIONS } from '../data';
+import { useArchetypes } from '../i18n/archetypes';
 import { saveResponse } from '../supabase';
 import QuizAanmelding from './QuizAanmelding.jsx';
 import styles from './Quiz.module.css';
@@ -51,10 +52,12 @@ function shuffleArray(array) {
 }
 
 function createEmptyScores() {
-    return Object.fromEntries(ARCHETYPES.map((archetype) => [archetype.id, 0]));
+    return Object.fromEntries(ARCHETYPE_ORDER.map((id) => [id, 0]));
 }
 
 export default function Quiz({ setPage, setResultData }) {
+    const ARCHETYPES = useArchetypes();
+
     // Bij eerste mount restoren uit localStorage als er progress is.
     const restored = useMemo(() => readProgress(), []);
 
@@ -112,7 +115,7 @@ export default function Quiz({ setPage, setResultData }) {
 
         const optionObjects = currentQuestion.a.map((answerText, index) => ({
             text: answerText,
-            archetypeId: ARCHETYPES[index]?.id,
+            archetypeId: ARCHETYPE_ORDER[index],
             originalIndex: index,
         }));
 

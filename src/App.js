@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
 
 import { useAuth } from './auth/AuthContext';
+import { useLang } from './i18n/LanguageContext';
+import { pagePath, resolvePath } from './i18n/routes';
 import { signOut, getMyManagedTeams } from './supabase';
 
 import Landing from './components/Landing.jsx';
@@ -31,52 +33,15 @@ import { WERKPLEKPROFIEL_ENABLED, QUIZTEST_ENABLED } from './experimental/featur
 // EXPERIMENTEEL — verkorte testvariant van de vragenlijst, achter een flag.
 import QuizTest from './experimental/quizTest/QuizTest.jsx';
 
-// Map page-keys naar URL-paths zodat we deep-links krijgen
-// en browser-back/forward natuurlijk werkt.
-const PAGE_TO_PATH = {
-  landing: '/',
-  home: '/home',
-  intro: '/intro',
-  library: '/library',
-  quiz: '/quiz',
-  results: '/results',
-  team: '/team',
-  teamdashboard: '/team/dashboard',
-  teamdynamics: '/team/dynamics',
-  teamselector: '/team/selector',
-  login: '/login',
-  // Persoonlijke uitnodiging om de tool zelf te proberen (zie Admin).
-  testerlogin: '/start',
-  authcallback: '/auth/callback',
-  authconfirm: '/auth/confirm',
-  admin: '/admin',
-  strategischkompas: '/strategisch-kompas',
-  strategischkompasintake: '/strategisch-kompas/intake',
-  strategischkompasreview: '/strategisch-kompas/review',
-  // EXPERIMENTEEL — alleen actief als de feature-flag aanstaat.
-  ...(WERKPLEKPROFIEL_ENABLED ? { teamwerkplekprofiel: '/team/werkplekprofiel' } : {}),
-  ...(QUIZTEST_ENABLED ? { quiztest: '/quiz-test' } : {}),
-};
-
-const PATH_TO_PAGE = Object.entries(PAGE_TO_PATH).reduce((acc, [k, v]) => {
-  acc[v] = k;
-  return acc;
-}, {});
-
-function pathToPage(pathname) {
-  if (PATH_TO_PAGE[pathname]) return PATH_TO_PAGE[pathname];
-  // Normaliseer: dubbele slashes inklappen (bv. //auth/confirm door een
-  // SiteURL met trailing slash in de Supabase-template) en trailing slash weg.
-  const normalized = pathname.replace(/\/{2,}/g, '/').replace(/\/+$/, '') || '/';
-  return PATH_TO_PAGE[normalized] || 'landing';
-}
-
 export default function App() {
   const location = useLocation();
   const routerNavigate = useNavigate();
   const { user } = useAuth();
+  const { lang } = useLang();
 
-  const page = pathToPage(location.pathname);
+  // Page-key + taal komen uit de URL (zie src/i18n/routes.js), zodat
+  // deep-links en browser-back/forward in beide talen blijven werken.
+  const { page } = resolvePath(location.pathname);
 
   const [resultData, setResultData] = useState(null);
   const [teamResponses, setTeamResponses] = useState([]);
@@ -107,17 +72,17 @@ export default function App() {
     // account kunt inloggen — handig voor managers die wisselen
     // tussen team-accounts, of voor admins die als manager willen
     // testen.
-    routerNavigate('/login');
-  }, [routerNavigate]);
+    routerNavigate(pagePath('login', lang));
+  }, [routerNavigate, lang]);
 
   // Drop-in compatible setPage(target) — vervangt useState-versie
-  // door router-navigatie. Bestaande componenten hoeven niets te weten.
+  // door router-navigatie. Bestaande componenten hoeven niets te weten:
+  // de taal van de huidige URL blijft automatisch behouden.
   const navigate = useCallback(
     (target) => {
-      const path = PAGE_TO_PATH[target] || '/';
-      routerNavigate(path);
+      routerNavigate(pagePath(target, lang));
     },
-    [routerNavigate]
+    [routerNavigate, lang]
   );
 
   // Scroll naar boven bij route-wissel — premium gevoel,

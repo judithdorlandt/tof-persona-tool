@@ -1,0 +1,56 @@
+const auth = {
+  login: {
+    eyebrow: 'INLOGGEN',
+    title: 'Welkom terug.',
+    testerEyebrow: 'FIJN DAT JE ER BENT',
+    testerTitle: 'Even zelf ervaren.',
+    lead: 'Vul je e-mailadres in. We sturen je een link om met één klik in te loggen — geen wachtwoord nodig.',
+    emailLabel: 'E-MAILADRES',
+    emailPlaceholder: 'naam@bedrijf.nl',
+    submit: 'Stuur magic-link →',
+    submitting: 'Bezig met versturen…',
+    cancel: 'Annuleren',
+    genericError: 'Er ging iets mis. Probeer het opnieuw.',
+  },
+  sent: {
+    eyebrow: 'CHECK JE INBOX',
+    title: 'Je link is onderweg.',
+    leadBefore: 'We hebben een magic-link gestuurd naar ',
+    leadAfter: 'Klik op de knop in de mail om in te loggen.',
+    spamHint: 'Geen mail ontvangen? Check je spam-folder, of vraag een nieuwe aan met een ander adres.',
+    otherAddress: '← Ander adres',
+    backToStart: 'Terug naar start',
+  },
+  confirm: {
+    eyebrow: 'FIJN DAT JE ER BENT',
+    title: 'Nog één klik.',
+    lead: 'Klik op de knop hieronder om in te loggen bij The Office Factory.',
+    safetyNote: 'Voor jouw veiligheid wordt je toegang pas geactiveerd op het moment dat je zelf op de knop klikt.',
+    submit: 'Inloggen →',
+    submitting: 'Bezig met inloggen…',
+    failed: 'Inloggen mislukt. Vraag een nieuwe link aan.',
+  },
+  invalidLink: {
+    eyebrow: 'LINK ONGELDIG',
+    title: 'Dat lukte niet.',
+    lead: 'Deze link bevat geen geldige toegangscode. Vraag een nieuwe aan — duurt 5 seconden.',
+  },
+  expiredLink: {
+    eyebrow: 'LINK VERLOPEN',
+    title: 'Dat lukte niet.',
+    lead: 'Je magic-link is verlopen of al gebruikt. Vraag een nieuwe aan — duurt 5 seconden.',
+    callbackLead: 'Je magic-link is verlopen of al eerder gebruikt. Vraag een nieuwe aan — duurt 5 seconden.',
+    note: 'Magic-links zijn één uur geldig en kunnen maar één keer gebruikt worden — dat is voor jouw veiligheid.',
+    requestNew: 'Vraag nieuwe link →',
+  },
+  callback: {
+    loggedInEyebrow: 'INGELOGD',
+    loggedInTitle: 'Welkom terug.',
+    loggedInLead: 'Je wordt doorgestuurd…',
+    waitingEyebrow: 'EÉN MOMENT',
+    waitingTitle: 'Inloggen…',
+    waitingLead: 'We verwerken je magic-link.',
+  },
+};
+
+export default auth;

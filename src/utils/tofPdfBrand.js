@@ -63,3 +63,17 @@ export function setupTofFonts(pdf) {
   pdf.addFileToVFS('PlayfairDisplay-Italic.ttf', PLAYFAIR_ITALIC);
   pdf.addFont('PlayfairDisplay-Italic.ttf', FONT_HEAD, 'italic');
 }
+
+/**
+ * Datum in de PDF-footers/headers.
+ * NL houdt dd-mm-yyyy; EN krijgt een uitgeschreven maand, omdat 03-04-2026
+ * voor een Engelse lezer 4 maart of 3 april kan betekenen.
+ */
+export function formatPdfDate(date, lang = 'nl') {
+  if (lang === 'en') {
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${dd}-${mm}-${date.getFullYear()}`;
+}

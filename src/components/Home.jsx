@@ -7,8 +7,10 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from '../ui/AppShell';
+import { useCopy } from '../i18n/LanguageContext';
 
 export default function Home({ setPage }) {
+  const { home: t } = useCopy();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
   const [showLock, setShowLock] = useState(false);
   const [accessCode, setAccessCode] = useState('');
@@ -59,7 +61,7 @@ export default function Home({ setPage }) {
     const code = accessCode.trim();
 
     if (!code) {
-      setLockError('Voer eerst een toegangscode in');
+      setLockError(t.lock.errorEmpty);
       return;
     }
 
@@ -74,13 +76,13 @@ export default function Home({ setPage }) {
       access = await validateTeamAccessCode(code);
     } catch (err) {
       console.error(err);
-      setLockError('Er ging iets mis bij het controleren van de code');
+      setLockError(t.lock.errorCheck);
       setCheckingCode(false);
       return;
     }
 
     if (!access) {
-      setLockError('Onjuiste of onbekende code');
+      setLockError(t.lock.errorUnknown);
       setCheckingCode(false);
       return;
     }
@@ -131,7 +133,7 @@ export default function Home({ setPage }) {
                   fontWeight: 600,
                 }}
               >
-                01 — TOF Persona Tool
+                {t.eyebrow}
               </div>
 
               <h1
@@ -144,14 +146,14 @@ export default function Home({ setPage }) {
                   color: '#1f1b18',
                 }}
               >
-                Ontdek hoe jij werkt —{' '}
+                {t.heroTitle}{' '}
                 <span
                   style={{
                     color: 'var(--tof-accent-rose)',
                     fontStyle: 'italic',
                   }}
                 >
-                  en waarom dat in teams soms schuurt.
+                  {t.heroTitleAccent}
                 </span>
               </h1>
             </div>
@@ -164,25 +166,24 @@ export default function Home({ setPage }) {
                 fontSize: isMobile ? 15 : 16,
               }}
             >
-              Start bij jezelf. Krijg inzicht in jouw werkstijl, waar jij energie
-              van krijgt en wat jij nodig hebt om goed tot je recht te komen.
+              {t.heroLead}
             </p>
           </div>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <PrimaryButton onClick={() => setPage('intro')}>
-              Start de Persona test
+              {t.ctaStartTest}
             </PrimaryButton>
 
             <PrimaryButton
               onClick={() => setPage('team')}
               style={{ background: 'var(--tof-accent-sage)' }}
             >
-              Voor teams & organisaties
+              {t.ctaForTeams}
             </PrimaryButton>
 
             <SecondaryButton onClick={openTeamLock}>
-              Teamomgeving
+              {t.ctaTeamEnvironment}
             </SecondaryButton>
           </div>
 
@@ -201,7 +202,7 @@ export default function Home({ setPage }) {
             }}
           >
             <span>⏱</span>
-            <span>Duurt ongeveer 15 minuten</span>
+            <span>{t.durationNote}</span>
           </div>
         </div>
 
@@ -214,15 +215,15 @@ export default function Home({ setPage }) {
           }}
         >
           <OfferCard
-            eyebrow="Jouw werkstijl"
-            title="Persona Insight"
-            text="Voor individueel inzicht in hoe jij werkt, waar jouw energie zit en wat jij nodig hebt om tot je recht te komen."
+            eyebrow={t.offerCard.eyebrow}
+            title={t.offerCard.title}
+            text={t.offerCard.text}
             accent="var(--tof-accent-sage)"
             onClick={() => setPage('intro')}
             clickable
           />
 
-          <GreenTeamCard onClick={() => setPage('team')} />
+          <GreenTeamCard copy={t.teamCard} onClick={() => setPage('team')} />
         </div>
 
         <div
@@ -244,7 +245,7 @@ export default function Home({ setPage }) {
           >
             <img
               src={tofLogo}
-              alt="TOF logo"
+              alt={t.footer.logoAlt}
               style={{
                 width: 34,
                 height: 34,
@@ -300,8 +301,7 @@ export default function Home({ setPage }) {
               color: 'var(--tof-text-soft)',
             }}
           >
-            Wij helpen organisaties om werkplek, gedrag en samenwerking beter op elkaar
-            te laten aansluiten. Vanuit inzicht naar concrete beweging.
+            {t.footer.body}
           </p>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -312,7 +312,7 @@ export default function Home({ setPage }) {
               }
               style={footerLinkRose}
             >
-              Ga naar website →
+              {t.footer.website}
             </button>
 
             <button
@@ -326,7 +326,7 @@ export default function Home({ setPage }) {
               }
               style={footerLinkDark}
             >
-              Contact
+              {t.footer.contact}
             </button>
           </div>
 
@@ -338,7 +338,7 @@ export default function Home({ setPage }) {
               color: 'var(--tof-text-muted)',
             }}
           >
-            🔒 Data wordt anoniem gebruikt voor analyse en niet gedeeld met derden. Naam is optioneel.
+            {t.footer.privacy}
           </p>
         </div>
       </div>
@@ -379,7 +379,7 @@ export default function Home({ setPage }) {
                 fontWeight: 700,
               }}
             >
-              Teamomgeving
+              {t.lock.eyebrow}
             </div>
 
             <div
@@ -390,7 +390,7 @@ export default function Home({ setPage }) {
                 color: 'var(--tof-text)',
               }}
             >
-              Voer je toegangscode in
+              {t.lock.title}
             </div>
 
             <p
@@ -401,14 +401,14 @@ export default function Home({ setPage }) {
                 lineHeight: 1.65,
               }}
             >
-              De teamomgeving is alleen toegankelijk met een persoonlijke code.
+              {t.lock.body}
             </p>
 
             <input
               type="text"
               value={accessCode}
               onChange={(e) => setAccessCode(e.target.value)}
-              placeholder="Voer code in"
+              placeholder={t.lock.placeholder}
               autoFocus
               style={{
                 width: '100%',
@@ -444,11 +444,11 @@ export default function Home({ setPage }) {
                 style={{ flex: 1 }}
                 disabled={checkingCode}
               >
-                {checkingCode ? 'Controleren...' : 'Ga verder'}
+                {checkingCode ? t.lock.checking : t.lock.submit}
               </PrimaryButton>
 
               <SecondaryButton onClick={closeTeamLock}>
-                Sluiten
+                {t.lock.close}
               </SecondaryButton>
             </div>
           </div>
@@ -545,7 +545,7 @@ function OfferCard({
   );
 }
 
-function GreenTeamCard({ onClick }) {
+function GreenTeamCard({ copy, onClick }) {
   return (
     <div
       role="button"
@@ -590,7 +590,7 @@ function GreenTeamCard({ onClick }) {
           fontWeight: 700,
         }}
       >
-        Alleen voor organisaties
+        {copy.eyebrow}
       </div>
 
       <h2
@@ -605,9 +605,9 @@ function GreenTeamCard({ onClick }) {
           maxWidth: 360,
         }}
       >
-        Je team werkt.
+        {copy.titleLine1}
         <br />
-        Werkt het ook samen?
+        {copy.titleLine2}
       </h2>
 
       <p
@@ -621,8 +621,7 @@ function GreenTeamCard({ onClick }) {
           maxWidth: 470,
         }}
       >
-        Bekijk wat Team Insight, Team Dynamics en strategisch werkplekinzicht voor
-        jouw organisatie kunnen betekenen.
+        {copy.text}
       </p>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ARCHETYPES } from '../data';
-import tofLogo from '../assets/tof-logo.png';
+import { useArchetypes } from '../i18n/archetypes';
+import { useCopy, useLang } from '../i18n/LanguageContext';
 import {
     PageShell,
     PrimaryButton,
@@ -22,39 +22,11 @@ const COLOR_MAP = {
     vernieuwer: '#D08C5B',
 };
 
-const WORKPLACE_LABELS = {
-    focus: 'Concentratieplekken',
-    work: 'Standaard werkplekken',
-    hybride: 'Hybride plekken',
-    meeting: 'Overlegplekken',
-    project: 'Creatieve plekken',
-    team: 'Samenwerkplekken',
-    learning: 'Leerplekken',
-    retreat: 'Rustplekken',
-    social: 'Informele plekken',
-};
-
-const INFO_LABEL_STYLE = {
-    fontSize: 11,
-    letterSpacing: 1.6,
-    textTransform: 'uppercase',
-    color: 'var(--tof-text-muted)',
-    fontWeight: 700,
-};
-
 const leadText = {
     margin: 0,
     color: 'var(--tof-text-soft)',
     lineHeight: 1.7,
     fontSize: 15,
-};
-
-const SPACING = {
-    xs: 4,
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
 };
 
 function SoftCard({ children, padding = 22 }) {
@@ -76,63 +48,17 @@ function SoftCard({ children, padding = 22 }) {
     );
 }
 
-function InnerCard({ label, title, titleColor = '#1F1F1F', children }) {
-    return (
-        <div
-            style={{
-                background: 'rgba(255,255,255,0.82)',
-                border: '1px solid #EADFD4',
-                borderRadius: 14,
-                padding: '14px 16px',
-                display: 'grid',
-                alignSelf: 'start',
-                gap: 10,
-            }}
-        >
-            <div style={INFO_LABEL_STYLE}>{label}</div>
-
-            {title ? (
-                <div
-                    style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontWeight: 500,
-                        fontSize: 24,
-                        lineHeight: 1.08,
-                        color: titleColor,
-                        marginTop: -2,
-                    }}
-                >
-                    {title}
-                </div>
-            ) : null}
-
-            {children}
-        </div>
-    );
-}
-
 function getFirstName(fullName) {
     const cleaned = String(fullName || '').trim();
     if (!cleaned) return '';
     return cleaned.split(/\s+/)[0];
 }
 
-function getReadableQuoteColor(hexColor) {
-    const hex = String(hexColor || '').replace('#', '');
-
-    if (hex.length !== 6) return '#2F2521';
-
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-
-    return luminance > 0.62 ? '#2F2521' : '#F7F3EE';
-}
-
 export default function Results({ resultData, setPage }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+    const ARCHETYPES = useArchetypes();
+    const { lang } = useLang();
+    const { resultsCard: copy } = useCopy();
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -148,7 +74,7 @@ export default function Results({ resultData, setPage }) {
     const tertiary = getArchetype(resultData?.tertiary);
 
     const primaryColor = COLOR_MAP[primary?.id] || '#B05252';
-    const quoteTextColor = getReadableQuoteColor(primaryColor);
+    const workplaceLabels = copy.profile.workplaceLabels;
 
     const scoreEntries = useMemo(() => {
         return Object.entries(resultData?.scores || {}).sort((a, b) => b[1] - a[1]);
@@ -173,7 +99,8 @@ export default function Results({ resultData, setPage }) {
                 opacity: 1,
             };
         });
-    }, [scoreEntries, resultData, primaryColor]);
+        // `getArchetype` is een render-lokale helper over ARCHETYPES; die staat al in deps.
+    }, [scoreEntries, resultData, primaryColor, ARCHETYPES]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const bricksItems = useMemo(() => {
         if (!primary?.bricksProfile) return [];
@@ -184,27 +111,29 @@ export default function Results({ resultData, setPage }) {
             .map(([key, value]) => ({
                 key,
                 score: value,
-                label: WORKPLACE_LABELS[key] || key,
+                label: workplaceLabels[key] || key,
                 text: primary?.bricksProfileText?.[key] || '',
             }));
-    }, [primary]);
+    }, [primary, workplaceLabels]);
 
     const bytesBehaviorBlocks = useMemo(() => {
+        const blocks = copy.profile.bytesBlocks;
+
         return [
             {
                 key: 'bytes',
-                label: 'Bytes',
-                title: 'Digitale ondersteuning',
+                label: blocks.bytes.label,
+                title: blocks.bytes.title,
                 text: primary?.bytes || '',
             },
             {
                 key: 'behavior',
-                label: 'Behavior',
-                title: 'Gedrag & cultuur',
+                label: blocks.behavior.label,
+                title: blocks.behavior.title,
                 text: primary?.behavior || '',
             },
         ].filter((item) => item.text);
-    }, [primary]);
+    }, [primary, copy]);
 
     const leadershipItems = useMemo(() => {
         return (primary?.leadership || []).slice(0, 3);
@@ -246,17 +175,17 @@ export default function Results({ resultData, setPage }) {
             .map(([key, value]) => ({
                 key,
                 score: Number(value.toFixed(1)),
-                label: WORKPLACE_LABELS[key] || key,
+                label: workplaceLabels[key] || key,
                 text:
                     primary?.bricksProfileText?.[key] ||
                     secondary?.bricksProfileText?.[key] ||
                     tertiary?.bricksProfileText?.[key] ||
                     '',
             }));
-    }, [primary, secondary, tertiary]);
+    }, [primary, secondary, tertiary, workplaceLabels]);
 
     const pdfData = useMemo(() => {
-        const firstName = getFirstName(resultData?.name) || 'Jouw profiel';
+        const firstName = getFirstName(resultData?.name) || copy.download.nameFallback;
         const roleLine = resultData?.role || resultData?.team_size || 'TOF Persona Tool';
 
         return {
@@ -288,9 +217,7 @@ export default function Results({ resultData, setPage }) {
                 workplace: workplaceNeedsForMix,
                 leiderschap: leadershipSentence,
                 eindquote: {
-                    tekst:
-                        primary?.lquote ||
-                        'Je werkt het sterkst wanneer je omgeving aansluit op hoe jij van nature werkt.',
+                    tekst: primary?.lquote || copy.download.fallbackQuote,
                     bron: 'TOF · The Office Factory',
                 },
             },
@@ -304,21 +231,21 @@ export default function Results({ resultData, setPage }) {
         topScoreEntries,
         workplaceNeedsForMix,
         leadershipSentence,
+        copy,
     ]);
 
     const downloadCardAsPDF = async () => {
         // Vector PDF: tekst is scherp, selecteerbaar en doorzoekbaar.
         // Geheel los van de schermweergave — geen html2canvas meer.
         const firstName = getFirstName(resultData?.name);
-        const fileName = firstName
-            ? `${firstName} - personakaart TOF.pdf`
-            : 'personakaart TOF.pdf';
+        const fileName = copy.download.fileName(firstName);
 
         try {
             downloadPersonaCardVectorPDF({
                 pdfData,
                 primaryColor,
                 fileName,
+                lang,
             });
         } catch (error) {
             console.error('Vector PDF download failed:', error);
@@ -337,7 +264,7 @@ export default function Results({ resultData, setPage }) {
                     }}
                 >
                     <SoftCard padding={isMobile ? 20 : 30}>
-                        <SectionEyebrow>04 — Jouw resultaat</SectionEyebrow>
+                        <SectionEyebrow>{copy.empty.eyebrow}</SectionEyebrow>
 
                         <h1
                             style={{
@@ -349,20 +276,18 @@ export default function Results({ resultData, setPage }) {
                                 color: 'var(--tof-text)',
                             }}
                         >
-                            Nog geen resultaat beschikbaar
+                            {copy.empty.title}
                         </h1>
 
-                        <p style={leadText}>
-                            Vul eerst de test in om jouw persona-profiel te bekijken.
-                        </p>
+                        <p style={leadText}>{copy.empty.body}</p>
 
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                             <PrimaryButton onClick={() => setPage('quiz')}>
-                                Start de test
+                                {copy.empty.startTest}
                             </PrimaryButton>
 
                             <SecondaryButton onClick={() => setPage('home')}>
-                                Terug naar home
+                                {copy.empty.backHome}
                             </SecondaryButton>
                         </div>
                     </SoftCard>

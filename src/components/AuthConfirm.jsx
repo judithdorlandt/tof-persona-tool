@@ -7,6 +7,7 @@ import {
   PrimaryButton,
 } from '../ui/AppShell';
 import { TYPE, SPACING } from '../ui/tokens';
+import { useCopy } from '../i18n/LanguageContext';
 
 /**
  * AuthConfirm — veilige magic-link bevestiging.
@@ -22,6 +23,7 @@ import { TYPE, SPACING } from '../ui/tokens';
  * dat de bestaande routing (manager-teams → dashboard, etc.) afhandelt.
  */
 export default function AuthConfirm({ setPage }) {
+  const { auth: t } = useCopy();
   const params = new URLSearchParams(window.location.search);
   const tokenHash = params.get('token_hash') || '';
   const type = params.get('type') || 'magiclink';
@@ -42,7 +44,7 @@ export default function AuthConfirm({ setPage }) {
     }
 
     setStatus('error');
-    setErrorMessage(result.error || 'Inloggen mislukt. Vraag een nieuwe link aan.');
+    setErrorMessage(result.error || t.confirm.failed);
   }
 
   // Iemand opent /auth/confirm zonder token (of de scanner pakte de query weg).
@@ -50,14 +52,14 @@ export default function AuthConfirm({ setPage }) {
     return (
       <PageShell>
         <HeroBlock
-          eyebrow="LINK ONGELDIG"
-          title="Dat lukte niet."
-          lead="Deze link bevat geen geldige toegangscode. Vraag een nieuwe aan — duurt 5 seconden."
+          eyebrow={t.invalidLink.eyebrow}
+          title={t.invalidLink.title}
+          lead={t.invalidLink.lead}
         />
         <SectionCard>
           <div style={{ marginTop: SPACING.md }}>
             <PrimaryButton onClick={() => setPage && setPage('login')}>
-              Vraag nieuwe link →
+              {t.expiredLink.requestNew}
             </PrimaryButton>
           </div>
         </SectionCard>
@@ -69,9 +71,9 @@ export default function AuthConfirm({ setPage }) {
     return (
       <PageShell>
         <HeroBlock
-          eyebrow="LINK VERLOPEN"
-          title="Dat lukte niet."
-          lead="Je magic-link is verlopen of al gebruikt. Vraag een nieuwe aan — duurt 5 seconden."
+          eyebrow={t.expiredLink.eyebrow}
+          title={t.expiredLink.title}
+          lead={t.expiredLink.lead}
         />
         <SectionCard>
           <p style={{ ...TYPE.body, color: 'var(--tof-text-muted)', margin: 0 }}>
@@ -79,7 +81,7 @@ export default function AuthConfirm({ setPage }) {
           </p>
           <div style={{ marginTop: SPACING.xl }}>
             <PrimaryButton onClick={() => setPage && setPage('login')}>
-              Vraag nieuwe link →
+              {t.expiredLink.requestNew}
             </PrimaryButton>
           </div>
         </SectionCard>
@@ -90,18 +92,17 @@ export default function AuthConfirm({ setPage }) {
   return (
     <PageShell>
       <HeroBlock
-        eyebrow="FIJN DAT JE ER BENT"
-        title="Nog één klik."
-        lead="Klik op de knop hieronder om in te loggen bij The Office Factory."
+        eyebrow={t.confirm.eyebrow}
+        title={t.confirm.title}
+        lead={t.confirm.lead}
       />
       <SectionCard>
         <p style={{ ...TYPE.body, color: 'var(--tof-text-muted)', margin: 0 }}>
-          Voor jouw veiligheid wordt je toegang pas geactiveerd op het moment dat
-          je zelf op de knop klikt.
+          {t.confirm.safetyNote}
         </p>
         <div style={{ marginTop: SPACING.xl }}>
           <PrimaryButton onClick={handleConfirm} disabled={status === 'verifying'}>
-            {status === 'verifying' ? 'Bezig met inloggen…' : 'Inloggen →'}
+            {status === 'verifying' ? t.confirm.submitting : t.confirm.submit}
           </PrimaryButton>
         </div>
       </SectionCard>

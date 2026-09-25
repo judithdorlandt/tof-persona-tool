@@ -27,6 +27,7 @@
 
 import React from 'react';
 import { SPACING, TYPE, RADIUS, useIsMobile } from '../../ui/tokens';
+import { useCopy } from '../../i18n/LanguageContext';
 
 const PERSONA_COLORS = {
     maker: '#B05252',
@@ -39,23 +40,13 @@ const PERSONA_COLORS = {
     vernieuwer: '#D08C5B',
 };
 
-const MISSING_CONTRIBUTION = {
-    maker: 'Zonder maker mist het team de drang om dingen tastbaar te maken — ideeën blijven hangen in concepten.',
-    groeier: 'Zonder groeier mist het team de natuurlijke nieuwsgierigheid om te leren en zich te ontwikkelen.',
-    presteerder: 'Zonder presteerder mist het team de scherpte om dingen daadwerkelijk af te krijgen.',
-    denker: 'Zonder denker mist het team de grondigheid om besluiten op inhoud te toetsen.',
-    verbinder: 'Zonder verbinder mist het team het vroege signaal als de samenwerking begint te schuren.',
-    teamspeler: 'Zonder teamspeler mist het team de lijm — niemand bewaakt expliciet de groepsdynamiek.',
-    zekerzoeker: 'Zonder zekerzoeker mist het team het tegenwicht dat continuïteit en stabiliteit bewaakt.',
-    vernieuwer: 'Zonder vernieuwer mist het team de impuls om bestaande aanpakken te durven loslaten.',
-};
-
 function colorFor(id) {
     return PERSONA_COLORS[id] || 'var(--tof-text)';
 }
 
 export default function TeamPersonaDistribution({ aggregate }) {
     const isMobile = useIsMobile();
+    const t = useCopy().teamPanels.personaDistribution;
 
     // LAAG 1 — wie zit er primair (met namen)
     const personasByPrimary = aggregate?.personasByPrimary || [];
@@ -69,7 +60,7 @@ export default function TeamPersonaDistribution({ aggregate }) {
     if (personasByPrimary.length === 0) {
         return (
             <div style={{ padding: SPACING.lg, fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                Nog geen werkstijlen beschikbaar.
+                {t.empty}
             </div>
         );
     }
@@ -111,8 +102,10 @@ export default function TeamPersonaDistribution({ aggregate }) {
 // SIGNATURE — dominante primaire persona als hero
 // =========================
 function SignatureStatement({ persona, isMobile }) {
+    const { teamPanels } = useCopy();
+    const t = teamPanels.personaDistribution;
     const color = colorFor(persona.id);
-    const namesText = formatPeople(persona.names, persona.anonymousCount);
+    const namesText = formatPeople(persona.names, persona.anonymousCount, teamPanels.names);
 
     return (
         <div
@@ -137,7 +130,7 @@ function SignatureStatement({ persona, isMobile }) {
                         color: 'var(--tof-text-muted)',
                     }}
                 >
-                    Dominante werkstijl
+                    {t.dominantEyebrow}
                 </div>
                 <div
                     style={{
@@ -147,7 +140,7 @@ function SignatureStatement({ persona, isMobile }) {
                         fontVariantNumeric: 'tabular-nums',
                     }}
                 >
-                    {persona.countPercentage}% van het team
+                    {t.shareOfTeam(persona.countPercentage)}
                 </div>
             </div>
 
@@ -174,7 +167,7 @@ function SignatureStatement({ persona, isMobile }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    Gedragen door{' '}
+                    {t.carriedBy}
                     <span style={{ color: 'var(--tof-text)', fontWeight: 500 }}>
                         {namesText}
                     </span>
@@ -188,10 +181,12 @@ function SignatureStatement({ persona, isMobile }) {
 // SECONDARY LIST — andere primair-aanwezige persona's
 // =========================
 function SecondaryList({ items, isMobile }) {
+    const t = useCopy().teamPanels.personaDistribution;
+
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
             <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                Verder vertegenwoordigd
+                {t.furtherRepresented}
             </div>
 
             <div
@@ -213,8 +208,9 @@ function SecondaryList({ items, isMobile }) {
 }
 
 function SecondaryItem({ persona }) {
+    const { teamPanels } = useCopy();
     const color = colorFor(persona.id);
-    const namesText = formatPeople(persona.names, persona.anonymousCount);
+    const namesText = formatPeople(persona.names, persona.anonymousCount, teamPanels.names);
 
     return (
         <div
@@ -318,6 +314,8 @@ function SecondaryItem({ persona }) {
 // Visueel rustiger dan de primair-lijst — dit is duiding, geen hero.
 
 function EnergyDistribution({ items, isMobile }) {
+    const t = useCopy().teamPanels.personaDistribution.energy;
+
     return (
         <div
             style={{
@@ -329,7 +327,7 @@ function EnergyDistribution({ items, isMobile }) {
         >
             <div style={{ display: 'grid', gap: SPACING.xs }}>
                 <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                    Energie van dit team
+                    {t.eyebrow}
                 </div>
                 <p
                     style={{
@@ -341,9 +339,7 @@ function EnergyDistribution({ items, isMobile }) {
                         maxWidth: 540,
                     }}
                 >
-                    Gewogen werkstijl-energie van alle profielen samen. Ook
-                    werkstijlen die niet primair zijn dragen bij via tweede en
-                    derde voorkeuren.
+                    {t.lead}
                 </p>
             </div>
 
@@ -425,6 +421,8 @@ function EnergyBar({ persona }) {
 // MISSING NOTE — strikte definitie uit aggregate.missingPersonas
 // =========================
 function MissingNote({ missing, isMobile }) {
+    const t = useCopy().teamPanels.personaDistribution.missing;
+
     return (
         <div
             style={{
@@ -435,14 +433,13 @@ function MissingNote({ missing, isMobile }) {
             }}
         >
             <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                Wie ontbreekt
+                {t.eyebrow}
             </div>
 
             <div style={{ display: 'grid', gap: SPACING.md }}>
                 {missing.map((p) => {
                     const color = colorFor(p.id);
-                    const text = MISSING_CONTRIBUTION[p.id] ||
-                        `Zonder ${p.name.toLowerCase()} mist het team een specifiek perspectief.`;
+                    const text = t.contribution[p.id] || t.fallback(p.name);
 
                     return (
                         <div
@@ -508,19 +505,16 @@ function MissingNote({ missing, isMobile }) {
 // HELPERS
 // =========================
 
-// Combineer namen met aantal anonieme respondenten.
-// Voorbeelden:
+// Combineer namen met aantal anonieme respondenten. De opsomming en het
+// woord "anoniem" komen uit copy/<taal>/teamPanels.js (namespace `names`).
+// Voorbeelden (NL):
 //   ["Maria","Doris","Thomas"], 0 → "Maria, Doris en Thomas"
 //   ["Karel","Henk"], 1         → "Karel, Henk en 1 anoniem"
 //   [], 1                       → "1 anoniem"
-//   [], 3                       → "3 anoniem"
-function formatPeople(names = [], anonymousCount = 0) {
+function formatPeople(names = [], anonymousCount = 0, copy) {
     const parts = [...names];
     if (anonymousCount > 0) {
-        parts.push(`${anonymousCount} anoniem`);
+        parts.push(copy.anonymous(anonymousCount));
     }
-    if (parts.length === 0) return '';
-    if (parts.length === 1) return parts[0];
-    if (parts.length === 2) return `${parts[0]} en ${parts[1]}`;
-    return `${parts.slice(0, -1).join(', ')} en ${parts[parts.length - 1]}`;
+    return copy.join(parts);
 }

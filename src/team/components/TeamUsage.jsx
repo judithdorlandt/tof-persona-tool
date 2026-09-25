@@ -1,14 +1,16 @@
 import React from 'react';
+import { useCopy } from '../../i18n/LanguageContext';
 
 export default function TeamUsage({ insights }) {
+    const t = useCopy().teamPanels.usage;
     const usage = insights?.usage || [];
 
     return (
         <div style={{ display: 'grid', gap: 18 }}>
             <SectionHeading
-                eyebrow="Zo gebruik je dit"
-                title="Klaar voor een teamoverleg, werkplekbeslissing of leiderschapsgesprek"
-                lead="Niet de data zelf maakt dit dashboard waardevol — maar het gesprek dat eruit volgt. Drie concrete manieren om dit morgen al in te zetten."
+                eyebrow={t.eyebrow}
+                title={t.title}
+                lead={t.lead}
             />
 
             <div

@@ -1,11 +1,11 @@
 import React from 'react';
-import { ARCHETYPES } from '../../data';
-
-function getPersonaName(id) {
-    return ARCHETYPES.find((item) => item.id === id)?.name || '-';
-}
+import { useArchetypes } from '../../i18n/archetypes';
 
 export default function TeamMembersTable({ teamResponses = [] }) {
+    const ARCHETYPES = useArchetypes();
+    const getPersonaName = (id) =>
+        ARCHETYPES.find((item) => item.id === id)?.name || '-';
+
     return (
         <div style={{ display: 'grid', gap: 16 }}>
             <div

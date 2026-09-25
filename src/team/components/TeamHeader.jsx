@@ -1,5 +1,6 @@
 import React from 'react';
 import { PrimaryButton, SecondaryButton } from '../../ui/AppShell';
+import { useCopy } from '../../i18n/LanguageContext';
 
 /**
  * TeamHeader — hero-kaart in de stijl van de Quiz ("Kort voordat je start.").
@@ -22,8 +23,8 @@ const ACCENT_COLOR_MAP = {
 
 export default function TeamHeader({
     accent = 'sage',
-    eyebrow = '01 — Teaminzicht',
-    titleLead = 'Teaminzicht voor',
+    eyebrow,
+    titleLead,
     titleHighlight,
     lead,
     selectedTeam,
@@ -33,23 +34,25 @@ export default function TeamHeader({
     setPage,
     extraActions = null,
 }) {
+    const t = useCopy().teamPanels.header;
+
     const isMobile =
         typeof window !== 'undefined' && window.innerWidth < 900;
 
     const accentColor = ACCENT_COLOR_MAP[accent] || ACCENT_COLOR_MAP.sage;
 
+    const eyebrowText = eyebrow ?? t.defaultEyebrow;
+    const titleLeadText = titleLead ?? t.defaultTitleLead;
+
     const teamName =
         titleHighlight ||
         (typeof selectedTeam === 'object' && selectedTeam !== null
-            ? selectedTeam.name || selectedTeam.team || 'jouw team'
-            : selectedTeam || 'jouw team');
+            ? selectedTeam.name || selectedTeam.team || t.teamFallback
+            : selectedTeam || t.teamFallback);
 
-    const reliabilityLabel = buildReliabilityLabel(teamCount);
+    const reliabilityLabel = buildReliabilityLabel(teamCount, t.reliability);
 
-    const defaultLead =
-        accent === 'rose'
-            ? 'Waar samenwerking schuurt, waarom tempo en reflectie botsen, en wat dat vraagt van leiderschap.'
-            : 'Wat werkstijlen zijn, wat het team van de werkomgeving vraagt en waar de eerste kansen liggen.';
+    const defaultLead = accent === 'rose' ? t.leadRose : t.leadSage;
 
     return (
         <div
@@ -83,7 +86,7 @@ export default function TeamHeader({
                             fontWeight: 600,
                         }}
                     >
-                        {eyebrow}
+                        {eyebrowText}
                     </div>
 
                     <h1
@@ -96,7 +99,7 @@ export default function TeamHeader({
                             color: '#1f1b18',
                         }}
                     >
-                        {titleLead}{' '}
+                        {titleLeadText}{' '}
                         <span
                             style={{
                                 color: accentColor,
@@ -123,19 +126,19 @@ export default function TeamHeader({
 
             {/* META-CHIPS */}
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                <MetaChip label="Responses" value={teamCount ?? 0} />
+                <MetaChip label={t.chips.responses} value={teamCount ?? 0} />
                 {organization ? (
-                    <MetaChip label="Organisatie" value={organization} />
+                    <MetaChip label={t.chips.organization} value={organization} />
                 ) : null}
                 {dominantPersona ? (
                     <MetaChip
-                        label="Dominant"
+                        label={t.chips.dominant}
                         value={dominantPersona}
                         accent={accentColor}
                     />
                 ) : null}
                 {reliabilityLabel ? (
-                    <MetaChip label="Betrouwbaarheid" value={reliabilityLabel} />
+                    <MetaChip label={t.chips.reliability} value={reliabilityLabel} />
                 ) : null}
             </div>
 
@@ -153,11 +156,11 @@ export default function TeamHeader({
                     onClick={() => setPage && setPage('team')}
                     style={{ background: accentColor }}
                 >
-                    Ander team
+                    {t.actions.otherTeam}
                 </PrimaryButton>
 
                 <SecondaryButton onClick={() => setPage && setPage('home')}>
-                    Terug naar home
+                    {t.actions.backHome}
                 </SecondaryButton>
             </div>
         </div>
@@ -211,9 +214,9 @@ function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
 // =========================
 // HELPERS
 // =========================
-function buildReliabilityLabel(count) {
+function buildReliabilityLabel(count, labels) {
     if (count === null || count === undefined) return '';
-    if (count < 3) return 'Indicatief';
-    if (count < 6) return 'Groeiend';
-    return 'Sterk beeld';
+    if (count < 3) return labels.indicative;
+    if (count < 6) return labels.growing;
+    return labels.strong;
 }

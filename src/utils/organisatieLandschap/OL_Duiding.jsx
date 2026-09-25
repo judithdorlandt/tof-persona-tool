@@ -30,7 +30,7 @@ export function buildDuidingSVG({ data, copy }) {
     // ── Pagina 1: titel + drie kaarten.
     const svg1 = createCanvas();
     svg1.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
-    drawPageHeader(svg1, { date: data.date, pageTitle: 'Duiding' });
+    drawPageHeader(svg1, { date: data.date, pageTitle: copy.duiding.pageTitle, copy });
     let y = CONTENT_TOP;
     y = drawTitleBlock(svg1, y, copy.duiding.title, copy.duiding.subtitle);
     y += SPACING.lg;
@@ -49,7 +49,7 @@ export function buildDuidingSVG({ data, copy }) {
 
     const svg2 = createCanvas();
     svg2.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
-    drawPageHeader(svg2, { date: data.date, pageTitle: 'Duiding' });
+    drawPageHeader(svg2, { date: data.date, pageTitle: copy.duiding.pageTitle, copy });
     let y2 = CONTENT_TOP;
     y2 = drawTitleBlock(svg2, y2, copy.duiding.attention.title, copy.duiding.continuationSubtitle);
     y2 += SPACING.lg;
@@ -110,9 +110,9 @@ function drawThreeCards(svg, y, data, copy) {
     const gap = SPACING.lg;
     const cardW = (USABLE_W - 2 * gap) / 3;
 
-    const leadership = buildLeadershipDirections(data);
-    const environment = buildEnvironmentDirections(data);
-    const teams = buildAttentionTeams(data);
+    const leadership = buildLeadershipDirections(data, copy);
+    const environment = buildEnvironmentDirections(data, copy);
+    const teams = buildAttentionTeams(data, copy);
 
     // Gelijke hoogte = de grootste benodigde hoogte, begrensd zodat de kaarten
     // niet de sluit-quote raken (max) en niet onnodig leeg ogen (min).

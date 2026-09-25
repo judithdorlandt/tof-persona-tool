@@ -27,7 +27,9 @@ import {
 } from '../ui/AppShell';
 import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 
-import { ARCHETYPES } from '../data';
+import { useArchetypes } from '../i18n/archetypes';
+import { useCopy, useLang } from '../i18n/LanguageContext';
+import { getCopy } from '../i18n/copy';
 import { hasTeamLevel, LEVEL_DYNAMICS, isAdminAccess } from '../utils/access';
 import {
     getDynamics,
@@ -36,7 +38,7 @@ import {
 } from '../insights';
 import { generateTeamDynamicsPDF } from '../utils/teamDynamicsPDF';
 import { logPdfDownload } from '../supabase';
-import { PERSONA_COLORS, TENSION_PAIRS, LEADERSHIP_MAP, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, getReliability, collectPersonaPeople, collectFirstNames, findMentionedPersona, formatNames, formatPeople, describeAxis } from './teamDynamicsLogic';
+import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, getReliability, collectPersonaPeople, findMentionedPersona, formatPeople, describeAxis } from './teamDynamicsLogic';
 
 const ACCENT = MODULE.dynamics.accent;
 // =========================
@@ -59,8 +61,11 @@ export default function TeamDynamics({
     // Standaard staat de eerste tegel (Dynamics) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
     const [activeId, setActiveId] = useState('dynamics');
+    const { lang } = useLang();
+    const { teamDynamics: t } = useCopy();
+    const ARCHETYPES = useArchetypes();
 
-    const teamName = resolveTeamName(selectedTeam);
+    const teamName = resolveTeamName(selectedTeam, lang);
     const organization = resolveOrg(selectedTeam);
     const team = resolveTeamKey(selectedTeam);
 
@@ -78,10 +83,10 @@ export default function TeamDynamics({
         () => Object.values(scores).reduce((a, b) => a + b, 0),
         [scores]
     );
-    const tensions = useMemo(() => findActiveTensions(sorted), [sorted]);
-    const dynamicsAxes = useMemo(() => buildDynamicsAxes(sorted, totalScore), [sorted, totalScore]);
-    const missingCritical = useMemo(() => findMissingCritical(sorted), [sorted]);
-    const leadershipActions = useMemo(() => buildLeadershipActions(sorted), [sorted]);
+    const tensions = useMemo(() => findActiveTensions(sorted, lang), [sorted, lang]);
+    const dynamicsAxes = useMemo(() => buildDynamicsAxes(sorted, totalScore, lang), [sorted, totalScore, lang]);
+    const missingCritical = useMemo(() => findMissingCritical(sorted, lang), [sorted, lang]);
+    const leadershipActions = useMemo(() => buildLeadershipActions(sorted, lang), [sorted, lang]);
 
     // Leadership-wins (de 6 acties) voor zowel het paneel als de PDF.
     const leadershipWins = useMemo(
@@ -90,8 +95,8 @@ export default function TeamDynamics({
             tensions,
             missingCritical,
             dynamicsAxes,
-        }),
-        [leadershipActions, tensions, missingCritical, dynamicsAxes]
+        }, lang),
+        [leadershipActions, tensions, missingCritical, dynamicsAxes, lang]
     );
 
     // PDF-aggregate: minimal subset wat teamDynamicsPDF nodig heeft.
@@ -102,8 +107,8 @@ export default function TeamDynamics({
     }), [teamResponses.length, scores, totalScore]);
 
     const topPersonaId = sorted[0]?.[0] || null;
-    const topPersona = topPersonaId ? getArchetype(topPersonaId) : null;
-    const reliability = getReliability(teamResponses.length);
+    const topPersona = topPersonaId ? getArchetype(topPersonaId, lang) : null;
+    const reliability = getReliability(teamResponses.length, lang);
 
     const signatureLine = useMemo(() => {
         if (!teamResponses.length) return null;
@@ -118,27 +123,27 @@ export default function TeamDynamics({
             const srt = pcts.map((c, i) => ({ c, i })).sort((a, b) => b.c - a.c);
             const dom = srt.filter(x => x.c > 0).slice(0, 3).map(x => ARCHETYPES[x.i]);
             const missing = srt.filter(x => x.c === 0).map(x => ARCHETYPES[x.i]);
-            const mat = getMaturity(pcts, srt);
-            const dyn = getDynamics(pcts);
-            return getSignatureLine(dom, missing, mat, dyn);
+            const mat = getMaturity(pcts, srt, lang);
+            const dyn = getDynamics(pcts, lang);
+            return getSignatureLine(dom, missing, mat, dyn, lang);
         } catch {
             return null;
         }
-    }, [sorted, totalScore, teamResponses.length]);
+    }, [sorted, totalScore, teamResponses.length, ARCHETYPES, lang]);
 
     // ── GEEN TOEGANG ─────────────────────────────────────────
     if (!hasAccess) {
         return (
             <PageShell>
                 <HeroBlock
-                    eyebrow="02 — Team Dynamics"
-                    title="Geen toegang tot"
-                    titleAccent="Team Dynamics"
+                    eyebrow={t.hero.eyebrow}
+                    title={t.noAccess.title}
+                    titleAccent={t.noAccess.titleAccent}
                     titleAccentColor={ACCENT}
-                    lead="Voer je toegangscode voor Team Dynamics in via de teamomgeving. Deze code geeft ook toegang tot Team Insight."
+                    lead={t.noAccess.lead}
                     actions={
                         <PrimaryButton onClick={() => setPage('team')}>
-                            Naar teamomgeving
+                            {t.noAccess.cta}
                         </PrimaryButton>
                     }
                 />
@@ -158,24 +163,24 @@ export default function TeamDynamics({
                     border: '1px solid var(--tof-border)',
                     borderRadius: 14,
                 }}>
-                    Geen responses om Dynamics op te baseren.
+                    {t.noData.embedded}
                 </div>
             );
         }
         return (
             <PageShell>
                 <HeroBlock
-                    eyebrow="02 — Team Dynamics"
-                    title="Geen teamdata voor"
+                    eyebrow={t.hero.eyebrow}
+                    title={t.noData.title}
                     titleAccent={teamName}
                     titleAccentColor={ACCENT}
-                    lead="Laad eerst een team via Team Insight."
+                    lead={t.noData.lead}
                     actions={
                         <PrimaryButton
                             onClick={() => setPage('teamdashboard')}
                             style={{ background: 'var(--tof-accent-sage)' }}
                         >
-                            ← Naar Team Insight
+                            {t.noData.cta}
                         </PrimaryButton>
                     }
                 />
@@ -187,11 +192,11 @@ export default function TeamDynamics({
     const TILES = [
         {
             id: 'dynamics',
-            eyebrow: 'Dynamiek',
-            value: 'Drie assen',
-            hint: 'Fundamentele spanningen',
-            detailTitle: 'Drie assen van teamdynamiek',
-            detailLead: 'Geen van de assen is goed of fout. Ze laten zien waar bewuste sturing het meeste oplevert.',
+            eyebrow: t.tiles.dynamics.eyebrow,
+            value: t.tiles.dynamics.value,
+            hint: t.tiles.dynamics.hint,
+            detailTitle: t.tiles.dynamics.detailTitle,
+            detailLead: t.tiles.dynamics.detailLead,
             render: () => (
                 <DynamicsPanel
                     dynamicsAxes={dynamicsAxes}
@@ -201,10 +206,10 @@ export default function TeamDynamics({
         },
         {
             id: 'collaboration',
-            eyebrow: 'Samenwerking',
-            value: topPersona?.name || 'Per werkstijl',
-            hint: 'Hoe loopt het samen',
-            detailTitle: 'Hoe deze werkstijlen samenwerken',
+            eyebrow: t.tiles.collaboration.eyebrow,
+            value: topPersona?.name || t.tiles.collaboration.value,
+            hint: t.tiles.collaboration.hint,
+            detailTitle: t.tiles.collaboration.detailTitle,
             detailLead: '',
             render: () => (
                 <CollaborationPanel
@@ -216,13 +221,15 @@ export default function TeamDynamics({
         },
         {
             id: 'tensions',
-            eyebrow: 'Spanningen',
-            value: tensions.length === 0 ? 'Geen actieve' : `${tensions.length} actief`,
-            hint: 'Waar regie helpt',
-            detailTitle: 'Waar dit team om regie vraagt',
+            eyebrow: t.tiles.tensions.eyebrow,
+            value: tensions.length === 0
+                ? t.tiles.tensions.valueNone
+                : t.tiles.tensions.value(tensions.length),
+            hint: t.tiles.tensions.hint,
+            detailTitle: t.tiles.tensions.detailTitle,
             detailLead: tensions.length === 0
-                ? 'Geen directe spanningsparen — de meest voorkomende combinaties zijn niet tegelijk sterk vertegenwoordigd.'
-                : 'Klik op een spanningsveld om risico en leiderschapsadvies te zien.',
+                ? t.tiles.tensions.detailLeadNone
+                : t.tiles.tensions.detailLead,
             render: () => (
                 <TensionsPanel
                     tensions={tensions}
@@ -233,11 +240,11 @@ export default function TeamDynamics({
         },
         {
             id: 'leadership',
-            eyebrow: 'Leiderschap',
-            value: 'Acties',
-            hint: 'Synthese voor morgen',
-            detailTitle: 'Leiderschap voor dit team',
-            detailLead: 'Concrete acties, direct afgeleid uit de dynamiek, samenwerking, spanningen en blinde vlekken in dit dashboard.',
+            eyebrow: t.tiles.leadership.eyebrow,
+            value: t.tiles.leadership.value,
+            hint: t.tiles.leadership.hint,
+            detailTitle: t.tiles.leadership.detailTitle,
+            detailLead: t.tiles.leadership.detailLead,
             render: () => (
                 <LeadershipPanel
                     leadershipActions={leadershipActions}
@@ -249,7 +256,7 @@ export default function TeamDynamics({
         },
     ];
 
-    const activeTile = TILES.find((t) => t.id === activeId);
+    const activeTile = TILES.find((tile) => tile.id === activeId);
 
     function handleTileClick(id) {
         setActiveId((prev) => (prev === id ? null : id));
@@ -315,7 +322,7 @@ export default function TeamDynamics({
                                 flexShrink: 0,
                             }}
                         >
-                            Sluiten ✕
+                            {t.close}
                         </button>
                     </div>
 
@@ -336,11 +343,11 @@ export default function TeamDynamics({
             {/* HERO */}
             <HeroBlock
                 compact
-                eyebrow="02 — Team Dynamics"
-                title="Team Dynamics voor"
+                eyebrow={t.hero.eyebrow}
+                title={t.hero.title}
                 titleAccent={teamName}
                 titleAccentColor={ACCENT}
-                lead="Waar samenwerking schuurt, waarom tempo en reflectie botsen, en wat dat vraagt van leiderschap."
+                lead={t.hero.lead}
                 actions={
                     <>
                         <PrimaryButton
@@ -353,22 +360,23 @@ export default function TeamDynamics({
                                     teamName,
                                     organization,
                                     headline: signatureLine || '',
+                                    lang,
                                 });
                                 // Log op de achtergrond — mag stil falen.
                                 logPdfDownload(`dynamics-${selectedTeam?.code || ''}`);
                             }}
                             style={{ background: ACCENT }}
                         >
-                            Download als PDF
+                            {t.hero.downloadPdf}
                         </PrimaryButton>
                         <SecondaryButton
                             onClick={() => setPage('teamdashboard')}
                         >
-                            ← Naar Team Insight
+                            {t.hero.backToInsight}
                         </SecondaryButton>
                         {isAdminAccess() ? (
                             <SecondaryButton onClick={() => setPage('team')}>
-                                Ander team
+                                {t.hero.otherTeam}
                             </SecondaryButton>
                         ) : null}
                     </>
@@ -406,6 +414,8 @@ function SignatureBlock({
     tensionsCount,
     reliability,
 }) {
+    const { teamDynamics: t } = useCopy();
+
     return (
         <div
             style={{
@@ -431,15 +441,19 @@ function SignatureBlock({
             ) : null}
 
             <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap' }}>
-                <MetaChip label="Responses" value={teamCount} />
-                {organization ? <MetaChip label="Organisatie" value={organization} /> : null}
+                <MetaChip label={t.chips.responses} value={teamCount} />
+                {organization ? <MetaChip label={t.chips.organisation} value={organization} /> : null}
                 {dominantPersona ? (
-                    <MetaChip label="Dominant" value={dominantPersona} accent={dominantColor || accent} />
+                    <MetaChip label={t.chips.dominant} value={dominantPersona} accent={dominantColor || accent} />
                 ) : null}
                 {tensionsCount > 0 ? (
-                    <MetaChip label="Spanningen" value={`${tensionsCount} actief`} accent={accent} />
+                    <MetaChip
+                        label={t.chips.tensions}
+                        value={t.tiles.tensions.value(tensionsCount)}
+                        accent={accent}
+                    />
                 ) : null}
-                {reliability ? <MetaChip label="Betrouwbaarheid" value={reliability} /> : null}
+                {reliability ? <MetaChip label={t.chips.reliability} value={reliability} /> : null}
             </div>
         </div>
     );
@@ -528,6 +542,8 @@ function EmptyLine({ children }) {
 // =========================
 
 function DynamicsPanel({ dynamicsAxes, missingCritical }) {
+    const { teamDynamics: t } = useCopy();
+
     return (
         <div>
             <div style={{ display: 'grid', gap: SPACING.lg }}>
@@ -540,12 +556,8 @@ function DynamicsPanel({ dynamicsAxes, missingCritical }) {
                 <>
                     <Divider />
                     <SubsectionHeading
-                        eyebrow="Wie ontbreekt"
-                        lead={
-                            missingCritical.length === 1
-                                ? 'Eén kritieke stem ontbreekt of is nauwelijks aanwezig. Dat vergroot het risico op blinde vlekken bij verandering.'
-                                : `${missingCritical.length} kritieke stemmen ontbreken of zijn nauwelijks aanwezig. Dat vergroot het risico op blinde vlekken bij verandering.`
-                        }
+                        eyebrow={t.dynamics.missing.eyebrow}
+                        lead={t.dynamics.missing.lead(missingCritical.length)}
                     />
                     <div style={{ display: 'grid', gap: SPACING.md, marginTop: SPACING.md }}>
                         {missingCritical.map(({ id, archetype }) => (
@@ -564,11 +576,13 @@ function DynamicsPanel({ dynamicsAxes, missingCritical }) {
 }
 
 function DynamicsAxis({ axis, isFirst }) {
+    const { lang } = useLang();
+    const { teamDynamics: t } = useCopy();
     const total = axis.lv + axis.rv || 1;
     const lPct = Math.round((axis.lv / total) * 100);
     const rPct = 100 - lPct;
     const imbalance = Math.abs(axis.lv - axis.rv) > 20;
-    const description = describeAxis(axis);
+    const description = describeAxis(axis, lang);
 
     return (
         <div style={{ display: 'grid', gap: SPACING.sm }}>
@@ -601,7 +615,7 @@ function DynamicsAxis({ axis, isFirst }) {
                             letterSpacing: 1.2,
                         }}
                     >
-                        Disbalans
+                        {t.dynamics.imbalance}
                     </span>
                 ) : null}
             </div>
@@ -682,6 +696,8 @@ function MissingPersonaRow({ name, description, color }) {
 // =========================
 
 function CollaborationPanel({ sorted, totalScore, teamResponses }) {
+    const ARCHETYPES = useArchetypes();
+    const { teamDynamics: t } = useCopy();
     const presentMap = {};
     sorted.forEach(([id, value]) => {
         if (value > 0) {
@@ -700,9 +716,7 @@ function CollaborationPanel({ sorted, totalScore, teamResponses }) {
 
     if (presentArchetypes.length === 0) {
         return (
-            <EmptyLine>
-                Nog geen samenwerkingspatronen zichtbaar — wacht tot meer teamleden hebben ingevuld.
-            </EmptyLine>
+            <EmptyLine>{t.collaboration.empty}</EmptyLine>
         );
     }
 
@@ -725,8 +739,8 @@ function CollaborationPanel({ sorted, totalScore, teamResponses }) {
                 <>
                     <Divider marginY={SPACING.xl} />
                     <SubsectionHeading
-                        eyebrow="Verder in het team"
-                        lead="De overige werkstijlen, met wie ze versterken en waar aandacht voor mag zijn."
+                        eyebrow={t.collaboration.rest.eyebrow}
+                        lead={t.collaboration.rest.lead}
                     />
                     <div
                         style={{
@@ -752,12 +766,8 @@ function CollaborationPanel({ sorted, totalScore, teamResponses }) {
                 <>
                     <Divider />
                     <SubsectionHeading
-                        eyebrow="Niet vertegenwoordigd"
-                        lead={
-                            missingArchetypes.length === 1
-                                ? 'Eén werkstijl ontbreekt — die kan nog niet meedoen in deze samenwerking.'
-                                : `${missingArchetypes.length} werkstijlen ontbreken — die kunnen nog niet meedoen in deze samenwerking.`
-                        }
+                        eyebrow={t.collaboration.missing.eyebrow}
+                        lead={t.collaboration.missing.lead(missingArchetypes.length)}
                     />
                     <div
                         style={{
@@ -782,19 +792,21 @@ function CollaborationPanel({ sorted, totalScore, teamResponses }) {
 }
 
 function DominantCollaborationBlock({ archetype, data, presentMap }) {
+    const { lang } = useLang();
+    const { teamDynamics: t } = useCopy();
     const color = PERSONA_COLORS[archetype.id];
     const ct = archetype.ct || [];
     const positiveText = ct[0] || null;
     const tensionText = ct[1] || null;
     const generalText = ct[2] || null;
 
-    const positiveMatch = positiveText ? findMentionedPersona(positiveText, presentMap) : null;
-    const tensionMatch = tensionText ? findMentionedPersona(tensionText, presentMap) : null;
+    const positiveMatch = positiveText ? findMentionedPersona(positiveText, presentMap, lang) : null;
+    const tensionMatch = tensionText ? findMentionedPersona(tensionText, presentMap, lang) : null;
 
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
             <SectionEyebrow color="var(--tof-text-muted)">
-                Dominante werkstijl · {data.percentage}% van het team
+                {t.collaboration.dominantEyebrow(data.percentage)}
             </SectionEyebrow>
 
             <h3
@@ -811,9 +823,9 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
 
             {(data.names.length > 0 || data.anonymousCount > 0) ? (
                 <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
-                    Gedragen door{' '}
+                    {t.collaboration.carriedBy}{' '}
                     <strong style={{ color: 'var(--tof-text)' }}>
-                        {formatPeople(data.names, data.anonymousCount)}
+                        {formatPeople(data.names, data.anonymousCount, lang)}
                     </strong>
                 </p>
             ) : null}
@@ -835,18 +847,18 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
             >
                 {positiveMatch ? (
                     <>
-                        <SectionEyebrow color="var(--tof-accent-sage)">Wat werkt goed</SectionEyebrow>
+                        <SectionEyebrow color="var(--tof-accent-sage)">{t.collaboration.worksWell}</SectionEyebrow>
                         <div style={{ display: 'grid', gap: SPACING.xs }}>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
                                 {positiveText}
                                 {(positiveMatch.names.length > 0 || positiveMatch.anonymousCount > 0) ? (
                                     <span style={{ color: 'var(--tof-text-muted)' }}>
-                                        {' '}— {formatPeople(positiveMatch.names, positiveMatch.anonymousCount)}
+                                        {' '}— {formatPeople(positiveMatch.names, positiveMatch.anonymousCount, lang)}
                                     </span>
                                 ) : null}
                             </p>
                             <p style={{ ...TYPE.body, fontSize: 13, margin: 0, color: 'var(--tof-text-soft)' }}>
-                                {capitalize(buildSynergyReason(archetype.id, positiveMatch.id))}.
+                                {capitalize(buildSynergyReason(archetype.id, positiveMatch.id, lang))}.
                             </p>
                         </div>
                     </>
@@ -854,18 +866,18 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
 
                 {tensionMatch ? (
                     <>
-                        <SectionEyebrow color="var(--tof-accent-rose)">Aandacht voor</SectionEyebrow>
+                        <SectionEyebrow color="var(--tof-accent-rose)">{t.collaboration.attentionFor}</SectionEyebrow>
                         <div style={{ display: 'grid', gap: SPACING.xs }}>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
                                 {tensionText}
                                 {(tensionMatch.names.length > 0 || tensionMatch.anonymousCount > 0) ? (
                                     <span style={{ color: 'var(--tof-text-muted)' }}>
-                                        {' '}— {formatPeople(tensionMatch.names, tensionMatch.anonymousCount)}
+                                        {' '}— {formatPeople(tensionMatch.names, tensionMatch.anonymousCount, lang)}
                                     </span>
                                 ) : null}
                             </p>
                             <p style={{ ...TYPE.body, fontSize: 13, margin: 0, color: 'var(--tof-text-soft)' }}>
-                                {capitalize(buildAttentionReason(archetype.id, tensionMatch.id))}.
+                                {capitalize(buildAttentionReason(archetype.id, tensionMatch.id, lang))}.
                             </p>
                         </div>
                     </>
@@ -876,13 +888,15 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
 }
 
 function CompactCollaborationRow({ archetype, data, presentMap }) {
+    const { lang } = useLang();
+    const { teamDynamics: t } = useCopy();
     const color = PERSONA_COLORS[archetype.id];
     const ct = archetype.ct || [];
     const positiveText = ct[0] || null;
     const tensionText = ct[1] || null;
 
-    const positiveMatch = positiveText ? findMentionedPersona(positiveText, presentMap) : null;
-    const tensionMatch = tensionText ? findMentionedPersona(tensionText, presentMap) : null;
+    const positiveMatch = positiveText ? findMentionedPersona(positiveText, presentMap, lang) : null;
+    const tensionMatch = tensionText ? findMentionedPersona(tensionText, presentMap, lang) : null;
 
     return (
         <div
@@ -912,7 +926,7 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                 </div>
                 {(data.names.length > 0 || data.anonymousCount > 0) ? (
                     <span style={{ fontSize: 13, color: 'var(--tof-text-soft)' }}>
-                        {formatPeople(data.names, data.anonymousCount)}
+                        {formatPeople(data.names, data.anonymousCount, lang)}
                     </span>
                 ) : null}
             </div>
@@ -927,15 +941,15 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                             fontSize: 10,
                         }}
                     >
-                        Sterk met {positiveMatch.name.toLowerCase()}
+                        {t.collaboration.strongWith(positiveMatch.name.toLowerCase())}
                         {(positiveMatch.names.length > 0 || positiveMatch.anonymousCount > 0) ? (
                             <span style={{ color: 'var(--tof-text-muted)', fontWeight: 500, letterSpacing: 0 }}>
-                                {' · '}{formatPeople(positiveMatch.names, positiveMatch.anonymousCount)}
+                                {' · '}{formatPeople(positiveMatch.names, positiveMatch.anonymousCount, lang)}
                             </span>
                         ) : null}
                     </div>
                     <p style={{ ...TYPE.body, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
-                        {capitalize(buildSynergyReason(archetype.id, positiveMatch.id))}.
+                        {capitalize(buildSynergyReason(archetype.id, positiveMatch.id, lang))}.
                     </p>
                 </div>
             ) : null}
@@ -950,10 +964,10 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                             fontSize: 10,
                         }}
                     >
-                        Aandacht met {tensionMatch.name.toLowerCase()}
+                        {t.collaboration.attentionWith(tensionMatch.name.toLowerCase())}
                     </div>
                     <p style={{ ...TYPE.body, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
-                        {capitalize(buildAttentionReason(archetype.id, tensionMatch.id))}.
+                        {capitalize(buildAttentionReason(archetype.id, tensionMatch.id, lang))}.
                     </p>
                 </div>
             ) : null}
@@ -964,55 +978,18 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
 // =========================
 // SAMENWERKING — uitgeschreven redenen per persona-paar
 // =========================
-// Per (persona × match-persona) combinatie een uitleg-zin.
-// Fallback: generieke zin op basis van de persona zelf.
+// Per (persona × match-persona) combinatie een uitleg-zin, opgezocht in
+// copy.collaboration.synergy / .attention met de sleutel `persona:match`.
+// Fallback: generieke zin.
 
-const SYNERGY_REASONS = {
-    'maker:denker': 'de maker zet ideeën om in beweging, de denker zorgt dat ze richting houden',
-    'maker:vernieuwer': 'beiden brengen energie en nieuwe ideeën — samen krijgen ze dingen écht in gang',
-    'denker:maker': 'de denker geeft de maker structuur, de maker geeft de denker iets om aan te bouwen',
-    'denker:zekerzoeker': 'beiden waarderen zorgvuldigheid — samen voorkomen ze haastige besluiten',
-    'verbinder:teamspeler': 'beiden bewaken de menselijke kant van het werk — samen houden ze het team bij elkaar',
-    'verbinder:groeier': 'de verbinder ziet wie ondersteuning nodig heeft, de groeier helpt anderen ontwikkelen',
-    'teamspeler:verbinder': 'beiden investeren in relaties — samen vormen ze de stabiele basis van het team',
-    'teamspeler:zekerzoeker': 'beiden zorgen voor continuïteit en betrouwbaarheid in het werk',
-    'presteerder:vernieuwer': 'de presteerder zet vernieuwing om in resultaat',
-    'presteerder:groeier': 'beiden willen vooruit — samen houden ze het tempo erin',
-    'groeier:presteerder': 'de groeier ontwikkelt zichzelf in tempo, de presteerder houdt focus op uitkomst',
-    'zekerzoeker:presteerder': 'de zekerzoeker bouwt de basis waarop de presteerder kan versnellen',
-    'zekerzoeker:teamspeler': 'beiden waarderen voorspelbaarheid en stabiele afspraken',
-    'vernieuwer:maker': 'de vernieuwer bedenkt het, de maker maakt het',
-    'vernieuwer:presteerder': 'de vernieuwer levert nieuwe ideeën, de presteerder zorgt dat ze landen',
-};
-
-const ATTENTION_REASONS = {
-    'maker:zekerzoeker': 'de maker beweegt sneller dan voor de zekerzoeker comfortabel is',
-    'maker:teamspeler': 'de maker werkt vaak alleen, terwijl de teamspeler juist samen wil optrekken',
-    'denker:presteerder': 'de denker wil eerst begrijpen, de presteerder wil nu beslissen',
-    'denker:maker': 'de denker analyseert door, terwijl de maker al wil doen',
-    'verbinder:presteerder': 'de verbinder vertraagt om af te stemmen, terwijl de presteerder vooruit wil',
-    'teamspeler:maker': 'de teamspeler verwacht overleg, terwijl de maker liever zelf besluit',
-    'teamspeler:vernieuwer': 'de teamspeler hecht aan stabiele werkwijzen, de vernieuwer wil ze juist veranderen',
-    'presteerder:verbinder': 'de presteerder kiest voor tempo, de verbinder voor afstemming — beiden onmisbaar, niet altijd verenigbaar',
-    'presteerder:denker': 'de presteerder maakt de denker ongeduldig, de denker frustreert de presteerder met details',
-    'zekerzoeker:maker': 'de zekerzoeker raakt onrustig van het tempo en de onvoorspelbaarheid van de maker',
-    'zekerzoeker:vernieuwer': 'verandering die voor de vernieuwer logisch is, voelt voor de zekerzoeker onvoorspelbaar',
-    'zekerzoeker:groeier': 'de zekerzoeker zoekt rust, de groeier juist beweging — dat schuurt zonder afspraken',
-    'groeier:zekerzoeker': 'de groeier wil door, de zekerzoeker wil eerst weten waar het naartoe gaat',
-    'vernieuwer:zekerzoeker': 'de vernieuwer ondermijnt onbedoeld de zekerheid die de zekerzoeker nodig heeft',
-    'vernieuwer:teamspeler': 'de vernieuwer bedenkt nieuwe paden, terwijl de teamspeler eerst draagvlak zoekt',
-};
-
-function buildSynergyReason(personaId, matchId) {
-    const key = `${personaId}:${matchId}`;
-    if (SYNERGY_REASONS[key]) return SYNERGY_REASONS[key];
-    return `samen vullen ze elkaar aan in tempo en aanpak`;
+function buildSynergyReason(personaId, matchId, lang = 'nl') {
+    const reasons = getCopy(lang).teamDynamics.collaboration.synergy;
+    return reasons[`${personaId}:${matchId}`] || reasons.fallback;
 }
 
-function buildAttentionReason(personaId, matchId) {
-    const key = `${personaId}:${matchId}`;
-    if (ATTENTION_REASONS[key]) return ATTENTION_REASONS[key];
-    return `hun werkritme botst zonder duidelijke afspraken`;
+function buildAttentionReason(personaId, matchId, lang = 'nl') {
+    const reasons = getCopy(lang).teamDynamics.collaboration.attention;
+    return reasons[`${personaId}:${matchId}`] || reasons.fallback;
 }
 
 function MissingPill({ name, color }) {
@@ -1050,22 +1027,18 @@ function MissingPill({ name, color }) {
 
 function TensionsPanel({ tensions, scores, totalScore }) {
     const [openIndex, setOpenIndex] = useState(0);
+    const { teamDynamics: t } = useCopy();
 
     if (tensions.length === 0) {
-        return (
-            <EmptyLine>
-                Geen directe spanningsparen gedetecteerd. De meest voorkomende combinaties
-                zijn niet tegelijk sterk vertegenwoordigd in dit team.
-            </EmptyLine>
-        );
+        return <EmptyLine>{t.tensions.empty}</EmptyLine>;
     }
 
     return (
         <div style={{ display: 'grid', gap: 0 }}>
-            {tensions.map((t, i) => (
+            {tensions.map((tension, i) => (
                 <TensionRow
                     key={i}
-                    tension={t}
+                    tension={tension}
                     scores={scores}
                     totalScore={totalScore}
                     isOpen={openIndex === i}
@@ -1078,10 +1051,12 @@ function TensionsPanel({ tensions, scores, totalScore }) {
 }
 
 function TensionRow({ tension, scores, totalScore, isOpen, isFirst, onToggle }) {
+    const { lang } = useLang();
+    const { teamDynamics: t } = useCopy();
     const pctA = totalScore > 0 ? Math.round(((scores[tension.a] || 0) / totalScore) * 100) : 0;
     const pctB = totalScore > 0 ? Math.round(((scores[tension.b] || 0) / totalScore) * 100) : 0;
-    const archA = getArchetype(tension.a);
-    const archB = getArchetype(tension.b);
+    const archA = getArchetype(tension.a, lang);
+    const archB = getArchetype(tension.b, lang);
 
     return (
         <>
@@ -1126,7 +1101,7 @@ function TensionRow({ tension, scores, totalScore, isOpen, isFirst, onToggle }) 
 
                         <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap', alignItems: 'center' }}>
                             <PersonaPill name={archA?.name || tension.a} pct={pctA} color={PERSONA_COLORS[tension.a]} />
-                            <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>en</span>
+                            <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>{t.tensions.and}</span>
                             <PersonaPill name={archB?.name || tension.b} pct={pctB} color={PERSONA_COLORS[tension.b]} />
                         </div>
                     </div>
@@ -1166,10 +1141,10 @@ function TensionRow({ tension, scores, totalScore, isOpen, isFirst, onToggle }) 
                                 alignItems: 'baseline',
                             }}
                         >
-                            <SectionEyebrow>Risico</SectionEyebrow>
+                            <SectionEyebrow>{t.tensions.risk}</SectionEyebrow>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>{tension.risk}</p>
 
-                            <SectionEyebrow color={ACCENT}>Leiderschapsadvies</SectionEyebrow>
+                            <SectionEyebrow color={ACCENT}>{t.tensions.advice}</SectionEyebrow>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0, color: 'var(--tof-text)' }}>
                                 {tension.leadership}
                             </p>
@@ -1214,32 +1189,24 @@ function PersonaPill({ name, pct, color }) {
 // PANEL 4: LEIDERSCHAP
 // =========================
 
-const LEADERSHIP_SOURCE_LABELS = {
-    dynamics: 'Uit dynamiek',
-    collaboration: 'Uit samenwerking',
-    tension: 'Uit spanningen',
-    missing: 'Uit blinde vlek',
-};
-
 function LeadershipPanel({
     leadershipActions,
     tensions,
     missingCritical,
     dynamicsAxes,
 }) {
+    const { lang } = useLang();
+    const { teamDynamics: t } = useCopy();
+
     const wins = buildLeadershipSynthesis({
         leadershipActions,
         tensions,
         missingCritical,
         dynamicsAxes,
-    });
+    }, lang);
 
     if (wins.length === 0) {
-        return (
-            <EmptyLine>
-                Nog geen leiderschapsacties te genereren — wacht tot meer teamleden hebben ingevuld.
-            </EmptyLine>
-        );
+        return <EmptyLine>{t.leadership.empty}</EmptyLine>;
     }
 
     return (
@@ -1248,7 +1215,7 @@ function LeadershipPanel({
                 <LeadershipAction
                     key={index}
                     index={index + 1}
-                    sourceLabel={LEADERSHIP_SOURCE_LABELS[win.source] || 'Reflectie'}
+                    sourceLabel={t.leadership.sources[win.source] || t.leadership.sources.fallback}
                     text={win.action}
                     isFirst={index === 0}
                 />
@@ -1262,7 +1229,8 @@ function buildLeadershipSynthesis({
     tensions,
     missingCritical,
     dynamicsAxes,
-}) {
+}, lang = 'nl') {
+    const t = getCopy(lang).teamDynamics.leadership;
     const wins = [];
 
     const sortedAxes = [...(dynamicsAxes || [])]
@@ -1274,7 +1242,7 @@ function buildLeadershipSynthesis({
     if (axis1 && axis1.gap > 0) {
         wins.push({
             source: 'dynamics',
-            action: dynamicsActionFor(axis1.axis),
+            action: dynamicsActionFor(axis1.axis, lang),
         });
     }
 
@@ -1285,7 +1253,7 @@ function buildLeadershipSynthesis({
         if (firstAction) {
             wins.push({
                 source: 'collaboration',
-                action: `Voor de ${top.persona.toLowerCase()}: ${decapitalize(firstAction)}`,
+                action: t.forPersona(top.persona.toLowerCase(), decapitalize(firstAction)),
             });
         }
     }
@@ -1303,7 +1271,7 @@ function buildLeadershipSynthesis({
     if (axis2 && axis2.gap > 0) {
         wins.push({
             source: 'dynamics',
-            action: dynamicsActionFor(axis2.axis),
+            action: dynamicsActionFor(axis2.axis, lang),
         });
     }
 
@@ -1314,7 +1282,7 @@ function buildLeadershipSynthesis({
         if (firstAction) {
             wins.push({
                 source: 'collaboration',
-                action: `Voor de ${second.persona.toLowerCase()}: ${decapitalize(firstAction)}`,
+                action: t.forPersona(second.persona.toLowerCase(), decapitalize(firstAction)),
             });
         }
     }
@@ -1324,7 +1292,7 @@ function buildLeadershipSynthesis({
         const first = missingCritical[0];
         wins.push({
             source: 'missing',
-            action: buildMissingAction(first.archetype),
+            action: buildMissingAction(first.archetype, lang),
         });
     }
 
@@ -1334,7 +1302,7 @@ function buildLeadershipSynthesis({
             tensions,
             sortedAxes,
             existing: wins,
-        });
+        }, lang);
         for (const f of fallbacks) {
             if (wins.length >= 6) break;
             wins.push(f);
@@ -1344,7 +1312,8 @@ function buildLeadershipSynthesis({
     return wins.slice(0, 6);
 }
 
-function buildFallbackActions({ leadershipActions, tensions, sortedAxes, existing }) {
+function buildFallbackActions({ leadershipActions, tensions, sortedAxes, existing }, lang = 'nl') {
+    const t = getCopy(lang).teamDynamics.leadership;
     const out = [];
     const usedActions = new Set(existing.map((w) => w.action));
 
@@ -1352,7 +1321,7 @@ function buildFallbackActions({ leadershipActions, tensions, sortedAxes, existin
         const third = leadershipActions[2];
         const firstAction = third.items?.[0];
         if (firstAction) {
-            const txt = `Voor de ${third.persona.toLowerCase()}: ${decapitalize(firstAction)}`;
+            const txt = t.forPersona(third.persona.toLowerCase(), decapitalize(firstAction));
             if (!usedActions.has(txt)) out.push({ source: 'collaboration', action: txt });
         }
     }
@@ -1366,7 +1335,7 @@ function buildFallbackActions({ leadershipActions, tensions, sortedAxes, existin
         const top = leadershipActions[0];
         const secondAction = top.items?.[1];
         if (secondAction) {
-            const txt = `Voor de ${top.persona.toLowerCase()}: ${decapitalize(secondAction)}`;
+            const txt = t.forPersona(top.persona.toLowerCase(), decapitalize(secondAction));
             if (!usedActions.has(txt)) out.push({ source: 'collaboration', action: txt });
         }
     }
@@ -1374,7 +1343,7 @@ function buildFallbackActions({ leadershipActions, tensions, sortedAxes, existin
     if (sortedAxes && sortedAxes.length > 2) {
         const a = sortedAxes[2];
         if (a && a.gap > 0) {
-            const txt = dynamicsActionFor(a.axis);
+            const txt = dynamicsActionFor(a.axis, lang);
             if (!usedActions.has(txt)) out.push({ source: 'dynamics', action: txt });
         }
     }
@@ -1395,7 +1364,7 @@ function capitalize(str) {
 /**
  * Vertaal een dynamics-as-disbalans naar een uitgeschreven leiderschapsadvies.
  */
-function dynamicsActionFor(axis) {
+function dynamicsActionFor(axis, lang = 'nl') {
     if (!axis) return '';
     const total = axis.lv + axis.rv;
     if (total === 0) return '';
@@ -1403,11 +1372,11 @@ function dynamicsActionFor(axis) {
     const dominantSide = axis.lv >= axis.rv ? axis.left : axis.right;
     const recessiveSide = axis.lv >= axis.rv ? axis.right : axis.left;
 
-    return `${dominantSide} weegt zwaarder dan ${recessiveSide.toLowerCase()} in dit team. Maak ruimte voor ${recessiveSide.toLowerCase()} in overleg en besluitvorming — niet als formaliteit, maar als actief tegenwicht. Anders verdwijnt deze stem geleidelijk uit het werk.`;
+    return getCopy(lang).teamDynamics.leadership.axisAction(dominantSide, recessiveSide);
 }
 
-function buildMissingAction(archetype) {
-    return `${archetype.name} ontbreekt of is nauwelijks aanwezig. Breng dit perspectief actief in besluiten — door iemand expliciet de rol te geven, of door extern advies te vragen. Anders ontstaat een blinde vlek die pas zichtbaar wordt als het misgaat.`;
+function buildMissingAction(archetype, lang = 'nl') {
+    return getCopy(lang).teamDynamics.leadership.missingAction(archetype.name);
 }
 
 function LeadershipAction({ index, sourceLabel, text, isFirst }) {

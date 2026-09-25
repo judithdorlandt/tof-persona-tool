@@ -20,30 +20,19 @@ import { SPACING, TYPE } from '../ui/tokens';
 import { EMPTY_REVIEW } from '../utils/strategicKompas';
 import { saveStrategicKompasReview } from '../supabase';
 import { Textarea, Input, Field } from './StrategischKompasIntake.jsx';
+import { useCopy } from '../i18n/LanguageContext';
 
 const ACCENT = 'var(--tof-text)';
 
-// Elk veld mapt 1-op-1 op een sleutel uit de review-shape (EMPTY_REVIEW).
-const QUESTIONS = [
-    {
-        field: 'changed',
-        question: 'Wat is er sinds de start veranderd — in de organisatie, in het MT, bij jou?',
-    },
-    {
-        field: 'mixShift',
-        question: 'Is de samenstelling van het team veranderd (nieuwe mensen, vertrek)? Zo ja, hoe?',
-    },
-    {
-        field: 'choiceLanding',
-        question: 'Welke keuze uit het kompas is nog niet echt gemaakt?',
-    },
-    {
-        field: 'notes',
-        question: 'Wat heeft de komende periode nodig?',
-    },
-];
+// De vragen staan in de i18n-namespace `kompasForms.review`. Elk `field` daarin
+// mapt 1-op-1 op een sleutel uit de review-shape (EMPTY_REVIEW) en is dus
+// taalonafhankelijk.
 
 export default function StrategischKompasReview({ setPage }) {
+    const { kompasForms, common } = useCopy();
+    const t = kompasForms.review;
+    const QUESTIONS = t.questions;
+
     const [values, setValues] = useState({ ...EMPTY_REVIEW, teamcode: '' });
     const [status, setStatus] = useState('idle'); // 'idle' | 'saving' | 'done'
     const [error, setError] = useState('');
@@ -58,14 +47,15 @@ export default function StrategischKompasReview({ setPage }) {
 
         const teamcode = String(values.teamcode || '').trim();
         if (!teamcode) {
-            setError('Vul een teamcode in — die koppelt deze check aan jullie kompas.');
+            setError(t.errors.teamcodeRequired);
             return;
         }
 
-        // Stel het object samen dat exact de review-shape volgt.
+        // Stel het object samen dat exact de review-shape volgt. De sleutels
+        // zijn Supabase-veldnamen en blijven in elke taal identiek.
         const payload = {
             ...EMPTY_REVIEW,
-            submittedAt: new Date().toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' }),
+            submittedAt: new Date().toLocaleDateString(common.locale, { month: 'long', year: 'numeric' }),
             changed: String(values.changed || '').trim(),
             mixShift: String(values.mixShift || '').trim(),
             choiceLanding: String(values.choiceLanding || '').trim(),
@@ -79,7 +69,7 @@ export default function StrategischKompasReview({ setPage }) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             setStatus('idle');
-            setError(res.error || 'Opslaan mislukt. Probeer het later opnieuw.');
+            setError(res.error || t.errors.saveFailed);
         }
     };
 
@@ -88,17 +78,17 @@ export default function StrategischKompasReview({ setPage }) {
             <PageShell compact>
                 <HeroBlock
                     compact
-                    eyebrow="Module 3 · Strategisch Kompas"
-                    title="Dank je."
+                    eyebrow={t.done.eyebrow}
+                    title={t.done.title}
                     titleAccentColor={ACCENT}
                 />
                 <SectionCard accent={ACCENT}>
                     <p style={{ ...TYPE.bodyLarge, margin: 0 }}>
-                        Jullie input is opgeslagen. Judith neemt hem door zodat het kompas meebeweegt.
+                        {t.done.body}
                     </p>
                     <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
                         <SecondaryButton onClick={() => setPage && setPage('strategischkompas')}>
-                            ← Terug naar Module 3
+                            {t.done.back}
                         </SecondaryButton>
                     </div>
                 </SectionCard>
@@ -110,15 +100,15 @@ export default function StrategischKompasReview({ setPage }) {
         <PageShell compact>
             <HeroBlock
                 compact
-                eyebrow="Module 3 · Strategisch Kompas · Check na 3 maanden"
-                title="Drie maanden"
-                titleAccent="verder"
+                eyebrow={t.eyebrow}
+                title={t.title}
+                titleAccent={t.titleAccent}
                 titleAccentColor={ACCENT}
             />
 
             <SectionCard accent={ACCENT}>
                 <p style={{ ...TYPE.bodyLarge, margin: 0 }}>
-                    Drie maanden verder. Deze korte check kijkt wat er is veranderd, zodat het kompas meebeweegt.
+                    {t.intro}
                 </p>
             </SectionCard>
 
@@ -135,20 +125,20 @@ export default function StrategischKompasReview({ setPage }) {
                         <Textarea
                             value={values[q.field]}
                             onChange={update(q.field)}
-                            placeholder="Jullie antwoord…"
+                            placeholder={t.answerPlaceholder}
                         />
                     </SectionCard>
                 ))}
 
-                <SectionCard accent={ACCENT} eyebrow="Afsluiting">
+                <SectionCard accent={ACCENT} eyebrow={t.closing.eyebrow}>
                     <Field
-                        label="Teamcode (verplicht)"
-                        hint="Koppelt deze check aan jullie kompas."
+                        label={t.closing.teamcodeLabel}
+                        hint={t.closing.teamcodeHint}
                     >
                         <Input
                             value={values.teamcode}
                             onChange={update('teamcode')}
-                            placeholder="bijv. NIJ-BES-26-A8K2"
+                            placeholder={t.closing.teamcodePlaceholder}
                         />
                     </Field>
 
@@ -164,10 +154,10 @@ export default function StrategischKompasReview({ setPage }) {
                             disabled={status === 'saving'}
                             style={{ background: ACCENT, borderColor: ACCENT }}
                         >
-                            {status === 'saving' ? 'Bezig met versturen…' : 'Verstuur check'}
+                            {status === 'saving' ? t.submitting : t.submit}
                         </PrimaryButton>
                         <SecondaryButton onClick={() => setPage && setPage('strategischkompas')}>
-                            Annuleer
+                            {t.cancel}
                         </SecondaryButton>
                     </div>
                 </SectionCard>

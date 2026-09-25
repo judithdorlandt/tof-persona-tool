@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase';
+import { useCopy } from '../i18n/LanguageContext';
 
 /**
  * QuizAanmelding — Supabase-gedreven aanmeldformulier voor "Test jezelf".
@@ -21,6 +22,8 @@ import { supabase } from '../supabase';
  *                   { name, org, dept, team, invite_code }
  */
 export default function QuizAanmelding({ organisatie = '', onSubmit }) {
+  const { signup: t } = useCopy();
+
   // URL-parameters uit de uitnodigingsmail: ?org=...&code=...
   // Hiermee weet de tool meteen om welke organisatie + team het gaat.
   const urlParams = useMemo(() => {
@@ -63,7 +66,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
 
       if (!supabase) {
         if (actief) {
-          setFout('Verbinding met de database is niet beschikbaar.');
+          setFout(t.errors.noConnection);
           setRijen([]);
           setLaden(false);
         }
@@ -81,7 +84,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
       if (!actief) return;
 
       if (error) {
-        setFout('Kon de teams niet laden. Probeer het later opnieuw.');
+        setFout(t.errors.loadFailed);
         setRijen([]);
       } else {
         setRijen(
@@ -100,7 +103,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     return () => {
       actief = false;
     };
-  }, []);
+  }, [t]);
 
   // Teamcode uit de URL: zodra de codes geladen zijn de bijbehorende
   // organisatie + afdeling automatisch voorselecteren.
@@ -185,11 +188,11 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   function verstuur(e) {
     e.preventDefault();
     if (!form.organisatie) {
-      setFout('Kies eerst een organisatie.');
+      setFout(t.errors.pickOrganization);
       return;
     }
     if (!form.afdeling) {
-      setFout('Kies eerst een afdeling.');
+      setFout(t.errors.pickDepartment);
       return;
     }
     setFout('');
@@ -300,18 +303,16 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   return (
     <div className="fade-up" style={S.page}>
       <form onSubmit={verstuur} style={S.card}>
-        <div style={S.eyebrow}>Test jezelf — aanmelden</div>
-        <h1 style={S.title}>{soloModus ? 'Even over jou' : 'Kies je team'}</h1>
+        <div style={S.eyebrow}>{t.eyebrow}</div>
+        <h1 style={S.title}>{soloModus ? t.soloTitle : t.title}</h1>
 
         {soloModus ? (
-          <p style={{ ...S.hint, marginTop: 0 }}>
-            Je doet de test voor jezelf. Twee vragen vooraf, dan ga je van start.
-          </p>
+          <p style={{ ...S.hint, marginTop: 0 }}>{t.soloLead}</p>
         ) : (
           <>
             {/* Organisatie — dropdown, met voorgeselecteerde waarde via ?org= parameter */}
             <label style={S.label}>
-              Organisatie <span style={S.required}>*</span>
+              {t.organizationLabel} <span style={S.required}>*</span>
             </label>
             {orgVast ? (
               <input style={S.readonly} value={orgVast} readOnly />
@@ -324,7 +325,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
                 disabled={laden}
               >
                 <option value="" disabled>
-                  {laden ? 'Organisaties laden…' : 'Kies je organisatie…'}
+                  {laden ? t.organizationLoading : t.organizationPlaceholder}
                 </option>
                 {organisaties.map((org) => (
                   <option key={org} value={org}>
@@ -336,7 +337,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
 
             {/* Afdeling — dropdown uit Supabase, of vast (readonly) in demo-modus */}
             <label style={S.label}>
-              Afdeling <span style={S.required}>*</span>
+              {t.departmentLabel} <span style={S.required}>*</span>
             </label>
             {afdelingVast ? (
               <input style={S.readonly} value={form.afdeling} readOnly />
@@ -350,12 +351,12 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
               >
                 <option value="" disabled>
                   {laden
-                    ? 'Afdelingen laden…'
+                    ? t.departmentLoading
                     : !form.organisatie
-                    ? 'Kies eerst een organisatie…'
+                    ? t.departmentNeedsOrganization
                     : afdelingen.length === 0
-                    ? 'Geen teams gevonden'
-                    : 'Kies je afdeling…'}
+                    ? t.departmentEmpty
+                    : t.departmentPlaceholder}
                 </option>
                 {afdelingen.map((a) => (
                   <option key={a.code} value={a.team}>
@@ -366,40 +367,45 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
             )}
 
             {/* Teamcode — automatisch ingevuld */}
-            <label style={S.label}>Teamcode</label>
+            <label style={S.label}>{t.teamcodeLabel}</label>
             <input
               style={S.readonly}
               value={form.teamcode}
-              placeholder="Verschijnt na keuze afdeling"
+              placeholder={t.teamcodePlaceholder}
               readOnly
             />
-            <p style={S.hint}>Wordt automatisch ingevuld zodra je een afdeling kiest.</p>
+            <p style={S.hint}>{t.teamcodeHint}</p>
           </>
         )}
 
         {/* Optionele velden */}
         <label style={S.label}>
-          Voornaam <span style={S.optional}>(optioneel)</span>
+          {t.firstNameLabel} <span style={S.optional}>{t.optional}</span>
         </label>
-        <input style={S.input} value={form.voornaam} onChange={wijzig('voornaam')} placeholder="Hoe heet je?" />
-        <p style={S.hint}>Leuk voor je persoonlijke persona als je je naam invult!</p>
+        <input
+          style={S.input}
+          value={form.voornaam}
+          onChange={wijzig('voornaam')}
+          placeholder={t.firstNamePlaceholder}
+        />
+        <p style={S.hint}>{t.firstNameHint}</p>
 
         {!soloModus && (
           <>
             <label style={S.label}>
-              Team <span style={S.optional}>(optioneel)</span>
+              {t.teamLabel} <span style={S.optional}>{t.optional}</span>
             </label>
             <input
               style={S.input}
               value={form.team}
               onChange={wijzig('team')}
-              placeholder="Laat leeg als je afdeling één team is"
+              placeholder={t.teamPlaceholder}
             />
           </>
         )}
 
         <label style={S.label}>
-          Meer over jezelf <span style={S.optional}>(optioneel)</span>
+          {t.aboutLabel} <span style={S.optional}>{t.optional}</span>
         </label>
         <textarea
           style={{ ...S.input, minHeight: 96, resize: 'vertical', fontFamily: 'inherit' }}
@@ -410,7 +416,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
         {fout && <p style={S.error}>{fout}</p>}
 
         <button type="submit" style={S.submit}>
-          Verder naar de quiz →
+          {t.submit}
         </button>
       </form>
     </div>

@@ -6,6 +6,18 @@
  * blijft staan) en geeft de gebruiker één duidelijke uitweg: reload.
  */
 import React from 'react';
+import { getCopy } from '../i18n/copy';
+
+// De ErrorBoundary hangt BOVEN de LanguageProvider (zie index.js) en kan dus
+// geen hook gebruiken. We lezen de laatst gekozen taal rechtstreeks uit
+// localStorage — dezelfde sleutel die LanguageContext schrijft.
+function readLang() {
+  try {
+    return window.localStorage.getItem('tof_lang') || 'nl';
+  } catch (_e) {
+    return 'nl';
+  }
+}
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -34,6 +46,8 @@ export default class ErrorBoundary extends React.Component {
 
   render() {
     if (!this.state.hasError) return this.props.children;
+
+    const t = getCopy(readLang()).shell.error;
 
     const wrap = {
       minHeight: '100vh',
@@ -104,26 +118,21 @@ export default class ErrorBoundary extends React.Component {
     return (
       <div style={wrap}>
         <div style={card}>
-          <div style={eye}>Er ging iets mis</div>
+          <div style={eye}>{t.eyebrow}</div>
           <h1 style={title}>
-            Even pauze.
+            {t.titleLead}
             <br />
             <em style={{ color: '#B05252', fontStyle: 'italic' }}>
-              We pakken het op.
+              {t.titleAccent}
             </em>
           </h1>
-          <p style={body}>
-            Een onderdeel van de app reageerde niet zoals verwacht. Je
-            antwoorden tot nu toe zijn lokaal bewaard — laad de pagina
-            opnieuw om verder te gaan. Lukt het daarna nog niet, dan
-            help ik graag persoonlijk.
-          </p>
+          <p style={body}>{t.body}</p>
           <div style={actions}>
             <button type="button" style={primary} onClick={this.handleReload}>
-              Pagina opnieuw laden
+              {t.reload}
             </button>
             <a
-              href="mailto:judith@tof.services?subject=Foutmelding%20Persona%20Tool"
+              href={`mailto:judith@tof.services?subject=${encodeURIComponent(t.mailSubject)}`}
               style={mailLink}
               onMouseOver={(e) => {
                 e.currentTarget.style.borderBottomColor = '#B05252';
@@ -132,7 +141,7 @@ export default class ErrorBoundary extends React.Component {
                 e.currentTarget.style.borderBottomColor = 'transparent';
               }}
             >
-              Stuur Judith een bericht →
+              {t.mailLink}
             </a>
           </div>
         </div>

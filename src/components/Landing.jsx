@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import styles from './Landing.module.css';
+import { useCopy } from '../i18n/LanguageContext';
 
 export default function Landing({ setPage }) {
+    const { landing: t } = useCopy();
     const [isVisible, setIsVisible] = useState(false);
     const [isLeaving, setIsLeaving] = useState(false);
 
@@ -32,9 +34,9 @@ export default function Landing({ setPage }) {
                     type="button"
                     className={styles.logoButton}
                     onClick={handleEnter}
-                    aria-label="Begin de Persona Tool"
+                    aria-label={t.logoButtonLabel}
                 >
-                    <img src={tofLogo} alt="TOF logo" className={styles.logo} />
+                    <img src={tofLogo} alt={t.logoAlt} className={styles.logo} />
                 </button>
 
                 <div className={styles.title}>
@@ -42,12 +44,10 @@ export default function Landing({ setPage }) {
                     <span className={styles.titleAccent}>Factory</span>
                 </div>
 
-                <p className={styles.subtitle}>
-                    Inzicht in werkstijl, teamdynamiek en werkplek.
-                </p>
+                <p className={styles.subtitle}>{t.subtitle}</p>
 
                 <button type="button" className={styles.cta} onClick={handleEnter}>
-                    Begin bij jezelf  →
+                    {t.cta}
                 </button>
             </div>
         </div>

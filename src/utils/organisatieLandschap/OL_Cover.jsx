@@ -19,7 +19,7 @@
  */
 
 import { PAGE_W, PAGE_H } from './constants';
-import { COLOR_FAMILIES, TYPE_V9 } from './OL_styles';
+import { COLOR_FAMILIES } from './OL_styles';
 import { createCanvas, rect, text, line } from './svgPrimitives';
 import { drawTOFMark } from '../teamInsightPDF';
 
@@ -74,7 +74,7 @@ export function buildCoverSVG({ data, copy }) {
     let baseline = blockTop + logoSize + SP.pt60 + SZ.label;
     svg.appendChild(text({
         x: cx, y: baseline,
-        content: 'MODULE 1 · INSIGHTS',
+        content: copy.brandCover.eyebrow,
         font: 'Inter', weight: 600, size: SZ.label,
         color: C.textMuted, letterSpacing: 0.45, anchor: 'middle',
     }));
@@ -83,7 +83,7 @@ export function buildCoverSVG({ data, copy }) {
     baseline += SP.pt12 + SZ.sub;
     svg.appendChild(text({
         x: cx, y: baseline,
-        content: 'Organisatie-landschap',
+        content: copy.brandCover.kicker,
         font: 'Playfair Display', weight: 400, size: SZ.sub,
         color: C.textSoft, italic: true, anchor: 'middle',
     }));
@@ -109,7 +109,9 @@ export function buildCoverSVG({ data, copy }) {
     const metaBaseline = dividerY + SP.pt12 + SZ.meta;
     svg.appendChild(text({
         x: cx, y: metaBaseline,
-        content: `${data.date}  ·  ${data.totalRespondents} ${data.totalRespondents === 1 ? 'respondent' : 'respondenten'}  ·  ${data.activeTeamCount}/${data.totalTeams} teams met data`,
+        content: copy.brandCover.meta(
+            data.date, data.totalRespondents, data.activeTeamCount, data.totalTeams,
+        ),
         font: 'Inter', weight: 400, size: SZ.meta,
         color: C.textMuted, anchor: 'middle',
     }));
@@ -119,7 +121,7 @@ export function buildCoverSVG({ data, copy }) {
     const taglineY = PAGE_H - 25;
     svg.appendChild(text({
         x: cx, y: taglineY,
-        content: 'Inzicht in werkstijl, teamdynamiek en werkplek.',
+        content: copy.brandCover.tagline,
         font: 'Inter', weight: 400, size: SZ.tagline,
         color: C.textMuted, italic: true, anchor: 'middle',
     }));

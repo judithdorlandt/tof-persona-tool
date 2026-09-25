@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCopy } from '../../i18n/LanguageContext';
 
 function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '' }) {
     return (
@@ -71,10 +72,16 @@ function StatCard({ label, value, accent = 'var(--tof-accent-rose)', subtext = '
 }
 
 export default function TeamStatsCards({ aggregate }) {
-    const dominant = aggregate?.sortedPersonas?.[0]?.name || '—';
-    const topNeed = aggregate?.sortedWorkplaceNeeds?.[0]?.label
-        || aggregate?.sortedWorkplaceNeeds?.[0]?.key
-        || '—';
+    const { teamPanels } = useCopy();
+    const t = teamPanels.stats;
+
+    const dominant = aggregate?.sortedPersonas?.[0]?.name || t.empty;
+
+    const topNeedKey = aggregate?.sortedWorkplaceNeeds?.[0]?.key;
+    const topNeed = teamPanels.workplaceNeeds.labels[topNeedKey]
+        || aggregate?.sortedWorkplaceNeeds?.[0]?.label
+        || topNeedKey
+        || t.empty;
 
     return (
         <div
@@ -85,24 +92,24 @@ export default function TeamStatsCards({ aggregate }) {
             }}
         >
             <StatCard
-                label="Aantal responses"
+                label={t.responses.label}
                 value={aggregate?.teamCount ?? 0}
                 accent="var(--tof-accent-rose)"
-                subtext="Ingevulde profielen in dit dashboard"
+                subtext={t.responses.subtext}
             />
 
             <StatCard
-                label="Dominante werkstijl"
+                label={t.dominant.label}
                 value={dominant}
                 accent="var(--tof-accent-sage)"
-                subtext="Meest aanwezige primaire werkstijl"
+                subtext={t.dominant.subtext}
             />
 
             <StatCard
-                label="Top werkplekbehoefte"
+                label={t.topNeed.label}
                 value={topNeed}
                 accent="var(--tof-text)"
-                subtext="Sterkste ruimtelijke behoefte op teamniveau"
+                subtext={t.topNeed.subtext}
             />
         </div>
     );

@@ -2,10 +2,14 @@
  * copy.nl.js — Nederlandse tekstcontent voor Organisatie-Landschap PDF.
  *
  * Alle UI-tekst staat hier — pagina-builders importeren strings, geen hardcodes.
- * Voorbereiding voor toekomstige `copy.en.js`.
+ * Zusterbestand: `copy.en.js` (IDENTIEKE sleutelstructuur). Resolver: `copy.js`.
  *
  * Lost op: maakt typo's traceerbaar op één plek (zoals 'resevering' → 'reservering'
  * uit fout #3 pagina 2).
+ *
+ * LET OP — font-beperking: de gebundelde Inter/Playfair zijn subsets ZONDER de
+ * glyphs ≥ (U+2265) en ≤ (U+2264). Nooit gebruiken; drempels in woorden
+ * uitschrijven. De tekens · – — é zitten wél in de subset.
  */
 
 export const COPY_NL = {
@@ -14,13 +18,26 @@ export const COPY_NL = {
     pillLabel: 'ORGANISATIE-LANDSCHAP',
     dateLocale: 'nl-NL',
 
+    // Module-label in de paginakop (pagina 2–5) en op de cover.
+    moduleLabel: 'MODULE 1 · INSIGHTS',
+
     // Bestand-suffix
     fileSuffix: 'organisatie-landschap TOF',
 
-    // ── Pagina 1 — TOF Brand cover (hardcoded merk-content, geen variabelen)
+    // ── Pagina 1 — TOF Brand cover
     brandCover: {
         title: 'The Office Factory',
         tagline: 'Inzicht in werkstijl, teamdynamiek en werkplek.',
+        eyebrow: 'MODULE 1 · INSIGHTS',
+        kicker: 'Organisatie-landschap',
+        meta: (date, respondents, activeTeams, totalTeams) =>
+            `${date}  ·  ${respondents} ${respondents === 1 ? 'respondent' : 'respondenten'}  ·  ${activeTeams}/${totalTeams} teams met data`,
+    },
+
+    // ── Pagina 2 — Kerncijfers (kop + lead-eyebrow)
+    hero: {
+        title: 'Kerncijfers',
+        leadEyebrow: 'WAT ZIE JE',
     },
 
     // ── Pagina 2 — Organisatie-landschap cover & samenvatting
@@ -97,6 +114,12 @@ export const COPY_NL = {
         // in woorden i.p.v. wiskundige tekens; leest bovendien prettiger voor een
         // bestuurlijke lezer. (· – é zitten wél in de subset en blijven dus staan.)
         reliabilityHelp: 'minder dan 5 = laag · 5–9 = midden · 10 of meer = hoog',
+        // Labels achter de betrouwbaarheids-dot per rij (keyed op dot-id).
+        reliabilityLabels: {
+            laag: 'Laag',
+            midden: 'Midden',
+            hoog: 'Hoog',
+        },
         // Fix #5 page 2: rij-totalen kunnen door afronding op 99–101% uitkomen.
         roundingNote: 'Rij-totalen kunnen door afronding optellen tot 99–101%.',
         // Fix #2 page 2: legenda-uitleg ipv arbitraire kleur.
@@ -155,6 +178,8 @@ export const COPY_NL = {
     // ── Pagina 4 — Duiding & richting
     duiding: {
         eyebrow: 'PAGINA 4 — DUIDING',
+        // Klein sage label in de paginakop.
+        pageTitle: 'Duiding',
         title: 'Wat dit betekent',
         subtitle: 'Richting voor leiderschap en werkomgeving.',
         leadership: {
@@ -181,5 +206,68 @@ export const COPY_NL = {
         tagline: 'Een organisatie die zichzelf herkent, beweegt sneller.',
     },
 
-    // ── Persona-namen worden uit constants.ARCHETYPE_NAME getrokken.
+    // ── Afgeleide zinnen (organisatieAggregation.js bouwt hiermee de
+    //    data-gedreven teksten; geen losse string-concatenatie in de logica).
+    data: {
+        dateLocale: 'nl-NL',
+        orgRowLabel: 'ORGANISATIE',
+        teamNameFallback: '—',
+
+        // Werkplektype-labels komen uit de aggregatie in het Nederlands.
+        // In NL laten we ze ongemoeid; copy.en.js vertaalt ze.
+        workplaceLabel: (label) => label,
+
+        leeglopers: {
+            tooLittle: (label) => `Te weinig ${label}`,
+            tooMuch: (label) => `Te veel ${label}`,
+            tension: (label) => `Spanning tussen ${label}`,
+            // Keyed op een taalneutrale id; de logica kiest het paar.
+            tensionPairs: {
+                tempoZorgvuldigheid: 'tempo en zorgvuldigheid',
+                resultaatVerbinding: 'resultaat en verbinding',
+                vrijheidZekerheid: 'vrijheid en zekerheid',
+                vernieuwingContinuiteit: 'vernieuwing en continuïteit',
+                ontwikkelingStabiliteit: 'ontwikkeling en stabiliteit',
+                loyaliteitAutonomie: 'loyaliteit en autonomie',
+            },
+            fallback: 'Werkplek die niet aansluit bij behoefte van de organisatie',
+        },
+
+        signature: {
+            none: 'Een organisatie in beweging.',
+            one: (drive) => `${drive} — daar bouwt deze organisatie op.`,
+            two: (driveA, driveB) =>
+                `${driveA} en ${driveB} — daar bouwt deze organisatie op.`,
+        },
+
+        leadership: {
+            discuss: (topic) => `Bespreek expliciet: ${topic}.`,
+            twoDrives: (a, b) =>
+                `Twee drijfveren springen eruit: ${a.drive} (${a.label}) en ${b.drive} (${b.label}). Maak ruimte voor beide — onderdruk geen van twee.`,
+            oneDrive: (a) =>
+                `De dominante drijfveer is ${a.drive} (${a.label}). Toets in gesprek of teams met andere drijfveren zich nog gezien voelen.`,
+            // Naam + optioneel aandeel, zoals getoond tussen haakjes.
+            personaLabel: (name, pct) =>
+                pct != null ? `${name}, ${pct}% primair` : name,
+            lowReliability: (n) =>
+                `${n} teams hebben te weinig respons voor harde uitspraken. Verdiep in gesprek voordat je beleid maakt.`,
+        },
+
+        environment: {
+            notEnoughData: 'Te weinig data om concrete investeringskeuzes te onderbouwen.',
+            spreadClose: (min, max) =>
+                `De voorkeuren liggen dicht bij elkaar (${min}–${max}% van het geheel). De behoefte is breed: geen enkel werkplektype springt eruit.`,
+            spreadMix: (labels) =>
+                `Investeer in een mix van werkplekken, niet in één type. Het meest genoemd: ${labels}.`,
+            invest: (label, pct) =>
+                `Investeer in ${label} — ${pct}% van álle werkplek-voorkeur ligt hier.`,
+        },
+
+        attention: {
+            noResponse: 'nog geen respons',
+            onlyN: (n) => `slechts ${n} ${n === 1 ? 'respondent' : 'respondenten'}`,
+        },
+    },
+
+    // ── Persona-namen worden uit constants.getArchetypeName(id, lang) getrokken.
 };

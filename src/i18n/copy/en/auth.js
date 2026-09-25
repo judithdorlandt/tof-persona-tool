@@ -1,0 +1,56 @@
+const auth = {
+  login: {
+    eyebrow: 'LOG IN',
+    title: 'Welcome back.',
+    testerEyebrow: 'GOOD TO HAVE YOU HERE',
+    testerTitle: 'See it for yourself.',
+    lead: 'Enter your email address. We will send you a link to log in with a single click — no password needed.',
+    emailLabel: 'EMAIL ADDRESS',
+    emailPlaceholder: 'name@company.com',
+    submit: 'Send magic link →',
+    submitting: 'Sending…',
+    cancel: 'Cancel',
+    genericError: 'Something went wrong. Please try again.',
+  },
+  sent: {
+    eyebrow: 'CHECK YOUR INBOX',
+    title: 'Your link is on its way.',
+    leadBefore: 'We have sent a magic link to ',
+    leadAfter: 'Click the button in the email to log in.',
+    spamHint: 'No email? Check your spam folder, or request a new one with a different address.',
+    otherAddress: '← Different address',
+    backToStart: 'Back to start',
+  },
+  confirm: {
+    eyebrow: 'GOOD TO HAVE YOU HERE',
+    title: 'One more click.',
+    lead: 'Click the button below to log in to The Office Factory.',
+    safetyNote: 'For your security, your access is only activated the moment you click the button yourself.',
+    submit: 'Log in →',
+    submitting: 'Logging you in…',
+    failed: 'Login failed. Please request a new link.',
+  },
+  invalidLink: {
+    eyebrow: 'INVALID LINK',
+    title: "That didn't work.",
+    lead: 'This link does not contain a valid access code. Request a new one — it takes 5 seconds.',
+  },
+  expiredLink: {
+    eyebrow: 'LINK EXPIRED',
+    title: "That didn't work.",
+    lead: 'Your magic link has expired or has already been used. Request a new one — it takes 5 seconds.',
+    callbackLead: 'Your magic link has expired or was already used. Request a new one — it takes 5 seconds.',
+    note: 'Magic links are valid for one hour and can only be used once — that is for your security.',
+    requestNew: 'Request a new link →',
+  },
+  callback: {
+    loggedInEyebrow: 'LOGGED IN',
+    loggedInTitle: 'Welcome back.',
+    loggedInLead: 'Taking you through…',
+    waitingEyebrow: 'ONE MOMENT',
+    waitingTitle: 'Logging in…',
+    waitingLead: 'We are processing your magic link.',
+  },
+};
+
+export default auth;

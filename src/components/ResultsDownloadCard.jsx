@@ -7,6 +7,7 @@
  */
 import React from 'react';
 import { SecondaryButton } from '../ui/AppShell';
+import { useCopy } from '../i18n/LanguageContext';
 
 export default function ResultsDownloadCard({
     primary,
@@ -16,6 +17,9 @@ export default function ResultsDownloadCard({
     setPage,
     resultData,
 }) {
+    const { resultsCard } = useCopy();
+    const t = resultsCard.download;
+
     return (
         <div style={{
             borderRadius: 20,
@@ -35,7 +39,7 @@ export default function ResultsDownloadCard({
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, color: 'rgba(255,255,255,0.65)' }}>
-                        Jouw personakaart
+                        {t.eyebrow}
                     </span>
                     <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)', display: 'inline-block' }} />
                     <span style={{ fontSize: 13, fontFamily: "'Playfair Display', serif", fontWeight: 500, fontStyle: 'italic', color: '#fff' }}>
@@ -43,7 +47,7 @@ export default function ResultsDownloadCard({
                     </span>
                 </div>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>
-                    PDF · 2 pagina&apos;s · A5
+                    {t.format}
                 </span>
             </div>
 
@@ -62,16 +66,10 @@ export default function ResultsDownloadCard({
                     {/* Wat er in zit */}
                     <div style={{ display: 'grid', gap: 10 }}>
                         <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
-                            Wat je downloadt
+                            {t.includesLabel}
                         </div>
                         <div style={{ display: 'grid', gap: 7 }}>
-                            {[
-                                'Jouw dominante persona en profielverdeling',
-                                'Jouw mix van secundaire persona\'s',
-                                'Wat jou in beweging brengt',
-                                'Jouw ideale werkplekmix (top 3)',
-                                'Wat helpt in leiderschap',
-                            ].map((item, i) => (
+                            {t.includes.map((item, i) => (
                                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
                                     <div style={{
                                         width: 18, height: 18, borderRadius: 999,
@@ -98,11 +96,10 @@ export default function ResultsDownloadCard({
                         alignContent: 'start',
                     }}>
                         <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
-                            Hoe te gebruiken
+                            {t.howToLabel}
                         </div>
                         <p style={{ margin: 0, fontSize: 13, lineHeight: 1.72, color: 'var(--tof-text-soft)' }}>
-                            De kaart is ontworpen om te delen — met je manager, je team of je organisatie.
-                            Gebruik hem als gespreksstarter of als input voor werkplek- en samenwerkingsafspraken.
+                            {t.howToBody}
                         </p>
                         {resultData?.name?.trim() && (
                             <div style={{
@@ -118,7 +115,7 @@ export default function ResultsDownloadCard({
                                 width: 'fit-content',
                                 marginTop: 4,
                             }}>
-                                Opgemaakt voor {resultData.name.trim().split(/\s+/)[0]}
+                                {t.madeForPrefix} {resultData.name.trim().split(/\s+/)[0]}
                             </div>
                         )}
                     </div>
@@ -157,20 +154,20 @@ export default function ResultsDownloadCard({
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
                             <path d="M8 1v9M8 10l-3-3M8 10l3-3M2 13h12" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                        Download personakaart
+                        {t.downloadButton}
                     </button>
                     <span style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                        PDF · gratis · direct beschikbaar
+                        {t.availability}
                     </span>
                 </div>
 
                 {/* Navigatie onderaan */}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', paddingTop: 4, borderTop: '1px solid var(--tof-border)' }}>
                     <SecondaryButton onClick={() => setPage('library')}>
-                        Bekijk alle persona&apos;s
+                        {t.allPersonas}
                     </SecondaryButton>
                     <SecondaryButton onClick={() => setPage('quiz')}>
-                        Test opnieuw
+                        {t.retakeTest}
                     </SecondaryButton>
                 </div>
             </div>

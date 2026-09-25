@@ -22,60 +22,19 @@ import {
 import { SPACING, TYPE, RADIUS } from '../ui/tokens';
 import { EMPTY_INTAKE } from '../utils/strategicKompas';
 import { saveStrategicKompasIntake } from '../supabase';
+import { useCopy } from '../i18n/LanguageContext';
 
 const ACCENT = 'var(--tof-text)';
 
-// De vijf inhoudelijke secties. Elk veld mapt 1-op-1 op een sleutel uit
-// de intake-shape (EMPTY_INTAKE).
-const SECTIONS = [
-    {
-        eyebrow: '01',
-        title: 'Organisatie en ambitie',
-        field: 'ambition',
-        questions: [
-            'Waar staat jullie organisatie nu, en waar moet het naartoe?',
-            'Wat is de aanleiding om dit traject nú te starten?',
-        ],
-    },
-    {
-        eyebrow: '02',
-        title: 'De beweging die je wilt maken',
-        field: 'movement',
-        questions: [
-            'Welke beweging willen jullie de komende 3–5 jaar maken?',
-            'Wat is er al in gang gezet, en wat ontbreekt nog?',
-        ],
-    },
-    {
-        eyebrow: '03',
-        title: 'MT en gedrag',
-        field: 'mtBehaviour',
-        questions: [
-            'Hoe loopt het in jullie MT — waar gaat het goed, waar stokt het?',
-            'Welk patroon keert terug in jullie samenwerking, en is nog niet hardop benoemd?',
-        ],
-    },
-    {
-        eyebrow: '04',
-        title: 'Werkomgeving',
-        field: 'workplace',
-        questions: [
-            'Past jullie werkomgeving (fysiek en hybride) bij hoe jullie wíllen werken, of bij hoe het werd ingericht?',
-            'Waar werkt de omgeving jullie tegen?',
-        ],
-    },
-    {
-        eyebrow: '05',
-        title: 'Richting voor 3–5 jaar',
-        field: 'direction',
-        questions: [
-            'Wat willen jullie over 3–5 jaar kunnen zeggen over deze periode?',
-            'Wat moet daarvoor nu in gang gezet worden?',
-        ],
-    },
-];
+// De vijf inhoudelijke secties staan in de i18n-namespace `kompasForms.intake`.
+// Elk `field` daarin mapt 1-op-1 op een sleutel uit de intake-shape
+// (EMPTY_INTAKE) en is dus taalonafhankelijk.
 
 export default function StrategischKompasIntake({ setPage }) {
+    const { kompasForms, common } = useCopy();
+    const t = kompasForms.intake;
+    const SECTIONS = t.sections;
+
     // Veldwaarden — start vanuit de shape zodat we exact dezelfde sleutels houden.
     const [values, setValues] = useState({ ...EMPTY_INTAKE });
     const [status, setStatus] = useState('idle'); // 'idle' | 'saving' | 'done'
@@ -91,14 +50,15 @@ export default function StrategischKompasIntake({ setPage }) {
 
         const teamcode = String(values.teamcode || '').trim();
         if (!teamcode) {
-            setError('Vul een teamcode in — die koppelt deze intake aan jullie persona-data.');
+            setError(t.errors.teamcodeRequired);
             return;
         }
 
-        // Stel het object samen dat exact de intake-shape volgt.
+        // Stel het object samen dat exact de intake-shape volgt. De sleutels
+        // zijn Supabase-veldnamen en blijven in elke taal identiek.
         const payload = {
             ...EMPTY_INTAKE,
-            submittedAt: new Date().toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' }),
+            submittedAt: new Date().toLocaleDateString(common.locale, { month: 'long', year: 'numeric' }),
             filledBy: String(values.filledBy || '').trim(),
             teamcode,
             ambition: String(values.ambition || '').trim(),
@@ -115,7 +75,7 @@ export default function StrategischKompasIntake({ setPage }) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             setStatus('idle');
-            setError(res.error || 'Opslaan mislukt. Probeer het later opnieuw.');
+            setError(res.error || t.errors.saveFailed);
         }
     };
 
@@ -124,18 +84,17 @@ export default function StrategischKompasIntake({ setPage }) {
             <PageShell compact>
                 <HeroBlock
                     compact
-                    eyebrow="Module 3 · Strategisch Kompas"
-                    title="Dank je."
+                    eyebrow={t.done.eyebrow}
+                    title={t.done.title}
                     titleAccentColor={ACCENT}
                 />
                 <SectionCard accent={ACCENT}>
                     <p style={{ ...TYPE.bodyLarge, margin: 0 }}>
-                        Jullie input is opgeslagen. Judith neemt hem door en combineert hem met jullie
-                        persona-data en de acht trends. In het ontwerpgesprek komt alles samen tot jullie kompas.
+                        {t.done.body}
                     </p>
                     <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
                         <SecondaryButton onClick={() => setPage && setPage('strategischkompas')}>
-                            ← Terug naar Module 3
+                            {t.done.back}
                         </SecondaryButton>
                     </div>
                 </SectionCard>
@@ -147,18 +106,15 @@ export default function StrategischKompasIntake({ setPage }) {
         <PageShell compact>
             <HeroBlock
                 compact
-                eyebrow="Module 3 · Strategisch Kompas · Intake"
-                title="De start van jullie"
-                titleAccent="kompas"
+                eyebrow={t.eyebrow}
+                title={t.title}
+                titleAccent={t.titleAccent}
                 titleAccentColor={ACCENT}
             />
 
             <SectionCard accent={ACCENT}>
                 <p style={{ ...TYPE.bodyLarge, margin: 0 }}>
-                    Deze vragenlijst is de start van jullie Strategisch Kompas. Jullie antwoorden vormen,
-                    samen met de persona-data uit Module 1 en 2 en de acht trends, de basis voor het
-                    ontwerpgesprek. Er volgt geen automatische uitslag — dit is input die we samen tot
-                    richting maken. Neem de tijd; eerlijke korte antwoorden zijn waardevoller dan volledige.
+                    {t.intro}
                 </p>
             </SectionCard>
 
@@ -179,29 +135,29 @@ export default function StrategischKompasIntake({ setPage }) {
                         <Textarea
                             value={values[sec.field]}
                             onChange={update(sec.field)}
-                            placeholder="Jullie antwoord…"
+                            placeholder={t.answerPlaceholder}
                         />
                     </SectionCard>
                 ))}
 
                 {/* Afsluiting: teamcode (verplicht) + invuller */}
-                <SectionCard accent={ACCENT} eyebrow="Afsluiting">
+                <SectionCard accent={ACCENT} eyebrow={t.closing.eyebrow}>
                     <div style={{ display: 'grid', gap: SPACING.lg }}>
                         <Field
-                            label="Teamcode (verplicht)"
-                            hint="Koppelt deze intake aan de persona-data van dezelfde organisatie."
+                            label={t.closing.teamcodeLabel}
+                            hint={t.closing.teamcodeHint}
                         >
                             <Input
                                 value={values.teamcode}
                                 onChange={update('teamcode')}
-                                placeholder="bijv. NIJ-BES-26-A8K2"
+                                placeholder={t.closing.teamcodePlaceholder}
                             />
                         </Field>
-                        <Field label="Naam en rol van de invuller">
+                        <Field label={t.closing.filledByLabel}>
                             <Input
                                 value={values.filledBy}
                                 onChange={update('filledBy')}
-                                placeholder="bijv. Sanne de Vries, MT-lid"
+                                placeholder={t.closing.filledByPlaceholder}
                             />
                         </Field>
                     </div>
@@ -218,10 +174,10 @@ export default function StrategischKompasIntake({ setPage }) {
                             disabled={status === 'saving'}
                             style={{ background: ACCENT, borderColor: ACCENT }}
                         >
-                            {status === 'saving' ? 'Bezig met versturen…' : 'Verstuur intake'}
+                            {status === 'saving' ? t.submitting : t.submit}
                         </PrimaryButton>
                         <SecondaryButton onClick={() => setPage && setPage('strategischkompas')}>
-                            Annuleer
+                            {t.cancel}
                         </SecondaryButton>
                     </div>
                 </SectionCard>

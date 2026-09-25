@@ -15,7 +15,7 @@
 
 import {
     PAGE_W, PAGE_H, MARGIN, USABLE_W,
-    ARCHETYPE_ORDER, ARCHETYPE_NAME, PERSONA_COLORS,
+    ARCHETYPE_ORDER, getArchetypeName, PERSONA_COLORS,
 } from './constants';
 import { COLOR_FAMILIES, TYPE_V9, SPACING } from './OL_styles';
 import { createCanvas, rect, text, drawWrapped, circle } from './svgPrimitives';
@@ -23,15 +23,14 @@ import { drawPageHeader } from './OL_Chrome';
 
 const C = COLOR_FAMILIES.neutral;
 const SAGE = COLOR_FAMILIES.accent.rust;
-const ROSE = COLOR_FAMILIES.accent.frictie;
 
-export function buildHeroSVG({ data, copy }) {
+export function buildHeroSVG({ data, copy, lang = 'nl' }) {
     const svg = createCanvas();
     svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
 
     // V13: eyebrow weg ("Kerncijfers" wordt prominente h2).
-    let y = drawPageHeader(svg, { date: data.date, pageTitle: null });
-    y = drawH2(svg, y, 'Kerncijfers');
+    let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
+    y = drawH2(svg, y, copy.hero.title);
     y = drawLead(svg, y, data, copy);
     y += SPACING.lg;
     y = drawThreeKpiCards(svg, y, data, copy);
@@ -42,7 +41,7 @@ export function buildHeroSVG({ data, copy }) {
     if (data.inactiveTeamCount > 0) {
         drawTeamsBanner(svg, y, data, copy);
     } else {
-        drawMeasurementBlock(svg, y, data, copy);
+        drawMeasurementBlock(svg, y, data, copy, lang);
     }
 
     // Footer wordt centraal door de orchestrator getekend (dynamische nummering).
@@ -67,7 +66,7 @@ function drawH2(svg, y, title) {
 function drawLead(svg, y, data, copy) {
     svg.appendChild(text({
         x: MARGIN, y,
-        content: 'WAT ZIE JE',
+        content: copy.hero.leadEyebrow,
         ...TYPE_V9.eyebrow,
     }));
     const leadText = data.totalRespondents > 0 && data.dominantStyle.name !== '—'
@@ -240,7 +239,7 @@ function drawTeamsBanner(svg, y, data, copy) {
 // ── Leeswijzer "Over deze meting" — vervangt het lege respons-blok wanneer
 // alle teams hebben gereageerd. Legt uit wat de meting meet + legenda van de
 // acht werkstijlen (één regel elk). Vult de ruimte tot net boven de footer.
-function drawMeasurementBlock(svg, y, data, copy) {
+function drawMeasurementBlock(svg, y, data, copy, lang) {
     const m = copy.cover.measurement;
     const bottomLimit = PAGE_H - MARGIN - 4;     // net boven de footer-lijn
     const blockH = bottomLimit - y;
@@ -291,13 +290,14 @@ function drawMeasurementBlock(svg, y, data, copy) {
         // Persona-kleur als kleine identifier-stip.
         svg.appendChild(circle(rowX + 1.3, rowY - 1.1, 1.3, PERSONA_COLORS[id] || SAGE));
         // Naam (bold) + omschrijving op één regel.
+        const personaName = getArchetypeName(id, lang);
         svg.appendChild(text({
             x: rowX + 4.5, y: rowY,
-            content: ARCHETYPE_NAME[id],
+            content: personaName,
             font: 'Inter', weight: 600, size: 3.3, color: C.text,
         }));
         svg.appendChild(text({
-            x: rowX + 4.5 + nameWidth(ARCHETYPE_NAME[id], 3.3) + 1.5, y: rowY,
+            x: rowX + 4.5 + nameWidth(personaName, 3.3) + 1.5, y: rowY,
             content: '— ' + m.legend[id],
             font: 'Inter', weight: 400, size: 3.2, color: C.textSoft,
         }));

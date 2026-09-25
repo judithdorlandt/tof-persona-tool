@@ -13,14 +13,14 @@
 
 import {
     PAGE_W, PAGE_H, MARGIN, USABLE_W,
-    PERSONA_COLORS, ARCHETYPE_ORDER, ARCHETYPE_NAME,
+    PERSONA_COLORS, ARCHETYPE_ORDER, getArchetypeName,
 } from './constants';
 import {
-    TYPE_V9, COLOR_FAMILIES, SPACING, RHYTHM,
+    TYPE_V9, COLOR_FAMILIES, SPACING,
     reliabilityDotFor,
 } from './OL_styles';
 import {
-    createCanvas, rect, text, drawWrapped, line, circle,
+    createCanvas, rect, text, drawWrapped, circle,
 } from './svgPrimitives';
 import { drawPageHeader } from './OL_Chrome';
 
@@ -36,12 +36,12 @@ const FN_SIZE = 2.9;
 // het paginanummer/logo nooit raken.
 const FN_BOTTOM_BASELINE = PAGE_H - MARGIN - 6;
 
-export function buildHeatmapSVG({ data, copy }) {
+export function buildHeatmapSVG({ data, copy, lang = 'nl' }) {
     const svg = createCanvas();
     svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
 
     // V12: pageTitle weglaten — anders staat hij identiek aan de H2.
-    let y = drawPageHeader(svg, { date: data.date, pageTitle: null });
+    let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
 
     // V24: legenda uitgelijnd met de titel-bovenkant (hoger), zodat de tabel
     // eerder kan beginnen. Pre-tabel-gap verkleind van lg → sm.
@@ -49,7 +49,7 @@ export function buildHeatmapSVG({ data, copy }) {
     y = drawTitleBlock(svg, y, copy);
     drawLegendTopRight(svg, titleTopY, copy);
     y += SPACING.sm;
-    drawHeatmap(svg, y, data, copy);
+    drawHeatmap(svg, y, data, copy, lang);
     drawHeatmapFootnote(svg, data, copy);
     // Footer wordt centraal door de orchestrator getekend (dynamische nummering).
     return svg;
@@ -115,12 +115,11 @@ function drawLegendTopRight(svg, y, copy) {
     }));
 }
 
-function drawHeatmap(svg, y, data, copy) {
+function drawHeatmap(svg, y, data, copy, lang) {
     // Fix #4: team-kolom breder (75mm), font kleiner (12px = 3.18mm)
     const teamColW = 75;
     const nColW = 9;
     const relColW = 22;
-    const personaAreaX = MARGIN + teamColW + nColW + relColW;
     const personaAreaW = USABLE_W - teamColW - nColW - relColW;
     const cellW = personaAreaW / ARCHETYPE_ORDER.length;
 
@@ -147,14 +146,14 @@ function drawHeatmap(svg, y, data, copy) {
     const availH = bandBottom - heatmapTop - orgGap * gapCount;
     const rowH = Math.max(5.0, Math.min(11, availH / units));
 
-    drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy);
+    drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang);
 
     let cursorY = heatmapTop;
     rows.forEach((row, ri) => {
         drawDataRow(svg, {
             x: MARGIN, y: cursorY, h: rowH,
             teamColW, nColW, relColW, cellW,
-            row, isOrg: false, zebra: ri % 2 === 0,
+            row, isOrg: false, zebra: ri % 2 === 0, copy,
         });
         cursorY += rowH;
     });
@@ -187,7 +186,7 @@ function drawHeatmap(svg, y, data, copy) {
     });
 }
 
-function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy) {
+function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang) {
     const yBase = y + 8;
     svg.appendChild(text({
         x: MARGIN, y: yBase,
@@ -212,7 +211,7 @@ function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy) {
         const cx = MARGIN + teamColW + nColW + relColW + ci * cellW + cellW / 2;
         svg.appendChild(text({
             x: cx, y: yBase,
-            content: ARCHETYPE_NAME[id],
+            content: getArchetypeName(id, lang),
             font: 'Inter', weight: 600, size: 3, color: C.text,
             anchor: 'middle',
         }));
@@ -269,7 +268,8 @@ function drawDataRow(svg, {
         }));
         svg.appendChild(text({
             x: cx + 2.5, y: cy + 1.1,
-            content: dot.label,
+            // Het label komt uit copy (OL_styles levert alleen de id + kleur).
+            content: copy?.heatmap?.reliabilityLabels?.[dot.id] || dot.label,
             font: 'Inter', weight: 500, size: 3, color: C.textSoft,
             opacity: rowOpacity < 1 ? rowOpacity : null,
         }));

@@ -2,8 +2,14 @@
  * strategicKompas.js — data-laag voor Module 3
  *
  * Eén shape voor alles wat het Strategisch Kompas-dashboard laat zien
- * voor een organisatie. Vandaag: hardcoded demo-data voor Demo Team 3.
+ * voor een organisatie. Vandaag: demo-data voor Demo Team 3.
  * Morgen: payload uit Supabase per organisatie.
+ *
+ * TWEETALIG: alle zichtbare tekst van de demo-payload staat in de
+ * i18n-namespace `kompasForms.demo` (nl/en). Hier blijft alleen de
+ * taalonafhankelijke LOGICA staan: trend-ids en hun gewicht. Tekst en
+ * gewichten worden per index aan elkaar gekoppeld, dus de volgorde van
+ * `demo.trends` in de copy-bestanden moet gelijk blijven aan DEMO_TREND_METRICS.
  *
  * Shape:
  *   {
@@ -48,111 +54,38 @@
  *     }
  *   }
  *
- * Helpers:
- *   getStrategicKompas(organization?) → bovenstaande shape of null
- *   EMPTY_INTAKE / EMPTY_REVIEW       → lege shape-skeletten voor de formulieren
+ * De sleutels van `intake` en `review` zijn Supabase jsonb-veldnamen. Ze zijn
+ * taalonafhankelijk en veranderen NOOIT — alleen de waarden zijn vertaald.
  *
- *   Nu probeert hij eerst een match op organization-name uit DEMO_DATA.
- *   Later kan dit een Supabase-fetch worden (zie SUPABASE-block onderin).
+ * Helpers:
+ *   getStrategicKompas(organization?, lang?) → bovenstaande shape of null
+ *   EMPTY_INTAKE / EMPTY_REVIEW              → lege shape-skeletten voor de formulieren
  */
 
+import { getCopy } from '../i18n/copy';
+
 // ─── DEMO DATA — Demo Team 3 (TOF) ───────────────────────────────────────────
+// Taalonafhankelijk deel: trend-id + gewicht. De bijbehorende naam en duiding
+// komen per index uit kompasForms.demo.trends.
 
-const DEMO_TEAM_3 = {
-    organization: 'TOF',
-    team: 'Demo Team 3',
-    horizon: '3–5 jaar',
-    lastUpdate: 'mei 2026',
-    nextReview: 'mei 2027',
+const DEMO_TREND_METRICS = [
+    { id: '05', weight: 95 },
+    { id: '01', weight: 85 },
+    { id: '04', weight: 80 },
+    { id: '07', weight: 75 },
+    { id: '02', weight: 70 },
+    { id: '06', weight: 65 },
+    { id: '03', weight: 55 },
+    { id: '08', weight: 40 },
+];
 
-    trends: [
-        { id: '05', name: 'Social based working', weight: 95, note: 'Met 42% teamspelers/verbinders/groeiers wordt verbinding niet door volume gedragen, maar door betekenisvolle ontmoeting.' },
-        { id: '01', name: 'Experience based working', weight: 85, note: 'Groeiers en teamspelers waarderen de werkplek op gevoel en kwaliteit van de dag — niet op stoel en bureau.' },
-        { id: '04', name: 'DEIB als ontwerp', weight: 80, note: 'De minderheid (denkers, zekerzoekers) bewaakt het ritme. Prikkelarme zones en voorspelbare structuur zijn ontwerpvraag, geen policy.' },
-        { id: '07', name: 'Van megacampus naar maatwerk', weight: 75, note: 'Hoge vraag naar samenwerk- en creatieve plekken, lage vraag naar hybride: het kompas wijst naar kleine, gerichte locaties.' },
-        { id: '02', name: 'Van aanwezigheid naar waarde', weight: 70, note: 'Dit team komt samen voor de ontmoeting — niet voor het aantal kantoor-dagen. Stuur op kwaliteit van samenkomst.' },
-        { id: '06', name: 'Servicerevolutie', weight: 65, note: 'Hospitality-omgeving past bij de waardering van beleving. Niet kritisch, wel versterkend.' },
-        { id: '03', name: 'Piekregie', weight: 55, note: 'Minder dominant voor dit team — sociale dynamiek weegt zwaarder dan kamelenweek-piek.' },
-        { id: '08', name: 'AI in de werkplek', weight: 40, note: 'Op afstand relevant: AI als stuurinstrument voor ritme-bewaking, niet als controle-tool.' },
-    ],
-
-    personaOverlay: {
-        dominant: ['Groeier', 'Teamspeler', 'Vernieuwer'],
-        insights: [
-            'Beweeglijk team met sociale draagkracht — 42% leunt op verbinding en ontwikkeling.',
-            'Drie spanningen vragen om ontwerp, niet om reparatie: tempo/verbinding, vrijheid/zekerheid, diepgang/tempo.',
-            'De minderheid (denkers, zekerzoekers, één verbinder) bewaakt het ritme — koester die kleine groep.',
-        ],
-    },
-
-    choices: [
-        {
-            axis: 'Leiderschap',
-            title: 'Bouw ritme in, niet meer tempo',
-            body: 'Drie spanningen draaien om hetzelfde: dit team kan tempo aan, maar niet zonder kaders. Maak ritme-momenten expliciet — wanneer reflectie, wanneer beslissen, wanneer leveren.',
-        },
-        {
-            axis: 'Werkplek',
-            title: 'Klein, sociaal, dichtbij',
-            body: 'Hoge vraag naar samenwerk- en creatieve plekken, lage vraag naar hybride. Investeer in kleinere, gerichte locaties met sterke sociale architectuur — niet in een groot centraal hoofdkantoor.',
-        },
-        {
-            axis: 'Cultuur',
-            title: 'Maak verschillen ontwerpvraag, geen probleem',
-            body: 'Benoem de drie spanningen actief in MT-meetings als ontwerpvragen. Wie heeft welk ritme nodig, en hoe vertaalt zich dat in afspraken, kantooromgeving en samenwerking?',
-        },
-        {
-            axis: 'Technologie',
-            title: 'AI als stuurinstrument voor ritme',
-            body: 'Gebruik AI om beleving, frictie en effectiviteit continu te meten — niet om medewerkers te controleren, maar om de minderheid te beschermen en het ritme bij te sturen.',
-        },
-        {
-            axis: 'Samenwerking',
-            title: 'Sociale architectuur in plaats van bezetting',
-            body: 'Stuur niet op aanwezigheid maar op kwaliteit van samenkomen. Plan rituelen — geen vergaderingen — voor de momenten waarop dit team energie ophaalt.',
-        },
-    ],
-
-    jaarritme: [
-        { moment: 'Q1', activity: 'Kompas-herijking met MT — trends opnieuw wegen, keuzes evalueren.' },
-        { moment: 'Q2', activity: 'Tussentijdse persona-check — nieuwe mensen erbij? Mix verschoven?' },
-        { moment: 'Q3', activity: 'Werkplek-evaluatie — wat heeft sociale architectuur opgeleverd?' },
-        { moment: 'Q4', activity: 'Trends-update + jaaroverzicht — nieuw kompas voor volgend jaar.' },
-    ],
-
-    // Kwalitatieve intake — open antwoorden, gelezen in het ontwerpgesprek.
-    intake: {
-        submittedAt: 'mei 2026',
-        filledBy: 'Demo Manager, MT-lid',
-        teamcode: 'DEMO-TEAM-3',
-        ambition: 'We willen van een uitvoerende organisatie naar een wendbare, lerende organisatie waarin teams meer eigen richting nemen.',
-        movement: 'Van sturen op aanwezigheid naar sturen op waarde en verbinding — de komende drie tot vijf jaar.',
-        mtBehaviour: 'Het MT beslist daadkrachtig, maar reflectie en het benoemen van onderliggende spanningen blijven achter.',
-        workplace: 'De huidige werkomgeving is ingericht op vaste werkplekken; ons werk vraagt om meer ruimte voor ontmoeting en samenwerking.',
-        direction: 'Over 3–5 jaar willen we kunnen zeggen dat verschillen in werkstijl een ontwerpkeuze zijn geworden, geen wrijving.',
-    },
-
-    // Vervolg na 3 maanden — korter, zelfde idee.
-    review: {
-        submittedAt: 'augustus 2026',
-        changed: 'Het MT benoemt spanningen nu vaker hardop; in de organisatie is een eerste pilot met samenwerkplekken gestart.',
-        mixShift: 'Twee nieuwe groeiers erbij, één denker vertrokken — de mix is iets beweeglijker geworden.',
-        choiceLanding: 'De keuze om op kwaliteit van samenkomst te sturen in plaats van aanwezigheid is nog niet echt gemaakt.',
-        notes: 'Behoefte aan een concreet ritme voor reflectie-momenten in het MT.',
-    },
-};
-
-// Mapping organization-name → kompas. Hardcoded voor nu.
-const DEMO_INDEX = {
-    'tof': DEMO_TEAM_3,
-    'demo': DEMO_TEAM_3,
-    'demo team 3': DEMO_TEAM_3,
-    'the office factory': DEMO_TEAM_3,
-};
+// Organisaties die (voorlopig) op de demo-payload uitkomen.
+const DEMO_ORGS = ['tof', 'demo', 'demo team 3', 'the office factory'];
 
 // ─── SHAPE-SKELETTEN — gebruikt door de Module 3-formulieren ─────────────────
 // Eén bron van waarheid: de intake- en review-formulieren bouwen hun payload
 // op basis van deze skeletten, zodat de opgeslagen vorm exact de shape volgt.
+// Deze sleutels zijn Supabase-veldnamen en blijven in elke taal identiek.
 
 export const EMPTY_INTAKE = {
     submittedAt: '',
@@ -173,6 +106,38 @@ export const EMPTY_REVIEW = {
     notes: '',
 };
 
+// Bouwt de demo-payload in de gevraagde taal.
+function buildDemoTeam3(lang) {
+    const demo = getCopy(lang)?.kompasForms?.demo || {};
+    const trendCopy = Array.isArray(demo.trends) ? demo.trends : [];
+
+    return {
+        organization: 'TOF',
+        team: demo.team || '',
+        horizon: demo.horizon || '',
+        lastUpdate: demo.lastUpdate || '',
+        nextReview: demo.nextReview || '',
+
+        trends: DEMO_TREND_METRICS.map((metric, i) => ({
+            id: metric.id,
+            weight: metric.weight,
+            name: trendCopy[i]?.name || '',
+            note: trendCopy[i]?.note || '',
+        })),
+
+        personaOverlay: {
+            dominant: demo.personaOverlay?.dominant || [],
+            insights: demo.personaOverlay?.insights || [],
+        },
+
+        choices: demo.choices || [],
+        jaarritme: demo.jaarritme || [],
+
+        intake: { ...EMPTY_INTAKE, ...(demo.intake || {}) },
+        review: { ...EMPTY_REVIEW, ...(demo.review || {}) },
+    };
+}
+
 // ─── PUBLIC API ──────────────────────────────────────────────────────────────
 
 /**
@@ -180,13 +145,16 @@ export const EMPTY_REVIEW = {
  * (later, zie #SUPABASE block onderin), valt terug op demo-data.
  *
  * Synchronous voor nu — async wanneer Supabase erbij komt.
+ *
+ * @param {string} [organization] — organisatienaam
+ * @param {'nl'|'en'} [lang='nl'] — taal van de zichtbare tekst
  */
-export function getStrategicKompas(organization) {
+export function getStrategicKompas(organization, lang = 'nl') {
     const key = (organization || '').trim().toLowerCase();
-    if (key && DEMO_INDEX[key]) return DEMO_INDEX[key];
+    if (key && DEMO_ORGS.includes(key)) return buildDemoTeam3(lang);
     // Default: laat Demo Team 3 zien zodat het dashboard altijd iets toont
     // (voor klanten zonder eigen payload).
-    return DEMO_TEAM_3;
+    return buildDemoTeam3(lang);
 }
 
 // =============================================================================
@@ -196,7 +164,7 @@ export function getStrategicKompas(organization) {
 //
 // 1. Tabel toevoegen: `strategic_kompas` met kolommen
 //      organization (text, PK)
-//      payload (jsonb)             ← exact dezelfde shape als DEMO_TEAM_3
+//      payload (jsonb)             ← exact dezelfde shape als hierboven
 //      updated_at (timestamptz)
 //      next_review (date)
 //

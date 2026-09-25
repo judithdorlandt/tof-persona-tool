@@ -18,17 +18,48 @@
 //   het om wat het hele profiel van de werkplek vraagt, niet wie er
 //   primair zit.
 
-import { ARCHETYPES } from '../data';
+import { getArchetypes } from '../i18n/archetypes';
+import { getCopy } from '../i18n/copy';
 
 const WORKPLACE_PRESENT_PCT = 15;
 
 // Persona scoort >= deze waarde op een werkplek → die persona heeft hoge behoefte
 const PERSONA_NEED_THRESHOLD = 3;
 
+// Alle zichtbare tekst komt uit copy/<taal>/teamInsightText.js.
+function text(lang) {
+    return getCopy(lang).teamInsightText;
+}
+
+// Werkplek-label in de juiste taal. De aggregatie levert nog een vaste
+// Nederlandse `label`; die blijft de terugval zodat er nooit een lege
+// naam in een zin belandt. De sleutel (focus/work/...) is taalonafhankelijk.
+function workplaceLabel(need, lang) {
+    if (!need) return '';
+    return text(lang).workplaceLabels[need.key] || need.label || need.key;
+}
+
+// Persona-naam uit de archetypes van die taal; nooit hardcoden.
+function personaName(id, lang) {
+    return getArchetypes(lang).find((a) => a.id === id)?.name || id;
+}
+
+// Datawaarden, geen UI-tekst: de aggregatie zet deze namen als een
+// respondent geen naam heeft achtergelaten. Niet vertalen — ze worden
+// hier alleen weggefilterd, nooit getoond.
+const UNKNOWN_NAME_SENTINEL = 'Onbekend';
+const ANONYMOUS_NAME_SENTINEL = 'Anoniem';
+
+function isRealName(name) {
+    return Boolean(name)
+        && name !== UNKNOWN_NAME_SENTINEL
+        && name !== ANONYMOUS_NAME_SENTINEL;
+}
+
 // =========================
 // PUBLIC API
 // =========================
-export function buildTeamInsights(aggregate) {
+export function buildTeamInsights(aggregate, lang = 'nl') {
     // "Wie zit er primair" — voor headline + meta + highlights
     const topByPrimary = aggregate?.personasByPrimary?.[0] || null;
     const secondByPrimary = aggregate?.personasByPrimary?.[1] || null;
@@ -42,15 +73,15 @@ export function buildTeamInsights(aggregate) {
     const teamCount = aggregate?.teamCount || 0;
 
     return {
-        headline: buildHeadline(aggregate),
-        workplaceTension: buildWorkplaceTension(aggregate),
-        quickWins: buildWorkplaceQuickWins(aggregate),
-        highlights: buildHighlights(topByPrimary, secondByPrimary, topNeed, secondNeed),
+        headline: buildHeadline(aggregate, lang),
+        workplaceTension: buildWorkplaceTension(aggregate, lang),
+        quickWins: buildWorkplaceQuickWins(aggregate, lang),
+        highlights: buildHighlights(topByPrimary, secondByPrimary, topNeed, secondNeed, lang),
 
         // Voor Module 2 — energie-basis
-        energy: buildEnergy(aggregate),
-        friction: buildPersonaFriction(aggregate),
-        usage: buildUsage(aggregate),
+        energy: buildEnergy(aggregate, lang),
+        friction: buildPersonaFriction(aggregate, lang),
+        usage: buildUsage(aggregate, lang),
 
         // Meta levert beide expliciet zodat downstream consumers (PDF, hero, etc.)
         // weten welke ze nodig hebben. "top" blijft op primair voor consistentie
@@ -70,37 +101,41 @@ export function buildTeamInsights(aggregate) {
 // =========================
 // HEADLINE
 // =========================
-function buildHeadline(aggregate) {
+function buildHeadline(aggregate, lang = 'nl') {
     const needs = (aggregate?.sortedWorkplaceNeeds || []).filter(
         (n) => n.percentage >= WORKPLACE_PRESENT_PCT
     );
     const teamCount = aggregate?.teamCount || 0;
+    const t = text(lang).headline;
 
     if (teamCount === 0) {
-        return 'Nog geen werkplekbehoefte zichtbaar — wacht tot meer teamleden hebben ingevuld.';
+        return t.empty;
     }
 
     if (needs.length >= 2) {
-        return `Dit team vraagt vooral om ${needs[0].label.toLowerCase()} en ${needs[1].label.toLowerCase()}.`;
+        return t.two(
+            workplaceLabel(needs[0], lang).toLowerCase(),
+            workplaceLabel(needs[1], lang).toLowerCase()
+        );
     }
 
     if (needs.length === 1) {
-        return `Dit team vraagt vooral om ${needs[0].label.toLowerCase()}.`;
+        return t.one(workplaceLabel(needs[0], lang).toLowerCase());
     }
 
     // Geen categorie boven de drempel: de behoeften liggen dicht bij elkaar.
     // Maak de basis voor de acties expliciet — de winst zit niet in een
     // verschil van één procentpunt, maar in de balans tussen relatief veel
     // en relatief weinig gevraagde plekken (vraag versus aanbod).
-    const base = 'Dit team heeft een gemengde werkplekbehoefte — geen enkele categorie springt er duidelijk uit.';
-    const tension = buildWorkplaceTension(aggregate);
+    const base = t.mixedBase;
+    const tension = buildWorkplaceTension(aggregate, lang);
     const under = tension.underserved?.[0];
     const over = tension.oversupplied?.[0];
     if (under && over) {
-        return `${base} De winst zit in de balans: relatief veel vraag naar ${under.label.toLowerCase()}, weinig naar ${over.label.toLowerCase()}.`;
+        return `${base} ${t.mixedBalance(under.label.toLowerCase(), over.label.toLowerCase())}`;
     }
     if (under) {
-        return `${base} De grootste relatieve vraag ligt bij ${under.label.toLowerCase()}.`;
+        return `${base} ${t.mixedUnderOnly(under.label.toLowerCase())}`;
     }
     return base;
 }
@@ -108,7 +143,7 @@ function buildHeadline(aggregate) {
 // =========================
 // WORKPLACE TENSION — onderbediend + overdosis
 // =========================
-function buildWorkplaceTension(aggregate) {
+function buildWorkplaceTension(aggregate, lang = 'nl') {
     const needs = aggregate?.sortedWorkplaceNeeds || [];
     const members = aggregate?.members || [];
     const presentPersonaIds = new Set(
@@ -128,18 +163,18 @@ function buildWorkplaceTension(aggregate) {
     const oversupplied = [];
 
     needs.forEach((need) => {
-        const impacted = impactedPersonas(need.key, presentPersonaIds);
-        const names = impactedNames(need.key, members);
+        const impacted = impactedPersonas(need.key, presentPersonaIds, lang);
+        const names = impactedNames(need.key, members, lang);
 
         // Onderbediend: bovengemiddelde behoefte
         if (need.percentage >= averagePct && impacted.length > 0) {
             underserved.push({
                 key: need.key,
-                label: need.label,
+                label: workplaceLabel(need, lang),
                 percentage: need.percentage,
                 impactedPersonas: impacted,
                 impactedNames: names,
-                message: buildUnderservedMessage(need, impacted),
+                message: buildUnderservedMessage(need, lang),
             });
         }
 
@@ -147,9 +182,9 @@ function buildWorkplaceTension(aggregate) {
         if (need.percentage < averagePct * 0.7) {
             oversupplied.push({
                 key: need.key,
-                label: need.label,
+                label: workplaceLabel(need, lang),
                 percentage: need.percentage,
-                message: buildOversuppliedMessage(need),
+                message: buildOversuppliedMessage(need, lang),
             });
         }
     });
@@ -165,13 +200,14 @@ function buildWorkplaceTension(aggregate) {
         needs,
         averagePct,
         aggregate,
+        lang,
     });
 
     return { underserved, oversupplied, impactSummary };
 }
 
 // Bouw drie groepen: Dominant / Gemiddeld / Minderheid
-function buildImpactSummary({ underserved, oversupplied, members, presentPersonaIds, needs, averagePct, aggregate }) {
+function buildImpactSummary({ underserved, oversupplied, members, presentPersonaIds, needs, averagePct, aggregate, lang = 'nl' }) {
     if (presentPersonaIds.size === 0) {
         return null;
     }
@@ -193,17 +229,20 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
         namesByPersona[p.id] = members
             .filter((m) => m.primary === p.id)
             .map((m) => firstName(m.name))
-            .filter((n) => n && n !== 'Onbekend' && n !== 'Anoniem')
+            .filter(isRealName)
             .filter((n, i, arr) => arr.indexOf(n) === i);
     });
 
+    const personaTension = text(lang).personaTension;
+
     const enrichPersona = (p, group) => {
-        const arch = ARCHETYPES.find((a) => a.id === p.id);
+        const name = personaName(p.id, lang);
+        const message = personaTension[p.id] || personaTension.fallback;
         return {
             id: p.id,
-            name: arch?.name || p.id,
+            name,
             teamPct: p.teamPct,
-            tensionMessage: PERSONA_TENSION[p.id] || `${arch?.name || p.id} verliest grip als de werkplek niet aansluit.`,
+            tensionMessage: message(name),
             names: namesByPersona[p.id] || [],
             group,
         };
@@ -256,11 +295,11 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
 
     const checkWorkplaces = needs
         .filter((n) => n.percentage >= averagePct)
-        .map((n) => ({ label: n.label, percentage: n.percentage }));
+        .map((n) => ({ label: workplaceLabel(n, lang), percentage: n.percentage }));
 
     const uncheckWorkplaces = needs
         .filter((n) => n.percentage < averagePct * 0.7)
-        .map((n) => ({ label: n.label, percentage: n.percentage }));
+        .map((n) => ({ label: workplaceLabel(n, lang), percentage: n.percentage }));
 
     return {
         dominant: dominantEnriched,
@@ -271,19 +310,8 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
     };
 }
 
-const PERSONA_TENSION = {
-    maker: 'Maker komt niet in flow zonder aaneengesloten ruimte om te bouwen.',
-    groeier: 'Groeier krijgt geen tijd om het werk te verteren en zich te ontwikkelen.',
-    presteerder: 'Presteerder verliest grip op voortgang zonder zichtbaar werkritme.',
-    denker: 'Denker vindt geen rust voor de analyse die zorgvuldigheid vraagt.',
-    verbinder: 'Verbinder mist het vroege signaal als samenwerking schuurt.',
-    teamspeler: 'Teamspeler verliest het gezamenlijke ritme dat het team draagt.',
-    zekerzoeker: 'Zekerzoeker mist het houvast dat structuur en voorspelbaarheid biedt.',
-    vernieuwer: 'Vernieuwer vindt geen sparringpartner om ideeën te scherpen.',
-};
-
-function impactedPersonas(workplaceKey, presentPersonaIds) {
-    return ARCHETYPES
+function impactedPersonas(workplaceKey, presentPersonaIds, lang = 'nl') {
+    return getArchetypes(lang)
         .filter((arch) => presentPersonaIds.has(arch.id))
         .filter((arch) => {
             const score = arch?.bricksProfile?.[workplaceKey] || 0;
@@ -296,8 +324,8 @@ function impactedPersonas(workplaceKey, presentPersonaIds) {
         }));
 }
 
-function impactedNames(workplaceKey, members) {
-    const highScoringIds = ARCHETYPES
+function impactedNames(workplaceKey, members, lang = 'nl') {
+    const highScoringIds = getArchetypes(lang)
         .filter((arch) => (arch?.bricksProfile?.[workplaceKey] || 0) >= PERSONA_NEED_THRESHOLD)
         .map((arch) => arch.id);
 
@@ -307,7 +335,7 @@ function impactedNames(workplaceKey, members) {
     members.forEach((m) => {
         if (!highScoringIds.includes(m.primary)) return;
         const fname = firstName(m.name);
-        if (!fname || fname === 'Onbekend' || fname === 'Anoniem') return;
+        if (!isRealName(fname)) return;
         if (seen.has(fname)) return;
         seen.add(fname);
         result.push({ name: fname, personaId: m.primary });
@@ -321,52 +349,30 @@ function firstName(fullName) {
     return String(fullName).trim().split(/\s+/)[0];
 }
 
-function formatNamesNatural(names) {
-    if (names.length === 0) return '';
-    if (names.length === 1) return names[0];
-    if (names.length === 2) return `${names[0]} en ${names[1]}`;
-    return `${names.slice(0, -1).join(', ')} en ${names[names.length - 1]}`;
+function formatNamesNatural(names, lang = 'nl') {
+    return text(lang).joinNatural(names);
 }
 
-function buildUnderservedMessage(need, impacted) {
-    const tension = {
-        focus: 'Het team verliest concentratie in een open omgeving.',
-        work: 'Er is geen vaste basis om rustig dagelijks werk te doen.',
-        hybride: 'Online en fysiek werken loopt vast op slechte schakelmomenten.',
-        meeting: 'Afstemming krijgt geen gestructureerde plek.',
-        project: 'Werk in lagen kan niet visueel gemaakt worden.',
-        team: 'Het werkbare contact valt weg in een te formele omgeving.',
-        learning: 'Reflectie en leren krijgen geen ruimte om te ademen.',
-        retreat: 'Er is geen plek om op te laden zonder afleiding.',
-        social: 'Informele ontmoeting voedt het werk niet meer.',
-    };
-
-    return tension[need.key] || `Het team mist iets in ${need.label.toLowerCase()}.`;
+function buildUnderservedMessage(need, lang = 'nl') {
+    const tension = text(lang).underserved;
+    return (
+        tension[need.key] ||
+        tension.fallback(workplaceLabel(need, lang).toLowerCase())
+    );
 }
 
-function buildOversuppliedMessage(need) {
-    const noise = {
-        focus: 'Veel concentratieplekken die niemand echt nodig heeft worden een leeg eiland.',
-        work: 'Een zee aan standaard werkplekken werkt niet — dit team doet ander soort werk.',
-        hybride: 'Veel hybride faciliteiten die weinig gebruikt worden kosten meer dan ze opleveren.',
-        meeting: 'Te veel overlegruimtes verleiden tot overleggen in plaats van werken.',
-        project: 'Veel creatieve zones die leeg staan voelen als een verwijt.',
-        team: 'Grote samenwerkplekken zonder vraag worden luidruchtige doorlooproutes.',
-        learning: 'Ongebruikte leerplekken geven het signaal dat ontwikkeling "ergens anders" gebeurt.',
-        retreat: 'Rustplekken die niemand zoekt worden rare lege hoeken.',
-        social: 'Te veel ontmoetingsplekken versplinteren in plaats van verbinden.',
-    };
-
+function buildOversuppliedMessage(need, lang = 'nl') {
+    const noise = text(lang).oversupplied;
     return (
         noise[need.key] ||
-        `Veel ${need.label.toLowerCase()} zonder vraag kost energie zonder op te leveren.`
+        noise.fallback(workplaceLabel(need, lang).toLowerCase())
     );
 }
 
 // =========================
 // QUICK WINS
 // =========================
-function buildWorkplaceQuickWins(aggregate) {
+function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
     const wins = [];
     const needs = aggregate?.sortedWorkplaceNeeds || [];
 
@@ -380,40 +386,23 @@ function buildWorkplaceQuickWins(aggregate) {
     const missingPersonas = aggregate?.missingPersonas || [];
 
     const topNeed = needs[0];
-    const tension = buildWorkplaceTension(aggregate);
+    const tension = buildWorkplaceTension(aggregate, lang);
+    const t = text(lang).quickWins;
 
     // WIN 1 — uit WERKSTIJLEN: de dominante primaire persona vraagt iets
     if (topPersona) {
-        const personaActions = {
-            maker: `Plan blokken zonder vergaderingen. Makers maken iets af in stilte, niet in onderbrekingen.`,
-            groeier: `Geef groeiers ruimte om het werk te verteren. Daar groeien ze, niet onder druk.`,
-            presteerder: `Maak voortgang zichtbaar. Presteerders bloeien op duidelijke doelen en mijlpalen.`,
-            denker: `Stuur stukken op tijd rond. Denkers willen voorbereid aan tafel komen.`,
-            verbinder: `Maak ruimte voor informeel contact. Verbinders houden de samenwerking levend.`,
-            teamspeler: `Geef het team gezamenlijke rituelen. Teamspelers gedijen op verbondenheid.`,
-            zekerzoeker: `Communiceer veranderingen vroeg en consistent. Zekerzoekers leveren in voorspelbaarheid.`,
-            vernieuwer: `Reserveer ruimte voor experiment. Vernieuwers verliezen energie als alles routine is.`,
-        };
-        const action = personaActions[topPersona.id];
-        if (action) {
-            wins.push({ source: 'werkstijlen', action });
+        const template = t.persona[topPersona.id];
+        if (template) {
+            wins.push({
+                source: 'werkstijlen',
+                action: template(personaName(topPersona.id, lang)),
+            });
         }
     }
 
     // WIN 2 — uit WERKPLEK
     if (topNeed) {
-        const workplaceActions = {
-            focus: `Maak een afgeschermde concentratiezone. Geen telefoongesprekken, geen meetings.`,
-            work: `Investeer in rustige standaardplekken. Kwaliteit boven variatie.`,
-            hybride: `Bouw één goede schakelruimte. Vaste camera, goede akoestiek, plug-and-play.`,
-            meeting: `Splits overlegruimtes. Klein voor afstemming, groot voor verdieping.`,
-            project: `Reserveer wand- en tafelruimte voor lopend werk. Dit team werkt visueel.`,
-            team: `Maak een echte samenwerkplek. Geen vergaderzaal, maar een werkbare ontmoetingsplek.`,
-            learning: `Zet een leerplek in waar nadenken mag duren. Niet elke plek hoeft productief te voelen.`,
-            retreat: `Creëer een echte rustplek. Geen laptop-hoek, een echte adempauze.`,
-            social: `Versterk de informele ontmoetingsplek. Niet als doorloopzone, maar als werkbare plek.`,
-        };
-        const action = workplaceActions[topNeed.key];
+        const action = t.workplace[topNeed.key];
         if (action) {
             wins.push({ source: 'werkplek', action });
         }
@@ -427,16 +416,16 @@ function buildWorkplaceQuickWins(aggregate) {
         // benoemen het patroon — de werkstijl die vastloopt — niet "de pijn
         // van persoon X".
         const arch = first.impactedPersonas?.[0];
-        const who = arch ? `${arch.name.toLowerCase()}s` : 'teamleden';
+        const who = arch ? text(lang).personaPlural(arch.name) : t.tensionWhoFallback;
         wins.push({
             source: 'spanning',
-            action: `Bescherm ${first.label.toLowerCase()}. De vraag ligt hier bovengemiddeld terwijl het kantoor het vaak niet biedt — juist ${who} lopen dan vast.`,
+            action: t.tensionUnderserved(first.label.toLowerCase(), who),
         });
     } else if (tension.oversupplied.length > 0) {
         const first = tension.oversupplied[0];
         wins.push({
             source: 'spanning',
-            action: `Zet ${first.label.toLowerCase()} anders in. Dit team gebruikt ze nauwelijks, dus het kost ruimte zonder waarde.`,
+            action: t.tensionOversupplied(first.label.toLowerCase()),
         });
     }
 
@@ -444,12 +433,11 @@ function buildWorkplaceQuickWins(aggregate) {
     const minority = tension?.impactSummary?.minority || [];
     if (minority.length > 0) {
         const personaNames = minority.map((p) => p.name);
-        const personaText = formatNamesNatural(personaNames);
-        const verb = minority.length === 1 ? 'zich geïsoleerd voelt' : 'zich geïsoleerd voelen';
+        const personaText = formatNamesNatural(personaNames, lang);
 
         const workplaceScores = {};
         minority.forEach((p) => {
-            const arch = ARCHETYPES.find((a) => a.id === p.id);
+            const arch = getArchetypes(lang).find((a) => a.id === p.id);
             if (!arch?.bricksProfile) return;
             Object.entries(arch.bricksProfile).forEach(([key, score]) => {
                 workplaceScores[key] = (workplaceScores[key] || 0) + score;
@@ -461,40 +449,35 @@ function buildWorkplaceQuickWins(aggregate) {
             .slice(0, 2)
             .map(([key]) => {
                 const need = needs.find((n) => n.key === key);
-                return need?.label || key;
+                return workplaceLabel(need || { key }, lang);
             });
 
-        const workplacesText = formatNamesNatural(topMinorityWorkplaces.map((w) => w.toLowerCase()));
+        const workplacesText = formatNamesNatural(
+            topMinorityWorkplaces.map((w) => w.toLowerCase()),
+            lang
+        );
 
         wins.push({
             source: 'minderheid',
-            action: `Voorzie de werkomgeving ook van ${workplacesText}. Zo voorkom je dat de ${personaText} ${verb}.`,
+            action: t.minority(workplacesText, personaText, minority.length),
         });
     }
 
     // WIN 5+ — uit ONTBREKEND (strikte definitie uit aggregate)
     if (missingPersonas.length > 0) {
-        const missingActions = {
-            maker: `Werf een Maker. Ideeën blijven nu hangen in concepten.`,
-            groeier: `Werf een Groeier. Het team mist nieuwsgierigheid om te leren.`,
-            presteerder: `Werf een Presteerder. Het team mist scherpte om af te krijgen.`,
-            denker: `Werf een Denker. Besluiten komen nu te snel zonder grondige toetsing.`,
-            verbinder: `Werf een Verbinder. Het vroege signaal als samenwerking schuurt ontbreekt.`,
-            teamspeler: `Werf een Teamspeler. Niemand bewaakt expliciet de groepsdynamiek.`,
-            zekerzoeker: `Werf een Zekerzoeker. Het tegenwicht voor stabiliteit ontbreekt.`,
-            vernieuwer: `Werf een Vernieuwer. De impuls om aanpakken los te laten ontbreekt.`,
-        };
-
         missingPersonas.slice(0, 3).forEach((persona) => {
-            const action = missingActions[persona.id];
-            if (action) {
-                wins.push({ source: 'ontbrekend', action });
+            const template = t.missing[persona.id];
+            if (template) {
+                wins.push({
+                    source: 'ontbrekend',
+                    action: template(personaName(persona.id, lang)),
+                });
             }
         });
     } else {
         wins.push({
             source: 'reflectie',
-            action: `Vul de werkplekken aan die dit team mist. Geen verbouwing nodig — klein en zichtbaar werkt.`,
+            action: t.reflection,
         });
     }
 
@@ -504,21 +487,21 @@ function buildWorkplaceQuickWins(aggregate) {
 // =========================
 // HIGHLIGHTS — gebaseerd op personasByPrimary (consistent met dashboard)
 // =========================
-function buildHighlights(top, second, topNeed, secondNeed) {
+function buildHighlights(top, second, topNeed, secondNeed, lang = 'nl') {
+    const t = text(lang).highlights;
     const out = [];
     if (top) {
-        out.push(
-            `${top.name} is de meest aanwezige werkstijl in dit team en zet waarschijnlijk de toon in tempo, voorkeuren en samenwerking.`
-        );
+        out.push(t.top(personaName(top.id, lang)));
     }
     if (top && second) {
-        out.push(
-            `De combinatie van ${top.name} en ${second.name} laat zien waar kracht én spanning kunnen ontstaan in afstemming, besluitvorming en ritme.`
-        );
+        out.push(t.combination(personaName(top.id, lang), personaName(second.id, lang)));
     }
     if (topNeed && secondNeed) {
         out.push(
-            `De sterkste werkplekbehoefte ligt bij ${topNeed.label.toLowerCase()} en ${secondNeed.label.toLowerCase()}. Dat vraagt om bewuste keuzes in focus, overleg en samenwerking.`
+            t.needs(
+                workplaceLabel(topNeed, lang).toLowerCase(),
+                workplaceLabel(secondNeed, lang).toLowerCase()
+            )
         );
     }
     return out;
@@ -529,14 +512,17 @@ function buildHighlights(top, second, topNeed, secondNeed) {
 // =========================
 const DOMINANT_PCT = 30;
 
+// Alleen de structuur: welke twee werkstijlen vormen een spanningsveld.
+// Label en beschrijving staan in copy, opgezocht via `id`.
 const TENSION_PAIRS = [
-    { a: 'maker', b: 'denker', label: 'Tempo vs. reflectie', description: 'Makers willen vooruit, denkers willen eerst begrijpen. Beide nodig — zonder afstemming loopt het team vast of rent het de verkeerde kant op.' },
-    { a: 'presteerder', b: 'verbinder', label: 'Resultaat vs. relatie', description: 'Presteerders sturen op wat af moet, verbinders op hoe het samen loopt. Zonder balans wordt het óf koud efficiënt óf warm traag.' },
-    { a: 'vernieuwer', b: 'zekerzoeker', label: 'Vernieuwing vs. continuïteit', description: 'Vernieuwers zoeken het nieuwe, zekerzoekers beschermen wat werkt.' },
-    { a: 'groeier', b: 'teamspeler', label: 'Ontwikkeling vs. stabiliteit', description: 'Groeiers willen leren en stretchen, teamspelers houden de groep draaiend.' },
+    { id: 'maker:denker', a: 'maker', b: 'denker' },
+    { id: 'presteerder:verbinder', a: 'presteerder', b: 'verbinder' },
+    { id: 'vernieuwer:zekerzoeker', a: 'vernieuwer', b: 'zekerzoeker' },
+    { id: 'groeier:teamspeler', a: 'groeier', b: 'teamspeler' },
 ];
 
-function buildEnergy(aggregate) {
+function buildEnergy(aggregate, lang = 'nl') {
+    const t = text(lang).energy;
     const personas = (aggregate?.sortedPersonas || []).filter(
         (p) => p.count > 0 && p.percentage >= DOMINANT_PCT
     );
@@ -545,35 +531,30 @@ function buildEnergy(aggregate) {
         return (aggregate?.sortedPersonas || [])
             .filter((p) => p.count > 0)
             .slice(0, 2)
-            .map((p) => ({
-                persona: p.name,
-                percentage: p.percentage,
-                body: `${p.name} is aanwezig in het team (${p.percentage}%).`,
-            }));
+            .map((p) => {
+                const name = personaName(p.id, lang);
+                return {
+                    persona: name,
+                    percentage: p.percentage,
+                    body: t.present(name, p.percentage),
+                };
+            });
     }
 
     return personas.map((p) => ({
-        persona: p.name,
+        persona: personaName(p.id, lang),
         percentage: p.percentage,
-        body: energyBodyFor(p),
+        body: energyBodyFor(p, lang),
     }));
 }
 
-function energyBodyFor(persona) {
-    const map = {
-        maker: 'Dit team maakt graag.',
-        groeier: 'Dit team wil leren.',
-        presteerder: 'Dit team levert.',
-        denker: 'Dit team denkt grondig.',
-        verbinder: 'Dit team zorgt voor relatie.',
-        teamspeler: 'Dit team houdt elkaar vast.',
-        zekerzoeker: 'Dit team bouwt op continuïteit.',
-        vernieuwer: 'Dit team zoekt het nieuwe.',
-    };
-    return map[persona.id] || `${persona.name} zet de toon.`;
+function energyBodyFor(persona, lang = 'nl') {
+    const map = text(lang).energy.body;
+    return map[persona.id] || map.fallback(personaName(persona.id, lang));
 }
 
-function buildPersonaFriction(aggregate) {
+function buildPersonaFriction(aggregate, lang = 'nl') {
+    const c = text(lang);
     const personas = aggregate?.sortedPersonas || [];
     const present = new Set(personas.filter((p) => p.count > 0).map((p) => p.id));
     const items = [];
@@ -582,11 +563,17 @@ function buildPersonaFriction(aggregate) {
         if (present.has(pair.a) && present.has(pair.b)) {
             const pA = personas.find((p) => p.id === pair.a);
             const pB = personas.find((p) => p.id === pair.b);
+            const copy = c.tensionPairs[pair.id];
+            if (!copy) return;
+
+            const nameA = personaName(pair.a, lang);
+            const nameB = personaName(pair.b, lang);
+
             items.push({
                 type: 'tension',
-                label: pair.label,
-                body: pair.description,
-                detail: `In dit team: ${pA.name} ${pA.percentage}% vs. ${pB.name} ${pB.percentage}%.`,
+                label: copy.label,
+                body: copy.description(nameA, nameB),
+                detail: c.tensionDetail(nameA, pA.percentage, nameB, pB.percentage),
             });
         }
     });
@@ -594,7 +581,9 @@ function buildPersonaFriction(aggregate) {
     return items;
 }
 
-function buildUsage(aggregate) {
+function buildUsage(aggregate, lang = 'nl') {
+    const t = text(lang).usage;
+
     // Bewust op personasByPrimary voor consistentie met dashboard
     const top = aggregate?.personasByPrimary?.[0]
         || aggregate?.sortedPersonas?.[0];
@@ -603,14 +592,14 @@ function buildUsage(aggregate) {
 
     return [
         {
-            situation: 'Voor een teamoverleg',
-            title: 'Wat leg je op tafel?',
-            items: top ? [`Het team wordt gedomineerd door ${top.name} (${pct}%).`] : [],
+            situation: t.meeting.situation,
+            title: t.meeting.title,
+            items: top ? [t.meeting.item(personaName(top.id, lang), pct)] : [],
         },
         {
-            situation: 'Voor een werkplekbeslissing',
-            title: 'Wat vraagt dit team van de ruimte?',
-            items: topNeed ? [`${topNeed.label} is de sterkste behoefte.`] : [],
+            situation: t.workplace.situation,
+            title: t.workplace.title,
+            items: topNeed ? [t.workplace.item(workplaceLabel(topNeed, lang))] : [],
         },
     ];
 }

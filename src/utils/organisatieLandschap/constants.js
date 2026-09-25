@@ -56,28 +56,83 @@ export const ARCHETYPE_ORDER = [
     'vernieuwer',
 ];
 
-export const ARCHETYPE_NAME = {
-    maker: 'Maker',
-    groeier: 'Groeier',
-    presteerder: 'Presteerder',
-    denker: 'Denker',
-    verbinder: 'Verbinder',
-    teamspeler: 'Teamspeler',
-    zekerzoeker: 'Zekerzoeker',
-    vernieuwer: 'Vernieuwer',
+// Persona-namen per taal. De Engelse namen liggen vast (productbesluit) en
+// mogen niet afwijken: maker=Maker, groeier=Grower, presteerder=Achiever,
+// denker=Thinker, verbinder=Connector, teamspeler=Team Player,
+// zekerzoeker=Stabiliser, vernieuwer=Innovator.
+export const ARCHETYPE_NAME_BY_LANG = {
+    nl: {
+        maker: 'Maker',
+        groeier: 'Groeier',
+        presteerder: 'Presteerder',
+        denker: 'Denker',
+        verbinder: 'Verbinder',
+        teamspeler: 'Teamspeler',
+        zekerzoeker: 'Zekerzoeker',
+        vernieuwer: 'Vernieuwer',
+    },
+    en: {
+        maker: 'Maker',
+        groeier: 'Grower',
+        presteerder: 'Achiever',
+        denker: 'Thinker',
+        verbinder: 'Connector',
+        teamspeler: 'Team Player',
+        zekerzoeker: 'Stabiliser',
+        vernieuwer: 'Innovator',
+    },
 };
 
+/** Alle persona-namen voor één taal (valt terug op NL). */
+export function getArchetypeNames(lang) {
+    return ARCHETYPE_NAME_BY_LANG[lang] || ARCHETYPE_NAME_BY_LANG.nl;
+}
+
+/** Persona-naam voor één id in één taal. Onbekende id → het id zelf. */
+export function getArchetypeName(id, lang) {
+    return getArchetypeNames(lang)[id] || id;
+}
+
+// Achterwaarts compatibel: het kale NL-object blijft bestaan zodat oude
+// importeurs niet breken zolang ze nog geen taal doorgeven.
+export const ARCHETYPE_NAME = ARCHETYPE_NAME_BY_LANG.nl;
+
 // ── Drijfveren (voor signature-zinnen en duiding).
-export const PERSONA_DRIVE = {
-    maker: 'maken',
-    groeier: 'ontwikkeling',
-    presteerder: 'resultaat',
-    denker: 'diepgang',
-    verbinder: 'verbinding',
-    teamspeler: 'verbondenheid',
-    zekerzoeker: 'stabiliteit',
-    vernieuwer: 'vernieuwing',
+// Kleine letter: ze worden midden in een zin gebruikt.
+export const PERSONA_DRIVE_BY_LANG = {
+    nl: {
+        maker: 'maken',
+        groeier: 'ontwikkeling',
+        presteerder: 'resultaat',
+        denker: 'diepgang',
+        verbinder: 'verbinding',
+        teamspeler: 'verbondenheid',
+        zekerzoeker: 'stabiliteit',
+        vernieuwer: 'vernieuwing',
+    },
+    en: {
+        maker: 'making',
+        groeier: 'development',
+        presteerder: 'results',
+        denker: 'depth',
+        verbinder: 'connection',
+        teamspeler: 'togetherness',
+        zekerzoeker: 'stability',
+        vernieuwer: 'renewal',
+    },
 };
+
+/** Alle drijfveren voor één taal (valt terug op NL). */
+export function getPersonaDrives(lang) {
+    return PERSONA_DRIVE_BY_LANG[lang] || PERSONA_DRIVE_BY_LANG.nl;
+}
+
+/** Drijfveer voor één persona-id in één taal. */
+export function getPersonaDrive(id, lang) {
+    return getPersonaDrives(lang)[id] || '';
+}
+
+export const PERSONA_DRIVE = PERSONA_DRIVE_BY_LANG.nl;
 
 // ── Betrouwbaarheidsdrempels (lost fout #4 pagina 1 op).
 // n<5 = laag, 5–9 = midden, ≥10 = hoog.

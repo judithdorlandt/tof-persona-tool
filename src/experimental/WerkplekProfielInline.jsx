@@ -26,7 +26,7 @@ import {
     aantallenUitAggregate,
     BAND,
 } from './werkplekProfielLogic';
-import { WERKPLEK_PROFIEL_COPY as COPY } from './werkplekProfielCopy.nl';
+import { useCopy } from '../i18n/LanguageContext';
 
 // Visuele duiding per band (subtiel, binnen het bestaande palet).
 const BAND_KLEUR = {
@@ -35,8 +35,19 @@ const BAND_KLEUR = {
     [BAND.AANVULLEND]: 'var(--tof-text-muted)',
 };
 
+// Naam en "soort plek"-illustratie komen uit de copy (i18n); de logica levert
+// alleen het type-id. Fallback op het label uit werkplekmix.js.
+function typeCopy(COPY, type) {
+    const c = COPY.types?.[type.id];
+    return {
+        label: c?.label || type.label,
+        voorbeeldplekken: c?.voorbeeldplekken || type.voorbeeldplekken,
+    };
+}
+
 export default function WerkplekProfielInline({ aggregate }) {
     const isMobile = useIsMobile();
+    const { workplaceProfile: COPY } = useCopy();
 
     const aantallen = aantallenUitAggregate(aggregate);
     const profiel = buildWerkplekProfiel(aantallen);
@@ -84,6 +95,7 @@ export default function WerkplekProfielInline({ aggregate }) {
 // =========================
 
 function SoortPlek({ voorbeeldplekken }) {
+    const { workplaceProfile: COPY } = useCopy();
     if (!voorbeeldplekken || voorbeeldplekken.length === 0) return null;
     return (
         <div
@@ -129,7 +141,9 @@ function SoortPlek({ voorbeeldplekken }) {
 // =========================
 
 function SignatureStatement({ type, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     const band = COPY.band[type.band];
+    const tc = typeCopy(COPY, type);
     return (
         <div
             style={{
@@ -164,7 +178,7 @@ function SignatureStatement({ type, isMobile }) {
                     letterSpacing: '-0.01em',
                 }}
             >
-                {type.label}
+                {tc.label}
             </h3>
 
             {COPY.gebruik[type.id] ? (
@@ -180,12 +194,13 @@ function SignatureStatement({ type, isMobile }) {
                 </div>
             ) : null}
 
-            <SoortPlek voorbeeldplekken={type.voorbeeldplekken} />
+            <SoortPlek voorbeeldplekken={tc.voorbeeldplekken} />
         </div>
     );
 }
 
 function BandBadge({ band }) {
+    const { workplaceProfile: COPY } = useCopy();
     const meta = COPY.band[band];
     if (!meta) return null;
     return (
@@ -213,6 +228,7 @@ function BandBadge({ band }) {
 // =========================
 
 function SecondaryList({ items, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
             <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
@@ -238,6 +254,8 @@ function SecondaryList({ items, isMobile }) {
 }
 
 function SecondaryItem({ type }) {
+    const { workplaceProfile: COPY } = useCopy();
+    const tc = typeCopy(COPY, type);
     return (
         <div
             style={{
@@ -265,7 +283,7 @@ function SecondaryItem({ type }) {
                         color: 'var(--tof-text)',
                     }}
                 >
-                    {type.label}
+                    {tc.label}
                 </h4>
                 <BandBadge band={type.band} />
             </div>
@@ -283,7 +301,7 @@ function SecondaryItem({ type }) {
                 </div>
             ) : null}
 
-            <SoortPlek voorbeeldplekken={type.voorbeeldplekken} />
+            <SoortPlek voorbeeldplekken={tc.voorbeeldplekken} />
         </div>
     );
 }
@@ -293,6 +311,7 @@ function SecondaryItem({ type }) {
 // =========================
 
 function BelowAverageNote({ items, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     return (
         <div
             style={{
@@ -355,7 +374,7 @@ function BelowAverageNote({ items, isMobile }) {
                                 fontWeight: 400,
                             }}
                         >
-                            {item.label}
+                            {typeCopy(COPY, item).label}
                         </span>
                     </div>
                 ))}
@@ -369,6 +388,7 @@ function BelowAverageNote({ items, isMobile }) {
 // =========================
 
 function SignalenBlok({ ids, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     const signalen = ids
         .map((id) => COPY.signalen[id])
         .filter(Boolean);

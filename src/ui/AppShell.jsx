@@ -17,6 +17,7 @@
 
 import React from 'react';
 import { SPACING, RADIUS, TYPE, SHADOW, EASE, useIsMobile } from './tokens';
+import { useCopy } from '../i18n/LanguageContext';
 
 // =========================
 // PAGE SHELL
@@ -69,7 +70,6 @@ export function HeroBlock({
     maxWidth = 760,
     compact = false,
 }) {
-    const isMobile = useIsMobile();
     const accentColor = titleAccentColor || 'var(--tof-accent-rose)';
 
     const titleStyle = compact
@@ -289,6 +289,7 @@ export function CollapsibleCard({
     cardRef,
 }) {
     const isMobile = useIsMobile();
+    const { shell: t } = useCopy();
 
     return (
         <div
@@ -387,7 +388,7 @@ export function CollapsibleCard({
                             marginTop: SPACING.xs,
                         }}
                     >
-                        {isOpen ? 'Minder tonen' : 'Ontdek wat dit inhoudt →'}
+                        {isOpen ? t.collapsible.showLess : t.collapsible.showMore}
                     </div>
                 </div>
             </button>

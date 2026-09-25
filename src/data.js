@@ -1,14 +1,35 @@
-export const ARCHETYPES = [
-  {
+/**
+ * data.js — taal-onafhankelijke structuur van de persona's.
+ *
+ * De teksten staan in `src/i18n/copy/<taal>/archetypes.js`. Hier blijft alleen
+ * wat logica of data is: de id's (zoals opgeslagen in de database), de vaste
+ * volgorde, het cluster en het numerieke bricksProfile.
+ *
+ * Gebruik `getArchetypes(lang)` of `useArchetypes()` uit `src/i18n/archetypes`
+ * om structuur en teksten samen te krijgen.
+ */
+
+/**
+ * Vaste volgorde van de persona's. Scoring-code mapt op INDEX (de
+ * antwoordopties per vraag staan in deze volgorde), dus deze volgorde is
+ * load-bearing en mag niet wijzigen.
+ */
+export const ARCHETYPE_ORDER = [
+  'maker',
+  'groeier',
+  'presteerder',
+  'denker',
+  'verbinder',
+  'teamspeler',
+  'zekerzoeker',
+  'vernieuwer',
+];
+
+/** Niet-vertaalbare eigenschappen per persona. `id` = de waarde in de database. */
+export const ARCHETYPE_STRUCTURE = {
+  maker: {
     id: 'maker',
-    name: 'Maker',
-    kw: ['creëren', 'vrijheid', 'experiment'],
-    short: 'Jij maakt. Ideeën krijgen voor jou pas echt waarde als je ze kunt omzetten in iets zichtbaars of tastbaars.',
-    motivation: 'Vrijheid om te creëren, te experimenteren en snel iets neer te zetten.',
-    energy_from: 'Ruimte om iets nieuws te bedenken, te proberen en direct om te zetten in actie.',
-    frustration: 'Te veel regels, trage besluitvorming en omgevingen waarin initiatief wordt afgeremd.',
-    strengths: 'Brengt creativiteit, energie en beweging. Zet ideeën om in iets concreets.',
-    bricks: 'Flexibele werkplekken, creatieve zones, projecttafels, whiteboards en plekken waar je direct kunt maken, schetsen of testen.',
+    cluster: 'creatie',
     bricksProfile: {
       focus: 1,
       work: 2,
@@ -20,72 +41,10 @@ export const ARCHETYPES = [
       retreat: 1,
       social: 3,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn voor de Maker bruikbaar in korte bursts — voor het uitwerken van een concept of het verwerken van feedback. Geen langdurige isolatie, maar gerichte momenten van uitwerking.',
-      work: 'Standaard werkplekken zijn voor de Maker acceptabel als ze flexibel zijn en dicht bij creatieve zones liggen. Een vaste bureau zonder maakruimte rondom voelt beperkend.',
-      hybride: 'Hybride plekken zijn voor de Maker functioneel maar geen prioriteit. Snel schakelen mag digitaal of fysiek — zolang het het creatieve proces niet vertraagt.',
-      meeting: 'Overlegplekken zijn voor de Maker alleen waardevol als ze klein en snel zijn. Een staand overleg van tien minuten werkt beter dan een uur in een vergaderzaal.',
-      project: 'Creatieve plekken zijn de kern van de Maker. Whiteboards, projecttafels, prototypemateriaal en ruimte om ideeën zichtbaar te maken — dit is het natuurlijke habitat. Hoe meer ruimte om te maken, hoe beter.',
-      team: 'Samenwerkplekken zijn voor de Maker cruciaal als ze actief zijn — grote tafels, schrijfwanden, ruimte om te bewegen. Geen formele vergaderomgevingen maar zones waar iets gemaakt wordt.',
-      learning: 'Leerplekken zijn voor de Maker interessant als ze direct toepasbaar zijn. Leren door te doen past beter dan formele leeromgevingen. Informele kenniszones werken het best.',
-      retreat: 'Rustplekken zijn voor de Maker een ventiel, geen werkplek. Een korte pauze om de creativiteit te resetten is nuttig maar geen vast onderdeel van het ritme.',
-      social: 'Informele plekken zijn voor de Maker een prettige inspiratiebron. Toevallige ontmoeting bij de koffiecorner kan een vastgelopen idee vlot trekken.',
-    },
-    bytes: 'Lichte, snelle tools die creatie ondersteunen in plaats van vertragen. Denk aan Miro, Figma, notitietools en eenvoudige samenwerkingsplatforms.',
-    behavior: 'Geef richting op hoofdlijnen, maar laat ruimte in de aanpak. Deze persona floreert bij vertrouwen, autonomie en experiment.',
-    friction: [
-      'Strakke procedures drukken jouw energie omlaag.',
-      'Te veel controle voelt als wantrouwen.',
-      'Als alles eerst besproken moet worden, zakt jouw initiatief weg.',
-    ],
-    consequence: [
-      'Zonder ruimte om te maken, slaat jouw energie om in frustratie.',
-      'Je wordt minder zichtbaar als jouw creatiekracht niet wordt benut.',
-      'De organisatie verliest vernieuwing zonder dat iemand het meteen merkt.',
-    ],
-    leadership: [
-      'Geef vrijheid binnen duidelijke kaders.',
-      'Stuur op resultaat, niet op ieder stapje.',
-      'Maak experimenteren normaal en veilig.',
-    ],
-    lquote: 'Als je deze persoon te strak aanstuurt, raak je niet de chaos kwijt — maar juist de creativiteit.',
-    mismatch: [
-      'Werkplekken zonder maakruimte of visuele hulpmiddelen.',
-      'Culturen waarin conformiteit belangrijker is dan initiatief.',
-      'Overleggen zonder ruimte om iets uit te proberen.',
-    ],
-    energycost: [
-      'Te veel regels en controle.',
-      'Geen ruimte om ideeën te testen.',
-      'Steeds moeten wachten op toestemming.',
-    ],
-    wd: [
-      'Creatieve zones met whiteboards en projecttafels',
-      'Flexibele werkplekken die meebewegen met het werk',
-      'Ruimte om ideeën zichtbaar te maken',
-    ],
-    ls: [
-      'Geef richting, geen dichtgetimmerde instructie',
-      'Beloon initiatief zichtbaar',
-      'Maak leren door te doen normaal',
-    ],
-    ct: [
-      'Combineert sterk met de Denker',
-      'Botst vaak met de Zekerzoeker',
-      'Brengt ideeën en energie in het team',
-    ],
-    cluster: 'creatie',
   },
-  {
+  groeier: {
     id: 'groeier',
-    name: 'Groeier',
-    kw: ['leren', 'ontwikkeling', 'vooruit'],
-    short: 'Jij groeit. Stilstand voelt voor jou niet veilig, maar juist alsof je energie verliest.',
-    motivation: 'Nieuwe dingen leren, jezelf ontwikkelen en steeds een stap verder komen.',
-    energy_from: 'Uitdaging, feedback, nieuwe ervaringen en zichtbare ontwikkeling.',
-    frustration: 'Herhaling, routine en omgevingen waar weinig ruimte is om te leren of te groeien.',
-    strengths: 'Leert snel, beweegt mee en stimuleert ook anderen om zich te ontwikkelen.',
-    bricks: 'Leerplekken, duo-werkplekken, informele kenniszones en plekken waar coaching en feedback vanzelf ontstaan.',
+    cluster: 'creatie',
     bricksProfile: {
       focus: 2,
       work: 3,
@@ -97,72 +56,10 @@ export const ARCHETYPES = [
       retreat: 1,
       social: 2,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn voor de Groeier nuttig voor reflectie en verdieping na nieuwe ervaringen. Geen langdurige isolatie maar gerichte verwerkingsmomenten.',
-      work: 'Standaard werkplekken zijn voor de Groeier acceptabel zolang er voldoende uitdaging en afwisseling in de omgeving is. Een vaste plek naast uitdagende collega\'s werkt beter dan een stille hoek.',
-      hybride: 'Hybride plekken zijn voor de Groeier functioneel maar niet ideaal. De Groeier leert het liefst in fysieke aanwezigheid waar nuance en interactie volledig mogelijk zijn.',
-      meeting: 'Overlegplekken zijn voor de Groeier waardevol als het sparren, feedback ontvangen en ideeën toetsen mogelijk maakt. Vergaderen om te vergaderen werkt averechts.',
-      project: 'Creatieve plekken spreken de Groeier aan omdat ze ruimte bieden voor experiment en nieuwe aanpakken. Niet als doel op zich maar als leermiddel en inspiratiebron.',
-      team: 'Samenwerkplekken zijn voor de Groeier waardevol als leeromgeving. Samenwerken met mensen die anders denken of meer weten geeft energie. Co-creatie en kennisdeling in actie zijn de ideale samenwerkplek.',
-      learning: 'Leerplekken zijn de kern van de Groeier. Kennispleinen, coachingsruimtes, plekken voor feedback en uitwisseling — dit is waar de Groeier het beste gedijt. Zichtbare toegang tot inspiratie en nieuwe kennis is essentieel.',
-      retreat: 'Rustplekken zijn voor de Groeier nuttig als verwerkingsmoment na intensieve leerervaringen. Even terugkeren op zichzelf voordat de volgende uitdaging begint.',
-      social: 'Informele plekken zijn voor de Groeier een bron van toevallige kennisuitwisseling. Spontane gesprekken over werk en inspiratie geven energie en nieuwe ideeën.',
-    },
-    bytes: 'Tools die ontwikkeling zichtbaar maken, feedback makkelijk maken en nieuwe kennis toegankelijk houden.',
-    behavior: 'Geef perspectief, uitdaging en leerkansen. Laat ontwikkeling onderdeel zijn van het werk zelf.',
-    friction: [
-      'Zonder uitdaging droogt jouw motivatie snel op.',
-      'Weinig feedback voelt voor jou als stilstand.',
-      'Als ontwikkeling wordt beloofd maar niet waargemaakt, zakt je vertrouwen.',
-    ],
-    consequence: [
-      'Je blijft wel werken, maar niet meer echt groeien.',
-      'De kans neemt toe dat je elders op zoek gaat naar ontwikkeling.',
-      'Je energie daalt als je geen toekomst meer voelt.',
-    ],
-    leadership: [
-      'Bespreek leerdoelen actief.',
-      'Geef uitdagende opdrachten voor routine.',
-      'Maak groei zichtbaar en concreet.',
-    ],
-    lquote: 'Als je deze persoon niet uitdaagt, verlies je eerst de energie — en daarna de persoon.',
-    mismatch: [
-      'Functies of teams waarin alles hetzelfde blijft.',
-      'Een cultuur zonder feedback.',
-      'Omgevingen waarin ontwikkelen alleen bij woorden blijft.',
-    ],
-    energycost: [
-      'Routine zonder uitdaging.',
-      'Geen feedback krijgen.',
-      'Geen ruimte om te groeien.',
-    ],
-    wd: [
-      'Kennispleinen en informele leerzones',
-      'Plekken voor coaching, feedback en uitwisseling',
-      'Zichtbare toegang tot inspiratie en nieuwe kennis',
-    ],
-    ls: [
-      'Maak leren onderdeel van het werk',
-      'Geef groei taal en richting',
-      'Zorg voor regelmatige feedback',
-    ],
-    ct: [
-      'Versterkt de Presteerder goed',
-      'Kan Zekerzoekers onrustig maken',
-      'Brengt ontwikkeling en beweging in teams',
-    ],
-    cluster: 'creatie',
   },
-  {
+  presteerder: {
     id: 'presteerder',
-    name: 'Presteerder',
-    kw: ['resultaat', 'tempo', 'grip'],
-    short: 'Jij gaat voor resultaat. Je krijgt energie van voortgang, scherpte en iets echt afmaken.',
-    motivation: 'Doelen halen, voortgang zien en grip houden op wat ertoe doet.',
-    energy_from: 'Heldere doelen, zichtbare voortgang, focus en tastbaar resultaat.',
-    frustration: 'Onduidelijkheid, uitstel, eindeloos overleg en teams zonder scherpte.',
-    strengths: 'Brengt focus, tempo en resultaat. Helpt teams om niet te blijven hangen.',
-    bricks: 'Focusplekken, afgeschermde werkzones, projectruimtes zonder ruis en plekken waar voortgang zichtbaar is.',
+    cluster: 'executie',
     bricksProfile: {
       focus: 4,
       work: 2,
@@ -174,72 +71,10 @@ export const ARCHETYPES = [
       retreat: 1,
       social: 1,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn de absolute kern voor de Presteerder. Diepe focuszones zonder ruis, onderbreking of visuele afleiding zijn geen luxe maar noodzaak. Hier wordt het meeste werk gedaan en de meeste energie teruggewonnen.',
-      work: 'Standaard werkplekken zijn voor de Presteerder acceptabel mits ze rustig, ergonomisch en goed uitgerust zijn. Zekerheid over beschikbaarheid op piekdagen is essentieel — geen hot-desking.',
-      hybride: 'Hybride plekken zijn voor de Presteerder functioneel en efficiënt. Snel schakelen zonder reistijd past goed bij het resultaatgerichte werkritme, mits de technische kwaliteit goed is.',
-      meeting: 'Overlegplekken zijn voor de Presteerder tijdverlies tenzij ze leiden tot een helder besluit. Klein, functioneel en snel beschikbaar — geen grote vergaderzalen voor routineoverleg.',
-      project: 'Creatieve plekken spreken de Presteerder weinig aan. Experiment zonder richting voelt als tijdverlies. Alleen interessant als er een concreet doel en een helder resultaat aan vastzit.',
-      team: 'Samenwerkplekken zijn voor de Presteerder alleen waardevol als ze resultaatgericht zijn. Gerichte projectomgevingen met zichtbare voortgang en een duidelijk doel passen goed.',
-      learning: 'Leerplekken zijn voor de Presteerder relevant als ze direct bijdragen aan betere prestaties. Geen leren om het leren — wel leren om scherper, sneller of effectiever te worden.',
-      retreat: 'Rustplekken zijn voor de Presteerder functioneel als herstelmoment. Kort opladen om daarna weer volledig gefocust verder te kunnen — niet meer dan dat.',
-      social: 'Informele plekken kosten de Presteerder eerder energie dan dat ze iets opleveren, tenzij het gesprek inhoudelijk en doelgericht is. Toevallig bijkletsen is geen prioriteit.',
-    },
-    bytes: 'Dashboards, taaktools, planningstools en systemen die direct inzicht geven in doelen, deadlines en voortgang.',
-    behavior: 'Wees duidelijk over doelen, verwachtingen en prioriteiten. Geef ruimte, maar houd richting scherp.',
-    friction: [
-      'Onduidelijkheid remt jouw tempo direct af.',
-      'Vergaderen zonder besluit voelt als energieverlies.',
-      'Steeds wisselende prioriteiten kosten vertrouwen.',
-    ],
-    consequence: [
-      'Je haakt mentaal af als resultaat te lang uitblijft.',
-      'Je levert dan nog wel, maar niet meer op jouw topniveau.',
-      'De drive zakt als er geen scherpte meer is.',
-    ],
-    leadership: [
-      'Wees direct en helder.',
-      'Erken resultaat expliciet.',
-      'Maak prioriteiten zichtbaar en stabiel.',
-    ],
-    lquote: 'Zonder helder doel gaat deze motor draaien — maar nergens naartoe.',
-    mismatch: [
-      'Werkplekken zonder focus.',
-      'Culturen waarin proces belangrijker is dan resultaat.',
-      'Langdurige vaagheid over richting.',
-    ],
-    energycost: [
-      'Onduidelijke doelen.',
-      'Vergaderen zonder besluit.',
-      'Geen plek voor focus.',
-    ],
-    wd: [
-      'Diepe focuszones',
-      'Visuele voortgangsborden',
-      'Projectplekken dicht bij stille werkplekken',
-    ],
-    ls: [
-      'Maak prioriteiten concreet',
-      'Erken voortgang en output',
-      'Stuur op uitkomst, niet op drukte',
-    ],
-    ct: [
-      'Sterk naast de Vernieuwer',
-      'Kan botsen met de Verbinder',
-      'Houdt teams scherp en in beweging',
-    ],
-    cluster: 'executie',
   },
-  {
+  denker: {
     id: 'denker',
-    name: 'Denker',
-    kw: ['analyse', 'diepgang', 'inhoud'],
-    short: 'Jij denkt eerst, dan doe je. Je wilt begrijpen hoe iets werkelijk in elkaar zit voordat je beweegt.',
-    motivation: 'Complexiteit doorgronden en kwaliteit brengen op basis van inzicht.',
-    energy_from: 'Rust, diepgang, analyse en de ruimte om een vraagstuk echt te begrijpen.',
-    frustration: 'Oppervlakkigheid, haast en besluiten zonder inhoudelijke basis.',
-    strengths: 'Brengt diepgang, scherpte en kwaliteit. Ziet wat anderen missen.',
-    bricks: 'Stille concentratieplekken, focuskamers, bibliotheekachtige zones en omgevingen met zo min mogelijk ruis.',
+    cluster: 'reflectie',
     bricksProfile: {
       focus: 4,
       work: 3,
@@ -251,72 +86,10 @@ export const ARCHETYPES = [
       retreat: 3,
       social: 1,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn voor de Denker de meest essentiële werkplek van alle archetypes. Volledig stille, afgesloten zones zonder visuele of auditieve prikkels zijn geen pretje maar een basisvoorwaarde voor goed functioneren.',
-      work: 'Standaard werkplekken zijn voor de Denker alleen acceptabel als ze rustig genoeg zijn. Open kantoorlandschappen met veel beweging en geluid zijn een cognitieve belasting. Een vaste, stille plek geeft houvast.',
-      hybride: 'Hybride plekken zijn voor de Denker functioneel als de technische kwaliteit goed is. De optie om vanuit rust deel te nemen zonder fysiek aanwezig te zijn in een drukke ruimte wordt gewaardeerd.',
-      meeting: 'Overlegplekken zijn voor de Denker uitputtend tenzij het overleg inhoudelijk goed voorbereid is. Spontaan overleg of vergaderen zonder scherpe vraag kost disproportioneel veel energie.',
-      project: 'Creatieve plekken passen de Denker alleen als er rust en structuur in zitten. Open rommelige makerspaces werken averechts. Een stille analyseplek met whiteboard voor complexe vraagstukken is de uitzondering die werkt.',
-      team: 'Samenwerkplekken zijn voor de Denker alleen zinvol als ze inhoudelijk en goed voorbereid zijn. Geen open brainstormsessies maar gestructureerde werkvormen met een scherpe inhoudelijke vraag.',
-      learning: 'Leerplekken zijn voor de Denker waardevol mits ze diepgang bieden. Zelfstudie, toegang tot documentatie en kennisstructuren die verdieping mogelijk maken passen uitstekend.',
-      retreat: 'Rustplekken zijn voor de Denker even essentieel als concentratieplekken. Na intensief denkwerk is herstel noodzakelijk. Een stille terugtrekplek buiten het zicht van anderen is geen luxe maar een noodzaak.',
-      social: 'Informele plekken zijn voor de Denker eerder een bron van ruis dan van energie. Toevallig contact is welkom als het inhoudelijk is — informeel bijkletsen kost meer dan het oplevert.',
-    },
-    bytes: 'Logische systemen, goede documentatie, complete informatie en tools die verdieping ondersteunen.',
-    behavior: 'Geef denktijd, inhoud en voorbereiding. Kwaliteit gaat hier vóór snelheid.',
-    friction: [
-      'Open kantoren zijn voor jou vaak cognitieve ruis.',
-      'Besluiten zonder analyse voelen onveilig.',
-      'Te veel onderbrekingen maken je minder sterk.',
-    ],
-    consequence: [
-      'Je trekt je terug als diepgang geen plek krijgt.',
-      'Jouw inhoudelijke bijdrage verdwijnt stil uit beeld.',
-      'Kwaliteit zakt zonder dat het direct zichtbaar is.',
-    ],
-    leadership: [
-      'Geef informatie op tijd en volledig.',
-      'Respecteer denktijd.',
-      'Waardeer grondigheid zichtbaar.',
-    ],
-    lquote: 'Wie deze persoon haast, verliest vaak precies datgene wat de kwaliteit bewaakt.',
-    mismatch: [
-      'Werkvloeren met continue ruis.',
-      'Culturen waar snelheid belangrijker is dan inhoud.',
-      'Onvoorbereide overleggen zonder scherpe vraag.',
-    ],
-    energycost: [
-      'Onderbrekingen.',
-      'Besluiten zonder analyse.',
-      'Te weinig rust om te verdiepen.',
-    ],
-    wd: [
-      'Stille focusplekken en akoestische rust',
-      'Heldere informatievoorziening',
-      'Plekken waar concentratie beschermd wordt',
-    ],
-    ls: [
-      'Geef tijd om te denken',
-      'Zorg voor goede voorbereiding',
-      'Bescherm kwaliteit in het proces',
-    ],
-    ct: [
-      'Versterkt de Maker goed',
-      'Kan met de Presteerder schuren op tempo',
-      'Brengt kwaliteit en diepte in teams',
-    ],
-    cluster: 'reflectie',
   },
-  {
+  verbinder: {
     id: 'verbinder',
-    name: 'Verbinder',
-    kw: ['mensen', 'contact', 'samenhang'],
-    short: 'Jij verbindt. Voor jou ontstaat goed werk pas echt als mensen zich gezien en verbonden voelen.',
-    motivation: 'Menselijk contact, samenwerking en een sfeer waarin mensen elkaar echt vinden.',
-    energy_from: 'Ontmoeting, samenwerking, afstemming en betekenisvol contact.',
-    frustration: 'Isolement, afstand, sfeerbreuk en werken zonder echte verbinding.',
-    strengths: 'Brengt mensen samen, voelt de onderstroom aan en houdt samenwerking menselijk.',
-    bricks: 'Ontmoetingsplekken, koffiecorners, open samenwerkzones en routing die toevallige ontmoeting stimuleert.',
+    cluster: 'verbinding',
     bricksProfile: {
       focus: 1,
       work: 1,
@@ -328,72 +101,10 @@ export const ARCHETYPES = [
       retreat: 1,
       social: 4,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn voor de Verbinder functioneel maar geen bron van energie. Langdurig alleen werken in stilte kost meer dan het oplevert. Korte focusmomenten zijn prima — geen dagvullend patroon.',
-      work: 'Standaard werkplekken zijn voor de Verbinder acceptabel als ze dicht bij het team zijn en spontaan contact mogelijk maken. Geïsoleerde werkplekken ver van de looproutes werken averechts.',
-      hybride: 'Hybride plekken zijn voor de Verbinder functioneel maar niet ideaal. Online contact voelt dunner dan fysiek. Goede hybride technologie vermindert dit gemis maar heft het niet op.',
-      meeting: 'Overlegplekken zijn voor de Verbinder essentieel — maar dan plekken die echt contact mogelijk maken. Geen kille vergaderzalen maar omgevingen die uitnodigen tot gesprek, oogcontact en echte verbinding.',
-      project: 'Creatieve plekken zijn voor de Verbinder interessant als ze samenwerken faciliteren. Samen iets maken of bedenken geeft energie — solo creatief werk minder.',
-      team: 'Samenwerkplekken zijn voor de Verbinder de kern. Open, toegankelijke zones die spontane samenwerking uitlokken en ruimte bieden voor relatie én taak zijn het ideale werkklimaat.',
-      learning: 'Leerplekken zijn voor de Verbinder het meest waardevol als ze sociaal zijn. Samen leren, kennisdelen en van elkaar horen passen uitstekend — zelfstudie in isolatie past minder goed.',
-      retreat: 'Rustplekken zijn voor de Verbinder zelden een bewuste keuze. Als de Verbinder zich terugtrekt, is dat een signaal dat iets niet klopt in de samenwerking of sfeer — geen normaal patroon.',
-      social: 'Informele plekken zijn de kern van de Verbinder. Warme ontmoetingszones, koffiecorners en routing die toevallig contact uitlokt zijn geen bijzaak maar het hart van de werkomgeving voor dit archetype.',
-    },
-    bytes: 'Communicatietools die menselijk voelen en echt contact makkelijk maken.',
-    behavior: 'Maak ruimte voor contact, relatie en afstemming. Verbinding is geen bijzaak maar voorwaarde.',
-    friction: [
-      'Te veel digitale afstand kost je energie.',
-      'Een koude, taakgerichte sfeer maakt je minder sterk.',
-      'Als ontmoeting geen plek krijgt, droogt samenwerking op.',
-    ],
-    consequence: [
-      'Je ziet vaak als eerste waar het schuurt.',
-      'Zonder verbinding wordt het team stiller en afstandelijker.',
-      'Belangrijke signalen worden gemist als jij geen ruimte krijgt.',
-    ],
-    leadership: [
-      'Maak bewust tijd voor contact.',
-      'Betrek deze persona vroeg bij verandering.',
-      'Zorg dat ontmoeting mogelijk en normaal is.',
-    ],
-    lquote: 'Een team zonder verbinder merkt pas wat er ontbreekt als iedereen nog wel samenwerkt, maar niemand meer verbonden is.',
-    mismatch: [
-      'Werkplekken die alleen op focus zijn ingericht.',
-      'Teams die alleen digitaal contact hebben.',
-      'Culturen waar relatie ondergeschikt is aan taak.',
-    ],
-    energycost: [
-      'Alleen werken zonder contact.',
-      'Geen ruimte voor gesprek.',
-      'Te veel afstand in samenwerking.',
-    ],
-    wd: [
-      'Warme ontmoetingszones',
-      'Informele overlegplekken',
-      'Routing die spontane ontmoeting ondersteunt',
-    ],
-    ls: [
-      'Vraag hoe het echt gaat',
-      'Maak ontmoeting onderdeel van het werk',
-      'Gebruik deze persona als signaalgever',
-    ],
-    ct: [
-      'Sterk naast de Teamspeler',
-      'Kan schuren met de Presteerder',
-      'Bewaakt de menselijke kant van samenwerking',
-    ],
-    cluster: 'verbinding',
   },
-  {
+  teamspeler: {
     id: 'teamspeler',
-    name: 'Teamspeler',
-    kw: ['loyaliteit', 'vertrouwen', 'samen winnen'],
-    short: 'Jij werkt voor het team. Voor jou telt niet alleen wat jij bereikt, maar vooral wat jullie samen neerzetten.',
-    motivation: 'Bijdragen aan een vaste groep met vertrouwen, continuïteit en gezamenlijk succes.',
-    energy_from: 'Samenwerken met bekende mensen, duidelijke rollen en een sterk teamgevoel.',
-    frustration: 'Wisselende teams, onduidelijke verhoudingen en gebrek aan loyaliteit.',
-    strengths: 'Brengt rust, loyaliteit en samenwerking. Houdt teams bij elkaar.',
-    bricks: 'Vaste teamplekken, herkenbare zones en omgevingen waarin een team zich echt als team kan organiseren.',
+    cluster: 'verbinding',
     bricksProfile: {
       focus: 1,
       work: 3,
@@ -405,72 +116,10 @@ export const ARCHETYPES = [
       retreat: 1,
       social: 2,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn voor de Teamspeler acceptabel mits ze dicht bij het team zijn. Werken in een volledig geïsoleerde focusruimte ver van het team voelt onbehaaglijk. Een rustige plek binnen het teamgebied werkt beter.',
-      work: 'Standaard werkplekken zijn voor de Teamspeler ideaal als ze vast en herkenbaar zijn. Een vaste plek in het team, altijd beschikbaar — dit geeft houvast en versterkt het teamgevoel. Geen hot-desking.',
-      hybride: 'Hybride plekken zijn voor de Teamspeler functioneel mits het team er goed mee overweg kan. Teamcohesie moet ook op afstand bewaakt worden — duidelijke hybride afspraken zijn essentieel.',
-      meeting: 'Overlegplekken zijn voor de Teamspeler essentieel — maar dan vaste, herkenbare plekken die bij het team horen. Een vaste teamoverlegplek die teamrituelen en continuïteit ondersteunt werkt beter dan wisselende vergaderzalen.',
-      project: 'Creatieve plekken zijn voor de Teamspeler interessant als het team er samen gebruik van maakt. Solo creatief werk in een creatieve zone past minder goed bij dit archetype.',
-      team: 'Samenwerkplekken zijn de kern van de Teamspeler. Vaste teamzones met herkenbare inrichting en rituelen werken beter dan wisselende open samenwerkruimtes. Continuïteit en vertrouwdheid zijn de basis.',
-      learning: 'Leerplekken zijn voor de Teamspeler relevant als ze teamgericht zijn. Gezamenlijk leren en kennisdelen binnen het team past beter dan individuele leertrajecten.',
-      retreat: 'Rustplekken zijn voor de Teamspeler zelden een bewuste keuze. Als de Teamspeler zich terugtrekt, is dat een teken van discomfort met de teamdynamiek — niet een normaal werkpatroon.',
-      social: 'Informele plekken zijn voor de Teamspeler waardevol als ze teamgericht zijn. Gezamenlijke lunch, vaste koffieplek voor het team en rituelen verankerd in de ruimte geven energie en versterken het teamgevoel.',
-    },
-    bytes: 'Gedeelde systemen, teamoverzichten, vaste processen en tools die samenwerking voorspelbaar maken.',
-    behavior: 'Werk met ritme, helderheid en gezamenlijke afspraken. Deze persona floreert in continuïteit.',
-    friction: [
-      'Wisselende teams voelen als structurele onrust.',
-      'Geen thuisbasis maakt jou minder stevig.',
-      'Te weinig aandacht voor teamgevoel maakt jouw kracht onzichtbaar.',
-    ],
-    consequence: [
-      'Je loyaliteit neemt af als het teamfundament ontbreekt.',
-      'Onrust vertaalt zich in lagere betrokkenheid.',
-      'De samenhang verdwijnt als continuïteit ontbreekt.',
-    ],
-    leadership: [
-      'Wees voorspelbaar en consistent.',
-      'Kondig veranderingen op tijd aan.',
-      'Maak teamdynamiek bespreekbaar.',
-    ],
-    lquote: 'Als je het team als wisselgeld behandelt, verliest deze persoon zijn fundament.',
-    mismatch: [
-      'Hot-desking en continu wisselende groepen.',
-      'Een cultuur waarin iedereen vooral voor zichzelf werkt.',
-      'Te veel reorganisatie zonder bedding.',
-    ],
-    energycost: [
-      'Wisselende teams.',
-      'Geen vaste basis.',
-      'Onzekerheid in samenwerking.',
-    ],
-    wd: [
-      'Vaste teamplekken',
-      'Herkenbare zones voor teams',
-      'Rituelen en routines verankerd in de ruimte',
-    ],
-    ls: [
-      'Bescherm teamcontinuïteit',
-      'Zorg voor duidelijkheid in rollen',
-      'Betrek het team in veranderingen',
-    ],
-    ct: [
-      'Sterk naast de Verbinder',
-      'Kan onrustig worden van de Vernieuwer',
-      'Brengt stabiliteit in samenwerking',
-    ],
-    cluster: 'verbinding',
   },
-  {
+  zekerzoeker: {
     id: 'zekerzoeker',
-    name: 'Zekerzoeker',
-    kw: ['structuur', 'rust', 'duidelijkheid'],
-    short: 'Jij zorgt dat het klopt. Duidelijkheid, structuur en voorspelbaarheid maken jou sterk.',
-    motivation: 'Overzicht, stabiliteit en weten waar je aan toe bent.',
-    energy_from: 'Heldere verwachtingen, structuur, rust en een voorspelbare omgeving.',
-    frustration: 'Chaos, last-minute wijzigingen en onduidelijkheid.',
-    strengths: 'Brengt rust, betrouwbaarheid en proceskwaliteit. Ziet snel waar het niet klopt.',
-    bricks: 'Vaste werkplekken, duidelijke zones, overzichtelijke routing en zo min mogelijk onnodige verandering.',
+    cluster: 'structuur',
     bricksProfile: {
       focus: 3,
       work: 4,
@@ -482,72 +131,10 @@ export const ARCHETYPES = [
       retreat: 2,
       social: 1,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn voor de Zekerzoeker essentieel — bij voorkeur vaste, herkenbare plekken die elke dag beschikbaar zijn. Geen zoekwerk, geen onzekerheid over beschikbaarheid. Voorspelbaarheid is de sleutel.',
-      work: 'Standaard werkplekken zijn voor de Zekerzoeker de belangrijkste werkplek. Een vaste plek die altijd beschikbaar is, ergonomisch goed ingericht en dicht bij bekende collega\'s. Geen hot-desking — zekerheid over de eigen plek is een basisvoorwaarde.',
-      hybride: 'Hybride plekken zijn voor de Zekerzoeker functioneel mits de technische afspraken helder en stabiel zijn. Onduidelijkheid over wie online is en wie fysiek aanwezig geeft spanning.',
-      meeting: 'Overlegplekken zijn voor de Zekerzoeker alleen energiegevend als het overleg goed voorbereid en gestructureerd is. Spontane vergaderingen of overleggen zonder agenda kosten disproportioneel veel energie.',
-      project: 'Creatieve plekken passen de Zekerzoeker slecht. Rommeligheid, experiment en onduidelijkheid over wat er verwacht wordt zijn het tegenovergestelde van wat energie geeft.',
-      team: 'Samenwerkplekken zijn voor de Zekerzoeker acceptabel als de spelregels helder zijn. Wie zit waar, wat is het doel, hoe lang duurt het — als dat duidelijk is werkt samenwerken prima. Zonder structuur kost het te veel energie.',
-      learning: 'Leerplekken zijn voor de Zekerzoeker interessant als ze structuur bieden. Georganiseerde kennissessies en stap-voor-stap leertrajecten passen beter dan open experimentele leeromgevingen.',
-      retreat: 'Rustplekken zijn voor de Zekerzoeker een essentiële buffer bij onzekerheid of hoge werkdruk. Een vaste terugtrekplek die altijd beschikbaar is geeft houvast en zekerheid.',
-      social: 'Informele plekken zijn voor de Zekerzoeker prettig in kleine, vertrouwde kring. Grote open ontmoetingszones met veel onbekenden geven eerder spanning dan energie.',
-    },
-    bytes: 'Heldere systemen, stabiele processen en betrouwbare informatie.',
-    behavior: 'Communiceer vroeg, helder en consistent. Deze persona heeft voorspelbaarheid nodig om goed te functioneren.',
-    friction: [
-      'Onduidelijkheid is voor jou geen kleine irritatie, maar een echte blokkade.',
-      'Last-minute wijzigingen kosten jou disproportioneel veel energie.',
-      'Te veel verandering tegelijk haalt jouw stabiliteit weg.',
-    ],
-    consequence: [
-      'Chronische onduidelijkheid leidt tot spanning.',
-      'Je levert minder goed als je steeds moet schakelen zonder houvast.',
-      'Weerstand groeit als helderheid verdwijnt.',
-    ],
-    leadership: [
-      'Communiceer vroeg en volledig.',
-      'Maak verwachtingen expliciet.',
-      'Bied structuur in onzekere periodes.',
-    ],
-    lquote: 'Onduidelijkheid is voor deze persoon geen uitdaging, maar een aantasting van werkvermogen.',
-    mismatch: [
-      'Omgevingen met continue verandering.',
-      'Vage verwachtingen of incomplete informatie.',
-      'Werkplekken zonder vaste ankers.',
-    ],
-    energycost: [
-      'Onvoorspelbaarheid.',
-      'Te veel verandering.',
-      'Onduidelijke kaders.',
-    ],
-    wd: [
-      'Vaste ankerplekken',
-      'Rustige, overzichtelijke inrichting',
-      'Duidelijke structuren en voorspelbare zones',
-    ],
-    ls: [
-      'Geef helderheid vroeg',
-      'Behandel structuur als kwaliteit',
-      'Respecteer de behoefte aan voorspelbaarheid',
-    ],
-    ct: [
-      'Sterke basis naast de Presteerder',
-      'Botst vaak met de Maker',
-      'Brengt rust en betrouwbaarheid',
-    ],
-    cluster: 'structuur',
   },
-  {
+  vernieuwer: {
     id: 'vernieuwer',
-    name: 'Vernieuwer',
-    kw: ['vooruitdenken', 'kansen', 'verandering'],
-    short: 'Jij ziet wat anders kan. Voor jou is verandering niet vooral risico, maar vooral potentie.',
-    motivation: 'Kansen zien, beweging creëren en bouwen aan iets dat beter kan.',
-    energy_from: 'Nieuwe ideeën, beweging, verandering en een blik op de toekomst.',
-    frustration: 'Stilstand, behoudzucht en organisaties zonder visie.',
-    strengths: 'Brengt richting, vernieuwing en toekomstgericht denken.',
-    bricks: 'Inspirerende werkplekken, innovatiezones, projectruimtes en omgevingen die beweging en vernieuwing zichtbaar maken.',
+    cluster: 'creatie',
     bricksProfile: {
       focus: 1,
       work: 1,
@@ -559,63 +146,8 @@ export const ARCHETYPES = [
       retreat: 1,
       social: 2,
     },
-    bricksProfileText: {
-      focus: 'Concentratieplekken zijn voor de Vernieuwer zelden de plek waar de beste ideeën ontstaan. Te veel stilte en structuur dempen het vooruitdenkende denken. Korte focusmomenten zijn functioneel voor uitwerking — niet de motor.',
-      work: 'Standaard werkplekken zijn voor de Vernieuwer acceptabel als ze flexibel en inspirerend zijn. Een vaste saai bureau in een routineuze omgeving werkt remmend. Plekken die toekomstdenken normaliseren zijn beter.',
-      hybride: 'Hybride plekken zijn voor de Vernieuwer functioneel en efficiënt. Snel schakelen met mensen overal past goed bij het brede netwerk dat dit archetype onderhoudt.',
-      meeting: 'Overlegplekken zijn voor de Vernieuwer waardevol als het overleg strategisch en toekomstgericht is. Operationeel bijpraten kost energie — visiegesprekken en strategische sessies geven energie.',
-      project: 'Creatieve plekken zijn de kern van de Vernieuwer. Innovatiezones, experimenteerruimtes en omgevingen die beweging en vernieuwing normaliseren zijn het ideale habitat. Hoe meer ruimte voor experiment en toekomstgericht denken, hoe beter.',
-      team: 'Samenwerkplekken zijn voor de Vernieuwer essentieel als ze gericht zijn op strategie en verkenning. Grote open innovatiezones waar ideeën kunnen botsen en nieuwe richtingen zichtbaar worden zijn het ideale samenwerkklimaat.',
-      learning: 'Leerplekken zijn voor de Vernieuwer interessant als ze toegang geven tot nieuwe kennis, trends en toekomstgericht denken. Niet voor het oppoetsen van bestaande vaardigheden maar voor het verkennen van nieuwe richtingen.',
-      retreat: 'Rustplekken zijn voor de Vernieuwer een functionele reset — niet meer dan dat. Een korte pauze om daarna met hernieuwde energie vooruit te kijken. Geen structureel onderdeel van het werkpatroon.',
-      social: 'Informele plekken zijn voor de Vernieuwer interessant als ze kruisbestuiving mogelijk maken. Contact met mensen van buiten het eigen team of de eigen organisatie geeft de meeste energie en nieuwe ideeën.',
-    },
-    bytes: 'Tools voor innovatie, experimenteren, trends en snelle iteratie.',
-    behavior: 'Geef ruimte voor ideeën, strategie en verkenning. Betrek deze persona in verandering en koers.',
-    friction: [
-      'Sturen op alleen de korte termijn knelt voor jou direct.',
-      'Bureaucratie voelt voor jou als energielek.',
-      'Als ideeën nooit landen, stop jij met delen.',
-    ],
-    consequence: [
-      'Je wordt stiller als vernieuwing geen podium krijgt.',
-      'De organisatie verliest zicht op toekomstige kansen.',
-      'Jouw energie verschuift naar plekken waar wel beweging is.',
-    ],
-    leadership: [
-      'Geef strategische ruimte.',
-      'Verbind visie aan concrete experimenten.',
-      'Zie deze persona als mede-ontwerper.',
-    ],
-    lquote: 'Zonder podium bouwt deze persoon zijn eigen podium — en dat is zelden binnen dezelfde organisatie.',
-    mismatch: [
-      'Omgevingen zonder ruimte voor vernieuwing.',
-      'Besluitvorming die vernieuwing steeds vertraagt.',
-      'Culturen zonder toekomstperspectief.',
-    ],
-    energycost: [
-      'Geen ruimte voor ideeën.',
-      'Trage besluitvorming.',
-      'Vastzitten in oude patronen.',
-    ],
-    wd: [
-      'Inspirerende innovatiezones',
-      'Plekken waar toekomstgericht werk zichtbaar is',
-      'Ruimte voor experiment en beweging',
-    ],
-    ls: [
-      'Geef visie en mandaat',
-      'Verbind ideeën aan actie',
-      'Gebruik deze persona bij strategie en transitie',
-    ],
-    ct: [
-      'Sterk naast de Presteerder',
-      'Kan Zekerzoekers destabiliseren',
-      'Motor van verandering in teams',
-    ],
-    cluster: 'creatie',
   },
-];
+};
 
 export const QUESTIONS = [
   {

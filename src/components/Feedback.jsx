@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { saveFeedback } from '../supabase';
+import { useCopy } from '../i18n/LanguageContext';
 
 export default function Feedback({ primaryPersonaName = '' }) {
+    const { feedback: t } = useCopy();
     const [fit, setFit] = useState('');
     const [reason, setReason] = useState('');
     const [teamUse, setTeamUse] = useState('');
@@ -10,17 +12,18 @@ export default function Feedback({ primaryPersonaName = '' }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
 
+    // De `value`s zijn databasewaarden — alleen de labels zijn vertaald.
     const fitOptions = [
-        { value: 'spot_on', label: 'Spot on' },
-        { value: 'recognizable', label: 'Herkenbaar' },
-        { value: 'doubt', label: 'Twijfel' },
-        { value: 'not_really', label: 'Niet echt' },
+        { value: 'spot_on', label: t.fitOptions.spot_on },
+        { value: 'recognizable', label: t.fitOptions.recognizable },
+        { value: 'doubt', label: t.fitOptions.doubt },
+        { value: 'not_really', label: t.fitOptions.not_really },
     ];
 
     const teamOptions = [
-        { value: 'yes', label: 'Ja' },
-        { value: 'maybe', label: 'Misschien' },
-        { value: 'no', label: 'Nee' },
+        { value: 'yes', label: t.teamOptions.yes },
+        { value: 'maybe', label: t.teamOptions.maybe },
+        { value: 'no', label: t.teamOptions.no },
     ];
 
     const showReason = !!fit;
@@ -44,7 +47,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
             setSubmitted(true);
         } catch (err) {
             console.error('Feedback save error:', err);
-            setError('Er ging iets mis bij opslaan.');
+            setError(t.saveError);
         } finally {
             setSaving(false);
         }
@@ -70,7 +73,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         textTransform: 'uppercase',
                     }}
                 >
-                    Dank je
+                    {t.thanks.eyebrow}
                 </div>
 
                 <h3
@@ -82,7 +85,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         color: '#1f1b18',
                     }}
                 >
-                    Dank je wel voor je input.
+                    {t.thanks.title}
                 </h3>
 
                 <p
@@ -94,7 +97,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         maxWidth: 640,
                     }}
                 >
-                    Dit is versie 1 — jouw input helpt om de tool scherper en waardevoller te maken.
+                    {t.thanks.lead}
                 </p>
             </div>
         );
@@ -123,7 +126,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         textTransform: 'uppercase',
                     }}
                 >
-                    Kleine check
+                    {t.eyebrow}
                 </div>
 
                 <h3
@@ -135,7 +138,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         color: '#1f1b18',
                     }}
                 >
-                    Klopt dit voor jou?
+                    {t.title}
                 </h3>
 
                 <p
@@ -147,7 +150,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         maxWidth: 640,
                     }}
                 >
-                    Dit helpt om de tool slimmer en scherper te maken.
+                    {t.lead}
                 </p>
             </div>
 
@@ -202,13 +205,13 @@ export default function Feedback({ primaryPersonaName = '' }) {
                             marginBottom: 8,
                         }}
                     >
-                        Wat herken je hierin?
+                        {t.reasonLabel}
                     </div>
 
                     <textarea
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
-                        placeholder="Bijvoorbeeld: manier van werken, energie, frustraties..."
+                        placeholder={t.reasonPlaceholder}
                         rows={4}
                         style={{
                             width: '100%',
@@ -243,7 +246,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                             marginBottom: 8,
                         }}
                     >
-                        Doorvertaling
+                        {t.teamUseLabel}
                     </div>
 
                     <div
@@ -254,7 +257,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                             marginBottom: 12,
                         }}
                     >
-                        Zou je dit ook voor je team willen gebruiken?
+                        {t.teamUseQuestion}
                     </div>
 
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -303,7 +306,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                             marginBottom: 8,
                         }}
                     >
-                        Verder praten
+                        {t.emailLabel}
                     </div>
 
                     <div
@@ -314,7 +317,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                             marginBottom: 8,
                         }}
                     >
-                        Laat je mail achter
+                        {t.emailTitle}
                     </div>
 
                     <p
@@ -325,14 +328,14 @@ export default function Feedback({ primaryPersonaName = '' }) {
                             lineHeight: 1.55,
                         }}
                     >
-                        Dan denk ik graag met je mee over wat dit voor jouw team kan betekenen.
+                        {t.emailLead}
                     </p>
 
                     <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="jouwmail@bedrijf.nl"
+                        placeholder={t.emailPlaceholder}
                         style={{
                             width: '100%',
                             borderRadius: 12,
@@ -371,7 +374,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         lineHeight: 1.5,
                     }}
                 >
-                    Dit is versie 1 — jouw input maakt hem beter.
+                    {t.versionNote}
                 </div>
 
                 <button
@@ -388,7 +391,7 @@ export default function Feedback({ primaryPersonaName = '' }) {
                         fontWeight: 500,
                     }}
                 >
-                    {saving ? 'Opslaan...' : 'Verstuur'}
+                    {saving ? t.saving : t.submit}
                 </button>
             </div>
         </form>

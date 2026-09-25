@@ -9,6 +9,7 @@ import {
   PrimaryButton,
 } from '../ui/AppShell';
 import { TYPE, SPACING } from '../ui/tokens';
+import { useCopy } from '../i18n/LanguageContext';
 
 /**
  * AuthCallback — landingspagina voor magic-link.
@@ -22,6 +23,7 @@ import { TYPE, SPACING } from '../ui/tokens';
  */
 export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponses }) {
   const { session, loading } = useAuth();
+  const { auth: t } = useCopy();
   const [waited, setWaited] = useState(false);
 
   useEffect(() => {
@@ -89,9 +91,9 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
     return (
       <PageShell>
         <HeroBlock
-          eyebrow="INGELOGD"
-          title="Welkom terug."
-          lead="Je wordt doorgestuurd…"
+          eyebrow={t.callback.loggedInEyebrow}
+          title={t.callback.loggedInTitle}
+          lead={t.callback.loggedInLead}
         />
       </PageShell>
     );
@@ -101,9 +103,9 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
     return (
       <PageShell>
         <HeroBlock
-          eyebrow="EÉN MOMENT"
-          title="Inloggen…"
-          lead="We verwerken je magic-link."
+          eyebrow={t.callback.waitingEyebrow}
+          title={t.callback.waitingTitle}
+          lead={t.callback.waitingLead}
         />
       </PageShell>
     );
@@ -113,17 +115,17 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
   return (
     <PageShell>
       <HeroBlock
-        eyebrow="LINK VERLOPEN"
-        title="Dat lukte niet."
-        lead="Je magic-link is verlopen of al eerder gebruikt. Vraag een nieuwe aan — duurt 5 seconden."
+        eyebrow={t.expiredLink.eyebrow}
+        title={t.expiredLink.title}
+        lead={t.expiredLink.callbackLead}
       />
       <SectionCard>
         <p style={{ ...TYPE.body, color: 'var(--tof-text-muted)', margin: 0 }}>
-          Magic-links zijn één uur geldig en kunnen maar één keer gebruikt worden — dat is voor jouw veiligheid.
+          {t.expiredLink.note}
         </p>
         <div style={{ marginTop: SPACING.xl }}>
           <PrimaryButton onClick={() => setPage && setPage('login')}>
-            Vraag nieuwe link →
+            {t.expiredLink.requestNew}
           </PrimaryButton>
         </div>
       </SectionCard>

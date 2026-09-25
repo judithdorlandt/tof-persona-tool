@@ -22,7 +22,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import {
     isCurrentUserAdmin,
-    getCurrentUser,
     sendMagicLink,
     signInWithPassword,
     logPdfDownload,
@@ -51,10 +50,10 @@ import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 
 import { buildTeamAggregate } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
-import { generateTeamInsightPDF } from '../utils/teamInsightPDF';
 import { generateOrganisatieLandschapPDF as generateOrganizationInsightPDF } from '../utils/organisatieLandschap/OrganisatieLandschap';
-import { TILES } from './TeamDashboard.jsx';
+import { buildTiles } from './TeamDashboard.jsx';
 import TeamDynamics from './TeamDynamics.jsx';
+import { useCopy, useLang } from '../i18n/LanguageContext';
 
 const INSIGHT_ACCENT = MODULE.insight.accent;
 const DYNAMICS_ACCENT = MODULE.dynamics.accent;
@@ -86,6 +85,7 @@ function responseMatchesTeam(r, t) {
 // ─── HOOFDCOMPONENT ─────────────────────────────────────────────────────────
 
 export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
+    const { admin: t, common } = useCopy();
     const { user, loading: authLoading } = useAuth();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
     const [loading, setLoading] = useState(true);
@@ -145,9 +145,9 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
             }
         });
         return Array.from(map.values()).sort((a, b) =>
-            a.name.localeCompare(b.name, 'nl', { sensitivity: 'base' })
+            a.name.localeCompare(b.name, common.locale, { sensitivity: 'base' })
         );
-    }, [teams, managers]);
+    }, [teams, managers, common.locale]);
 
     // Haal per organisatie de echte (over de hele org gededupliceerde)
     // response-telling op. Dit komt overeen met wat de detailpagina toont,
@@ -206,7 +206,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
         e?.preventDefault?.();
         setCreateError('');
         if (!orgInput.trim() || !teamInput.trim()) {
-            setCreateError('Organisatie en teamnaam zijn verplicht.');
+            setCreateError(t.createTeam.errors.required);
             return;
         }
         setCreateLoading(true);
@@ -217,7 +217,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                 level: levelInput,
             });
             if (result.error) {
-                setCreateError(result.error.message || 'Aanmaken mislukt.');
+                setCreateError(result.error.message || t.createTeam.errors.failed);
                 setCreateLoading(false);
                 return;
             }
@@ -238,7 +238,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
             const refreshed = await getAllTeamAccessCodes();
             setTeams(refreshed);
         } catch (err) {
-            setCreateError(err?.message || 'Onbekende fout.');
+            setCreateError(err?.message || t.createTeam.errors.unknown);
         } finally {
             setCreateLoading(false);
         }
@@ -250,18 +250,18 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
         const email = managerEmailInput.trim().toLowerCase();
         const code = managerCodeInput.trim();
         if (!email || !code) {
-            setManagerError('Email en teamcode zijn verplicht.');
+            setManagerError(t.managers.errors.required);
             return;
         }
         if (!email.includes('@')) {
-            setManagerError('Vul een geldig e-mailadres in.');
+            setManagerError(t.managers.errors.invalidEmail);
             return;
         }
         setManagerBusy(true);
         try {
             const { error } = await adminAddTeamManager({ email, teamCode: code });
             if (error) {
-                setManagerError(error.message || 'Koppelen mislukt.');
+                setManagerError(error.message || t.managers.errors.linkFailed);
                 return;
             }
             setManagerEmailInput('');
@@ -269,7 +269,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
             const refreshed = await adminListTeamManagers();
             setManagers(refreshed);
         } catch (err) {
-            setManagerError(err?.message || 'Onbekende fout.');
+            setManagerError(err?.message || t.managers.errors.unknown);
         } finally {
             setManagerBusy(false);
         }
@@ -280,7 +280,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
         try {
             const { error } = await adminRemoveTeamManager(id);
             if (error) {
-                setManagerError(error.message || 'Verwijderen mislukt.');
+                setManagerError(error.message || t.managers.errors.removeFailed);
                 return;
             }
             const refreshed = await adminListTeamManagers();
@@ -295,7 +295,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
         return (
             <PageShell>
                 <div style={{ padding: 48, textAlign: 'center', color: 'var(--tof-text-muted)' }}>
-                    Toegangscheck loopt…
+                    {t.gate.checking}
                 </div>
             </PageShell>
         );
@@ -326,7 +326,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                         color: 'var(--tof-accent-rose)',
                         marginBottom: 12,
                     }}>
-                        Geen toegang
+                        {t.noAccess.eyebrow}
                     </div>
                     <h1 style={{
                         margin: '0 0 12px',
@@ -334,13 +334,13 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                         fontWeight: 500,
                         fontSize: 28,
                     }}>
-                        Deze pagina is alleen voor TOF-admins.
+                        {t.noAccess.title}
                     </h1>
                     <p style={{ color: 'var(--tof-text-soft)', lineHeight: 1.6, margin: '0 0 24px' }}>
-                        Je bent ingelogd, maar je hebt geen admin-rechten op dit account.
+                        {t.noAccess.body}
                     </p>
                     <PrimaryButton onClick={() => setPage && setPage('home')}>
-                        Terug naar Home
+                        {t.noAccess.backHome}
                     </PrimaryButton>
                 </div>
             </PageShell>
@@ -403,7 +403,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                             textTransform: 'uppercase',
                             fontWeight: 700,
                         }}>
-                            TOF — Admin
+                            {t.hero.eyebrow}
                         </div>
                         <h1 style={{
                             margin: 0,
@@ -412,7 +412,8 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                             fontSize: isMobile ? 'clamp(24px, 5vw, 32px)' : 'clamp(28px, 2.8vw, 36px)',
                             lineHeight: 1.15,
                         }}>
-                            Nieuwe klant in <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>één blik</em>
+                            {t.hero.titleLead}
+                            <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>{t.hero.titleAccent}</em>
                         </h1>
                         <p style={{
                             margin: 0,
@@ -421,7 +422,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                             color: 'var(--tof-text-soft)',
                             maxWidth: 560,
                         }}>
-                            Maak een team-toegangscode aan, krijg een kant-en-klare welkomstmail, en houd je klantenlijst overzichtelijk.
+                            {t.hero.lead}
                         </p>
                     </div>
                 </div>
@@ -472,6 +473,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
 // waardoor de admin-check in Admin opnieuw draait en het dashboard verschijnt.
 
 function AdminLogin() {
+    const { admin: { login: t } } = useCopy();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [busy, setBusy] = useState(false);
@@ -504,7 +506,7 @@ function AdminLogin() {
         setBusy(true);
         const result = await signInWithPassword(email, password);
         if (!result.ok) {
-            setError(result.error || 'Inloggen mislukt.');
+            setError(result.error || t.failed);
             setBusy(false);
             return;
         }
@@ -530,7 +532,7 @@ function AdminLogin() {
                     color: 'var(--tof-accent-rose)',
                     marginBottom: 12,
                 }}>
-                    TOF Admin
+                    {t.eyebrow}
                 </div>
                 <h1 style={{
                     margin: '0 0 20px',
@@ -538,11 +540,11 @@ function AdminLogin() {
                     fontWeight: 500,
                     fontSize: 28,
                 }}>
-                    Inloggen.
+                    {t.title}
                 </h1>
 
                 <form onSubmit={handleSubmit} noValidate>
-                    <label htmlFor="admin-email" style={labelStyle}>E-mailadres</label>
+                    <label htmlFor="admin-email" style={labelStyle}>{t.emailLabel}</label>
                     <input
                         id="admin-email"
                         type="email"
@@ -551,18 +553,18 @@ function AdminLogin() {
                         autoFocus
                         value={email}
                         onChange={(e) => { setEmail(e.target.value); if (error) setError(''); }}
-                        placeholder="naam@tof.services"
+                        placeholder={t.emailPlaceholder}
                         style={{ ...inputStyle, marginBottom: 16 }}
                     />
 
-                    <label htmlFor="admin-password" style={labelStyle}>Wachtwoord</label>
+                    <label htmlFor="admin-password" style={labelStyle}>{t.passwordLabel}</label>
                     <input
                         id="admin-password"
                         type="password"
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => { setPassword(e.target.value); if (error) setError(''); }}
-                        placeholder="••••••••"
+                        placeholder={t.passwordPlaceholder}
                         style={{ ...inputStyle, marginBottom: error ? 8 : 20 }}
                     />
 
@@ -577,7 +579,7 @@ function AdminLogin() {
                     ) : null}
 
                     <PrimaryButton type="submit" disabled={busy}>
-                        {busy ? 'Bezig met inloggen…' : 'Inloggen →'}
+                        {busy ? t.submitting : t.submit}
                     </PrimaryButton>
                 </form>
             </div>
@@ -592,6 +594,7 @@ function CreateTeamCard({
     levelInput, setLevelInput, leaderEmail, setLeaderEmail,
     createLoading, createError, onSubmit,
 }) {
+    const { admin: { createTeam: t } } = useCopy();
     const inputStyle = {
         width: '100%',
         padding: '12px 14px',
@@ -629,7 +632,7 @@ function CreateTeamCard({
                 fontWeight: 700,
                 color: 'var(--tof-accent-rose)',
             }}>
-                Nieuwe klant aanmaken
+                {t.eyebrow}
             </div>
 
             <div style={{
@@ -638,23 +641,23 @@ function CreateTeamCard({
                 gap: 14,
             }}>
                 <div>
-                    <label style={labelStyle}>Organisatie</label>
+                    <label style={labelStyle}>{t.organizationLabel}</label>
                     <input
                         type="text"
                         value={orgInput}
                         onChange={(e) => setOrgInput(e.target.value)}
-                        placeholder="Bv. Gemeente Nijkerk"
+                        placeholder={t.organizationPlaceholder}
                         style={inputStyle}
                         autoFocus
                     />
                 </div>
                 <div>
-                    <label style={labelStyle}>Team / Afdeling</label>
+                    <label style={labelStyle}>{t.teamLabel}</label>
                     <input
                         type="text"
                         value={teamInput}
                         onChange={(e) => setTeamInput(e.target.value)}
-                        placeholder="Bv. Bestuurszaken"
+                        placeholder={t.teamPlaceholder}
                         style={inputStyle}
                     />
                 </div>
@@ -666,23 +669,23 @@ function CreateTeamCard({
                 gap: 14,
             }}>
                 <div>
-                    <label style={labelStyle}>Module</label>
+                    <label style={labelStyle}>{t.moduleLabel}</label>
                     <select
                         value={levelInput}
                         onChange={(e) => setLevelInput(e.target.value)}
                         style={{ ...inputStyle, cursor: 'pointer' }}
                     >
-                        <option value="insight">Module 01 — Insight (€1.500)</option>
-                        <option value="dynamics">Module 02 — Dynamics (€8.500)</option>
+                        <option value="insight">{t.moduleOptions.insight}</option>
+                        <option value="dynamics">{t.moduleOptions.dynamics}</option>
                     </select>
                 </div>
                 <div>
-                    <label style={labelStyle}>Leider e-mail (optioneel)</label>
+                    <label style={labelStyle}>{t.leaderEmailLabel}</label>
                     <input
                         type="email"
                         value={leaderEmail}
                         onChange={(e) => setLeaderEmail(e.target.value)}
-                        placeholder="l.janssen@nijkerk.nl"
+                        placeholder={t.leaderEmailPlaceholder}
                         style={inputStyle}
                     />
                 </div>
@@ -703,10 +706,10 @@ function CreateTeamCard({
 
             <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 <PrimaryButton type="submit" disabled={createLoading}>
-                    {createLoading ? 'Aanmaken…' : 'Team aanmaken'}
+                    {createLoading ? t.submitting : t.submit}
                 </PrimaryButton>
                 <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>
-                    Code wordt automatisch gegenereerd.
+                    {t.hint}
                 </span>
             </div>
         </form>
@@ -716,12 +719,15 @@ function CreateTeamCard({
 // ─── SUB: Just-created (welkomstmail preview) ──────────────────────────────
 
 function JustCreatedCard({ isMobile, info, onDismiss }) {
+    const { admin: { justCreated: t } } = useCopy();
     const [copied, setCopied] = useState(false);
 
-    const moduleLabel = info.level === 'dynamics' ? 'Module 02 — Dynamics' : 'Module 01 — Insight';
+    const moduleLabel = info.level === 'dynamics'
+        ? t.moduleLabels.dynamics
+        : t.moduleLabels.insight;
     const recipientName = info.leaderEmail
         ? info.leaderEmail.split('@')[0].split('.')[0]
-        : 'Livia'; // placeholder voorbeeld
+        : t.fallbackRecipient; // voorbeeldnaam
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
     // Persoonlijke deelnemer-link: organisatie én teamcode zitten in de URL,
@@ -732,30 +738,11 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
         `?org=${encodeURIComponent(info.organization || '')}` +
         `&code=${encodeURIComponent(info.code || '')}`;
 
-    const mailBody = `Beste ${capitalize(recipientName)},
-
-Fijn dat we deze stap samen zetten. Hieronder alles wat je nodig hebt om jouw team aan de slag te laten gaan.
-
-JULLIE TEAMCODE
-${info.code}
-
-Deze code zit al verwerkt in de link hieronder, zodat de tool de antwoorden automatisch aan jullie team koppelt.
-
-WAT JE TEAMLEDEN DOEN (15 minuten per persoon)
-1. Open de persoonlijke teamlink: ${quizUrl}
-2. Organisatie, afdeling en teamcode staan al ingevuld — alleen voornaam toevoegen
-3. Vul de quiz in — ze beantwoorden ~30 stellingen
-4. Ze krijgen direct hun persoonlijke persona als resultaat
-
-WAT JIJ ALS LEIDINGGEVENDE STRAKS DOET
-Zodra iedereen heeft ingevuld krijg je van mij een persoonlijke link om het team-resultaat in te zien.
-
-Vragen? Bel of mail gerust.
-
-Hartelijke groet,
-Judith
-The Office Factory
-+31 6 8389 4556 · judith@tof.services`;
+    const mailBody = t.mailBody({
+        recipient: capitalize(recipientName),
+        code: info.code,
+        quizUrl,
+    });
 
     function handleCopy() {
         navigator.clipboard.writeText(mailBody).then(() => {
@@ -784,7 +771,7 @@ The Office Factory
                         color: 'var(--tof-accent-sage)',
                         marginBottom: 4,
                     }}>
-                        Team aangemaakt
+                        {t.eyebrow}
                     </div>
                     <h3 style={{
                         margin: 0,
@@ -798,7 +785,7 @@ The Office Factory
                         {moduleLabel}
                     </div>
                 </div>
-                <SecondaryButton onClick={onDismiss}>Sluiten</SecondaryButton>
+                <SecondaryButton onClick={onDismiss}>{t.dismiss}</SecondaryButton>
             </div>
 
             <div style={{
@@ -814,7 +801,7 @@ The Office Factory
             }}>
                 <div>
                     <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.4, color: 'var(--tof-text-muted)' }}>
-                        Code
+                        {t.codeLabel}
                     </div>
                     <div style={{
                         fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
@@ -827,7 +814,7 @@ The Office Factory
                     </div>
                 </div>
                 <SecondaryButton onClick={() => navigator.clipboard.writeText(info.code)}>
-                    Kopieer code
+                    {t.copyCode}
                 </SecondaryButton>
             </div>
 
@@ -839,7 +826,7 @@ The Office Factory
                     color: 'var(--tof-accent-rose)',
                     listStyle: 'none',
                 }}>
-                    Kant-en-klare welkomstmail tonen ↓
+                    {t.toggleMail}
                 </summary>
                 <div style={{ marginTop: 14, display: 'grid', gap: 10 }}>
                     <textarea
@@ -862,7 +849,7 @@ The Office Factory
                     />
                     <div>
                         <PrimaryButton onClick={handleCopy}>
-                            {copied ? '✓ Gekopieerd' : 'Kopieer mail-tekst'}
+                            {copied ? t.copied : t.copyMail}
                         </PrimaryButton>
                     </div>
                 </div>
@@ -881,29 +868,17 @@ const TESTER_LOGIN_URL = 'https://tof-persona-tool.netlify.app/start';
 const INVITE_COOLDOWN_SECONDS = 60;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function buildTesterMail(name, email) {
-    const greeting = name.trim() ? name.trim() : 'jij';
-    return `Beste ${greeting},
-
-Ik laat je graag zelf ervaren waar onze persona-tool over gaat. Je bent er een kwartiertje mee bezig.
-
-ZO WERKT HET
-1. Open deze link: ${TESTER_LOGIN_URL}
-2. Vul je e-mailadres in (${email || 'je eigen adres'}) — je krijgt meteen een inloglink in je mailbox
-3. Klik die link aan en je staat direct in de vragenlijst
-4. Na negen vragen zie je je eigen persona
-
-Geen wachtwoord nodig. Je antwoorden blijven van jou.
-
-Benieuwd naar wat dit voor een heel team laat zien? Bel of mail gerust.
-
-Hartelijke groet,
-Judith
-The Office Factory
-+31 6 8389 4556 · judith@tof.services`;
+/** Bouwt de kopieerbare uitnodigingsmail met de teksten van de actieve taal. */
+function buildTesterMail(copy, name, email) {
+    return copy.mailBody({
+        recipient: name.trim() || copy.mailFallbackName,
+        email: email || copy.mailFallbackEmail,
+        loginUrl: TESTER_LOGIN_URL,
+    });
 }
 
 function InviteTesterCard({ isMobile }) {
+    const { admin: { inviteTester: t } } = useCopy();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState('idle'); // idle | sending | sent | error
@@ -918,12 +893,12 @@ function InviteTesterCard({ isMobile }) {
     }, [cooldown]);
 
     const cleanEmail = email.trim().toLowerCase();
-    const mailBody = buildTesterMail(name, cleanEmail);
+    const mailBody = buildTesterMail(t, name, cleanEmail);
 
     async function handleSend() {
         if (!EMAIL_PATTERN.test(cleanEmail)) {
             setStatus('error');
-            setMessage('Vul een geldig e-mailadres in.');
+            setMessage(t.errors.invalidEmail);
             return;
         }
 
@@ -937,11 +912,11 @@ function InviteTesterCard({ isMobile }) {
 
         if (result.ok) {
             setStatus('sent');
-            setMessage(`Inlogmail verstuurd naar ${cleanEmail}. De link is één uur geldig.`);
+            setMessage(t.sent(cleanEmail));
             setCooldown(INVITE_COOLDOWN_SECONDS);
         } else {
             setStatus('error');
-            setMessage(result.error || 'Versturen mislukt. Gebruik de mailtekst hieronder.');
+            setMessage(result.error || t.errors.sendFailed);
         }
     }
 
@@ -955,9 +930,9 @@ function InviteTesterCard({ isMobile }) {
     const sending = status === 'sending';
     const disabled = sending || cooldown > 0;
 
-    let buttonLabel = 'Stuur inlogmail';
-    if (sending) buttonLabel = 'Bezig…';
-    else if (cooldown > 0) buttonLabel = `Opnieuw over ${cooldown}s`;
+    let buttonLabel = t.send;
+    if (sending) buttonLabel = t.sending;
+    else if (cooldown > 0) buttonLabel = t.cooldown(cooldown);
 
     const inputStyle = {
         width: '100%',
@@ -999,12 +974,10 @@ function InviteTesterCard({ isMobile }) {
                     color: 'var(--tof-accent-rose)',
                     marginBottom: 6,
                 }}>
-                    Individuele tester uitnodigen
+                    {t.eyebrow}
                 </div>
                 <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tof-text-soft)', maxWidth: 620 }}>
-                    Geen team, geen code — alleen een persoonlijke inlog. Na het klikken op de
-                    link in de mail komt de ontvanger direct in de vragenlijst en ziet daarna
-                    zijn eigen persona.
+                    {t.lead}
                 </p>
             </div>
 
@@ -1014,17 +987,17 @@ function InviteTesterCard({ isMobile }) {
                 gap: 14,
             }}>
                 <div>
-                    <label style={labelStyle}>Voornaam (optioneel)</label>
+                    <label style={labelStyle}>{t.nameLabel}</label>
                     <input
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Bv. Maarten"
+                        placeholder={t.namePlaceholder}
                         style={inputStyle}
                     />
                 </div>
                 <div>
-                    <label style={labelStyle}>E-mail</label>
+                    <label style={labelStyle}>{t.emailLabel}</label>
                     <input
                         type="email"
                         value={email}
@@ -1038,7 +1011,7 @@ function InviteTesterCard({ isMobile }) {
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !disabled) handleSend();
                         }}
-                        placeholder="naam@organisatie.nl"
+                        placeholder={t.emailPlaceholder}
                         style={inputStyle}
                     />
                 </div>
@@ -1064,7 +1037,7 @@ function InviteTesterCard({ isMobile }) {
                     {buttonLabel}
                 </PrimaryButton>
                 <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>
-                    Lukt versturen niet? Mail de tekst hieronder zelf.
+                    {t.hint}
                 </span>
             </div>
 
@@ -1076,7 +1049,7 @@ function InviteTesterCard({ isMobile }) {
                     color: 'var(--tof-accent-rose)',
                     listStyle: 'none',
                 }}>
-                    Mailtekst en link zelf versturen ↓
+                    {t.toggleMail}
                 </summary>
                 <div style={{ marginTop: 14, display: 'grid', gap: 10 }}>
                     <textarea
@@ -1099,13 +1072,13 @@ function InviteTesterCard({ isMobile }) {
                     />
                     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                         <PrimaryButton type="button" onClick={handleCopyMail}>
-                            {copied ? '✓ Gekopieerd' : 'Kopieer mailtekst'}
+                            {copied ? t.copied : t.copyMail}
                         </PrimaryButton>
                         <SecondaryButton
                             type="button"
                             onClick={() => navigator.clipboard.writeText(TESTER_LOGIN_URL)}
                         >
-                            Kopieer alleen de link
+                            {t.copyLink}
                         </SecondaryButton>
                     </div>
                 </div>
@@ -1117,6 +1090,8 @@ function InviteTesterCard({ isMobile }) {
 // ─── SUB: Organisaties lijst (overzicht) ───────────────────────────────────
 
 function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSelect }) {
+    const { admin } = useCopy();
+    const t = admin.organizations;
     return (
         <div style={{
             background: 'var(--tof-surface)',
@@ -1133,7 +1108,7 @@ function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSel
                 fontWeight: 700,
                 color: 'var(--tof-text-muted)',
             }}>
-                Organisaties ({organizations.length})
+                {t.heading(organizations.length)}
             </div>
 
             {organizations.length === 0 ? (
@@ -1143,7 +1118,7 @@ function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSel
                     fontSize: 14,
                     textAlign: 'center',
                 }}>
-                    Nog geen organisaties met teams.
+                    {t.empty}
                 </div>
             ) : (
                 <div style={{ display: 'grid', gap: 10 }}>
@@ -1179,16 +1154,13 @@ function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSel
                                 {org.name}
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                {org.teamCount} {org.teamCount === 1 ? 'team' : 'teams'}
+                                {admin.counts.teams(org.teamCount)}
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                {(() => {
-                                    const count = responseCounts[org.name] ?? org.responseCount;
-                                    return `${count} ${count === 1 ? 'response' : 'responses'}`;
-                                })()}
+                                {admin.counts.responses(responseCounts[org.name] ?? org.responseCount)}
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                {org.managerCount} {org.managerCount === 1 ? 'manager' : 'managers'}
+                                {admin.counts.managers(org.managerCount)}
                             </div>
                             <div style={{
                                 fontSize: 13,
@@ -1196,7 +1168,7 @@ function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSel
                                 color: INSIGHT_ACCENT,
                                 textAlign: 'right',
                             }}>
-                                Bekijk →
+                                {t.view}
                             </div>
                         </button>
                     ))}
@@ -1222,6 +1194,10 @@ function OrganizationDetail({
     const [obsForm, setObsForm] = useState({ leegloper: '', werkt_goed: '' });
     const [obsBusy, setObsBusy] = useState(false);
     const [obsError, setObsError] = useState(null);
+    const { lang } = useLang();
+    const { admin, teamDashboard } = useCopy();
+    const t = admin.detail;
+    const tiles = useMemo(() => buildTiles(teamDashboard), [teamDashboard]);
 
     const moduleAccent = moduleSel === 'dynamics' ? DYNAMICS_ACCENT : INSIGHT_ACCENT;
 
@@ -1261,7 +1237,7 @@ function OrganizationDetail({
         });
         setObsBusy(false);
         if (error) {
-            setObsError(error.message || 'Toevoegen mislukt.');
+            setObsError(error.message || admin.observations.errors.addFailed);
             return;
         }
         if (row) {
@@ -1275,30 +1251,30 @@ function OrganizationDetail({
         const { error } = await adminRemoveOrgObservation(id);
         setObsBusy(false);
         if (error) {
-            setObsError(error.message || 'Verwijderen mislukt.');
+            setObsError(error.message || admin.observations.errors.removeFailed);
             return;
         }
         setObservations((prev) => prev.filter((o) => o.id !== id));
     }
 
-    const aggregate = useMemo(() => buildTeamAggregate(responses), [responses]);
-    const insights = useMemo(() => buildTeamInsights(aggregate), [aggregate]);
+    const aggregate = useMemo(() => buildTeamAggregate(responses, lang), [responses, lang]);
+    const insights = useMemo(() => buildTeamInsights(aggregate, lang), [aggregate, lang]);
 
     // Per-team aggregaten voor vergelijkings-blok.
     const teamSummaries = useMemo(() => {
-        return (org?.teams || []).map((t) => {
-            const forTeam = responses.filter((r) => responseMatchesTeam(r, t));
-            const agg = buildTeamAggregate(forTeam);
+        return (org?.teams || []).map((teamRow) => {
+            const forTeam = responses.filter((r) => responseMatchesTeam(r, teamRow));
+            const agg = buildTeamAggregate(forTeam, lang);
             const top = agg?.topPersonaByPrimary || agg?.personasByPrimary?.[0];
             return {
-                team: t,
+                team: teamRow,
                 responseCount: forTeam.length,
-                dominant: top ? `${top.name} ${top.countPercentage}%` : '—',
+                dominant: top ? `${top.name} ${top.countPercentage}%` : t.empty,
                 responses: forTeam,
                 aggregate: agg,
             };
         }).sort((a, b) => b.responseCount - a.responseCount);
-    }, [org, responses]);
+    }, [org, responses, lang, t.empty]);
 
     // ── TIJDELIJKE DIAGNOSE: welke responses koppelen NIET aan een team?
     // Toont per niet-gematchte response waarom de match faalt, zodat de
@@ -1343,7 +1319,7 @@ function OrganizationDetail({
         [managers, orgCodes]
     );
 
-    const activeTile = TILES.find((t) => t.id === activeTileId);
+    const activeTile = tiles.find((tile) => tile.id === activeTileId);
 
     function handleTileClick(id) {
         setActiveTileId((prev) => (prev === id ? null : id));
@@ -1392,16 +1368,16 @@ function OrganizationDetail({
                     width: 'fit-content',
                 }}
             >
-                ← Terug naar Admin
+                {t.back}
             </button>
 
             <HeroBlock
                 compact
-                eyebrow="TOF — ADMIN · ORGANISATIE"
-                title="Organisatie-inzicht voor"
+                eyebrow={t.eyebrow}
+                title={t.title}
                 titleAccent={org.name}
                 titleAccentColor={moduleAccent}
-                lead={`Geaggregeerd over ${org.teamCount} ${org.teamCount === 1 ? 'team' : 'teams'} en ${responses.length} ${responses.length === 1 ? 'response' : 'responses'}.`}
+                lead={t.lead(org.teamCount, responses.length)}
                 actions={
                     moduleSel === 'insight' && responses.length > 0 ? (
                         <PrimaryButton
@@ -1412,13 +1388,14 @@ function OrganizationDetail({
                                     teamSummaries,
                                     organizationName: org.name,
                                     observations,
+                                    lang,
                                 });
                                 // Log op de achtergrond — mag stil falen.
                                 logPdfDownload(`admin-rapport-${org.name}`);
                             }}
                             style={{ background: INSIGHT_ACCENT }}
                         >
-                            Download als PDF
+                            {t.downloadPdf}
                         </PrimaryButton>
                     ) : null
                 }
@@ -1432,14 +1409,14 @@ function OrganizationDetail({
 
             {loadingResponses ? (
                 <div style={{ padding: 32, textAlign: 'center', color: 'var(--tof-text-muted)' }}>
-                    Responses laden…
+                    {t.loadingResponses}
                 </div>
             ) : (
                 <>
                     {moduleSel === 'insight' ? (
                         <>
                             <TileGrid columns={4}>
-                                {TILES.map((tile) => (
+                                {tiles.map((tile) => (
                                     <Tile
                                         key={tile.id}
                                         eyebrow={tile.eyebrow}
@@ -1490,7 +1467,7 @@ function OrganizationDetail({
                                                 flexShrink: 0,
                                             }}
                                         >
-                                            Sluiten ✕
+                                            {t.closeTile}
                                         </button>
                                     </div>
                                     <div style={{ padding: '0 22px 22px' }}>
@@ -1524,7 +1501,7 @@ function OrganizationDetail({
                                 fontWeight: 700,
                                 color: 'var(--tof-text-muted)',
                             }}>
-                                Teams in deze organisatie ({teamSummaries.length})
+                                {t.teamsHeading(teamSummaries.length)}
                             </div>
 
                             <div style={{ display: 'grid', gap: 10 }}>
@@ -1557,7 +1534,7 @@ function OrganizationDetail({
                                                     textOverflow: 'ellipsis',
                                                     whiteSpace: 'nowrap',
                                                 }}>
-                                                    {s.team.team || '—'}
+                                                    {s.team.team || t.empty}
                                                 </div>
                                                 <div style={{
                                                     fontSize: 11,
@@ -1569,7 +1546,7 @@ function OrganizationDetail({
                                                 </div>
                                             </div>
                                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                                {s.responseCount} {s.responseCount === 1 ? 'response' : 'responses'}
+                                                {admin.counts.responses(s.responseCount)}
                                             </div>
                                             <div style={{ fontSize: 13, color: 'var(--tof-text)' }}>
                                                 {s.dominant}
@@ -1593,7 +1570,7 @@ function OrganizationDetail({
                                                     whiteSpace: 'nowrap',
                                                 }}
                                             >
-                                                {busy ? '…' : 'Bekijk team →'}
+                                                {busy ? t.viewTeamBusy : t.viewTeam}
                                             </button>
                                         </div>
                                     );
@@ -1639,15 +1616,16 @@ function OrganizationDetail({
 // ─── SUB: Module-toggle ────────────────────────────────────────────────────
 
 function ModuleToggle({ value, onChange, isMobile }) {
+    const { admin: { moduleToggle: t } } = useCopy();
     const options = [
-        { id: 'insight', label: '01 — Team Insight', accent: INSIGHT_ACCENT },
-        { id: 'dynamics', label: '02 — Team Dynamics', accent: DYNAMICS_ACCENT },
+        { id: 'insight', label: t.options.insight, accent: INSIGHT_ACCENT },
+        { id: 'dynamics', label: t.options.dynamics, accent: DYNAMICS_ACCENT },
     ];
 
     return (
         <div
             role="tablist"
-            aria-label="Module"
+            aria-label={t.ariaLabel}
             style={{
                 display: 'inline-flex',
                 gap: 4,
@@ -1692,6 +1670,7 @@ function ModuleToggle({ value, onChange, isMobile }) {
 // ─── SUB: Bestuurder placeholder ───────────────────────────────────────────
 
 function BestuurderPlaceholder({ isMobile, orgName }) {
+    const { admin: { director: t } } = useCopy();
     return (
         <div style={{
             background: 'var(--tof-surface)',
@@ -1708,14 +1687,14 @@ function BestuurderPlaceholder({ isMobile, orgName }) {
                 fontWeight: 700,
                 color: 'var(--tof-text-muted)',
             }}>
-                Bestuurder
+                {t.eyebrow}
             </div>
             <div style={{
                 fontFamily: 'var(--tof-font-heading)',
                 fontSize: 18,
                 color: 'var(--tof-text)',
             }}>
-                Komt binnenkort
+                {t.title}
             </div>
             <p style={{
                 margin: 0,
@@ -1724,9 +1703,9 @@ function BestuurderPlaceholder({ isMobile, orgName }) {
                 color: 'var(--tof-text-soft)',
                 maxWidth: 620,
             }}>
-                Hier kun je straks een bestuurder of directielid koppelen aan
-                <strong> {orgName}</strong>. Hij of zij krijgt op organisatie-niveau
-                dezelfde inzichten als een manager binnen één team.
+                {t.bodyBefore}
+                <strong> {orgName}</strong>
+                {t.bodyAfter}
             </p>
         </div>
     );
@@ -1737,24 +1716,15 @@ function BestuurderPlaceholder({ isMobile, orgName }) {
 // (akoestiek, no-shows, niet nakomen afspraken) en werkt_goed (sterktes,
 // patronen). Verschijnen in de organisatie-PDF.
 
+// `key` is de databasewaarde van de kolom `category` — label, helper en
+// placeholder komen uit de copy (admin.observations.categories[key]).
 const OBSERVATION_CATEGORIES = [
-    {
-        key: 'leegloper',
-        label: 'Waar de organisatie op leegloopt',
-        helper: 'Bv. akoestiek, no-shows, niet nakomen van afspraken.',
-        accent: 'var(--tof-accent-rose)',
-        placeholder: 'akoestiek op de werkvloer',
-    },
-    {
-        key: 'werkt_goed',
-        label: 'Wat werkt goed in de organisatie',
-        helper: 'Bv. open feedbackcultuur, snelle besluitvorming.',
-        accent: 'var(--tof-accent-sage)',
-        placeholder: 'open feedbackcultuur tussen teams',
-    },
+    { key: 'leegloper', accent: 'var(--tof-accent-rose)' },
+    { key: 'werkt_goed', accent: 'var(--tof-accent-sage)' },
 ];
 
 function ObservationsSection({ observations, form, setForm, busy, error, onAdd, onRemove }) {
+    const { admin: { observations: t } } = useCopy();
     const inputStyle = {
         width: '100%',
         padding: '12px 14px',
@@ -1785,7 +1755,7 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
                     color: '#A37A4E',
                     marginBottom: 4,
                 }}>
-                    Eigen observaties — handmatig per organisatie
+                    {t.eyebrow}
                 </div>
                 <p style={{
                     margin: 0,
@@ -1793,13 +1763,12 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
                     lineHeight: 1.6,
                     color: 'var(--tof-text-soft)',
                 }}>
-                    Naast de data-driven inzichten uit de persona-responses kun je
-                    hier zelf observaties toevoegen die in de organisatie-PDF
-                    verschijnen.
+                    {t.lead}
                 </p>
             </div>
 
             {OBSERVATION_CATEGORIES.map((cat) => {
+                const catCopy = t.categories[cat.key];
                 const items = (observations || []).filter((o) => o.category === cat.key);
                 return (
                     <div key={cat.key} style={{
@@ -1817,13 +1786,13 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
                                 color: cat.accent,
                                 marginBottom: 4,
                             }}>
-                                {cat.label}
+                                {catCopy.label}
                             </div>
                             <div style={{
                                 fontSize: 12,
                                 color: 'var(--tof-text-muted)',
                             }}>
-                                {cat.helper}
+                                {catCopy.helper}
                             </div>
                         </div>
 
@@ -1861,7 +1830,7 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
                                                 cursor: busy ? 'not-allowed' : 'pointer',
                                                 padding: '4px 8px',
                                             }}
-                                            title="Verwijderen"
+                                            title={t.removeTitle}
                                         >
                                             ✕
                                         </button>
@@ -1882,12 +1851,12 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
                                 type="text"
                                 value={form[cat.key] || ''}
                                 onChange={(e) => setForm((p) => ({ ...p, [cat.key]: e.target.value }))}
-                                placeholder={cat.placeholder}
+                                placeholder={catCopy.placeholder}
                                 style={inputStyle}
                                 disabled={busy}
                             />
                             <PrimaryButton type="submit" disabled={busy || !(form[cat.key] || '').trim()}>
-                                Toevoegen
+                                {t.add}
                             </PrimaryButton>
                         </form>
                     </div>
@@ -1916,6 +1885,7 @@ function ManagersSection({
     emailInput, setEmailInput, codeInput, setCodeInput,
     busy, error, onAdd, onRemove,
 }) {
+    const { admin: { managers: t } } = useCopy();
     const inputStyle = {
         width: '100%',
         padding: '12px 14px',
@@ -1937,7 +1907,7 @@ function ManagersSection({
         marginBottom: 6,
     };
 
-    const activeTeams = (teams || []).filter((t) => t.active);
+    const activeTeams = (teams || []).filter((team) => team.active);
 
     return (
         <div style={{
@@ -1955,7 +1925,7 @@ function ManagersSection({
                 fontWeight: 700,
                 color: 'var(--tof-accent-rose)',
             }}>
-                Managers — directe team-toegang via email
+                {t.eyebrow}
             </div>
             <p style={{
                 margin: 0,
@@ -1963,9 +1933,7 @@ function ManagersSection({
                 lineHeight: 1.6,
                 color: 'var(--tof-text-soft)',
             }}>
-                Koppel een manager-email aan een team-code. Bij hun eerste magic-link
-                login zien ze het team(s) automatisch in hun toegangs-overzicht — zonder
-                code in te voeren.
+                {t.lead}
             </p>
 
             {/* Form: nieuwe koppeling */}
@@ -1976,32 +1944,32 @@ function ManagersSection({
                 alignItems: 'end',
             }}>
                 <div>
-                    <label style={labelStyle}>Email manager</label>
+                    <label style={labelStyle}>{t.emailLabel}</label>
                     <input
                         type="email"
                         value={emailInput}
                         onChange={(e) => setEmailInput(e.target.value)}
-                        placeholder="a.kempeneers@nijkerk.eu"
+                        placeholder={t.emailPlaceholder}
                         style={inputStyle}
                     />
                 </div>
                 <div>
-                    <label style={labelStyle}>Team-code</label>
+                    <label style={labelStyle}>{t.codeLabel}</label>
                     <select
                         value={codeInput}
                         onChange={(e) => setCodeInput(e.target.value)}
                         style={{ ...inputStyle, cursor: 'pointer' }}
                     >
-                        <option value="">— kies een team —</option>
-                        {activeTeams.map((t) => (
-                            <option key={t.code} value={t.code}>
-                                {t.code} — {t.team || '(zonder naam)'}
+                        <option value="">{t.codePlaceholder}</option>
+                        {activeTeams.map((team) => (
+                            <option key={team.code} value={team.code}>
+                                {team.code} — {team.team || t.teamWithoutName}
                             </option>
                         ))}
                     </select>
                 </div>
                 <PrimaryButton type="submit" disabled={busy}>
-                    {busy ? 'Bezig…' : 'Koppel'}
+                    {busy ? t.submitting : t.submit}
                 </PrimaryButton>
             </form>
 
@@ -2027,7 +1995,7 @@ function ManagersSection({
                 color: 'var(--tof-text-muted)',
                 marginTop: 6,
             }}>
-                Gekoppeld ({managers.length})
+                {t.linkedHeading(managers.length)}
             </div>
 
             {managers.length === 0 ? (
@@ -2039,7 +2007,7 @@ function ManagersSection({
                     border: '1px dashed var(--tof-border)',
                     borderRadius: 10,
                 }}>
-                    Nog geen managers gekoppeld. (Of de SQL-migratie is nog niet gedraaid.)
+                    {t.empty}
                 </div>
             ) : (
                 <div style={{ display: 'grid', gap: 8 }}>
@@ -2059,6 +2027,7 @@ function ManagersSection({
 }
 
 function ManagerRow({ isMobile, manager, busy, onRemove }) {
+    const { admin: { managers: { row: t } } } = useCopy();
     const [linkStatus, setLinkStatus] = useState('idle'); // idle | sending | sent | error
     const [linkMessage, setLinkMessage] = useState('');
 
@@ -2068,18 +2037,18 @@ function ManagerRow({ isMobile, manager, busy, onRemove }) {
         const { ok, error } = await sendMagicLink(manager.email);
         if (ok) {
             setLinkStatus('sent');
-            setLinkMessage('Magic link verstuurd.');
+            setLinkMessage(t.sent);
         } else {
             setLinkStatus('error');
-            setLinkMessage(error || 'Versturen mislukt.');
+            setLinkMessage(error || t.sendFailed);
         }
     }
 
     const sending = linkStatus === 'sending';
 
-    let linkLabel = 'Stuur magic link';
-    if (sending) linkLabel = 'Bezig…';
-    else if (linkStatus === 'sent') linkLabel = 'Opnieuw sturen';
+    let linkLabel = t.sendLink;
+    if (sending) linkLabel = t.sending;
+    else if (linkStatus === 'sent') linkLabel = t.resend;
 
     return (
         <div style={{
@@ -2109,7 +2078,7 @@ function ManagerRow({ isMobile, manager, busy, onRemove }) {
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
             }}>
-                {manager.team || '—'}
+                {manager.team || t.noTeam}
             </div>
             <div style={{
                 fontSize: 11,
@@ -2135,7 +2104,7 @@ function ManagerRow({ isMobile, manager, busy, onRemove }) {
                 )}
             </div>
             <SecondaryButton onClick={onRemove} disabled={busy}>
-                Verwijder
+                {t.remove}
             </SecondaryButton>
         </div>
     );

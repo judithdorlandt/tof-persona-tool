@@ -11,19 +11,21 @@
  */
 
 import { PAGE_W, PAGE_H, MARGIN } from './constants';
-import { COLOR_FAMILIES, TYPE_V9, SPACING, RHYTHM } from './OL_styles';
+import { COLOR_FAMILIES, TYPE_V9, SPACING } from './OL_styles';
 import { text, line } from './svgPrimitives';
 import { drawTOFMark } from '../teamInsightPDF';
+import { getOLCopy } from './copy';
 
 const C = COLOR_FAMILIES.neutral;
 
 /** Header — small eyebrow label + date, with paginatitel below.
- *  V24: compacter + hoger — eyebrow/datum op MARGIN+3, lijn op MARGIN+7. */
-export function drawPageHeader(svg, { date, pageTitle }) {
+ *  V24: compacter + hoger — eyebrow/datum op MARGIN+3, lijn op MARGIN+7.
+ *  `copy` komt van de aanroepende pagina-builder; default = Nederlands. */
+export function drawPageHeader(svg, { date, pageTitle, copy = getOLCopy('nl') }) {
     // Label links
     svg.appendChild(text({
         x: MARGIN, y: MARGIN + 3,
-        content: 'MODULE 1 · INSIGHTS',
+        content: copy.moduleLabel,
         ...TYPE_V9.eyebrow,
     }));
     // Datum rechts
@@ -53,7 +55,7 @@ export function drawPageHeader(svg, { date, pageTitle }) {
 
 /** Footer — logo + brand links, paginanummer rechts.
  *  V13: hele footer 20pt (~7mm) lager — meer adem onderaan de pagina. */
-export function drawPageFooter(svg, { pageNum, totalPages = 5 }) {
+export function drawPageFooter(svg, { pageNum, totalPages = 5, copy = getOLCopy('nl') }) {
     const yLine = PAGE_H - MARGIN + 2;
     svg.appendChild(line(MARGIN, yLine, PAGE_W - MARGIN, yLine, C.border, 0.3));
 
@@ -63,7 +65,7 @@ export function drawPageFooter(svg, { pageNum, totalPages = 5 }) {
     drawTOFMark(svg, MARGIN, yText - 4.6, 5.8);
     svg.appendChild(text({
         x: MARGIN + 8, y: yText,
-        content: 'TOF · The Office Factory',
+        content: copy.brand,
         ...TYPE_V9.footer,
     }));
     svg.appendChild(text({

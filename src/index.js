@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { AuthProvider } from './auth/AuthContext';
+import { LanguageProvider } from './i18n/LanguageContext';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -12,9 +13,11 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </ErrorBoundary>
   </React.StrictMode>

@@ -34,6 +34,7 @@ import TeamQuickWins from '../team/components/TeamQuickWins';
 
 import { buildTeamAggregate } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
+import { useLang, useCopy } from '../i18n/LanguageContext';
 import { hasTeamLevel, LEVEL_DYNAMICS, isAdminAccess } from '../utils/access';
 import { generateTeamInsightPDF } from '../utils/teamInsightPDF';
 import { logPdfDownload } from '../supabase';
@@ -48,79 +49,85 @@ const ACCENT = MODULE.insight.accent;
 // TILE DEFINITIONS
 // =========================
 
-export const TILES = [
-    {
-        id: 'personas',
-        eyebrow: 'Werkstijlen',
-        buildValue: (aggregate) => {
-            // Tegel toont "wie zit er in dit team" — primaire telling.
-            // Anders mismatcht hij met het detail-scherm dat hetzelfde verhaal vertelt.
-            const top = aggregate?.topPersonaByPrimary
-                || aggregate?.personasByPrimary?.[0];
-            if (!top) return '—';
-            return `${top.name} ${top.countPercentage}%`;
+/**
+ * buildTiles — de vier tegels, met de teksten van de actieve taal erin.
+ *
+ * `t` is de `teamDashboard`-namespace uit useCopy(). Admin.jsx hergebruikt
+ * deze tegels voor het organisatie-overzicht en roept dezelfde functie aan.
+ */
+export function buildTiles(t) {
+    return [
+        {
+            id: 'personas',
+            eyebrow: t.tiles.personas.eyebrow,
+            buildValue: (aggregate) => {
+                // Tegel toont "wie zit er in dit team" — primaire telling.
+                // Anders mismatcht hij met het detail-scherm dat hetzelfde verhaal vertelt.
+                const top = aggregate?.topPersonaByPrimary
+                    || aggregate?.personasByPrimary?.[0];
+                if (!top) return t.empty;
+                return `${top.name} ${top.countPercentage}%`;
+            },
+            buildHint: () => t.tiles.personas.hint,
+            detailTitle: t.tiles.personas.detailTitle,
+            detailLead: () => '',
+            render: (aggregate) => <TeamPersonaDistribution aggregate={aggregate} />,
         },
-        buildHint: () => 'Wie zit er in dit team',
-        detailTitle: 'Wie zit er in dit team',
-        detailLead: () => '',
-        render: (aggregate) => <TeamPersonaDistribution aggregate={aggregate} />,
-    },
-    {
-        id: 'workplace',
-        eyebrow: 'Werkplek',
-        buildValue: (aggregate) => {
-            const top = aggregate?.sortedWorkplaceNeeds?.[0];
-            if (!top) return '—';
-            return top.label;
+        {
+            id: 'workplace',
+            eyebrow: t.tiles.workplace.eyebrow,
+            buildValue: (aggregate) => {
+                const top = aggregate?.sortedWorkplaceNeeds?.[0];
+                if (!top) return t.empty;
+                return top.label;
+            },
+            buildHint: () => t.tiles.workplace.hint,
+            detailTitle: t.tiles.workplace.detailTitle,
+            detailLead: () => '',
+            render: (aggregate) =>
+                WERKPLEKPROFIEL_ENABLED ? (
+                    <WerkplekProfielInline aggregate={aggregate} />
+                ) : (
+                    <TeamWorkplaceNeeds aggregate={aggregate} />
+                ),
         },
-        buildHint: () => 'Wat vraagt dit team',
-        detailTitle: 'Wat vraagt dit team van de werkplek',
-        detailLead: () => '',
-        render: (aggregate) =>
-            WERKPLEKPROFIEL_ENABLED ? (
-                <WerkplekProfielInline aggregate={aggregate} />
-            ) : (
-                <TeamWorkplaceNeeds aggregate={aggregate} />
-            ),
-    },
-    {
-        id: 'tension',
-        eyebrow: 'Spanning',
-        buildValue: (aggregate, insights) => {
-            const t = insights?.workplaceTension || { underserved: [], oversupplied: [] };
-            const under = t.underserved?.length || 0;
-            const over = t.oversupplied?.length || 0;
-            if (under === 0 && over === 0) return 'Consistent';
-            if (under > 0 && over > 0) return `${under} + ${over}`;
-            if (under > 0) return `${under} onderbediend`;
-            return `${over} teveel`;
+        {
+            id: 'tension',
+            eyebrow: t.tiles.tension.eyebrow,
+            buildValue: (aggregate, insights) => {
+                const tension = insights?.workplaceTension || { underserved: [], oversupplied: [] };
+                const under = tension.underserved?.length || 0;
+                const over = tension.oversupplied?.length || 0;
+                if (under === 0 && over === 0) return t.tiles.tension.valueConsistent;
+                if (under > 0 && over > 0) return `${under} + ${over}`;
+                if (under > 0) return t.tiles.tension.valueUnderserved(under);
+                return t.tiles.tension.valueOversupplied(over);
+            },
+            buildHint: () => t.tiles.tension.hint,
+            detailTitle: t.tiles.tension.detailTitle,
+            detailLead: (aggregate, insights) => {
+                const tension = insights?.workplaceTension || { underserved: [], oversupplied: [] };
+                const under = tension.underserved?.length || 0;
+                const over = tension.oversupplied?.length || 0;
+                if (under === 0 && over === 0) return t.tiles.tension.leadNone;
+                if (under > 0 && over > 0) return t.tiles.tension.leadBoth(under, over);
+                if (under > 0) return t.tiles.tension.leadUnder(under);
+                return t.tiles.tension.leadOver(over);
+            },
+            render: (aggregate, insights) => <TeamWorkplaceTension insights={insights} />,
         },
-        buildHint: () => 'Waar het kan botsen',
-        detailTitle: 'Waar behoefte en aanbod kunnen botsen',
-        detailLead: (aggregate, insights) => {
-            const t = insights?.workplaceTension || { underserved: [], oversupplied: [] };
-            const under = t.underserved?.length || 0;
-            const over = t.oversupplied?.length || 0;
-            if (under === 0 && over === 0) return 'De werkplekbehoefte is consistent — weinig botsing.';
-            if (under > 0 && over > 0) return `${under} werkplek${under > 1 ? 'ken' : ''} onderbediend, ${over} mogelijk te veel aanwezig.`;
-            if (under > 0) return `${under} werkplek${under > 1 ? 'ken' : ''} waar dit team extra op leunt.`;
-            return `${over} werkplek${over > 1 ? 'ken' : ''} waar dit team weinig aan heeft.`;
+        {
+            id: 'quickwins',
+            eyebrow: t.tiles.quickwins.eyebrow,
+            buildValue: (aggregate, insights) =>
+                t.tiles.quickwins.value((insights?.quickWins || []).length),
+            buildHint: () => t.tiles.quickwins.hint,
+            detailTitle: t.tiles.quickwins.detailTitle,
+            detailLead: () => t.tiles.quickwins.detailLead,
+            render: (aggregate, insights) => <TeamQuickWins insights={insights} />,
         },
-        render: (aggregate, insights) => <TeamWorkplaceTension insights={insights} />,
-    },
-    {
-        id: 'quickwins',
-        eyebrow: 'Quick wins',
-        buildValue: (aggregate, insights) => {
-            const count = (insights?.quickWins || []).length;
-            return `${count} acties`;
-        },
-        buildHint: () => 'Voor morgen',
-        detailTitle: 'Acties voor morgen',
-        detailLead: () => 'Concrete acties afgeleid uit alle inzichten van dit dashboard.',
-        render: (aggregate, insights) => <TeamQuickWins insights={insights} />,
-    },
-];
+    ];
+}
 
 // =========================
 // MAIN COMPONENT
@@ -134,14 +141,17 @@ export default function TeamDashboard({
     // Standaard staat de eerste tegel (Werkstijlen) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
     const [activeId, setActiveId] = useState('personas');
+    const { lang } = useLang();
+    const { teamDashboard: t } = useCopy();
 
     const aggregate = useMemo(
-        () => buildTeamAggregate(teamResponses),
-        [teamResponses]
+        () => buildTeamAggregate(teamResponses, lang),
+        [teamResponses, lang]
     );
-    const insights = useMemo(() => buildTeamInsights(aggregate), [aggregate]);
+    const insights = useMemo(() => buildTeamInsights(aggregate, lang), [aggregate, lang]);
+    const tiles = useMemo(() => buildTiles(t), [t]);
 
-    const teamName = resolveTeamName(selectedTeam);
+    const teamName = resolveTeamName(selectedTeam, t.fallbackTeamName);
     const organization = resolveOrg(selectedTeam);
 
     // "Dominant" in de chip = wie zit er primair in dit team.
@@ -152,12 +162,12 @@ export default function TeamDashboard({
         || '';
 
     const teamCount = aggregate?.teamCount || 0;
-    const reliability = buildReliabilityLabel(teamCount);
+    const reliability = buildReliabilityLabel(teamCount, t.reliability);
 
     const team = resolveTeamKey(selectedTeam);
     const hasDynamicsAccess = hasTeamLevel(team, organization, LEVEL_DYNAMICS);
 
-    const activeTile = TILES.find((t) => t.id === activeId);
+    const activeTile = tiles.find((tile) => tile.id === activeId);
 
     function handleTileClick(id) {
         setActiveId((prev) => (prev === id ? null : id));
@@ -168,11 +178,11 @@ export default function TeamDashboard({
             {/* ── HERO ── */}
             <HeroBlock
                 compact
-                eyebrow="01 — Team Insight"
-                title="Teaminzicht voor"
+                eyebrow={t.hero.eyebrow}
+                title={t.hero.title}
                 titleAccent={teamName}
                 titleAccentColor={ACCENT}
-                lead="Wat werkstijlen zijn, wat het team van de werkplek vraagt en waar de eerste kansen liggen."
+                lead={t.hero.lead}
                 actions={
                     <>
                         <PrimaryButton
@@ -182,17 +192,18 @@ export default function TeamDashboard({
                                     insights,
                                     teamName,
                                     organization,
+                                    lang,
                                 });
                                 // Log op de achtergrond — mag stil falen.
                                 logPdfDownload(selectedTeam?.code || null);
                             }}
                             style={{ background: ACCENT }}
                         >
-                            Download als PDF
+                            {t.hero.downloadPdf}
                         </PrimaryButton>
                         {isAdminAccess() ? (
                             <SecondaryButton onClick={() => setPage('team')}>
-                                Ander team
+                                {t.hero.otherTeam}
                             </SecondaryButton>
                         ) : null}
                     </>
@@ -207,11 +218,12 @@ export default function TeamDashboard({
                 organization={organization}
                 dominantPersona={dominantPersona}
                 reliability={reliability}
+                labels={t.chips}
             />
 
             {/* ── TILE GRID ── vier compacte tegels ── */}
             <TileGrid columns={4}>
-                {TILES.map((tile) => (
+                {tiles.map((tile) => (
                     <Tile
                         key={tile.id}
                         eyebrow={tile.eyebrow}
@@ -276,7 +288,7 @@ export default function TeamDashboard({
                                 flexShrink: 0,
                             }}
                         >
-                            Sluiten ✕
+                            {t.close}
                         </button>
                     </div>
 
@@ -290,6 +302,7 @@ export default function TeamDashboard({
             <DynamicsBridge
                 hasDynamicsAccess={hasDynamicsAccess}
                 setPage={setPage}
+                t={t.bridge}
             />
         </PageShell>
     );
@@ -299,7 +312,7 @@ export default function TeamDashboard({
 // SIGNATURE BLOCK
 // =========================
 
-function SignatureBlock({ quote, accent, teamCount, organization, dominantPersona, reliability }) {
+function SignatureBlock({ quote, accent, teamCount, organization, dominantPersona, reliability, labels }) {
     return (
         <div
             style={{
@@ -325,10 +338,10 @@ function SignatureBlock({ quote, accent, teamCount, organization, dominantPerson
             ) : null}
 
             <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap' }}>
-                <MetaChip label="Responses" value={teamCount} />
-                {organization ? <MetaChip label="Organisatie" value={organization} /> : null}
-                {dominantPersona ? <MetaChip label="Dominant" value={dominantPersona} accent={accent} /> : null}
-                {reliability ? <MetaChip label="Betrouwbaarheid" value={reliability} /> : null}
+                <MetaChip label={labels.responses} value={teamCount} />
+                {organization ? <MetaChip label={labels.organisation} value={organization} /> : null}
+                {dominantPersona ? <MetaChip label={labels.dominant} value={dominantPersona} accent={accent} /> : null}
+                {reliability ? <MetaChip label={labels.reliability} value={reliability} /> : null}
             </div>
         </div>
     );
@@ -377,7 +390,7 @@ function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
 // DYNAMICS BRIDGE
 // =========================
 
-function DynamicsBridge({ hasDynamicsAccess, setPage }) {
+function DynamicsBridge({ hasDynamicsAccess, setPage, t }) {
     if (hasDynamicsAccess) {
         return (
             <InteractiveRow
@@ -386,17 +399,17 @@ function DynamicsBridge({ hasDynamicsAccess, setPage }) {
             >
                 <div style={{ display: 'grid', gap: 2, minWidth: 240 }}>
                     <SectionEyebrow color="var(--tof-accent-rose)">
-                        Team Dynamics beschikbaar
+                        {t.available.eyebrow}
                     </SectionEyebrow>
                     <p style={{ ...TYPE.body, fontSize: 14 }}>
-                        Zie de onderliggende patronen: waarom deze samenstelling werkt of schuurt.
+                        {t.available.lead}
                     </p>
                 </div>
                 <PrimaryButton
                     onClick={() => setPage('teamdynamics')}
                     style={{ background: 'var(--tof-accent-rose)' }}
                 >
-                    Naar Team Dynamics →
+                    {t.available.cta}
                 </PrimaryButton>
             </InteractiveRow>
         );
@@ -414,7 +427,7 @@ function DynamicsBridge({ hasDynamicsAccess, setPage }) {
             }}
         >
             <SectionEyebrow color="var(--tof-accent-rose)">
-                Dieper kijken?
+                {t.locked.eyebrow}
             </SectionEyebrow>
 
             <h3
@@ -423,15 +436,13 @@ function DynamicsBridge({ hasDynamicsAccess, setPage }) {
                     color: 'var(--tof-text)',
                 }}
             >
-                Team Dynamics laat zien{' '}
-                <em style={{ color: 'var(--tof-accent-rose)' }}>waarom</em>{' '}
-                deze patronen ontstaan.
+                {t.locked.titleBefore}{' '}
+                <em style={{ color: 'var(--tof-accent-rose)' }}>{t.locked.titleEmphasis}</em>{' '}
+                {t.locked.titleAfter}
             </h3>
 
             <p style={{ ...TYPE.body, maxWidth: 620 }}>
-                Spanningsvelden tussen werkstijlen, leiderschapsimplicaties en
-                de keuze tussen tempo en reflectie — in één verdiept dashboard,
-                toegelicht in een sessie.
+                {t.locked.lead}
             </p>
 
             <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
@@ -439,14 +450,14 @@ function DynamicsBridge({ hasDynamicsAccess, setPage }) {
                     onClick={() => setPage('team')}
                     style={{ background: 'var(--tof-accent-rose)' }}
                 >
-                    Dynamics ontgrendelen
+                    {t.locked.unlock}
                 </PrimaryButton>
                 <SecondaryButton
                     onClick={() =>
                         window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')
                     }
                 >
-                    Plan een gesprek
+                    {t.locked.plan}
                 </SecondaryButton>
             </div>
         </div>
@@ -457,10 +468,10 @@ function DynamicsBridge({ hasDynamicsAccess, setPage }) {
 // HELPERS
 // =========================
 
-function resolveTeamName(sel) {
-    if (!sel) return 'jouw team';
+function resolveTeamName(sel, fallback) {
+    if (!sel) return fallback;
     if (typeof sel === 'string') return sel;
-    return sel.name || sel.team || 'jouw team';
+    return sel.name || sel.team || fallback;
 }
 
 function resolveTeamKey(sel) {
@@ -474,9 +485,9 @@ function resolveOrg(sel) {
     return sel.organization || '';
 }
 
-function buildReliabilityLabel(count) {
+function buildReliabilityLabel(count, labels) {
     if (count === null || count === undefined) return '';
-    if (count < 3) return 'Indicatief';
-    if (count < 6) return 'Groeiend';
-    return 'Sterk beeld';
+    if (count < 3) return labels.low;
+    if (count < 6) return labels.mid;
+    return labels.high;
 }

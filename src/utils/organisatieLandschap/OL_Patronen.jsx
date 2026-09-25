@@ -38,7 +38,7 @@ function buildQuantPage(data, copy) {
     const svg = createCanvas();
     svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
 
-    let y = drawPageHeader(svg, { date: data.date, pageTitle: null });
+    let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
     y = drawTitleBlock(svg, y, copy.patronen.title, copy.patronen.subtitle);
     y += SPACING.lg;
 
@@ -74,7 +74,7 @@ function buildQualPage(data, copy) {
     const svg = createCanvas();
     svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
 
-    let y = drawPageHeader(svg, { date: data.date, pageTitle: null });
+    let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
     y = drawTitleBlock(svg, y, copy.patronen.qualTitle, copy.patronen.qualSubtitle);
     y += SPACING.lg;
 

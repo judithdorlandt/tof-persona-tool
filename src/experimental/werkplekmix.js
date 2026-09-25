@@ -143,5 +143,3 @@ export function berekenTeamWerkplekmix(aantallen) {
   });
   return totaal;
 }
-
-export default { WERKPLEKTYPEN, PERSONA_WERKPLEKMIX, NIVEAU_LABEL, berekenTeamWerkplekmix };

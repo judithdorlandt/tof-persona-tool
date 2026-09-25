@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { SPACING, TYPE, RADIUS, useIsMobile } from '../../ui/tokens';
+import { useCopy } from '../../i18n/LanguageContext';
 
 const PERSONA_COLORS = {
     maker: '#B05252',
@@ -27,22 +28,16 @@ function colorForPersona(id) {
     return PERSONA_COLORS[id] || 'var(--tof-text)';
 }
 
-function formatNamesNatural(names) {
-    if (names.length === 0) return '';
-    if (names.length === 1) return names[0];
-    if (names.length === 2) return `${names[0]} en ${names[1]}`;
-    return `${names.slice(0, -1).join(', ')} en ${names[names.length - 1]}`;
-}
-
 export default function TeamWorkplaceTension({ insights }) {
     const isMobile = useIsMobile();
+    const t = useCopy().teamPanels.workplaceTension;
     const tension = insights?.workplaceTension || { impactSummary: null };
     const { impactSummary } = tension;
 
     if (!impactSummary) {
         return (
             <div style={{ padding: SPACING.lg, fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                Nog geen werkplekbehoefte zichtbaar — wacht tot meer teamleden hebben ingevuld.
+                {t.empty}
             </div>
         );
     }
@@ -91,6 +86,8 @@ export default function TeamWorkplaceTension({ insights }) {
 // =========================
 
 function Header({ isMobile }) {
+    const t = useCopy().teamPanels.workplaceTension;
+
     return (
         <div
             style={{
@@ -108,7 +105,7 @@ function Header({ isMobile }) {
                     color: 'var(--tof-text-muted)',
                 }}
             >
-                Hoe ziet jullie huidige kantoor eruit?
+                {t.headerQuestion}
             </div>
         </div>
     );
@@ -119,19 +116,23 @@ function Header({ isMobile }) {
 // =========================
 
 function DominantHero({ personas, isMobile }) {
+    const { teamPanels } = useCopy();
+    const t = teamPanels.workplaceTension;
     const isOne = personas.length === 1;
 
     const personaNames = personas.map((p) => p.name);
-    const personaNamesText = formatNamesNatural(personaNames);
-    const verb = isOne ? 'is' : 'zijn';
+    const personaNamesText = teamPanels.names.join(personaNames);
 
     // Som van team-percentages voor eyebrow-context
     const totalPct = personas.reduce((sum, p) => sum + (p.teamPct || 0), 0);
     const pctText = isOne
-        ? `${personas[0].teamPct}% van het team`
+        ? t.shareOne(personas[0].teamPct)
         : personas.length === 2
-            ? `${personas[0].teamPct}% + ${personas[1].teamPct}% van het team`
-            : `${totalPct}% van het team`;
+            ? t.shareTwo(personas[0].teamPct, personas[1].teamPct)
+            : t.shareMany(totalPct);
+
+    const resultLine = t.impactResult(isOne);
+    const energyLine = t.impactEnergy(isOne);
 
     // Verzamel alle namen van de dominante personae
     const allNames = [];
@@ -160,7 +161,7 @@ function DominantHero({ personas, isMobile }) {
                 }}
             >
                 <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                    De kern
+                    {t.coreEyebrow}
                 </div>
                 <div
                     style={{
@@ -200,11 +201,11 @@ function DominantHero({ personas, isMobile }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    {isOne ? 'Komt' : 'Komen'}{' '}
+                    {resultLine.before}
                     <span style={{ color: 'var(--tof-text)', fontWeight: 500 }}>
-                        niet tot resultaat
-                    </span>{' '}
-                    als de werkplekken die {isOne ? 'hij of zij' : 'ze'} nodig {isOne ? 'heeft' : 'hebben'} er onvoldoende zijn.
+                        {resultLine.highlight}
+                    </span>
+                    {resultLine.after}
                 </p>
                 <p
                     style={{
@@ -215,11 +216,11 @@ function DominantHero({ personas, isMobile }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    {isOne ? 'Verliest' : 'Verliezen'}{' '}
+                    {energyLine.before}
                     <span style={{ color: 'var(--tof-text)', fontWeight: 500 }}>
-                        energie
-                    </span>{' '}
-                    om te komen werken als het kantoor vol staat met wat {isOne ? 'hij of zij' : 'ze'} niet {isOne ? 'gebruikt' : 'gebruiken'}.
+                        {energyLine.highlight}
+                    </span>
+                    {energyLine.after}
                 </p>
             </div>
 
@@ -234,9 +235,9 @@ function DominantHero({ personas, isMobile }) {
                         paddingTop: 4,
                     }}
                 >
-                    Gedragen door{' '}
+                    {t.carriedBy}
                     <span style={{ color: 'var(--tof-text)', fontWeight: 500 }}>
-                        {formatNamesNatural(allNames)}
+                        {teamPanels.names.join(allNames)}
                     </span>
                 </div>
             ) : null}
@@ -249,10 +250,12 @@ function DominantHero({ personas, isMobile }) {
 // =========================
 
 function RestOfTeam({ items, isMobile }) {
+    const t = useCopy().teamPanels.workplaceTension;
+
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
             <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                Verder in het team
+                {t.restOfTeam}
             </div>
 
             <div
@@ -271,6 +274,7 @@ function RestOfTeam({ items, isMobile }) {
 }
 
 function PersonaCard({ persona }) {
+    const { teamPanels } = useCopy();
     const color = colorForPersona(persona.id);
 
     return (
@@ -329,7 +333,7 @@ function PersonaCard({ persona }) {
                             whiteSpace: 'nowrap',
                         }}
                     >
-                        Risico op isolatie
+                        {teamPanels.workplaceTension.isolationRisk}
                     </span>
                 ) : null}
             </div>
@@ -356,7 +360,7 @@ function PersonaCard({ persona }) {
                         color: 'var(--tof-text-muted)',
                     }}
                 >
-                    {formatNamesNatural(persona.names)}
+                    {teamPanels.names.join(persona.names)}
                 </p>
             ) : null}
         </div>
@@ -368,6 +372,8 @@ function PersonaCard({ persona }) {
 // =========================
 
 function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
+    const t = useCopy().teamPanels.workplaceTension.office;
+
     return (
         <div
             style={{
@@ -378,7 +384,7 @@ function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
             }}
         >
             <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                Check in je kantoor
+                {t.eyebrow}
             </div>
 
             {checkWorkplaces.length > 0 ? (
@@ -391,7 +397,7 @@ function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
                             color: 'var(--tof-text-soft)',
                         }}
                     >
-                        Voorzien jullie genoeg in:
+                        {t.enough}
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                         {checkWorkplaces.map((wp) => (
@@ -411,7 +417,7 @@ function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
                             color: 'var(--tof-text-soft)',
                         }}
                     >
-                        En staat het niet vol met:
+                        {t.notFull}
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                         {uncheckWorkplaces.map((wp) => (

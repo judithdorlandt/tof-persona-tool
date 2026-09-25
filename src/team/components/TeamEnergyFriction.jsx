@@ -1,15 +1,17 @@
 import React from 'react';
+import { useCopy } from '../../i18n/LanguageContext';
 
 export default function TeamEnergyFriction({ insights }) {
+    const t = useCopy().teamPanels.energyFriction;
     const energy = insights?.energy || [];
     const friction = insights?.friction || [];
 
     return (
         <div style={{ display: 'grid', gap: 18 }}>
             <SectionHeading
-                eyebrow="Energie & wrijving"
-                title="Waar zit de energie en waar ontstaat wrijving?"
-                lead="Niet alleen wie er in het team zit, maar ook waar kracht ontstaat en waar de ritmes botsen. Dit is de essentie van wat dit team onderscheidt."
+                eyebrow={t.section.eyebrow}
+                title={t.section.title}
+                lead={t.section.lead}
             />
 
             {/* ENERGIE */}
@@ -17,19 +19,19 @@ export default function TeamEnergyFriction({ insights }) {
                 <BlockHeader
                     icon="↑"
                     accent="var(--tof-accent-sage)"
-                    title="Waar zit de energie"
-                    description="De dominante stijlen zetten de toon. Hier komt de kracht van het team vandaan."
+                    title={t.energy.title}
+                    description={t.energy.description}
                 />
 
                 {energy.length === 0 ? (
-                    <EmptyState text="Nog geen duidelijke energielijn zichtbaar." />
+                    <EmptyState text={t.energy.empty} />
                 ) : (
                     <div style={{ display: 'grid', gap: 10 }}>
                         {energy.map((item, index) => (
                             <InsightCard
                                 key={index}
                                 accent="var(--tof-accent-sage)"
-                                label={`${item.persona} · ${item.percentage}%`}
+                                label={t.energy.label(item.persona, item.percentage)}
                                 body={item.body}
                             />
                         ))}
@@ -42,12 +44,12 @@ export default function TeamEnergyFriction({ insights }) {
                 <BlockHeader
                     icon="↔"
                     accent="var(--tof-accent-rose)"
-                    title="Waar ontstaat wrijving"
-                    description="Waar stijlen elkaar raken — of waar één stijl zo sterk is dat andere minder gehoord worden."
+                    title={t.friction.title}
+                    description={t.friction.description}
                 />
 
                 {friction.length === 0 ? (
-                    <EmptyState text="Geen directe wrijving gedetecteerd. Dat betekent niet dat er geen spanning is — de tegenpolen zijn niet tegelijk sterk aanwezig." />
+                    <EmptyState text={t.friction.empty} />
                 ) : (
                     <div style={{ display: 'grid', gap: 10 }}>
                         {friction.map((item, index) => (

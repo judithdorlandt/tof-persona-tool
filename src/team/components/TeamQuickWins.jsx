@@ -12,18 +12,11 @@
 
 import React from 'react';
 import { SPACING, TYPE, useIsMobile } from '../../ui/tokens';
-
-const SOURCE_LABELS = {
-    werkstijlen: 'Uit werkstijlen',
-    werkplek: 'Uit werkplek',
-    spanning: 'Uit spanning',
-    minderheid: 'Uit minderheid',
-    ontbrekend: 'Uit ontbrekend',
-    reflectie: 'Reflectie',
-};
+import { useCopy } from '../../i18n/LanguageContext';
 
 export default function TeamQuickWins({ insights }) {
     const isMobile = useIsMobile();
+    const t = useCopy().teamPanels.quickWins;
 
     const rawItems = insights?.quickWins || [];
 
@@ -37,7 +30,7 @@ export default function TeamQuickWins({ insights }) {
     if (items.length === 0) {
         return (
             <div style={{ padding: SPACING.lg, fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                Nog geen quick wins beschikbaar.
+                {t.empty}
             </div>
         );
     }
@@ -62,7 +55,7 @@ export default function TeamQuickWins({ insights }) {
                 }}
             >
                 <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                    {items.length === 1 ? 'Eén actie' : `${items.length} acties`} voor morgen
+                    {t.countLabel(items.length)}
                 </div>
                 <div
                     style={{
@@ -71,7 +64,7 @@ export default function TeamQuickWins({ insights }) {
                         color: 'var(--tof-text-muted)',
                     }}
                 >
-                    Synthese uit alle inzichten van dit dashboard.
+                    {t.note}
                 </div>
             </div>
 
@@ -86,7 +79,7 @@ export default function TeamQuickWins({ insights }) {
                     <ActionRow
                         key={index}
                         index={index + 1}
-                        source={item.source}
+                        sourceLabel={t.sources[item.source] || t.sources.reflectie}
                         action={item.action}
                         isMobile={isMobile}
                     />
@@ -101,9 +94,7 @@ export default function TeamQuickWins({ insights }) {
 // =========================
 // Cijfer in marge als anker. Eyebrow + actie-tekst rechts, leesbaar als artikel.
 
-function ActionRow({ index, source, action, isMobile }) {
-    const sourceLabel = SOURCE_LABELS[source] || 'Reflectie';
-
+function ActionRow({ index, sourceLabel, action, isMobile }) {
     return (
         <div
             style={{

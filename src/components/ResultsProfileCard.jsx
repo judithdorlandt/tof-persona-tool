@@ -6,6 +6,7 @@
  */
 import React from 'react';
 import tofLogo from '../assets/tof-logo.png';
+import { useCopy } from '../i18n/LanguageContext';
 
 // Lokale kopie — voorkomt circulaire import vanuit Results.jsx.
 // Wanneer dit op meer plekken nodig is → verplaatsen naar src/data.
@@ -91,6 +92,8 @@ export default function ResultsProfileCard({
     bricksItems,
     resultData,
 }) {
+    const { resultsCard } = useCopy();
+    const t = resultsCard.profile;
     const quoteTextColor = getReadableQuoteColor(primaryColor);
 
     return (
@@ -160,7 +163,7 @@ export default function ResultsProfileCard({
                                 >
                                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff', opacity: 0.7, flexShrink: 0 }} />
                                     <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: '#fff', lineHeight: 1 }}>
-                                        Primaire persona
+                                        {t.badge}
                                     </span>
                                 </div>
                                 {resultData?.name?.trim() && (
@@ -182,7 +185,7 @@ export default function ResultsProfileCard({
                                     maxWidth: 760,
                                 }}
                             >
-                                Jouw dominante profiel is{' '}
+                                {t.dominantPrefix}{' '}
                                 <span
                                     style={{
                                         color: primaryColor,
@@ -230,12 +233,10 @@ export default function ResultsProfileCard({
                             }}
                         >
                             <strong style={{ color: 'var(--tof-text)' }}>
-                                Wat dit betekent in de praktijk
+                                {t.meaningTitle}
                             </strong>
                             <br />
-                            Je werkt het sterkst wanneer je omgeving aansluit op hoe jij van nature werkt.
-                            Zit daar verschil in, dan kost dat energie en wordt het moeilijker om echt tot
-                            je recht te komen.
+                            {t.meaningBody}
                         </div>
 
                         {/* WAT JOU IN BEWEGING BRENGT */}
@@ -249,7 +250,7 @@ export default function ResultsProfileCard({
                                 gap: 10,
                             }}
                         >
-                            <div style={INFO_LABEL_STYLE}>Wat jou in beweging brengt</div>
+                            <div style={INFO_LABEL_STYLE}>{t.motionLabel}</div>
 
                             <div
                                 style={{
@@ -260,7 +261,7 @@ export default function ResultsProfileCard({
                                     color: primaryColor,
                                 }}
                             >
-                                Jouw natuurlijke kracht
+                                {t.motionTitle}
                             </div>
 
                             <p
@@ -296,7 +297,7 @@ export default function ResultsProfileCard({
                                         gap: 10,
                                     }}
                                 >
-                                    <div style={INFO_LABEL_STYLE}>Verdeling van jouw profiel</div>
+                                    <div style={INFO_LABEL_STYLE}>{t.distributionLabel}</div>
 
                                     <div style={{ display: 'grid', gap: 8 }}>
                                         {topScoreEntries.map((item) => (
@@ -348,7 +349,7 @@ export default function ResultsProfileCard({
                                         borderLeft: `4px solid ${primaryColor}`,
                                     }}
                                 >
-                                    <div style={INFO_LABEL_STYLE}>Jouw mix</div>
+                                    <div style={INFO_LABEL_STYLE}>{t.mixLabel}</div>
 
                                     <div style={{ display: 'grid', gap: 8 }}>
                                         {[secondary, tertiary].filter(Boolean).map((persona, index) => (
@@ -392,8 +393,8 @@ export default function ResultsProfileCard({
 
                                 {leadershipItems.length > 0 ? (
                                     <InnerCard
-                                        label="Wat helpt in leiderschap"
-                                        title="Zo kom jij beter tot je recht"
+                                        label={t.leadershipLabel}
+                                        title={t.leadershipTitle}
                                         titleColor={primaryColor}
                                     >
                                         <ul
@@ -418,8 +419,8 @@ export default function ResultsProfileCard({
                             {/* RECHTERKOLOM */}
                             <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
                                 <InnerCard
-                                    label="Bricks"
-                                    title="Jouw ideale werkplekmix"
+                                    label={t.bricksLabel}
+                                    title={t.bricksTitle}
                                     titleColor={primaryColor}
                                 >
                                     <div style={{ display: 'grid', gap: 10 }}>
@@ -466,7 +467,7 @@ export default function ResultsProfileCard({
                                                             fontWeight: 600,
                                                         }}
                                                     >
-                                                        score {item.score}
+                                                        {t.scorePrefix} {item.score}
                                                     </div>
                                                 </div>
 
@@ -486,8 +487,8 @@ export default function ResultsProfileCard({
                                 </InnerCard>
 
                                 <InnerCard
-                                    label="Bytes & Behavior"
-                                    title="Wat jij nodig hebt"
+                                    label={t.bytesLabel}
+                                    title={t.bytesTitle}
                                     titleColor={primaryColor}
                                 >
                                     <div style={{ display: 'grid', gap: 10 }}>
@@ -556,7 +557,7 @@ export default function ResultsProfileCard({
                                     gap: 12,
                                 }}
                             >
-                                <div style={INFO_LABEL_STYLE}>Waar je op leegloopt</div>
+                                <div style={INFO_LABEL_STYLE}>{t.drainLabel}</div>
                                 <div style={{ display: 'grid', gap: 8 }}>
                                     {primary.energycost.slice(0, 3).map((item) => (
                                         <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>

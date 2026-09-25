@@ -42,59 +42,29 @@ import {
     PrimaryButton,
     SecondaryButton,
 } from '../ui/AppShell';
+import { useCopy } from '../i18n/LanguageContext';
 
-// ─── MODULE-DATA ───────────────────────────────────────────────────────────────
+// ─── MODULE-STRUCTUUR ──────────────────────────────────────────────────────────
+// Alleen structuur (ids, kleuren, CTA-gedrag). De teksten komen uit
+// copy/<taal>/teamIntro.js, gekoppeld op `id`.
 
-const MODULES = [
+const MODULE_STRUCTURE = [
     {
         id: 'insight',
-        eyebrow: 'Module 1 · Voor teams',
-        title: 'Team Insight & Quick Wins',
-        hook: 'Je weet wie er in je team zit. Maar weet je ook hoe het team écht werkt?',
         accent: 'var(--tof-accent-sage)',
         soft: '#EAF0EB',
-        bullets: [
-            'Zie in één oogopslag welke werkstijlen domineren',
-            'Ontdek waar energie zit — en waar wrijving ontstaat',
-            'Krijg directe werkplekbehoefte per team',
-            'Vier concrete quick wins die je morgen kunt toepassen',
-        ],
-        what: 'Een teamdashboard klaar voor een teamoverleg, werkplek­beslissing of leiderschapsgesprek.',
-        cta: 'Naar de teamomgeving',
         ctaType: 'access-insight',
     },
     {
         id: 'dynamics',
-        eyebrow: 'Module 2 · Voor teams & organisaties',
-        title: 'Team Dynamics Sessie',
-        hook: 'Je ziet de verdeling. Maar waarom loopt de samenwerking soms vast?',
         accent: 'var(--tof-accent-rose)',
         soft: '#F4DFDF',
-        bullets: [
-            'Spanningsvelden tussen persona\'s zichtbaar gemaakt',
-            'Inzicht in waarom tempo, structuur en besluitvorming botsen',
-            'Concrete leiderschapsimplicaties per persona-combinatie',
-            'Live toelichting — online of op locatie',
-        ],
-        what: 'Een verdiept dashboard, toegelicht in een sessie. Van inzicht naar actie.',
-        cta: 'Naar Team Dynamics',
         ctaType: 'access-dynamics',
     },
     {
         id: 'strategic',
-        eyebrow: 'Module 3 · Voor MT, bestuur, huisvesting',
-        title: 'Het Strategisch Kompas',
-        hook: 'Wat de wereld vraagt, vertaald naar wie je team is.',
         accent: 'var(--tof-text)',
         soft: '#EDE5D8',
-        bullets: [
-            'Trend-radar: 8 gecureerde trends over werk, leiderschap en AI',
-            'Persona-overlay: welke trends raken juist jullie team het hardst',
-            'Strategische keuzes voor leiderschap, werkomgeving en cultuur',
-            'Levend richtingsdocument — jaarlijks bijgewerkt, geen plan in een la',
-        ],
-        what: 'Een Strategisch Kompas-document (~20 pagina\'s) plus halfdaagse MT-sessie. Traject van 8–12 weken, volledig op maat.',
-        cta: 'Ontdek het Strategisch Kompas',
         ctaType: 'page',
         ctaPage: 'strategischkompas',
         // Live demo — beschikbaar als secundaire link voor wie eerst wil zien.
@@ -106,6 +76,9 @@ const MODULES = [
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 
 export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, initialOpen = null }) {
+    const t = useCopy().teamIntro;
+    const modules = MODULE_STRUCTURE.map((mod) => ({ ...mod, ...t.modules[mod.id] }));
+
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
     const [openId, setOpenId] = useState(initialOpen);
 
@@ -315,7 +288,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
         if (!accessModal) return;
         const cleanedInput = accessInput.trim();
         if (!cleanedInput) {
-            setAccessError('Voer eerst een toegangscode in.');
+            setAccessError(t.errors.empty);
             return;
         }
 
@@ -341,7 +314,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
             const accessResult = await validateTeamAccessCode(cleanedInput);
             if (!accessResult) {
-                setAccessError('Onjuiste of onbekende code.');
+                setAccessError(t.errors.unknownCode);
                 setAccessLoading(false);
                 return;
             }
@@ -350,7 +323,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
             // Als Module 2 vraagt maar code is alleen insight → blokkeren
             if (accessModal.requiredLevel === LEVEL_DYNAMICS && codeLevel !== LEVEL_DYNAMICS) {
-                setAccessError('Deze code geeft alleen toegang tot Team Insight, niet tot Team Dynamics.');
+                setAccessError(t.errors.insightOnly);
                 setAccessLoading(false);
                 return;
             }
@@ -414,7 +387,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             setPage(destination);
         } catch (err) {
             console.error('Access flow error:', err);
-            setAccessError('Er ging iets mis. Probeer het opnieuw.');
+            setAccessError(t.errors.generic);
         } finally {
             setAccessLoading(false);
         }
@@ -450,7 +423,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                         <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'var(--tof-accent-rose)', borderRadius: '4px 0 0 4px' }} />
                         <div style={{ paddingLeft: isMobile ? 8 : 16, display: 'grid', gap: 8 }}>
                             <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>
-                                Welkom terug
+                                {t.managerWelcome.eyebrow}
                             </div>
                             <h1 style={{
                                 margin: 0,
@@ -461,12 +434,12 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                 color: '#1f1b18',
                             }}>
                                 {managerFirstName
-                                    ? <>Hoi {managerFirstName}, <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>jouw team(s) staan klaar.</em></>
-                                    : <>Jouw team(s) <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>staan klaar.</em></>
+                                    ? <>{t.managerWelcome.greeting(managerFirstName)}<em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>{t.managerWelcome.greetingHighlight}</em></>
+                                    : <>{t.managerWelcome.titleLead}<em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>{t.managerWelcome.titleHighlight}</em></>
                                 }
                             </h1>
                             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: '#6F6A66', maxWidth: 560 }}>
-                                Klik op een team hieronder om het Team Insight-dashboard te openen.
+                                {t.managerWelcome.lead}
                             </p>
                         </div>
                     </div>
@@ -487,7 +460,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'var(--tof-accent-rose)', borderRadius: '4px 0 0 4px' }} />
                     <div style={{ paddingLeft: isMobile ? 8 : 16, display: 'grid', gap: isMobile ? 12 : 14 }}>
                         <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>
-                            Voor teams &amp; organisaties
+                            {t.hero.eyebrow}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
                             <h1 style={{
@@ -499,26 +472,26 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                 color: '#1f1b18',
                                 maxWidth: 620,
                             }}>
-                                Jouw team heeft een patroon.
+                                {t.hero.titleLead}
                                 <br />
                                 <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>
-                                    Tijd om het te zien.
+                                    {t.hero.titleHighlight}
                                 </em>
                             </h1>
                             {!isMobile && (
                                 <p style={{ margin: 0, maxWidth: 260, fontSize: 14, lineHeight: 1.65, color: '#6F6A66', paddingBottom: 4, flexShrink: 0 }}>
-                                    Elk team werkt anders — en dat patroon is zichtbaar te maken. Kies het niveau dat bij jouw vraag past.
+                                    {t.hero.leadDesktop}
                                 </p>
                             )}
                         </div>
                         {isMobile && (
                             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: '#6F6A66' }}>
-                                Elk team werkt anders. Kies het niveau dat bij jouw vraag past.
+                                {t.hero.leadMobile}
                             </p>
                         )}
                         {makerMode && (
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--tof-rose-soft)', border: '1px solid rgba(176,82,82,0.12)', borderRadius: 999, padding: '6px 12px', fontSize: 12, color: 'var(--tof-text-muted)', width: 'fit-content' }}>
-                                🛠 Maker mode actief
+                                🛠 {t.hero.makerMode}
                             </div>
                         )}
                     </div>
@@ -531,7 +504,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     gap: isMobile ? 12 : 16,
                     alignItems: 'start',
                 }}>
-                    {MODULES.map((mod) => {
+                    {modules.map((mod) => {
                         const isOpen = openId === mod.id;
                         const isDimmed = openId !== null && !isOpen;
                         return (
@@ -592,7 +565,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     justifyContent: 'space-between',
                     paddingTop: 4,
                 }}>
-                    <SecondaryButton onClick={() => setPage('home')}>Terug naar home</SecondaryButton>
+                    <SecondaryButton onClick={() => setPage('home')}>{t.footer.backHome}</SecondaryButton>
                     <button
                         type="button"
                         onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
@@ -609,7 +582,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                             textUnderlineOffset: 3,
                         }}
                     >
-                        Vragen? Plan een gesprek →
+                        {t.footer.contact}
                     </button>
                 </div>
 
@@ -636,6 +609,8 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 // Vervangt de oude code-invoer flow (codes lopen nu via magic-link login).
 
 function MagicLinkRequestBlock({ isMobile }) {
+    const t = useCopy().teamIntro.magicLink;
+
     return (
         <div
             style={{
@@ -661,7 +636,7 @@ function MagicLinkRequestBlock({ isMobile }) {
                         color: 'var(--tof-accent-rose)',
                     }}
                 >
-                    Al een samenwerking met TOF? Log in met magic-link
+                    {t.eyebrow}
                 </div>
                 <p
                     style={{
@@ -671,11 +646,11 @@ function MagicLinkRequestBlock({ isMobile }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    Magic-link toegang is alleen beschikbaar voor teams waarmee we een traject zijn gestart. Nog geen samenwerking? Plan eerst een gesprek hieronder.
+                    {t.body}
                 </p>
             </div>
             <PrimaryButton onClick={() => { window.location.href = '/login'; }}>
-                Naar inloggen →
+                {t.cta}
             </PrimaryButton>
         </div>
     );
@@ -686,6 +661,8 @@ function MagicLinkRequestBlock({ isMobile }) {
 // niet weten wat een "Dynamics-code" is. Upgrade loopt via contact (aparte regel).
 
 function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMode = false, onLogoutAdmin }) {
+    const t = useCopy().teamIntro.access;
+
     // Zijn er teams die nog op Insight-niveau staan? Alleen dan tonen we de upgrade-regel.
     const hasInsightOnly = teamAccesses.some((e) => e.level !== LEVEL_DYNAMICS);
 
@@ -722,7 +699,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                                 color: adminMode ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage)',
                             }}
                         >
-                            Jouw toegang
+                            {t.title}
                             {adminMode && (
                                 <span style={{
                                     fontSize: 10,
@@ -733,7 +710,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                                     borderRadius: 999,
                                     fontWeight: 700,
                                 }}>
-                                    BEHEERDER
+                                    {t.adminBadge}
                                 </span>
                             )}
                         </div>
@@ -746,10 +723,10 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                             }}
                         >
                             {adminMode
-                                ? 'Je bent ingelogd als beheerder en hebt toegang tot alle teams via de teamselector.'
+                                ? t.adminLead
                                 : teamAccesses.length === 1
-                                    ? 'Je hebt toegang tot dit team.'
-                                    : `Je hebt toegang tot ${teamAccesses.length} teams.`}
+                                    ? t.oneTeam
+                                    : t.manyTeams(teamAccesses.length)}
                         </p>
                     </div>
 
@@ -776,7 +753,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                             e.currentTarget.style.background = 'transparent';
                         }}
                     >
-                        Uitloggen
+                        {t.logout}
                     </button>
                 </div>
 
@@ -804,7 +781,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                             flexWrap: 'wrap',
                         }}>
                             <span style={{ fontSize: 13, color: 'var(--tof-text-soft)' }}>
-                                Kies een team uit het overzicht om te openen.
+                                {t.adminNoTeams}
                             </span>
                         </div>
                     )}
@@ -821,7 +798,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                         color: 'var(--tof-text-muted)',
                     }}
                 >
-                    Meer dan Team Insight nodig?{' '}
+                    {t.upgradeLead}{' '}
                     <a
                         href="https://www.tof.services/contact"
                         target="_blank"
@@ -833,7 +810,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                             textUnderlineOffset: 3,
                         }}
                     >
-                        Vraag Dynamics-toegang aan →
+                        {t.upgradeLink}
                     </a>
                 </div>
             )}
@@ -842,6 +819,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
 }
 
 function AccessRow({ entry, isMobile, onOpen }) {
+    const t = useCopy().teamIntro.access;
     const isDynamics = entry.level === LEVEL_DYNAMICS;
 
     return (
@@ -869,7 +847,7 @@ function AccessRow({ entry, isMobile, onOpen }) {
                         textOverflow: 'ellipsis',
                     }}
                 >
-                    {entry.team || 'Team'}
+                    {entry.team || t.teamFallback}
                     {entry.organization ? (
                         <span
                             style={{
@@ -892,7 +870,7 @@ function AccessRow({ entry, isMobile, onOpen }) {
                         color: isDynamics ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage)',
                     }}
                 >
-                    {isDynamics ? 'Team Insight + Dynamics' : 'Team Insight'}
+                    {isDynamics ? t.levelDynamics : t.levelInsight}
                 </div>
             </div>
 
@@ -913,7 +891,7 @@ function AccessRow({ entry, isMobile, onOpen }) {
                         fontFamily: 'var(--tof-font-body)',
                     }}
                 >
-                    Insight →
+                    {t.openInsight}
                 </button>
 
                 {isDynamics && (
@@ -932,7 +910,7 @@ function AccessRow({ entry, isMobile, onOpen }) {
                             fontFamily: 'var(--tof-font-body)',
                         }}
                     >
-                        Dynamics →
+                        {t.openDynamics}
                     </button>
                 )}
             </div>
@@ -951,27 +929,25 @@ function AccessModal({
     onSubmit,
     onClose,
 }) {
+    const t = useCopy().teamIntro.modal;
+
     const isDynamics = requiredLevel === LEVEL_DYNAMICS;
     const isAny = requiredLevel === null || requiredLevel === undefined;
 
-    let eyebrow, title, lead, accentColor;
+    let variant, accentColor;
 
     if (isAny) {
-        eyebrow = 'Toegangscode';
-        title = 'Voer je toegangscode in';
-        lead = 'We herkennen zelf of je toegang hebt tot Team Insight of Team Dynamics — je komt automatisch op het juiste dashboard.';
+        variant = t.any;
         accentColor = 'var(--tof-text)';
     } else if (isDynamics) {
-        eyebrow = 'Module 2';
-        title = 'Toegangscode Team Dynamics';
-        lead = 'Voer je toegangscode voor Team Dynamics in. Deze code geeft ook toegang tot Team Insight.';
+        variant = t.dynamics;
         accentColor = 'var(--tof-accent-rose)';
     } else {
-        eyebrow = 'Module 1';
-        title = 'Toegangscode Team Insight';
-        lead = 'Voer je toegangscode voor Team Insight in.';
+        variant = t.insight;
         accentColor = 'var(--tof-accent-sage)';
     }
+
+    const { eyebrow, title, lead } = variant;
 
     return (
         <div style={{
@@ -1011,7 +987,7 @@ function AccessModal({
                 <input
                     value={accessInput}
                     onChange={(e) => setAccessInput(e.target.value)}
-                    placeholder="Voer code in"
+                    placeholder={t.placeholder}
                     autoFocus
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' && !accessLoading) onSubmit();
@@ -1038,10 +1014,10 @@ function AccessModal({
                             background: accentColor,
                         }}
                     >
-                        {accessLoading ? 'Bezig…' : 'Ga verder'}
+                        {accessLoading ? t.busy : t.submit}
                     </PrimaryButton>
                     <SecondaryButton onClick={onClose}>
-                        Sluiten
+                        {t.close}
                     </SecondaryButton>
                 </div>
             </div>
@@ -1052,6 +1028,8 @@ function AccessModal({
 // ─── MODULE KAART ─────────────────────────────────────────────────────────────
 
 function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef }) {
+    const t = useCopy().teamIntro.card;
+
     return (
         <div
             ref={cardRef}
@@ -1147,7 +1125,7 @@ function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef 
                                 border: `1px solid ${mod.accent === 'var(--tof-text)' ? 'var(--tof-border)' : `${mod.accent}30`}`,
                             }}>
                                 <strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.4, color: mod.accent === 'var(--tof-text)' ? 'var(--tof-text-muted)' : mod.accent, display: 'block', marginBottom: 5 }}>
-                                    Wat je krijgt
+                                    {t.whatYouGet}
                                 </strong>
                                 {mod.what}
                             </div>
@@ -1155,7 +1133,7 @@ function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef 
                     )}
 
                     <div style={{ fontSize: 12, color: 'var(--tof-text-muted)', fontWeight: 500, marginTop: 'auto', paddingTop: 12 }}>
-                        {isOpen ? 'Minder tonen' : 'Ontdek wat dit inhoudt →'}
+                        {isOpen ? t.showLess : t.showMore}
                     </div>
                 </div>
             </button>

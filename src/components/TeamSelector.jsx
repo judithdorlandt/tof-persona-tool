@@ -13,6 +13,7 @@ import {
     SecondaryButton,
     SectionEyebrow,
 } from '../ui/AppShell';
+import { useCopy } from '../i18n/LanguageContext';
 
 export default function TeamSelector({
     setPage,
@@ -20,6 +21,9 @@ export default function TeamSelector({
     setTeamResponses,
     setSelectedTeam,
 }) {
+    const { common, teamSelector: t } = useCopy();
+    const locale = common.locale;
+
     const storedAccess = getStoredTeamAccess();
     const storedCode = storedAccess?.code || '';
     const storedTeam = storedAccess?.team || '';
@@ -40,7 +44,7 @@ export default function TeamSelector({
     useEffect(() => {
         async function loadTeams() {
             if (!supabase) {
-                setErrorMessage('Supabase is niet beschikbaar.');
+                setErrorMessage(t.errors.supabaseUnavailable);
                 setLoading(false);
                 return;
             }
@@ -60,7 +64,7 @@ export default function TeamSelector({
 
             if (error) {
                 console.error(error);
-                setErrorMessage('Er ging iets mis bij het ophalen van teams.');
+                setErrorMessage(t.errors.loadTeams);
                 setLoading(false);
                 return;
             }
@@ -81,7 +85,8 @@ export default function TeamSelector({
         }
 
         loadTeams();
-    }, []);
+        // Eenmalig bij mount; foutteksten uit `t` mogen geen herlaadronde uitlokken.
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const organizations = useMemo(() => {
         return [...new Set(rows.map((row) => row.organization).filter(Boolean))].sort();
@@ -105,10 +110,10 @@ export default function TeamSelector({
                 dept && team && dept.toLowerCase() === team.toLowerCase();
 
             const label = isSameAsDepartment
-                ? `Afdeling: ${dept}`
+                ? t.optionLabels.departmentOnly(dept)
                 : dept
-                    ? `Afdeling: ${dept} — Team: ${team}`
-                    : `Team: ${team}`;
+                    ? t.optionLabels.departmentAndTeam(dept, team)
+                    : t.optionLabels.teamOnly(team);
 
             if (!grouped.has(teamKey)) {
                 grouped.set(teamKey, {
@@ -124,9 +129,9 @@ export default function TeamSelector({
         });
 
         return [...grouped.values()].sort((a, b) =>
-            a.label.localeCompare(b.label, 'nl')
+            a.label.localeCompare(b.label, locale)
         );
-    }, [rows, selectedOrg]);
+    }, [rows, selectedOrg, t, locale]);
 
     const inviteCodeOptions = useMemo(() => {
         if (storedCode) {
@@ -139,7 +144,7 @@ export default function TeamSelector({
             return [
                 {
                     value: storedCode,
-                    label: `Invite code: ${storedCode}`,
+                    label: t.optionLabels.inviteCode(storedCode),
                     count: filteredRows.length,
                 },
             ];
@@ -175,9 +180,9 @@ export default function TeamSelector({
         });
 
         return [...grouped.values()].sort((a, b) =>
-            a.label.localeCompare(b.label, 'nl')
+            a.label.localeCompare(b.label, locale)
         );
-    }, [rows, storedCode]);
+    }, [rows, storedCode, t, locale]);
 
     const storedCodeTeamOptions = useMemo(() => {
         if (!activeInviteCode) return [];
@@ -199,10 +204,10 @@ export default function TeamSelector({
                 dept && teamKey && dept.toLowerCase() === teamKey.toLowerCase();
 
             const label = isSameAsDepartment
-                ? `Afdeling: ${dept}`
+                ? t.optionLabels.departmentOnly(dept)
                 : dept
-                    ? `Afdeling: ${dept} — Team: ${teamKey}`
-                    : `Team: ${teamKey}`;
+                    ? t.optionLabels.departmentAndTeam(dept, teamKey)
+                    : t.optionLabels.teamOnly(teamKey);
 
             if (!grouped.has(teamKey)) {
                 grouped.set(teamKey, {
@@ -216,9 +221,9 @@ export default function TeamSelector({
         });
 
         return [...grouped.values()].sort((a, b) =>
-            a.label.localeCompare(b.label, 'nl')
+            a.label.localeCompare(b.label, locale)
         );
-    }, [rows, activeInviteCode]);
+    }, [rows, activeInviteCode, t, locale]);
 
     const selectedInviteMeta = inviteCodeOptions.find(
         (item) => item.value === activeInviteCode
@@ -259,9 +264,9 @@ export default function TeamSelector({
     }
 
     function reliabilityLabel(count) {
-        if (count < 3) return 'Lage betrouwbaarheid';
-        if (count < 6) return 'Basis inzicht';
-        return 'Sterk beeld';
+        if (count < 3) return t.reliability.low;
+        if (count < 6) return t.reliability.basic;
+        return t.reliability.strong;
     }
 
     function buildTeamResultData(members, meta = {}) {
@@ -300,7 +305,7 @@ export default function TeamSelector({
 
     async function handleOpenDashboard() {
         if (!supabase) {
-            setErrorMessage('Supabase is niet beschikbaar.');
+            setErrorMessage(t.errors.supabaseUnavailable);
             return;
         }
 
@@ -309,7 +314,7 @@ export default function TeamSelector({
 
         if (selectionMode === 'team') {
             if (selectedTeams.length === 0) {
-                setErrorMessage('Kies minstens één team of afdeling.');
+                setErrorMessage(t.errors.noTeamSelected);
                 setOpeningDashboard(false);
                 return;
             }
@@ -330,7 +335,7 @@ export default function TeamSelector({
 
             if (error) {
                 console.error(error);
-                setErrorMessage('Het teamdashboard kon niet worden opgebouwd.');
+                setErrorMessage(t.errors.dashboardFailed);
                 setOpeningDashboard(false);
                 return;
             }
@@ -369,7 +374,7 @@ export default function TeamSelector({
         }
 
         if (!activeInviteCode) {
-            setErrorMessage('Kies een invite code.');
+            setErrorMessage(t.errors.noInviteCode);
             setOpeningDashboard(false);
             return;
         }
@@ -390,7 +395,7 @@ export default function TeamSelector({
 
         if (error) {
             console.error(error);
-            setErrorMessage('Het dashboard op basis van invite code kon niet worden opgebouwd.');
+            setErrorMessage(t.errors.inviteDashboardFailed);
             setOpeningDashboard(false);
             return;
         }
@@ -404,7 +409,7 @@ export default function TeamSelector({
 
         if (typeof setSelectedTeam === 'function') {
             setSelectedTeam({
-                team: selectedTeams.length === 1 ? selectedTeams[0] : 'Afdeling totaal',
+                team: selectedTeams.length === 1 ? selectedTeams[0] : t.invite.departmentTotal,
                 organization: firstOrg,
                 code: activeInviteCode,
             });
@@ -414,8 +419,8 @@ export default function TeamSelector({
             const result = buildTeamResultData(members, {
                 name:
                     selectedTeams.length === 1
-                        ? `Team: ${selectedTeams[0]}`
-                        : 'Afdeling totaal',
+                        ? t.optionLabels.teamOnly(selectedTeams[0])
+                        : t.invite.departmentTotal,
                 organization: firstOrg,
                 invite_code: activeInviteCode,
                 team_names: selectedTeams,
@@ -434,7 +439,7 @@ export default function TeamSelector({
             <PageShell padding="20px 16px 32px">
                 <SectionCard padding={28}>
                     <div style={{ display: 'grid', gap: 16 }}>
-                        <SectionEyebrow>Team selector</SectionEyebrow>
+                        <SectionEyebrow>{t.gate.eyebrow}</SectionEyebrow>
 
                         <h1
                             style={{
@@ -445,7 +450,7 @@ export default function TeamSelector({
                                 color: 'var(--tof-text)',
                             }}
                         >
-                            🔒 Toegang vereist
+                            🔒 {t.gate.title}
                         </h1>
 
                         <p
@@ -457,12 +462,12 @@ export default function TeamSelector({
                                 fontSize: 15,
                             }}
                         >
-                            Deze omgeving is alleen beschikbaar met een geldige toegangscode.
+                            {t.gate.lead}
                         </p>
 
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                             <PrimaryButton onClick={() => setPage('team')}>
-                                Terug naar uitleg
+                                {t.gate.cta}
                             </PrimaryButton>
                         </div>
                     </div>
@@ -475,7 +480,7 @@ export default function TeamSelector({
         <PageShell padding="20px 16px 32px">
             <SectionCard padding={24}>
                 <div style={{ display: 'grid', gap: 14 }}>
-                    <SectionEyebrow>Team selector</SectionEyebrow>
+                    <SectionEyebrow>{t.page.eyebrow}</SectionEyebrow>
 
                     <h1
                         style={{
@@ -486,10 +491,10 @@ export default function TeamSelector({
                             color: 'var(--tof-text)',
                         }}
                     >
-                        Kies hoe je wilt selecteren
+                        {t.page.titleLead}
                         <br />
                         <span style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>
-                            en open het dashboard.
+                            {t.page.titleHighlight}
                         </span>
                     </h1>
 
@@ -502,8 +507,7 @@ export default function TeamSelector({
                             fontSize: 15,
                         }}
                     >
-                        Je kunt een dashboard openen op basis van teams en afdelingen binnen een
-                        organisatie, of direct op basis van een invite code.
+                        {t.page.lead}
                     </p>
 
                     {makerMode ? (
@@ -522,7 +526,7 @@ export default function TeamSelector({
                             }}
                         >
                             <span>🛠</span>
-                            <span>Maker mode actief</span>
+                            <span>{t.page.makerMode}</span>
                         </div>
                     ) : null}
                 </div>
@@ -536,7 +540,7 @@ export default function TeamSelector({
                             fontSize: 15,
                         }}
                     >
-                        Teams laden…
+                        {t.page.loading}
                     </div>
                 ) : (
                     <>
@@ -545,14 +549,14 @@ export default function TeamSelector({
                                 active={selectionMode === 'team'}
                                 onClick={() => setSelectionMode('team')}
                             >
-                                Organisatie + team
+                                {t.modes.team}
                             </ModeButton>
 
                             <ModeButton
                                 active={selectionMode === 'invite'}
                                 onClick={() => setSelectionMode('invite')}
                             >
-                                Invite code
+                                {t.modes.invite}
                             </ModeButton>
                         </div>
 
@@ -567,7 +571,7 @@ export default function TeamSelector({
                             >
                                 <div style={{ display: 'grid', gap: 8 }}>
                                     <label style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                        Organisatie
+                                        {t.fields.organization}
                                     </label>
 
                                     <select
@@ -575,7 +579,7 @@ export default function TeamSelector({
                                         onChange={(e) => setSelectedOrg(e.target.value)}
                                         style={selectStyle}
                                     >
-                                        <option value="">Alle organisaties</option>
+                                        <option value="">{t.fields.allOrganizations}</option>
                                         {organizations.map((org) => (
                                             <option key={org} value={org}>
                                                 {org}
@@ -586,7 +590,7 @@ export default function TeamSelector({
 
                                 <div style={{ display: 'grid', gap: 10 }}>
                                     <label style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                        Teams / afdelingen
+                                        {t.fields.teams}
                                     </label>
 
                                     <div
@@ -622,13 +626,13 @@ export default function TeamSelector({
                                                     }
                                                     onChange={handleSelectAllTeams}
                                                 />
-                                                <span>Alles selecteren</span>
+                                                <span>{t.fields.selectAll}</span>
                                             </label>
                                         )}
 
                                         {teamOptions.length === 0 ? (
                                             <div style={{ fontSize: 14, color: 'var(--tof-text-muted)' }}>
-                                                Kies eerst een organisatie of zorg dat er teams beschikbaar zijn.
+                                                {t.fields.noTeams}
                                             </div>
                                         ) : (
                                             teamOptions.map((item) => {
@@ -700,7 +704,7 @@ export default function TeamSelector({
                                 {!storedCode && (
                                     <div style={{ display: 'grid', gap: 8 }}>
                                         <label style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                            Invite code
+                                            {t.fields.inviteCode}
                                         </label>
 
                                         <select
@@ -708,7 +712,7 @@ export default function TeamSelector({
                                             onChange={(e) => setSelectedInviteCode(e.target.value)}
                                             style={selectStyle}
                                         >
-                                            <option value="">Kies een invite code</option>
+                                            <option value="">{t.fields.chooseInviteCode}</option>
                                             {inviteCodeOptions.map((item) => (
                                                 <option key={item.value} value={item.value}>
                                                     {item.label} ({item.count})
@@ -729,16 +733,16 @@ export default function TeamSelector({
                                                 color: 'var(--tof-text-soft)',
                                             }}
                                         >
-                                            Je bent ingelogd met invite code{' '}
+                                            {t.invite.loggedInPrefix}
                                             <strong style={{ color: 'var(--tof-text)' }}>
                                                 {activeInviteCode}
                                             </strong>
-                                            . Kies hieronder of je het totaalbeeld van de afdeling wilt zien of één team apart.
+                                            {t.invite.loggedInSuffix}
                                         </div>
 
                                         <div style={{ display: 'grid', gap: 10 }}>
                                             <label style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                                Kies niveau
+                                                {t.fields.chooseLevel}
                                             </label>
 
                                             <div style={{ display: 'grid', gap: 10 }}>
@@ -767,9 +771,9 @@ export default function TeamSelector({
                                                             style={{ marginTop: 2 }}
                                                         />
                                                         <div style={{ display: 'grid', gap: 4 }}>
-                                                            <span style={{ fontWeight: 600 }}>Afdeling totaal</span>
+                                                            <span style={{ fontWeight: 600 }}>{t.invite.departmentTotal}</span>
                                                             <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>
-                                                                Alle responses binnen deze invite code samen
+                                                                {t.invite.departmentTotalHint}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -866,11 +870,11 @@ export default function TeamSelector({
                                     color: 'var(--tof-text-soft)',
                                 }}
                             >
-                                Je hebt nu{' '}
+                                {t.summary.teamsPrefix}
                                 <strong style={{ color: 'var(--tof-text)' }}>
                                     {selectedTeams.length}
-                                </strong>{' '}
-                                groep(en) geselecteerd.
+                                </strong>
+                                {t.summary.teamsSuffix}
                             </div>
                         )}
 
@@ -885,27 +889,28 @@ export default function TeamSelector({
                                     color: 'var(--tof-text-soft)',
                                 }}
                             >
-                                Je bekijkt nu invite code{' '}
+                                {t.summary.invitePrefix}
                                 <strong style={{ color: 'var(--tof-text)' }}>
                                     {activeInviteCode}
                                 </strong>
                                 {selectedTeams.length === 1 ? (
                                     <>
-                                        {' '}op teamniveau:{' '}
+                                        {t.summary.atTeamLevel}
                                         <strong style={{ color: 'var(--tof-text)' }}>{selectedTeams[0]}</strong>
                                     </>
                                 ) : (
                                     <>
-                                        {' '}op <strong style={{ color: 'var(--tof-text)' }}>afdelingsniveau</strong>
+                                        {t.summary.atLevelPrefix}
+                                        <strong style={{ color: 'var(--tof-text)' }}>{t.summary.departmentLevel}</strong>
                                     </>
                                 )}
                                 {selectedInviteMeta ? (
                                     <>
-                                        {' '}met{' '}
+                                        {t.summary.withPrefix}
                                         <strong style={{ color: 'var(--tof-text)' }}>
                                             {selectedInviteMeta.count}
-                                        </strong>{' '}
-                                        response(s).
+                                        </strong>
+                                        {t.summary.responsesSuffix}
                                     </>
                                 ) : null}
                             </div>
@@ -928,11 +933,11 @@ export default function TeamSelector({
 
                         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
                             <PrimaryButton onClick={handleOpenDashboard}>
-                                {openingDashboard ? 'Bezig…' : 'Bekijk teamdashboard'}
+                                {openingDashboard ? t.actions.busy : t.actions.openDashboard}
                             </PrimaryButton>
 
                             <SecondaryButton onClick={() => setPage('team')}>
-                                Terug
+                                {t.actions.back}
                             </SecondaryButton>
                         </div>
                     </>

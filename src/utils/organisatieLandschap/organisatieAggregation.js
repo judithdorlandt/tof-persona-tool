@@ -14,14 +14,18 @@
 
 import {
     ARCHETYPE_ORDER,
-    ARCHETYPE_NAME,
-    PERSONA_DRIVE,
+    getArchetypeName,
+    getPersonaDrive,
     PERSONA_COLORS,
     reliabilityFor,
 } from './constants';
+import { getOLCopy } from './copy';
 
 /**
  * Hoofd-entry — verwerkt input van Admin tot stabiele dataset voor pagina's.
+ *
+ * `copy`/`lang` komen uit `generateOrganisatieLandschapPDF`. Alle afgeleide
+ * zinnen worden via `copy.data.*` gevormd; hier staat geen losse tekst meer.
  */
 export function prepareOrganisatieData({
     aggregate,
@@ -29,16 +33,19 @@ export function prepareOrganisatieData({
     teamSummaries = [],
     organizationName = 'Organisatie',
     observations = [],
+    lang = 'nl',
+    copy = getOLCopy(lang),
 }) {
+    const cd = copy.data;
     const allTeams = [...teamSummaries];
     const activeTeams = allTeams.filter((t) => (t.responseCount || 0) > 0);
     const inactiveTeams = allTeams.filter((t) => (t.responseCount || 0) === 0);
 
     const totalRespondents = aggregate?.teamCount || 0;
 
-    const orgRow = buildOrgRow(aggregate);
+    const orgRow = buildOrgRow(aggregate, cd);
     const teamRows = activeTeams
-        .map((t) => buildTeamRow(t))
+        .map((t) => buildTeamRow(t, cd))
         .sort((a, b) => b.n - a.n);
 
     // Reconciliatie respondenten: het organisatietotaal (aggregate.teamCount)
@@ -51,10 +58,10 @@ export function prepareOrganisatieData({
     // dan is linked > totaal. Dat signaleren we apart.
     const overlapRespondents = Math.max(0, linkedRespondents - totalRespondents);
 
-    const dominantStyle = computeDominantStyle(aggregate);
-    const topNeed = computeTopWorkplaceNeed(aggregate);
-    const workplaceNeeds = computeWorkplaceNeeds(aggregate, 5);
-    const leeglopers = computeLeeglopers(aggregate, insights);
+    const dominantStyle = computeDominantStyle(aggregate, lang);
+    const topNeed = computeTopWorkplaceNeed(aggregate, cd);
+    const workplaceNeeds = computeWorkplaceNeeds(aggregate, cd, 5);
+    const leeglopers = computeLeeglopers(insights, cd);
 
     const leegloperObservations = (observations || [])
         .filter((o) => o.category === 'leegloper')
@@ -70,7 +77,7 @@ export function prepareOrganisatieData({
 
     return {
         organizationName,
-        date: new Date().toLocaleDateString('nl-NL', {
+        date: new Date().toLocaleDateString(cd.dateLocale, {
             day: 'numeric', month: 'long', year: 'numeric',
         }),
         totalRespondents,
@@ -80,7 +87,7 @@ export function prepareOrganisatieData({
         totalTeams: allTeams.length,
         activeTeamCount: activeTeams.length,
         inactiveTeamCount: inactiveTeams.length,
-        inactiveTeams: inactiveTeams.map(getTeamName),
+        inactiveTeams: inactiveTeams.map((t) => getTeamName(t, cd)),
         dominantStyle,
         topNeed,
         workplaceNeeds,
@@ -96,22 +103,24 @@ export function prepareOrganisatieData({
         // de organisatie-rij in de heatmap.
         topPersonas: (aggregate?.personasByPrimary || []).slice(0, 2).map((p) => ({
             id: p.id,
-            name: p.name || ARCHETYPE_NAME[p.id] || p.id,
-            drive: PERSONA_DRIVE[p.id] || (p.name || '').toLowerCase(),
+            // Bewust de canonieke naam uit constants (taalvast), niet p.name —
+            // die komt uit de generieke aggregatie en kan NL zijn.
+            name: getArchetypeName(p.id, lang) || p.name || p.id,
+            drive: getPersonaDrive(p.id, lang) || (p.name || '').toLowerCase(),
             color: PERSONA_COLORS[p.id],
             pct: Number.isFinite(p.countPercentage) ? p.countPercentage : null,
             count: p.count || 0,
         })),
         // Voor signature/quote.
-        signatureSentence: buildSignatureSentence(aggregate),
+        signatureSentence: buildSignatureSentence(aggregate, cd, lang),
     };
 }
 
-function getTeamName(t) {
-    return t?.team?.team || '—';
+function getTeamName(t, cd) {
+    return t?.team?.team || cd.teamNameFallback;
 }
 
-function buildOrgRow(aggregate) {
+function buildOrgRow(aggregate, cd) {
     const n = aggregate?.teamCount || 0;
     const personas = aggregate?.personasByPrimary || [];
     const map = new Map(personas.map((p) => [p.id, p]));
@@ -120,10 +129,10 @@ function buildOrgRow(aggregate) {
         if (!p) return { id, pct: null, count: 0 };
         return { id, pct: n > 0 ? Math.round((p.count / n) * 100) : 0, count: p.count || 0 };
     });
-    return { name: 'ORGANISATIE', n, cells, isOrg: true };
+    return { name: cd.orgRowLabel, n, cells, isOrg: true };
 }
 
-function buildTeamRow(t) {
+function buildTeamRow(t, cd) {
     const n = t.responseCount || 0;
     const personas = t.aggregate?.personasByPrimary || [];
     const map = new Map(personas.map((p) => [p.id, p]));
@@ -134,7 +143,7 @@ function buildTeamRow(t) {
         return { id, pct: Math.round((p.count / n) * 100), count: p.count || 0 };
     });
     return {
-        name: getTeamName(t),
+        name: getTeamName(t, cd),
         n,
         cells,
         reliability: reliabilityFor(n),
@@ -142,12 +151,12 @@ function buildTeamRow(t) {
     };
 }
 
-function computeDominantStyle(aggregate) {
+function computeDominantStyle(aggregate, lang) {
     const top = (aggregate?.personasByPrimary || [])[0];
     if (!top) return { id: null, name: '—', color: '#999' };
     return {
         id: top.id,
-        name: top.name || ARCHETYPE_NAME[top.id] || top.id,
+        name: getArchetypeName(top.id, lang) || top.name || top.id,
         color: PERSONA_COLORS[top.id],
         count: top.count,
     };
@@ -164,21 +173,21 @@ function pctOfTotal(it) {
     return 0;
 }
 
-function computeTopWorkplaceNeed(aggregate) {
+function computeTopWorkplaceNeed(aggregate, cd) {
     const items = aggregate?.sortedWorkplaceNeeds || [];
     if (items.length === 0) return { label: '—', value: 0, pct: 0 };
     const top = items[0];
     return {
-        label: top.label || top.name || '—',
+        label: cd.workplaceLabel(top.label || top.name || '—'),
         value: Number(top.value || top.count || 0),
         pct: pctOfTotal(top),
     };
 }
 
-function computeWorkplaceNeeds(aggregate, take = 5) {
+function computeWorkplaceNeeds(aggregate, cd, take = 5) {
     const items = (aggregate?.sortedWorkplaceNeeds || []).slice(0, take);
     return items.map((it) => ({
-        label: it.label || it.name || '—',
+        label: cd.workplaceLabel(it.label || it.name || '—'),
         pct: pctOfTotal(it),
     }));
 }
@@ -195,46 +204,56 @@ function computeWorkplaceSpread(needs) {
     return { min, max, range, close: range <= 5 };
 }
 
-function computeLeeglopers(aggregate, insights) {
+// Spanningsparen zijn taalneutraal: het paar wijst een key aan, de copy
+// levert de formulering ('tempo en zorgvuldigheid' / 'pace and care').
+const TENSION_PAIRS = [
+    ['presteerder', 'denker', 'tempoZorgvuldigheid'],
+    ['presteerder', 'verbinder', 'resultaatVerbinding'],
+    ['maker', 'zekerzoeker', 'vrijheidZekerheid'],
+    ['vernieuwer', 'zekerzoeker', 'vernieuwingContinuiteit'],
+    ['groeier', 'zekerzoeker', 'ontwikkelingStabiliteit'],
+    ['teamspeler', 'maker', 'loyaliteitAutonomie'],
+];
+
+function computeLeeglopers(insights, cd) {
     const t = insights?.workplaceTension || {};
+    const cl = cd.leeglopers;
     const out = [];
-    if (t.underserved?.[0]) out.push(sanitizeUserText(`Te weinig ${t.underserved[0].label.toLowerCase()}`));
-    if (t.oversupplied?.[0]) out.push(sanitizeUserText(`Te veel ${t.oversupplied[0].label.toLowerCase()}`));
+    if (t.underserved?.[0]) {
+        const label = cd.workplaceLabel(t.underserved[0].label || '').toLowerCase();
+        out.push(sanitizeUserText(cl.tooLittle(label)));
+    }
+    if (t.oversupplied?.[0]) {
+        const label = cd.workplaceLabel(t.oversupplied[0].label || '').toLowerCase();
+        out.push(sanitizeUserText(cl.tooMuch(label)));
+    }
 
     const personas = [
         ...(t.impactSummary?.dominant || []),
         ...(t.impactSummary?.middle || []),
     ].map((p) => p.id);
 
-    const TENSION_PAIRS = [
-        ['presteerder', 'denker', 'tempo en zorgvuldigheid'],
-        ['presteerder', 'verbinder', 'resultaat en verbinding'],
-        ['maker', 'zekerzoeker', 'vrijheid en zekerheid'],
-        ['vernieuwer', 'zekerzoeker', 'vernieuwing en continuïteit'],
-        ['groeier', 'zekerzoeker', 'ontwikkeling en stabiliteit'],
-        ['teamspeler', 'maker', 'loyaliteit en autonomie'],
-    ];
-    for (const [a, b, label] of TENSION_PAIRS) {
+    for (const [a, b, key] of TENSION_PAIRS) {
         if (personas.includes(a) && personas.includes(b)) {
-            out.push(`Spanning tussen ${label}`);
+            out.push(cl.tension(cl.tensionPairs[key]));
             break;
         }
     }
     while (out.length < 3) {
-        out.push('Werkplek die niet aansluit bij behoefte van de organisatie');
+        out.push(cl.fallback);
     }
     return out.slice(0, 3);
 }
 
-function buildSignatureSentence(aggregate) {
+function buildSignatureSentence(aggregate, cd, lang) {
     const top = aggregate?.personasByPrimary || [];
-    if (top.length === 0) return 'Een organisatie in beweging.';
-    const drive1 = PERSONA_DRIVE[top[0].id] || (top[0].name || '').toLowerCase();
+    if (top.length === 0) return cd.signature.none;
+    const drive1 = getPersonaDrive(top[0].id, lang) || (top[0].name || '').toLowerCase();
     if (top.length === 1) {
-        return `${capitalize(drive1)} — daar bouwt deze organisatie op.`;
+        return cd.signature.one(capitalize(drive1));
     }
-    const drive2 = PERSONA_DRIVE[top[1].id] || (top[1].name || '').toLowerCase();
-    return `${capitalize(drive1)} en ${drive2} — daar bouwt deze organisatie op.`;
+    const drive2 = getPersonaDrive(top[1].id, lang) || (top[1].name || '').toLowerCase();
+    return cd.signature.two(capitalize(drive1), drive2);
 }
 
 function capitalize(s) {
@@ -262,74 +281,66 @@ export function sanitizeUserText(s) {
 }
 
 // ── Duiding-helpers (concrete richting i.p.v. clichés).
+// Elke helper krijgt het opgeloste copy-object mee; zonder argument valt hij
+// terug op Nederlands, zodat bestaande aanroepers blijven werken.
 
-export function buildLeadershipDirections(data) {
+export function buildLeadershipDirections(data, copy = getOLCopy('nl')) {
+    const cl = copy.data.leadership;
     const out = [];
     if (data.leeglopers?.length >= 1) {
-        out.push(`Bespreek expliciet: ${data.leeglopers[0].toLowerCase()}.`);
+        out.push(cl.discuss(data.leeglopers[0].toLowerCase()));
     }
+    const withLabel = (p) => ({
+        drive: p.drive,
+        label: cl.personaLabel(p.name, p.pct != null ? p.pct : null),
+    });
     if (data.topPersonas?.length >= 2) {
-        const a = data.topPersonas[0];
-        const b = data.topPersonas[1];
-        out.push(
-            `Twee drijfveren springen eruit: ${a.drive} (${a.name}${a.pct != null ? `, ${a.pct}% primair` : ''}) en ${b.drive} (${b.name}${b.pct != null ? `, ${b.pct}% primair` : ''}). Maak ruimte voor beide — onderdruk geen van twee.`,
-        );
+        out.push(cl.twoDrives(withLabel(data.topPersonas[0]), withLabel(data.topPersonas[1])));
     } else if (data.topPersonas?.length === 1) {
-        const a = data.topPersonas[0];
-        out.push(
-            `De dominante drijfveer is ${a.drive} (${a.name}${a.pct != null ? `, ${a.pct}% primair` : ''}). Toets in gesprek of teams met andere drijfveren zich nog gezien voelen.`,
-        );
+        out.push(cl.oneDrive(withLabel(data.topPersonas[0])));
     }
     if (data.lowReliabilityTeams?.length >= 3) {
-        out.push(
-            `${data.lowReliabilityTeams.length} teams hebben te weinig respons voor harde uitspraken. Verdiep in gesprek voordat je beleid maakt.`,
-        );
+        out.push(cl.lowReliability(data.lowReliabilityTeams.length));
     }
     return out;
 }
 
-export function buildEnvironmentDirections(data) {
+export function buildEnvironmentDirections(data, copy = getOLCopy('nl')) {
+    const ce = copy.data.environment;
     const out = [];
     const needs = data.workplaceNeeds || [];
     const spread = data.workplaceSpread || { close: false, min: 0, max: 0 };
 
     if (needs.length === 0) {
-        out.push('Te weinig data om concrete investeringskeuzes te onderbouwen.');
+        out.push(ce.notEnoughData);
         return out;
     }
 
     if (spread.close) {
         // Behoefte is breed en gespreid — de spreiding zelf is het signaal.
         const labels = needs.slice(0, 3).map((n) => n.label.toLowerCase()).join(', ');
-        out.push(
-            `De voorkeuren liggen dicht bij elkaar (${spread.min}–${spread.max}% van het geheel). De behoefte is breed: geen enkel werkplektype springt eruit.`,
-        );
-        out.push(
-            `Investeer in een mix van werkplekken, niet in één type. Het meest genoemd: ${labels}.`,
-        );
+        out.push(ce.spreadClose(spread.min, spread.max));
+        out.push(ce.spreadMix(labels));
     } else {
         // Wél een duidelijke top — benoem die, met het echte aandeel.
         needs.slice(0, 3).forEach((n) => {
-            out.push(
-                `Investeer in ${n.label.toLowerCase()} — ${n.pct}% van álle werkplek-voorkeur ligt hier.`,
-            );
+            out.push(ce.invest(n.label.toLowerCase(), n.pct));
         });
     }
     return out;
 }
 
-export function buildAttentionTeams(data) {
+export function buildAttentionTeams(data, copy = getOLCopy('nl')) {
+    const ca = copy.data.attention;
     const out = (data.lowReliabilityTeams || []).map((t) => ({
         name: t.name,
         n: t.n,
-        why: t.n === 0
-            ? 'nog geen respons'
-            : `slechts ${t.n} ${t.n === 1 ? 'respondent' : 'respondenten'}`,
+        why: t.n === 0 ? ca.noResponse : ca.onlyN(t.n),
     }));
     // Voeg ook teams toe die helemaal geen respons hebben.
     (data.inactiveTeams || []).forEach((name) => {
         if (!out.find((x) => x.name === name)) {
-            out.push({ name, n: 0, why: 'nog geen respons' });
+            out.push({ name, n: 0, why: ca.noResponse });
         }
     });
     return out;

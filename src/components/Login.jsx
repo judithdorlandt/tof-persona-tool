@@ -8,6 +8,7 @@ import {
   SecondaryButton,
 } from '../ui/AppShell';
 import { TYPE, SPACING, RADIUS, useIsMobile } from '../ui/tokens';
+import { useCopy } from '../i18n/LanguageContext';
 
 /**
  * Login — magic-link flow.
@@ -21,6 +22,7 @@ import { TYPE, SPACING, RADIUS, useIsMobile } from '../ui/tokens';
  */
 export default function Login({ setPage, testerInvite = false }) {
   const isMobile = useIsMobile();
+  const { auth: t, common } = useCopy();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'error'
   const [errorMessage, setErrorMessage] = useState('');
@@ -31,7 +33,7 @@ export default function Login({ setPage, testerInvite = false }) {
 
     const cleanEmail = email.trim();
     if (!cleanEmail || !cleanEmail.includes('@')) {
-      setErrorMessage('Vul een geldig e-mailadres in.');
+      setErrorMessage(common.errors.invalidEmail);
       setStatus('error');
       return;
     }
@@ -43,7 +45,7 @@ export default function Login({ setPage, testerInvite = false }) {
     );
 
     if (!ok) {
-      setErrorMessage(error || 'Er ging iets mis. Probeer het opnieuw.');
+      setErrorMessage(error || t.login.genericError);
       setStatus('error');
       return;
     }
@@ -55,26 +57,26 @@ export default function Login({ setPage, testerInvite = false }) {
     return (
       <PageShell>
         <HeroBlock
-          eyebrow="CHECK JE INBOX"
-          title="Je link is onderweg."
+          eyebrow={t.sent.eyebrow}
+          title={t.sent.title}
           lead={
             <>
-              We hebben een magic-link gestuurd naar <strong>{email}</strong>.<br />
-              Klik op de knop in de mail om in te loggen.
+              {t.sent.leadBefore}<strong>{email}</strong>.<br />
+              {t.sent.leadAfter}
             </>
           }
         />
         <SectionCard>
           <p style={{ ...TYPE.body, color: 'var(--tof-text-muted)', margin: 0 }}>
-            Geen mail ontvangen? Check je spam-folder, of vraag een nieuwe aan met een ander adres.
+            {t.sent.spamHint}
           </p>
           <div style={{ marginTop: SPACING.xl, display: 'flex', gap: SPACING.md, flexWrap: 'wrap' }}>
             <SecondaryButton onClick={() => { setStatus('idle'); setEmail(''); }}>
-              ← Ander adres
+              {t.sent.otherAddress}
             </SecondaryButton>
             {setPage && (
               <SecondaryButton onClick={() => setPage('landing')}>
-                Terug naar start
+                {t.sent.backToStart}
               </SecondaryButton>
             )}
           </div>
@@ -86,9 +88,9 @@ export default function Login({ setPage, testerInvite = false }) {
   return (
     <PageShell>
       <HeroBlock
-        eyebrow={testerInvite ? 'FIJN DAT JE ER BENT' : 'INLOGGEN'}
-        title={testerInvite ? 'Even zelf ervaren.' : 'Welkom terug.'}
-        lead="Vul je e-mailadres in. We sturen je een link om met één klik in te loggen — geen wachtwoord nodig."
+        eyebrow={testerInvite ? t.login.testerEyebrow : t.login.eyebrow}
+        title={testerInvite ? t.login.testerTitle : t.login.title}
+        lead={t.login.lead}
       />
 
       <SectionCard>
@@ -102,7 +104,7 @@ export default function Login({ setPage, testerInvite = false }) {
               color: 'var(--tof-text-muted)',
             }}
           >
-            E-MAILADRES
+            {t.login.emailLabel}
           </label>
 
           <input
@@ -113,7 +115,7 @@ export default function Login({ setPage, testerInvite = false }) {
             autoFocus
             value={email}
             onChange={(e) => { setEmail(e.target.value); if (status === 'error') setStatus('idle'); }}
-            placeholder="naam@bedrijf.nl"
+            placeholder={t.login.emailPlaceholder}
             disabled={status === 'sending'}
             style={{
               width: '100%',
@@ -147,11 +149,11 @@ export default function Login({ setPage, testerInvite = false }) {
 
           <div style={{ marginTop: SPACING.xl, display: 'flex', gap: SPACING.md, flexWrap: 'wrap' }}>
             <PrimaryButton type="submit" disabled={status === 'sending'}>
-              {status === 'sending' ? 'Bezig met versturen…' : 'Stuur magic-link →'}
+              {status === 'sending' ? t.login.submitting : t.login.submit}
             </PrimaryButton>
             {setPage && (
               <SecondaryButton type="button" onClick={() => setPage('landing')}>
-                Annuleren
+                {t.login.cancel}
               </SecondaryButton>
             )}
           </div>

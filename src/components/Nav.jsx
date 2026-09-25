@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import styles from './Nav.module.css';
 import { isAdminEmail } from '../supabase';
+import { useCopy, useLang } from '../i18n/LanguageContext';
 
 export default function Nav({
     page,
@@ -16,6 +17,8 @@ export default function Nav({
     isManager = false,
     onLogout,
 }) {
+    const { nav: t } = useCopy();
+    const { lang, setLang } = useLang();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 820);
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -34,18 +37,18 @@ export default function Nav({
     // — als hij óók admin is — "Admin". Niet-managers zien de volledige nav.
     const baseItems = isManager
         ? [
-            { key: 'team', label: 'Mijn team' },
+            { key: 'team', label: t.myTeam },
         ]
         : [
-            { key: 'home', label: 'Home' },
-            { key: 'intro', label: 'Eerst even uitleg' },
-            { key: 'quiz', label: 'Test jezelf' },
-            { key: 'team', label: 'Teamomgeving' },
+            { key: 'home', label: t.home },
+            { key: 'intro', label: t.intro },
+            { key: 'quiz', label: t.quiz },
+            { key: 'team', label: t.teamEnvironment },
         ];
     const resultItems = (hasResult && !isManager)
         ? [
-            { key: 'results', label: 'Resultaat' },
-            { key: 'library', label: "Persona's" },
+            { key: 'results', label: t.results },
+            { key: 'library', label: t.library },
         ]
         : [];
     // "Mijn teams" tijdelijk verborgen tot data-migratie + admin-dashboard af zijn.
@@ -55,7 +58,7 @@ export default function Nav({
 
     // Admin-link — alleen zichtbaar voor TOF-admins (zie ADMIN_EMAILS in supabase.js).
     const adminItems = (currentUser && isAdminEmail(currentUser.email))
-        ? [{ key: 'admin', label: 'Admin' }]
+        ? [{ key: 'admin', label: t.admin }]
         : [];
 
     const items = [...baseItems, ...resultItems, ...managerItems, ...adminItems];
@@ -69,6 +72,29 @@ export default function Nav({
         if (typeof onLogout === 'function') onLogout();
     }
 
+    const langSwitch = (
+        <div className={styles.langSwitch} role="group" aria-label={t.languageLabel}>
+            <button
+                type="button"
+                onClick={() => { setLang('nl'); setMenuOpen(false); }}
+                className={`${styles.langBtn} ${lang === 'nl' ? styles.langBtnActive : ''}`}
+                aria-label={t.switchToDutch}
+                aria-pressed={lang === 'nl'}
+            >
+                NL
+            </button>
+            <button
+                type="button"
+                onClick={() => { setLang('en'); setMenuOpen(false); }}
+                className={`${styles.langBtn} ${lang === 'en' ? styles.langBtnActive : ''}`}
+                aria-label={t.switchToEnglish}
+                aria-pressed={lang === 'en'}
+            >
+                EN
+            </button>
+        </div>
+    );
+
     return (
         <div className={styles.bar}>
             <div className={styles.inner}>
@@ -78,13 +104,13 @@ export default function Nav({
                         onClick={() => handleNavigate(isManager ? 'team' : 'home')}
                         className={styles.logoBtn}
                     >
-                        <img src={tofLogo} alt="TOF logo" className={styles.logoImg} />
+                        <img src={tofLogo} alt={t.logoAlt} className={styles.logoImg} />
                         <div className={styles.brand}>
                             <span className={styles.brandTitle}>
                                 <span className={styles.brandWord}>The Office</span>
                                 <span className={styles.brandAccent}>Factory</span>
                             </span>
-                            <span className={styles.brandSub}>Persona Tool</span>
+                            <span className={styles.brandSub}>{t.brandSub}</span>
                         </div>
                     </button>
 
@@ -112,9 +138,11 @@ export default function Nav({
                                     title={currentUser.email || ''}
                                 >
                                     <span className={styles.logoutDot} />
-                                    Uitloggen
+                                    {t.logout}
                                 </button>
                             ) : null}
+
+                            {langSwitch}
                         </div>
                     ) : (
                         <button
@@ -122,7 +150,7 @@ export default function Nav({
                             onClick={() => setMenuOpen((prev) => !prev)}
                             className={`${styles.menuBtn} ${menuOpen ? styles.menuBtnOpen : ''}`}
                         >
-                            {menuOpen ? 'Sluit' : 'Menu'}
+                            {menuOpen ? t.close : t.menu}
                         </button>
                     )}
                 </div>
@@ -149,9 +177,11 @@ export default function Nav({
                                 onClick={handleLogoutClick}
                                 className={styles.menuLogoutBtn}
                             >
-                                Uitloggen ({currentUser.email})
+                                {t.logoutWithEmail(currentUser.email)}
                             </button>
                         ) : null}
+
+                        <div className={styles.menuLang}>{langSwitch}</div>
                     </div>
                 )}
             </div>

@@ -38,6 +38,52 @@ const COLOR = {
   trackSoft: '#E4D9C7',     // verdeling-lijn track (achtergrond)
 };
 
+// --- teksten -----------------------------------------------------------------
+// Alle zichtbare tekst staat hier, per taal. De render-functies hardcoden niets.
+// Let op de font-subsets: geen >= / <= glyphs; · – — é mogen wel.
+const CARD_COPY = {
+  nl: {
+    pillPrimary: 'PRIMAIRE PERSONA',
+    roleFallback: 'TOF Persona Tool',
+    titlePrefix: 'Jouw dominante profiel is ',
+    verdelingEyebrow: 'VERDELING PROFIEL',
+    mixEyebrow: 'JOUW MIX',
+    krachtEyebrow: 'WAT JOU IN BEWEGING BRENGT',
+    leeglopersEyebrow: 'WAAR JE OP LEEGLOOPT',
+    seeBack: 'ZIE ACHTERKANT',
+    workplaceEyebrow: 'JOUW IDEALE WERKPLEKMIX',
+    workplaceTitle: 'Wat jij nodig hebt in de werkomgeving.',
+    score: (value) => `score ${value}`,
+    leiderschapEyebrow: 'WAT HELPT IN LEIDERSCHAP',
+    tagline: 'Helping people understand their workplace through insight, design and movement.',
+    docTitle: 'TOF Personakaart',
+    docSubject: (persona) => `Personakaart — ${persona}`,
+    defaultFileName: 'personakaart TOF.pdf',
+  },
+  en: {
+    pillPrimary: 'PRIMARY PERSONA',
+    roleFallback: 'TOF Persona Tool',
+    titlePrefix: 'Your dominant profile is ',
+    verdelingEyebrow: 'PROFILE BREAKDOWN',
+    mixEyebrow: 'YOUR MIX',
+    krachtEyebrow: 'WHAT GETS YOU MOVING',
+    leeglopersEyebrow: 'WHERE YOU DRAIN',
+    seeBack: 'SEE REVERSE',
+    workplaceEyebrow: 'YOUR IDEAL WORKPLACE MIX',
+    workplaceTitle: 'What you need in the work environment.',
+    score: (value) => `score ${value}`,
+    leiderschapEyebrow: 'WHAT HELPS IN LEADERSHIP',
+    tagline: 'Helping people understand their workplace through insight, design and movement.',
+    docTitle: 'TOF Persona Card',
+    docSubject: (persona) => `Persona card — ${persona}`,
+    defaultFileName: 'persona card TOF.pdf',
+  },
+};
+
+function getCardCopy(lang) {
+  return CARD_COPY[lang] || CARD_COPY.nl;
+}
+
 // --- helpers -----------------------------------------------------------------
 
 function hexToRgb(hex) {
@@ -135,7 +181,7 @@ function drawCrossMarker(pdf, cx, cy, size, hex) {
 
 // --- page 1: voorkant --------------------------------------------------------
 
-function renderFront(pdf, data, primaryColor) {
+function renderFront(pdf, data, primaryColor, c) {
   const page = { x: MARGIN_X, y: MARGIN_Y, w: CONTENT_W };
 
   // Achtergrond
@@ -143,7 +189,7 @@ function renderFront(pdf, data, primaryColor) {
   pdf.rect(0, 0, PAGE_W, PAGE_H, 'F');
 
   // ── HEADER ROW: pill-badge (links) + TOF-mark (rechts)
-  const badge = drawPillBadge(pdf, page.x, page.y, 'PRIMAIRE PERSONA', primaryColor);
+  const badge = drawPillBadge(pdf, page.x, page.y, c.pillPrimary, primaryColor);
   drawTofMark(pdf, page.x + page.w - 5, page.y + badge.h / 2, 4.4, primaryColor);
 
   // ── Eyebrow: "JUDITH · TOF Persona Tool" — naam prominenter (bold + caps)
@@ -158,7 +204,7 @@ function renderFront(pdf, data, primaryColor) {
   pdf.setFont(FONT_BODY, 'normal');
   pdf.setFontSize(7.6);
   setText(pdf, COLOR.textMuted);
-  pdf.text(`  ·  ${data.rol || 'TOF Persona Tool'}`, page.x + nameW, y);
+  pdf.text(`  ·  ${data.rol || c.roleFallback}`, page.x + nameW, y);
 
   // ── BIG TITLE — "Jouw dominante profiel is Persona." op één regel
   y += 13;
@@ -166,7 +212,7 @@ function renderFront(pdf, data, primaryColor) {
   pdf.setFont(FONT_HEAD, 'normal');
   pdf.setFontSize(titleSize);
   setText(pdf, COLOR.text);
-  const titlePart1 = 'Jouw dominante profiel is ';
+  const titlePart1 = c.titlePrefix;
   pdf.text(titlePart1, page.x, y);
   const titlePart1W = pdf.getTextWidth(titlePart1);
 
@@ -204,7 +250,7 @@ function renderFront(pdf, data, primaryColor) {
   setText(pdf, COLOR.textMuted);
   pdf.setFont(FONT_BODY, 'bold');
   pdf.setFontSize(7);
-  pdf.text('VERDELING PROFIEL', colLeftX, leftY);
+  pdf.text(c.verdelingEyebrow, colLeftX, leftY);
   leftY += 6;
 
   const lines = (data.verdeling || []).slice(0, 8);
@@ -248,7 +294,7 @@ function renderFront(pdf, data, primaryColor) {
   setText(pdf, COLOR.textMuted);
   pdf.setFont(FONT_BODY, 'bold');
   pdf.setFontSize(7);
-  pdf.text('JOUW MIX', colRightX, rightY);
+  pdf.text(c.mixEyebrow, colRightX, rightY);
   rightY += 7;
 
   const mix = (data.mix || []).slice(0, 2);
@@ -326,7 +372,7 @@ function renderFront(pdf, data, primaryColor) {
     setText(pdf, COLOR.textMuted);
     pdf.setFont(FONT_BODY, 'bold');
     pdf.setFontSize(7);
-    pdf.text('WAT JOU IN BEWEGING BRENGT', page.x + boxPadX, y + boxPadY);
+    pdf.text(c.krachtEyebrow, page.x + boxPadX, y + boxPadY);
 
     // Italic quote in primary color — gegarandeerd één regel
     setText(pdf, primaryColor);
@@ -343,7 +389,7 @@ function renderFront(pdf, data, primaryColor) {
     setText(pdf, COLOR.textMuted);
     pdf.setFont(FONT_BODY, 'bold');
     pdf.setFontSize(7);
-    pdf.text('WAAR JE OP LEEGLOOPT', page.x, y);
+    pdf.text(c.leeglopersEyebrow, page.x, y);
     y += 6;
 
     // Laatste onderlijn moet vóór "→ ZIE ACHTERKANT" stoppen anders kruist hij
@@ -374,7 +420,7 @@ function renderFront(pdf, data, primaryColor) {
   setText(pdf, COLOR.textMuted);
   pdf.setFont(FONT_BODY, 'bold');
   pdf.setFontSize(7);
-  const footerLabel = 'ZIE ACHTERKANT';
+  const footerLabel = c.seeBack;
   const labelW = pdf.getTextWidth(footerLabel);
   const footerY = PAGE_H - 9;
   const labelX = PAGE_W - MARGIN_X;
@@ -393,7 +439,7 @@ function renderFront(pdf, data, primaryColor) {
 
 // --- page 2: achterkant ------------------------------------------------------
 
-function renderBack(pdf, data, primaryColor) {
+function renderBack(pdf, data, primaryColor, c) {
   const page = { x: MARGIN_X, y: MARGIN_Y, w: CONTENT_W };
 
   // Achtergrond
@@ -405,7 +451,7 @@ function renderBack(pdf, data, primaryColor) {
   setText(pdf, COLOR.textMuted);
   pdf.setFont(FONT_BODY, 'bold');
   pdf.setFontSize(7);
-  pdf.text('JOUW IDEALE WERKPLEKMIX', page.x, y);
+  pdf.text(c.workplaceEyebrow, page.x, y);
 
   drawTofMark(pdf, page.x + page.w - 5, y - 1.2, 4.4, primaryColor);
 
@@ -414,7 +460,7 @@ function renderBack(pdf, data, primaryColor) {
   setText(pdf, COLOR.text);
   pdf.setFont(FONT_HEAD, 'normal');
   pdf.setFontSize(16);
-  pdf.text('Wat jij nodig hebt in de werkomgeving.', page.x, y);
+  pdf.text(c.workplaceTitle, page.x, y);
 
   // ── Workplace cards (lijst, geen bars) — compact, luchtige typografie.
   //    Body wrapt naar 2 regels indien nodig, met intelligente ellipsis.
@@ -469,7 +515,7 @@ function renderBack(pdf, data, primaryColor) {
     setText(pdf, COLOR.textMuted);
     pdf.setFont(FONT_BODY, 'normal');
     pdf.setFontSize(6.8);
-    pdf.text(`score ${scoreStr}`, page.x + page.w - cardPadX, y + titleBaselineY, { align: 'right' });
+    pdf.text(c.score(scoreStr), page.x + page.w - cardPadX, y + titleBaselineY, { align: 'right' });
 
     // Body — italic serif, lichter color, ruime line-height
     setText(pdf, '#807468');
@@ -502,7 +548,7 @@ function renderBack(pdf, data, primaryColor) {
     setText(pdf, COLOR.textMuted);
     pdf.setFont(FONT_BODY, 'bold');
     pdf.setFontSize(6.8);
-    pdf.text('WAT HELPT IN LEIDERSCHAP', page.x + panelPad, y + panelPad);
+    pdf.text(c.leiderschapEyebrow, page.x + panelPad, y + panelPad);
 
     // Body
     setText(pdf, COLOR.text);
@@ -571,12 +617,7 @@ function renderBack(pdf, data, primaryColor) {
   setText(pdf, COLOR.textMuted);
   pdf.setFont(FONT_BODY, 'normal');
   pdf.setFontSize(7);
-  pdf.text(
-    'Helping people understand their workplace through insight, design and movement.',
-    PAGE_W / 2,
-    TAGLINE_Y,
-    { align: 'center' }
-  );
+  pdf.text(c.tagline, PAGE_W / 2, TAGLINE_Y, { align: 'center' });
 }
 
 // --- public api --------------------------------------------------------------
@@ -587,8 +628,10 @@ function renderBack(pdf, data, primaryColor) {
  * @param {Object} pdfData       voorkant + achterkant data (zie Results.jsx).
  * @param {string} primaryColor  hex-kleur van de primaire persona.
  * @param {string} fileName      bestandsnaam.
+ * @param {string} lang          'nl' (default) of 'en'.
  */
-export function downloadPersonaCardVectorPDF({ pdfData, primaryColor, fileName }) {
+export function downloadPersonaCardVectorPDF({ pdfData, primaryColor, fileName, lang = 'nl' }) {
+  const c = getCardCopy(lang);
   const pdf = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -602,8 +645,8 @@ export function downloadPersonaCardVectorPDF({ pdfData, primaryColor, fileName }
 
   try {
     pdf.setProperties({
-      title: fileName || 'TOF Personakaart',
-      subject: `Personakaart — ${pdfData?.voorkant?.persona || ''}`,
+      title: fileName || c.docTitle,
+      subject: c.docSubject(pdfData?.voorkant?.persona || ''),
       author: 'The Office Factory',
       creator: 'TOF Persona Tool',
       keywords: 'TOF, Persona, Personakaart, The Office Factory',
@@ -612,11 +655,11 @@ export function downloadPersonaCardVectorPDF({ pdfData, primaryColor, fileName }
     // Sommige jsPDF-builds gooien hierop; niet fataal.
   }
 
-  renderFront(pdf, pdfData.voorkant, primaryColor);
+  renderFront(pdf, pdfData.voorkant, primaryColor, c);
   pdf.addPage('a5', 'portrait');
-  renderBack(pdf, pdfData.achterkant, primaryColor);
+  renderBack(pdf, pdfData.achterkant, primaryColor, c);
 
-  const safeName = fileName || 'personakaart TOF.pdf';
+  const safeName = fileName || c.defaultFileName;
   try {
     const blob = pdf.output('blob');
     const url = URL.createObjectURL(blob);

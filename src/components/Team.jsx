@@ -1,5 +1,5 @@
 import React from 'react';
-import { ARCHETYPES } from '../data';
+import { useArchetypes } from '../i18n/archetypes';
 import { hasFullTeamAccess, isMakerAccess } from '../utils/access';
 import {
     PageShell,
@@ -54,6 +54,8 @@ export default function Team({
     teamResponses = [],
     selectedTeam = null,
 }) {
+    // Hook staat bewust vóór de access-gate: hooks mogen niet achter een return.
+    const ARCHETYPES = useArchetypes();
     const hasAccess = hasFullTeamAccess() || isMakerAccess();
 
     // ---- ACCESS GATE ----

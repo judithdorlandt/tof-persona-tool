@@ -16,6 +16,11 @@
  *                         source ∈ { 'dynamics' | 'collaboration' | 'tension' | 'missing' }
  *   - teamName, organization
  *   - headline          : signature-zin (optioneel)
+ *   - lang              : 'nl' | 'en' (default 'nl')
+ *
+ * LET OP: label-teksten binnen dynamicsAxes / tensions / leadershipWins komen
+ * al vertaald mee vanuit de aanroeper (teamDynamicsLogic + i18n-copy). Dit
+ * bestand vertaalt alleen zijn eigen chrome-teksten en de persona-namen.
  */
 
 import jsPDF from 'jspdf';
@@ -25,7 +30,11 @@ import {
     TOF_COLORS,
     TOF_PERSONA_COLORS,
     setupTofFonts,
+    formatPdfDate,
 } from './tofPdfBrand';
+// Persona-namen komen uit één taalvaste bron, zodat NL/EN rapporten dezelfde
+// termen gebruiken als de team-insight en Organisatie-Landschap PDF.
+import { getArchetypeName } from './organisatieLandschap/constants';
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -47,15 +56,92 @@ const COLOR = {
 
 const PERSONA_COLORS = TOF_PERSONA_COLORS;
 
-// Source-labels — keys exact gelijk aan TeamDynamics.jsx
-// (anders krijg je "REFLECTIE" voor alles wat geen match is)
-const LEADERSHIP_SOURCE_LABELS = {
-    dynamics: 'UIT DYNAMIEK',
-    collaboration: 'UIT SAMENWERKING',
-    tension: 'UIT SPANNINGEN',
-    missing: 'UIT BLINDE VLEK',
-    reflectie: 'REFLECTIE',
+// =========================
+// TEKSTEN — per taal
+// =========================
+// Alle zichtbare tekst staat hier; de teken-functies hardcoden niets.
+// Font-subsets missen >= en <=; gebruik die glyphs nooit. · – — é mogen wel.
+// Geen cursief voor niet-Latin1-tekst: er is geen Inter-italic gebundeld.
+const DYNAMICS_COPY = {
+    nl: {
+        fileSuffix: 'teamdynamics',
+        pill: 'TEAM DYNAMICS',
+        heroTitle: 'Wat onder de samenwerking ligt',
+        heroFallback: 'Drie assen tonen waar dit team in evenwicht is en waar regie nodig is.',
+        responses: (n) => `${n} respons${n === 1 ? '' : 'en'}`,
+        reliability: {
+            first: 'Eerste signalen',
+            emerging: 'Opkomend patroon',
+            reliable: 'Betrouwbaar beeld',
+            strong: 'Sterk patroon',
+        },
+        axesEyebrow: 'DRIE ASSEN — WAAR HET TEAM ZIT',
+        tensionsEyebrow: 'ACTIEVE SPANNINGEN',
+        tensionsEmpty: 'Geen actieve spanningen — werkstijlen zijn in balans.',
+        // Voegwoord tussen de twee persona-pills. `joinerGap` is de ruimte in mm
+        // die we ervoor reserveren — taalafhankelijk, want "and" is breder.
+        joiner: 'en',
+        joinerGap: 9,
+        footerHint: 'ZIE ACHTERKANT VOOR REGIE EN ACTIE',
+        backPill: 'REGIE EN ACTIE',
+        backTitle: 'Waar regie helpt en wat te doen',
+        adviceEyebrow: 'PER SPANNING — WAT VRAAGT REGIE',
+        adviceEmpty: 'Geen actieve spanningen om regie op te voeren.',
+        actionsEyebrow: 'ZES ACTIES VOOR LEIDERSCHAP',
+        actionsEmpty: 'Nog geen acties beschikbaar.',
+        // Keys zijn logica-ids uit TeamDynamics.jsx — niet vertalen, alleen de
+        // waarden. Een onbekende source valt terug op `sourceFallback`.
+        sourceLabels: {
+            dynamics: 'UIT DYNAMIEK',
+            collaboration: 'UIT SAMENWERKING',
+            tension: 'UIT SPANNINGEN',
+            missing: 'UIT BLINDE VLEK',
+            reflectie: 'REFLECTIE',
+        },
+        sourceFallback: 'REFLECTIE',
+        footerQuote: '"Regie geven is duidelijkheid scheppen — niet bepalen."',
+        footerTagline: 'Helping teams understand their workplace through insight, design and movement.',
+    },
+    en: {
+        fileSuffix: 'team dynamics',
+        pill: 'TEAM DYNAMICS',
+        heroTitle: 'What sits beneath the collaboration',
+        heroFallback: 'Three axes show where this team is in balance and where it needs direction.',
+        responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
+        reliability: {
+            first: 'First signals',
+            emerging: 'Emerging pattern',
+            reliable: 'Reliable picture',
+            strong: 'Strong pattern',
+        },
+        axesEyebrow: 'THREE AXES — WHERE THE TEAM SITS',
+        tensionsEyebrow: 'ACTIVE TENSIONS',
+        tensionsEmpty: 'No active tensions — working styles are in balance.',
+        joiner: 'and',
+        joinerGap: 11,
+        footerHint: 'SEE REVERSE FOR DIRECTION AND ACTION',
+        backPill: 'DIRECTION AND ACTION',
+        backTitle: 'Where direction helps and what to do',
+        adviceEyebrow: 'PER TENSION — WHAT NEEDS DIRECTION',
+        adviceEmpty: 'No active tensions to give direction to.',
+        actionsEyebrow: 'SIX ACTIONS FOR LEADERSHIP',
+        actionsEmpty: 'No actions available yet.',
+        sourceLabels: {
+            dynamics: 'FROM THE DYNAMICS',
+            collaboration: 'FROM THE COLLABORATION',
+            tension: 'FROM THE TENSIONS',
+            missing: 'FROM THE BLIND SPOT',
+            reflectie: 'REFLECTION',
+        },
+        sourceFallback: 'REFLECTION',
+        footerQuote: '"Giving direction is creating clarity — not deciding for people."',
+        footerTagline: 'Helping teams understand their workplace through insight, design and movement.',
+    },
 };
+
+function getDynamicsCopy(lang) {
+    return DYNAMICS_COPY[lang] || DYNAMICS_COPY.nl;
+}
 
 // =========================
 // PUBLIC API
@@ -69,7 +155,10 @@ export async function generateTeamDynamicsPDF({
     teamName = 'Team',
     organization = '',
     headline = '',
+    lang = 'nl',
 }) {
+    const c = getDynamicsCopy(lang);
+
     const svgVoorkant = buildVoorkantSVG({
         aggregate,
         dynamicsAxes,
@@ -77,6 +166,8 @@ export async function generateTeamDynamicsPDF({
         teamName,
         organization,
         headline,
+        c,
+        lang,
     });
 
     const svgAchterkant = buildAchterkantSVG({
@@ -85,6 +176,7 @@ export async function generateTeamDynamicsPDF({
         leadershipWins,
         teamName,
         organization,
+        c,
     });
 
     document.body.appendChild(svgVoorkant);
@@ -121,7 +213,7 @@ export async function generateTeamDynamicsPDF({
             .replace(/[^\w\s-]/g, '')
             .trim()
             .slice(0, 50);
-        const fileName = `${safeName} - teamdynamics TOF.pdf`;
+        const fileName = `${safeName} - ${c.fileSuffix} TOF.pdf`;
         pdf.save(fileName);
     } finally {
         document.body.removeChild(svgVoorkant);
@@ -133,29 +225,29 @@ export async function generateTeamDynamicsPDF({
 // SVG BUILDER — VOORKANT
 // =========================
 
-function buildVoorkantSVG({ aggregate, dynamicsAxes, tensions, teamName, organization, headline }) {
+function buildVoorkantSVG({ aggregate, dynamicsAxes, tensions, teamName, organization, headline, c, lang }) {
     const svg = createSVGCanvas();
     svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
     let y = MARGIN;
 
     y = drawHeader({
-        svg, y, teamName, organization,
-        pillLabel: 'TEAM DYNAMICS',
+        svg, y, teamName, organization, lang,
+        pillLabel: c.pill,
         pillColor: COLOR.rose,
     });
     y += 14;
-    y = drawHero({ svg, y, aggregate, headline });
+    y = drawHero({ svg, y, aggregate, headline, c });
     y += 14;
     y = drawDivider({ svg, y });
     y += 12;
-    y = drawAxes({ svg, y, dynamicsAxes });
+    y = drawAxes({ svg, y, dynamicsAxes, c });
     y += 12;
     y = drawDivider({ svg, y });
     y += 12;
-    drawTensionsList({ svg, y, tensions, aggregate });
+    drawTensionsList({ svg, y, tensions, aggregate, c, lang });
 
-    drawFooterHint({ svg, label: 'ZIE ACHTERKANT VOOR REGIE EN ACTIE' });
+    drawFooterHint({ svg, label: c.footerHint });
 
     return svg;
 }
@@ -164,23 +256,23 @@ function buildVoorkantSVG({ aggregate, dynamicsAxes, tensions, teamName, organiz
 // SVG BUILDER — ACHTERKANT
 // =========================
 
-function buildAchterkantSVG({ aggregate, tensions, leadershipWins, teamName, organization }) {
+function buildAchterkantSVG({ aggregate, tensions, leadershipWins, teamName, organization, c }) {
     const svg = createSVGCanvas();
     svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
     let y = MARGIN;
 
-    y = drawAchterkantHeader({ svg, y });
+    y = drawAchterkantHeader({ svg, y, c });
     y += 14;
-    y = drawAchterkantTitle({ svg, y });
+    y = drawAchterkantTitle({ svg, y, c });
     y += 12;
-    y = drawTensionAdvice({ svg, y, tensions });
+    y = drawTensionAdvice({ svg, y, tensions, c });
     y += 10;
     y = drawDivider({ svg, y });
     y += 12;
-    drawLeadershipActions({ svg, y, leadershipWins });
+    drawLeadershipActions({ svg, y, leadershipWins, c });
 
-    drawAchterkantFooter({ svg });
+    drawAchterkantFooter({ svg, c });
 
     return svg;
 }
@@ -189,7 +281,7 @@ function buildAchterkantSVG({ aggregate, tensions, leadershipWins, teamName, org
 // SECTIES — VOORKANT
 // =========================
 
-function drawHeader({ svg, y, teamName, organization, pillLabel, pillColor }) {
+function drawHeader({ svg, y, teamName, organization, pillLabel, pillColor, lang = 'nl' }) {
     const pillW = 80;
     const pillH = 12;
     const pillY = y;
@@ -226,8 +318,7 @@ function drawHeader({ svg, y, teamName, organization, pillLabel, pillColor }) {
         color: COLOR.textMuted,
     }));
 
-    const today = new Date();
-    const dateText = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+    const dateText = formatPdfDate(new Date(), lang);
     svg.appendChild(createText({
         x: PAGE_W - MARGIN,
         y: metaY,
@@ -242,14 +333,14 @@ function drawHeader({ svg, y, teamName, organization, pillLabel, pillColor }) {
     return metaY;
 }
 
-function drawHero({ svg, y, aggregate, headline }) {
+function drawHero({ svg, y, aggregate, headline, c }) {
     const teamCount = aggregate?.teamCount || 0;
 
     const titleY = y + 22;
     svg.appendChild(createText({
         x: MARGIN,
         y: titleY,
-        text: 'Wat onder de samenwerking ligt',
+        text: c.heroTitle,
         font: 'Playfair Display',
         weight: 500,
         size: 16,
@@ -257,8 +348,8 @@ function drawHero({ svg, y, aggregate, headline }) {
     }));
 
     const subY = titleY + 16;
-    const sentence = headline
-        || 'Drie assen tonen waar dit team in evenwicht is en waar regie nodig is.';
+    // `headline` komt al in de juiste taal mee vanuit de aanroeper.
+    const sentence = headline || c.heroFallback;
 
     drawWrappedText({
         svg,
@@ -277,8 +368,8 @@ function drawHero({ svg, y, aggregate, headline }) {
     const sentenceCount = wrapText(sentence, PAGE_W - MARGIN * 2, 8, 'Playfair Display').length;
     const metaY = subY + sentenceCount * 11 + 6;
 
-    const reliability = buildReliabilityLabel(teamCount);
-    const metaLine = `${teamCount} respons${teamCount === 1 ? '' : 'en'}${reliability ? ' · ' + reliability : ''}`;
+    const reliability = buildReliabilityLabel(teamCount, c);
+    const metaLine = `${c.responses(teamCount)}${reliability ? ' · ' + reliability : ''}`;
     svg.appendChild(createText({
         x: MARGIN,
         y: metaY,
@@ -292,13 +383,13 @@ function drawHero({ svg, y, aggregate, headline }) {
     return metaY;
 }
 
-function drawAxes({ svg, y, dynamicsAxes }) {
+function drawAxes({ svg, y, dynamicsAxes, c }) {
     if (!dynamicsAxes || dynamicsAxes.length === 0) return y;
 
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 6,
-        text: 'DRIE ASSEN — WAAR HET TEAM ZIT',
+        text: c.axesEyebrow,
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -388,11 +479,11 @@ function drawAxes({ svg, y, dynamicsAxes }) {
     return lineY;
 }
 
-function drawTensionsList({ svg, y, tensions, aggregate }) {
+function drawTensionsList({ svg, y, tensions, aggregate, c, lang }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 6,
-        text: 'ACTIEVE SPANNINGEN',
+        text: c.tensionsEyebrow,
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -404,7 +495,7 @@ function drawTensionsList({ svg, y, tensions, aggregate }) {
         svg.appendChild(createText({
             x: MARGIN,
             y: y + 20,
-            text: 'Geen actieve spanningen — werkstijlen zijn in balans.',
+            text: c.tensionsEmpty,
             font: 'Inter',
             weight: 400,
             size: 6,
@@ -441,10 +532,12 @@ function drawTensionsList({ svg, y, tensions, aggregate }) {
             color: COLOR.rose,
         }));
 
-        // Persona-pills regel
+        // Persona-pills regel — namen uit de taalvaste bron, nooit hardcoded.
+        // `capitalize` blijft eromheen staan voor onbekende ids (die geeft
+        // getArchetypeName ongewijzigd terug).
         const pillY = lineY + 7;
-        const archAName = capitalize(t.a);
-        const archBName = capitalize(t.b);
+        const archAName = capitalize(getArchetypeName(t.a, lang));
+        const archBName = capitalize(getArchetypeName(t.b, lang));
 
         svg.appendChild(createCircle(MARGIN + 1.6, pillY - 1.6, 1.4, colorA));
         svg.appendChild(createText({
@@ -457,7 +550,7 @@ function drawTensionsList({ svg, y, tensions, aggregate }) {
             color: COLOR.textSoft,
         }));
 
-        // Schat positie van " en " na A-pill
+        // Schat positie van het voegwoord na de A-pill
         const aText = `${archAName} ${pctA}%`;
         const aTextWidth = aText.length * 0.55 * 5 + 8;
         const enX = MARGIN + 5 + aTextWidth;
@@ -465,14 +558,15 @@ function drawTensionsList({ svg, y, tensions, aggregate }) {
         svg.appendChild(createText({
             x: enX,
             y: pillY,
-            text: 'en',
+            text: c.joiner,
             font: 'Inter',
             weight: 400,
             size: 5,
             color: COLOR.textMuted,
         }));
 
-        const bDotX = enX + 9;
+        // Ruimte na het voegwoord is taalafhankelijk ("and" is breder dan "en").
+        const bDotX = enX + c.joinerGap;
         svg.appendChild(createCircle(bDotX + 1.6, pillY - 1.6, 1.4, colorB));
         svg.appendChild(createText({
             x: bDotX + 5,
@@ -508,7 +602,7 @@ function drawFooterHint({ svg, label }) {
 // SECTIES — ACHTERKANT
 // =========================
 
-function drawAchterkantHeader({ svg, y }) {
+function drawAchterkantHeader({ svg, y, c }) {
     const pillW = 100;
     const pillH = 12;
 
@@ -522,7 +616,7 @@ function drawAchterkantHeader({ svg, y }) {
     svg.appendChild(createText({
         x: MARGIN + 11,
         y: y + pillH / 2 + 2,
-        text: 'REGIE EN ACTIE',
+        text: c.backPill,
         font: 'Inter',
         weight: 700,
         size: 5.2,
@@ -535,12 +629,12 @@ function drawAchterkantHeader({ svg, y }) {
     return y + pillH;
 }
 
-function drawAchterkantTitle({ svg, y }) {
+function drawAchterkantTitle({ svg, y, c }) {
     const titleY = y + 16;
     svg.appendChild(createText({
         x: MARGIN,
         y: titleY,
-        text: 'Waar regie helpt en wat te doen',
+        text: c.backTitle,
         font: 'Playfair Display',
         weight: 500,
         size: 12,
@@ -549,11 +643,11 @@ function drawAchterkantTitle({ svg, y }) {
     return titleY;
 }
 
-function drawTensionAdvice({ svg, y, tensions }) {
+function drawTensionAdvice({ svg, y, tensions, c }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 8,
-        text: 'PER SPANNING — WAT VRAAGT REGIE',
+        text: c.adviceEyebrow,
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -565,7 +659,7 @@ function drawTensionAdvice({ svg, y, tensions }) {
         svg.appendChild(createText({
             x: MARGIN,
             y: y + 22,
-            text: 'Geen actieve spanningen om regie op te voeren.',
+            text: c.adviceEmpty,
             font: 'Inter',
             weight: 400,
             size: 6,
@@ -610,11 +704,11 @@ function drawTensionAdvice({ svg, y, tensions }) {
     return lineY;
 }
 
-function drawLeadershipActions({ svg, y, leadershipWins }) {
+function drawLeadershipActions({ svg, y, leadershipWins, c }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 8,
-        text: 'ZES ACTIES VOOR LEIDERSCHAP',
+        text: c.actionsEyebrow,
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -626,7 +720,7 @@ function drawLeadershipActions({ svg, y, leadershipWins }) {
         svg.appendChild(createText({
             x: MARGIN,
             y: y + 22,
-            text: 'Nog geen acties beschikbaar.',
+            text: c.actionsEmpty,
             font: 'Inter',
             weight: 400,
             size: 6,
@@ -648,7 +742,8 @@ function drawLeadershipActions({ svg, y, leadershipWins }) {
         const item = typeof win === 'string'
             ? { source: 'reflectie', action: win }
             : win;
-        const sourceLabel = LEADERSHIP_SOURCE_LABELS[item.source] || 'REFLECTIE';
+        // Source-keys zijn logica-ids uit TeamDynamics.jsx — niet vertalen.
+        const sourceLabel = c.sourceLabels[item.source] || c.sourceFallback;
 
         const col = index % 2;
         const row = Math.floor(index / 2);
@@ -701,13 +796,13 @@ function drawLeadershipActions({ svg, y, leadershipWins }) {
     });
 }
 
-function drawAchterkantFooter({ svg }) {
+function drawAchterkantFooter({ svg, c }) {
     const footerY = PAGE_H - 56;
 
     svg.appendChild(createText({
         x: PAGE_W / 2,
         y: footerY,
-        text: '"Regie geven is duidelijkheid scheppen — niet bepalen."',
+        text: c.footerQuote,
         font: 'Playfair Display',
         weight: 500,
         size: 7,
@@ -722,7 +817,7 @@ function drawAchterkantFooter({ svg }) {
     svg.appendChild(createText({
         x: PAGE_W / 2,
         y: footerY + 36,
-        text: 'Helping teams understand their workplace through insight, design and movement.',
+        text: c.footerTagline,
         font: 'Inter',
         weight: 400,
         size: 4.8,
@@ -857,10 +952,12 @@ function capitalize(s) {
     return String(s).charAt(0).toUpperCase() + String(s).slice(1);
 }
 
-function buildReliabilityLabel(count) {
+// Drempels blijven in cijfers (geen >= of <= in PDF-tekst — die glyphs
+// ontbreken in de gebundelde font-subsets). Alleen het label is vertaald.
+function buildReliabilityLabel(count, c) {
     if (count === null || count === undefined) return '';
-    if (count < 3) return 'Eerste signalen';
-    if (count < 6) return 'Opkomend patroon';
-    if (count <= 15) return 'Betrouwbaar beeld';
-    return 'Sterk patroon';
+    if (count < 3) return c.reliability.first;
+    if (count < 6) return c.reliability.emerging;
+    if (count <= 15) return c.reliability.reliable;
+    return c.reliability.strong;
 }

@@ -11,8 +11,8 @@
  *   - GEEN inrichtings-, capaciteits- of vastgoedadvies.
  *   - RUIMTEBOEK_BENCHMARK wordt NIET gebruikt.
  *
- * Geen zichtbare tekst hier — alleen ids en getallen. Labels staan in
- * werkplekProfielCopy.nl.js (i18n-klaar).
+ * Geen zichtbare tekst hier — alleen ids en getallen. Labels staan in de
+ * `workplaceProfile`-namespace (src/i18n/copy/{nl,en}/workplaceProfile.js).
  */
 
 import { WERKPLEKTYPEN, berekenTeamWerkplekmix } from './werkplekmix';

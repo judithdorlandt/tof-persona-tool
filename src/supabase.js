@@ -1,5 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
+import { getActiveLang, getCopy } from './i18n/copy';
+
+// Foutteksten in de taal die de gebruiker nu ziet. Deze module draait buiten
+// React, dus de taal komt uit de URL/localStorage in plaats van uit de context.
+function errorCopy() {
+  return getCopy(getActiveLang()).common.errors;
+}
+
 // =========================
 // INIT
 // =========================
@@ -15,16 +23,17 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // leesbaars. Voorkomt "stil falen": de aanroeper toont deze tekst.
 function describeError(err) {
   const msg = String(err?.message || err || '').toLowerCase();
+  const c = errorCopy().save;
   if (msg.includes('schema') && (msg.includes('not') || msg.includes('exist'))) {
-    return 'De database is even niet bereikbaar (schema). Probeer het zo opnieuw.';
+    return c.schema;
   }
   if (msg.includes('permission') || msg.includes('denied') || msg.includes('row-level') || msg.includes('policy')) {
-    return 'Je resultaat kon niet worden opgeslagen (geen rechten). Neem contact op als dit blijft.';
+    return c.permission;
   }
   if (msg.includes('column') || msg.includes('does not exist')) {
-    return 'Er ging iets mis bij het opslaan (veld ontbreekt). Neem contact op als dit blijft.';
+    return c.column;
   }
-  return 'Je resultaat kon niet worden opgeslagen. Ververs de pagina om het opnieuw te proberen.';
+  return c.generic;
 }
 
 export const supabase =
@@ -55,13 +64,13 @@ function ensureSupabase() {
  */
 export async function sendMagicLink(email, metadata = null) {
   if (!ensureSupabase()) {
-    return { ok: false, error: 'Supabase niet beschikbaar' };
+    return { ok: false, error: errorCopy().supabaseUnavailable };
   }
 
   try {
     const cleanEmail = String(email || '').trim().toLowerCase();
     if (!cleanEmail) {
-      return { ok: false, error: 'Vul een geldig e-mailadres in.' };
+      return { ok: false, error: errorCopy().invalidEmail };
     }
 
     const { error } = await supabase.auth.signInWithOtp({
@@ -80,7 +89,7 @@ export async function sendMagicLink(email, metadata = null) {
     return { ok: true, error: null };
   } catch (err) {
     console.error('❌ Magic-link error:', err?.message || err);
-    return { ok: false, error: err?.message || 'Onbekende fout' };
+    return { ok: false, error: err?.message || errorCopy().generic };
   }
 }
 
@@ -90,12 +99,12 @@ export async function sendMagicLink(email, metadata = null) {
  */
 export async function signInWithPassword(email, password) {
   if (!ensureSupabase()) {
-    return { ok: false, error: 'Supabase niet beschikbaar' };
+    return { ok: false, error: errorCopy().supabaseUnavailable };
   }
 
   const cleanEmail = String(email || '').trim().toLowerCase();
   if (!cleanEmail || !password) {
-    return { ok: false, error: 'Vul je e-mailadres en wachtwoord in.' };
+    return { ok: false, error: errorCopy().missingCredentials };
   }
 
   try {
@@ -112,7 +121,7 @@ export async function signInWithPassword(email, password) {
     return { ok: true, error: null };
   } catch (err) {
     console.error('❌ signInWithPassword error:', err?.message || err);
-    return { ok: false, error: err?.message || 'Onbekende fout' };
+    return { ok: false, error: err?.message || errorCopy().generic };
   }
 }
 
@@ -132,12 +141,12 @@ export async function signInWithPassword(email, password) {
  */
 export async function verifyMagicLink(tokenHash, type) {
   if (!ensureSupabase()) {
-    return { ok: false, error: 'Supabase niet beschikbaar' };
+    return { ok: false, error: errorCopy().supabaseUnavailable };
   }
 
   const cleanHash = String(tokenHash || '').trim();
   if (!cleanHash) {
-    return { ok: false, error: 'Geen geldige token in de link.' };
+    return { ok: false, error: errorCopy().invalidToken };
   }
 
   // Begin met het type uit de URL, val daarna terug op de overige kandidaten.
@@ -200,7 +209,7 @@ export async function signOut() {
     return { error };
   } catch (err) {
     console.error('❌ signOut error:', err?.message || err);
-    return { error: { message: err?.message || 'Onbekende fout' } };
+    return { error: { message: err?.message || errorCopy().generic } };
   }
 }
 
@@ -210,14 +219,14 @@ export async function signOut() {
 
 export async function logPdfDownload(teamId) {
   if (!ensureSupabase()) {
-    return { ok: false, error: 'Supabase niet beschikbaar' };
+    return { ok: false, error: errorCopy().supabaseUnavailable };
   }
 
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return { ok: false, error: 'Geen actieve sessie' };
+      return { ok: false, error: errorCopy().noSession };
     }
 
     const { error } = await supabase
@@ -829,19 +838,19 @@ export async function getMyMemberships() {
  */
 export async function joinTeamByCode(code) {
   if (!ensureSupabase()) {
-    return { membership: null, accessCode: null, error: { message: 'Supabase niet beschikbaar' } };
+    return { membership: null, accessCode: null, error: { message: errorCopy().supabaseUnavailable } };
   }
 
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return { membership: null, accessCode: null, error: { message: 'Niet ingelogd' } };
+      return { membership: null, accessCode: null, error: { message: errorCopy().notLoggedIn } };
     }
 
     // Validate code
     const accessCode = await validateTeamAccessCode(code);
     if (!accessCode) {
-      return { membership: null, accessCode: null, error: { message: 'Code niet geldig of inactief' } };
+      return { membership: null, accessCode: null, error: { message: errorCopy().invalidCode } };
     }
 
     // team_access_codes heeft organization + team als aparte kolommen.
@@ -871,7 +880,7 @@ export async function joinTeamByCode(code) {
     return { membership: data, accessCode, error: null };
   } catch (err) {
     console.error('❌ joinTeamByCode error:', err?.message || err);
-    return { membership: null, accessCode: null, error: { message: err?.message || 'Onbekende fout' } };
+    return { membership: null, accessCode: null, error: { message: err?.message || errorCopy().generic } };
   }
 }
 
@@ -969,16 +978,16 @@ export async function adminListTeamManagers() {
  */
 export async function adminAddTeamManager({ email, teamCode, role = 'manager' }) {
   if (!ensureSupabase()) {
-    return { row: null, error: { message: 'Supabase niet beschikbaar' } };
+    return { row: null, error: { message: errorCopy().supabaseUnavailable } };
   }
   try {
     const isAdmin = await isCurrentUserAdmin();
-    if (!isAdmin) return { row: null, error: { message: 'Geen admin-rechten' } };
+    if (!isAdmin) return { row: null, error: { message: errorCopy().noAdminRights } };
 
     const cleanEmail = String(email || '').trim().toLowerCase();
     const cleanCode = String(teamCode || '').trim();
     if (!cleanEmail || !cleanCode) {
-      return { row: null, error: { message: 'Email en team_code zijn verplicht' } };
+      return { row: null, error: { message: errorCopy().requiredFields } };
     }
 
     const { data, error } = await supabase
@@ -997,16 +1006,16 @@ export async function adminAddTeamManager({ email, teamCode, role = 'manager' })
     return { row: data, error: null };
   } catch (err) {
     console.error('❌ adminAddTeamManager error:', err?.message || err);
-    return { row: null, error: { message: err?.message || 'Onbekende fout' } };
+    return { row: null, error: { message: err?.message || errorCopy().generic } };
   }
 }
 
 /** Verwijder een manager-koppeling op id. Alleen admin. */
 export async function adminRemoveTeamManager(id) {
-  if (!ensureSupabase()) return { error: { message: 'Supabase niet beschikbaar' } };
+  if (!ensureSupabase()) return { error: { message: errorCopy().supabaseUnavailable } };
   try {
     const isAdmin = await isCurrentUserAdmin();
-    if (!isAdmin) return { error: { message: 'Geen admin-rechten' } };
+    if (!isAdmin) return { error: { message: errorCopy().noAdminRights } };
 
     const { error } = await supabase.from('team_managers').delete().eq('id', id);
     if (error) {
@@ -1016,7 +1025,7 @@ export async function adminRemoveTeamManager(id) {
     return { error: null };
   } catch (err) {
     console.error('❌ adminRemoveTeamManager error:', err?.message || err);
-    return { error: { message: err?.message || 'Onbekende fout' } };
+    return { error: { message: err?.message || errorCopy().generic } };
   }
 }
 
@@ -1052,17 +1061,17 @@ export async function adminListOrgObservations(organization) {
 
 export async function adminAddOrgObservation({ organization, category, content }) {
   if (!ensureSupabase()) {
-    return { row: null, error: { message: 'Supabase niet beschikbaar' } };
+    return { row: null, error: { message: errorCopy().supabaseUnavailable } };
   }
   try {
     const isAdmin = await isCurrentUserAdmin();
-    if (!isAdmin) return { row: null, error: { message: 'Geen admin-rechten' } };
+    if (!isAdmin) return { row: null, error: { message: errorCopy().noAdminRights } };
 
     const org = String(organization || '').trim();
     const cat = String(category || '').trim();
     const txt = String(content || '').trim();
     if (!org || !cat || !txt) {
-      return { row: null, error: { message: 'Organisatie, categorie en tekst zijn verplicht' } };
+      return { row: null, error: { message: errorCopy().requiredFields } };
     }
     if (!['leegloper', 'werkt_goed'].includes(cat)) {
       return { row: null, error: { message: `Onbekende categorie: ${cat}` } };
@@ -1081,15 +1090,15 @@ export async function adminAddOrgObservation({ organization, category, content }
     return { row: data, error: null };
   } catch (err) {
     console.error('❌ adminAddOrgObservation error:', err?.message || err);
-    return { row: null, error: { message: err?.message || 'Onbekende fout' } };
+    return { row: null, error: { message: err?.message || errorCopy().generic } };
   }
 }
 
 export async function adminRemoveOrgObservation(id) {
-  if (!ensureSupabase()) return { error: { message: 'Supabase niet beschikbaar' } };
+  if (!ensureSupabase()) return { error: { message: errorCopy().supabaseUnavailable } };
   try {
     const isAdmin = await isCurrentUserAdmin();
-    if (!isAdmin) return { error: { message: 'Geen admin-rechten' } };
+    if (!isAdmin) return { error: { message: errorCopy().noAdminRights } };
     const { error } = await supabase.from('organization_observations').delete().eq('id', id);
     if (error) {
       console.error('❌ adminRemoveOrgObservation:', error.message);
@@ -1098,7 +1107,7 @@ export async function adminRemoveOrgObservation(id) {
     return { error: null };
   } catch (err) {
     console.error('❌ adminRemoveOrgObservation error:', err?.message || err);
-    return { error: { message: err?.message || 'Onbekende fout' } };
+    return { error: { message: err?.message || errorCopy().generic } };
   }
 }
 
@@ -1216,15 +1225,15 @@ function generateTeamCode(organization, team) {
  */
 export async function createTeamAccessCode({ organization, team, level = 'insight' }) {
   if (!ensureSupabase()) {
-    return { code: null, accessCode: null, error: { message: 'Supabase niet beschikbaar' } };
+    return { code: null, accessCode: null, error: { message: errorCopy().supabaseUnavailable } };
   }
   try {
     const isAdmin = await isCurrentUserAdmin();
     if (!isAdmin) {
-      return { code: null, accessCode: null, error: { message: 'Geen admin-rechten' } };
+      return { code: null, accessCode: null, error: { message: errorCopy().noAdminRights } };
     }
     if (!organization || !team) {
-      return { code: null, accessCode: null, error: { message: 'Organisatie en team zijn verplicht' } };
+      return { code: null, accessCode: null, error: { message: errorCopy().requiredFields } };
     }
 
     const code = generateTeamCode(organization, team);
@@ -1243,7 +1252,7 @@ export async function createTeamAccessCode({ organization, team, level = 'insigh
     return { code, accessCode: data, error: null };
   } catch (err) {
     console.error('❌ createTeamAccessCode error:', err?.message || err);
-    return { code: null, accessCode: null, error: { message: err?.message || 'Onbekende fout' } };
+    return { code: null, accessCode: null, error: { message: err?.message || errorCopy().generic } };
   }
 }
 

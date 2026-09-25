@@ -29,6 +29,7 @@ import {
 } from '../ui/AppShell';
 import { SPACING, TYPE } from '../ui/tokens';
 import { getStrategicKompas } from '../utils/strategicKompas';
+import { useCopy, useLang } from '../i18n/LanguageContext';
 
 const ACCENT = 'var(--tof-accent-rose)';
 const SOFT = '#F4DFDF';
@@ -36,30 +37,33 @@ const SOFT = '#F4DFDF';
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 
 export default function TeamStrategic({ setPage, selectedTeam }) {
-    const orgName = selectedTeam?.organization || '';
-    const teamName = selectedTeam?.team || '';
+    const { lang } = useLang();
+    const { kompasForms } = useCopy();
+    const t = kompasForms.dashboard;
 
-    const kompas = useMemo(() => getStrategicKompas(orgName), [orgName]);
+    const orgName = selectedTeam?.organization || '';
+
+    const kompas = useMemo(() => getStrategicKompas(orgName, lang), [orgName, lang]);
 
     if (!kompas) {
         return (
             <PageShell compact>
                 <HeroBlock
                     compact
-                    eyebrow="Module 3 · Strategisch Kompas"
-                    title="Nog geen kompas beschikbaar"
+                    eyebrow={t.eyebrow}
+                    title={t.empty.title}
                     titleAccentColor={ACCENT}
-                    lead={`Er is voor ${orgName || 'deze organisatie'} nog geen Strategisch Kompas opgesteld. Plan een verkenningsgesprek om het traject te starten.`}
+                    lead={`${t.empty.leadBefore}${orgName || t.thisOrganization}${t.empty.leadAfter}`}
                     actions={
                         <>
                             <PrimaryButton
                                 onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
                                 style={{ background: ACCENT, borderColor: ACCENT }}
                             >
-                                Plan een gesprek
+                                {t.empty.cta}
                             </PrimaryButton>
                             <SecondaryButton onClick={() => setPage && setPage('team')}>
-                                ← Terug
+                                {t.back}
                             </SecondaryButton>
                         </>
                     }
@@ -76,15 +80,15 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
             {/* ── HERO ── */}
             <HeroBlock
                 compact
-                eyebrow={`Module 3 · Strategisch Kompas · ${kompas.team || orgName}`}
-                title="Het kompas voor"
+                eyebrow={`${t.eyebrow} · ${kompas.team || orgName}`}
+                title={t.hero.title}
                 titleAccent={kompas.team || orgName}
                 titleAccentColor={ACCENT}
-                lead={`Hoe de huidige persona-mix verhoudt zich tot acht externe trends — en wat dat vraagt van leiderschap, werkplek en samenwerking de komende ${kompas.horizon || '3–5 jaar'}.`}
+                lead={`${t.hero.leadBefore}${kompas.horizon || t.defaultHorizon}${t.hero.leadAfter}`}
                 actions={
                     <>
                         <SecondaryButton onClick={() => setPage && setPage('team')}>
-                            ← Terug naar Persona Tool
+                            {t.backToTool}
                         </SecondaryButton>
                     </>
                 }
@@ -92,19 +96,19 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
 
             {/* Meta-strip */}
             <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
-                <Chip>Horizon · {kompas.horizon}</Chip>
-                <Chip>Laatste herijking · {kompas.lastUpdate}</Chip>
-                <Chip>Volgende review · {kompas.nextReview}</Chip>
+                <Chip>{t.meta.horizon} · {kompas.horizon}</Chip>
+                <Chip>{t.meta.lastUpdate} · {kompas.lastUpdate}</Chip>
+                <Chip>{t.meta.nextReview} · {kompas.nextReview}</Chip>
             </div>
 
             {/* ── 1. TREND-RADAR ── */}
             <SectionCard
                 accent={ACCENT}
-                eyebrow="01 · Trend-radar"
-                title={`Acht externe trends, gewogen op ${kompas.team || 'deze organisatie'}.`}
+                eyebrow={t.trends.eyebrow}
+                title={`${t.trends.titleBefore}${kompas.team || t.thisOrganization}${t.trends.titleAfter}`}
             >
                 <p style={{ ...TYPE.body, color: 'var(--tof-text-soft)', margin: 0 }}>
-                    De top-trend voor dit team is <strong style={{ color: 'var(--tof-text)' }}>{topTrend.name}</strong>. Wat onderaan staat is niet weg — wel minder urgent voor déze persona-mix.
+                    {t.trends.noteBefore}<strong style={{ color: 'var(--tof-text)' }}>{topTrend.name}</strong>{t.trends.noteAfter}
                 </p>
                 <div style={{ display: 'grid', gap: SPACING.sm + 2 }}>
                     {sortedTrends.map((t) => (
@@ -116,8 +120,8 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
             {/* ── 2. PERSONA-OVERLAY ── */}
             <SectionCard
                 accent={ACCENT}
-                eyebrow="02 · Persona-overlay"
-                title="Wat de team-mix vraagt over drie tot vijf jaar."
+                eyebrow={t.overlay.eyebrow}
+                title={t.overlay.title}
             >
                 {/* Eigen ambitie uit de intake — zodat de richting van de
                     organisatie zichtbaar staat naast de trend- en persona-analyse.
@@ -136,7 +140,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                             fontSize: 10,
                             marginBottom: 6,
                         }}>
-                            Eigen ambitie · uit de intake
+                            {t.overlay.ambitionLabel}
                         </div>
                         <p style={{
                             ...TYPE.body,
@@ -164,7 +168,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                         fontSize: 10,
                         marginBottom: 6,
                     }}>
-                        Dominant aanwezig
+                        {t.overlay.dominantLabel}
                     </div>
                     {kompas.personaOverlay.dominant.join(' · ')}
                 </div>
@@ -196,8 +200,8 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
             {/* ── 3. STRATEGISCHE KEUZES ── */}
             <SectionCard
                 accent={ACCENT}
-                eyebrow="03 · Strategische keuzes"
-                title="Vijf richtingen voor MT en bestuur."
+                eyebrow={t.choices.eyebrow}
+                title={t.choices.title}
             >
                 <div style={{ display: 'grid', gap: SPACING.md }}>
                     {kompas.choices.map((c, i) => (
@@ -241,8 +245,8 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
             {/* ── 4. JAARRITME ── */}
             <SectionCard
                 accent={ACCENT}
-                eyebrow="04 · Jaarritme"
-                title="Vier momenten om het kompas te herijken."
+                eyebrow={t.jaarritme.eyebrow}
+                title={t.jaarritme.title}
             >
                 <div style={{
                     display: 'grid',

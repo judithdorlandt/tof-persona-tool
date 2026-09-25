@@ -10,39 +10,16 @@
 
 import React from 'react';
 import { SPACING, TYPE, RADIUS, useIsMobile } from '../../ui/tokens';
-
-const WORKPLACE_LABELS = {
-    focus: 'Concentratieplekken',
-    work: 'Standaard werkplekken',
-    hybride: 'Hybride plekken',
-    meeting: 'Overlegplekken',
-    project: 'Creatieve plekken',
-    team: 'Samenwerkplekken',
-    learning: 'Leerplekken',
-    retreat: 'Rustplekken',
-    social: 'Informele plekken',
-};
-
-// Korte zin per werkplek — wat het team ermee doet
-const WORKPLACE_MEANING = {
-    focus: 'Voor diep, geconcentreerd werk zonder onderbreking.',
-    work: 'De vaste basis voor dagelijks werk en focus tussen activiteiten door.',
-    hybride: 'Voor werk waar online en fysiek elkaar moeten ontmoeten.',
-    meeting: 'Voor afstemming, beslissing en gestructureerde gesprekken.',
-    project: 'Voor creatief, visueel en projectmatig werk dat groeit door feedback en samenwerking.',
-    team: 'Voor actieve samenwerking en gedeeld eigenaarschap.',
-    learning: 'Voor leren, reflectie en ontwikkeling in eigen tempo.',
-    retreat: 'Voor herstel, rust en mentale ademruimte.',
-    social: 'Voor informeel contact dat samenwerking voedt.',
-};
+import { useCopy } from '../../i18n/LanguageContext';
 
 export default function TeamWorkplaceNeeds({ aggregate }) {
     const isMobile = useIsMobile();
+    const t = useCopy().teamPanels.workplaceNeeds;
 
     const rawItems = aggregate?.sortedWorkplaceNeeds || [];
     const items = rawItems.map((item) => ({
         ...item,
-        label: item.label || WORKPLACE_LABELS[item.key] || item.key,
+        label: t.labels[item.key] || item.label || item.key,
     }));
 
     const total = items.reduce(
@@ -59,7 +36,7 @@ export default function TeamWorkplaceNeeds({ aggregate }) {
     if (enriched.length === 0) {
         return (
             <div style={{ padding: SPACING.lg, fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                Nog geen werkplekbehoefte beschikbaar.
+                {t.empty}
             </div>
         );
     }
@@ -98,6 +75,9 @@ export default function TeamWorkplaceNeeds({ aggregate }) {
 // =========================
 
 function SignatureStatement({ workplace, isMobile }) {
+    const t = useCopy().teamPanels.workplaceNeeds;
+    const meaning = t.meaning[workplace.key];
+
     return (
         <div
             style={{
@@ -116,7 +96,7 @@ function SignatureStatement({ workplace, isMobile }) {
                 }}
             >
                 <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                    Sterkste behoefte
+                    {t.strongestEyebrow}
                 </div>
                 <div
                     style={{
@@ -126,7 +106,7 @@ function SignatureStatement({ workplace, isMobile }) {
                         fontVariantNumeric: 'tabular-nums',
                     }}
                 >
-                    {workplace.percentage}% van de teamvraag
+                    {t.shareOfDemand(workplace.percentage)}
                 </div>
             </div>
 
@@ -144,7 +124,7 @@ function SignatureStatement({ workplace, isMobile }) {
                 {workplace.label}
             </h3>
 
-            {WORKPLACE_MEANING[workplace.key] ? (
+            {meaning ? (
                 <div
                     style={{
                         fontFamily: 'var(--tof-font-body)',
@@ -153,7 +133,7 @@ function SignatureStatement({ workplace, isMobile }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    {WORKPLACE_MEANING[workplace.key]}
+                    {meaning}
                 </div>
             ) : null}
         </div>
@@ -165,10 +145,12 @@ function SignatureStatement({ workplace, isMobile }) {
 // =========================
 
 function SecondaryList({ items, isMobile }) {
+    const t = useCopy().teamPanels.workplaceNeeds;
+
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
             <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                Verder bovengemiddeld
+                {t.furtherAboveAverage}
             </div>
 
             <div
@@ -190,6 +172,8 @@ function SecondaryList({ items, isMobile }) {
 }
 
 function SecondaryItem({ workplace }) {
+    const meaning = useCopy().teamPanels.workplaceNeeds.meaning[workplace.key];
+
     return (
         <div
             style={{
@@ -250,7 +234,7 @@ function SecondaryItem({ workplace }) {
                 />
             </div>
 
-            {WORKPLACE_MEANING[workplace.key] ? (
+            {meaning ? (
                 <div
                     style={{
                         fontFamily: 'var(--tof-font-body)',
@@ -259,7 +243,7 @@ function SecondaryItem({ workplace }) {
                         color: 'var(--tof-text-soft)',
                     }}
                 >
-                    {WORKPLACE_MEANING[workplace.key]}
+                    {meaning}
                 </div>
             ) : null}
         </div>
@@ -271,6 +255,8 @@ function SecondaryItem({ workplace }) {
 // =========================
 
 function BelowAverageNote({ items, isMobile }) {
+    const t = useCopy().teamPanels.workplaceNeeds.below;
+
     return (
         <div
             style={{
@@ -290,7 +276,7 @@ function BelowAverageNote({ items, isMobile }) {
                 }}
             >
                 <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                    Hier is minder vraag naar
+                    {t.eyebrow}
                 </div>
                 <div
                     style={{
@@ -299,7 +285,7 @@ function BelowAverageNote({ items, isMobile }) {
                         color: 'var(--tof-text-muted)',
                     }}
                 >
-                    Als jullie kantoor hier vol mee staat, kost dat energie zonder op te leveren.
+                    {t.note}
                 </div>
             </div>
 

@@ -13,7 +13,7 @@ import { svg2pdf } from 'svg2pdf.js';
 
 import { setupTofFonts } from '../tofPdfBrand';
 import { PAGE_W, PAGE_H } from './constants';
-import { COPY_NL } from './copy.nl';
+import { getOLCopy } from './copy';
 import { prepareOrganisatieData } from './organisatieAggregation';
 
 import { buildCoverSVG } from './OL_Cover';
@@ -29,28 +29,32 @@ export async function generateOrganisatieLandschapPDF({
     teamSummaries = [],
     organizationName = 'Organisatie',
     observations = [],
+    lang = 'nl',
 }) {
+    // Taal wordt één keer opgelost en daarna overal doorgegeven — noch de
+    // aggregatie noch de pagina-builders importeren zelf een copy-bestand.
+    const copy = getOLCopy(lang);
     const data = prepareOrganisatieData({
         aggregate, insights, teamSummaries, organizationName, observations,
+        copy, lang,
     });
-    const copy = COPY_NL;
 
     // Pagina-builders geven óf één SVG óf een array van SVG's terug (Patronen
     // en Duiding kunnen uitlopen naar vervolgpagina's wanneer de inhoud niet op
     // één pagina past). We platten ze hier en nummeren de footers dynamisch.
     const groups = [
-        buildCoverSVG({ data, copy }),                // 1 — TOF cover voor Module 1
-        buildHeroSVG({ data, copy }),                 // kerncijfers
-        buildHeatmapSVG({ data, copy }),              // werkstijl per team
-        buildPatronenSVG({ data, copy }),             // patronen (1+ pagina's)
-        buildDuidingSVG({ data, copy }),              // duiding (1+ pagina's)
+        buildCoverSVG({ data, copy, lang }),          // 1 — TOF cover voor Module 1
+        buildHeroSVG({ data, copy, lang }),           // kerncijfers
+        buildHeatmapSVG({ data, copy, lang }),        // werkstijl per team
+        buildPatronenSVG({ data, copy, lang }),       // patronen (1+ pagina's)
+        buildDuidingSVG({ data, copy, lang }),        // duiding (1+ pagina's)
     ];
     const pages = groups.flatMap((g) => (Array.isArray(g) ? g : [g]));
 
     // Footer per pagina, behalve de cover (index 0 heeft een eigen layout).
     const totalPages = pages.length;
     pages.forEach((svg, i) => {
-        if (i > 0) drawPageFooter(svg, { pageNum: i + 1, totalPages });
+        if (i > 0) drawPageFooter(svg, { pageNum: i + 1, totalPages, copy });
     });
 
     // svg2pdf heeft SVG nodes nodig die in de DOM zitten voor layoutmeting.

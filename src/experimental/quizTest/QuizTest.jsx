@@ -1,17 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ARCHETYPES } from '../../data';
+import { ARCHETYPE_ORDER } from '../../data';
+import { useArchetypes } from '../../i18n/archetypes';
+import { useCopy, useLang } from '../../i18n/LanguageContext';
 import { saveResponse } from '../../supabase';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
 import Results from '../../components/Results.jsx';
-import {
-    BASIS_VRAGEN,
-    DRUK_VRAAG,
-    WERKPLEK_TYPES,
-    OPEN_VRAAG,
-    VERDIEPING_INTRO,
-    DUEL_ESSENTIE,
-    DUEL_INTRO,
-} from './quizTestData';
+import { getQuizData } from './quizTestData';
 
 /**
  * QuizTest — EXPERIMENTEEL (testvariant vragenlijst)
@@ -49,12 +43,14 @@ function shuffleArray(array) {
     return copy;
 }
 
+// Scores hangen alleen aan de persona-ids — die zijn taal-onafhankelijk.
 function emptyScores() {
-    return Object.fromEntries(ARCHETYPES.map((a) => [a.id, 0]));
+    return Object.fromEntries(ARCHETYPE_ORDER.map((id) => [id, 0]));
 }
 
-function sortByScore(scores) {
-    return [...ARCHETYPES]
+// De persona-lijst komt uit de actieve taal en wordt meegegeven.
+function sortByScore(archetypes, scores) {
+    return [...archetypes]
         .map((a) => ({ ...a, score: scores[a.id] || 0 }))
         .sort((a, b) => b.score - a.score);
 }
@@ -214,7 +210,7 @@ function OptionButton({ option, order, onClick, isMobile }) {
     );
 }
 
-function PlekGrid({ list, setList, isMobile }) {
+function PlekGrid({ list, setList, isMobile, types }) {
     const toggle = (id) => {
         if (list.includes(id)) {
             setList(list.filter((x) => x !== id));
@@ -225,7 +221,7 @@ function PlekGrid({ list, setList, isMobile }) {
     };
     return (
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)', gap: 8 }}>
-            {WERKPLEK_TYPES.map((t) => {
+            {types.map((t) => {
                 const active = list.includes(t.id);
                 const full = list.length >= 3 && !active;
                 return (
@@ -282,6 +278,18 @@ function ProfielBanner({ eyebrow, text, isMobile, children }) {
 }
 
 export default function QuizTest({ setPage }) {
+    const ARCHETYPES = useArchetypes();
+    const { lang } = useLang();
+    const { quiz: t } = useCopy();
+    const {
+        BASIS_VRAGEN,
+        DRUK_VRAAG,
+        WERKPLEK_TYPES,
+        OPEN_VRAAG,
+        VERDIEPING_INTRO,
+        DUEL_ESSENTIE,
+        DUEL_INTRO,
+    } = useMemo(() => getQuizData(lang), [lang]);
     const [phase, setPhase] = useState('intake'); // intake | basis | profiel | verdieping | profielScherp
     const [profile, setProfile] = useState(null);
     const [scores, setScores] = useState(emptyScores());
@@ -323,7 +331,7 @@ export default function QuizTest({ setPage }) {
         if (phase !== 'basis' || !currentBasis) return;
         const opts = currentBasis.a.map((text, index) => ({
             text,
-            archetypeId: ARCHETYPES[index]?.id,
+            archetypeId: ARCHETYPE_ORDER[index],
         }));
         setShuffled(shuffleArray(opts));
         setSelected([]);
@@ -336,13 +344,15 @@ export default function QuizTest({ setPage }) {
         if (phase !== 'verdieping' || verdiepStep !== 2) return;
         const opts = DRUK_VRAAG.a.map((text, index) => ({
             text,
-            archetypeId: ARCHETYPES[index]?.id,
+            archetypeId: ARCHETYPE_ORDER[index],
         }));
         setDrukShuffled(shuffleArray(opts));
-    }, [phase, verdiepStep]);
+        // DRUK_VRAAG bewust niet in deps: getQuizData() geeft per render een nieuw
+        // object, dat zou de opties elke render opnieuw husselen.
+    }, [phase, verdiepStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const buildResult = (finalScores) => {
-        const sorted = sortByScore(finalScores);
+        const sorted = sortByScore(ARCHETYPES, finalScores);
         return {
             ...profile,
             primary: sorted[0]?.id || null,
@@ -386,12 +396,13 @@ export default function QuizTest({ setPage }) {
                 await saveResponse(scherpResult);
             } catch (err) {
                 savedRef.current = false; // mislukt → volgende render mag opnieuw
-                setSaveError(err?.message || 'Je resultaat kon niet worden opgeslagen. Ververs de pagina om het opnieuw te proberen.');
+                setSaveError(err?.message || t.errors.saveFailed);
             }
         })();
-    }, [phase, scherpResult]);
+        // Alleen fase en resultaat sturen het opslaan aan; `t` is puur fouttekst.
+    }, [phase, scherpResult]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const sortedBasis = useMemo(() => sortByScore(scores), [scores]);
+    const sortedBasis = useMemo(() => sortByScore(ARCHETYPES, scores), [ARCHETYPES, scores]);
     const duelPairs = useMemo(
         () => [
             [sortedBasis[0], sortedBasis[1]],
@@ -412,7 +423,7 @@ export default function QuizTest({ setPage }) {
 
     const nextBasis = () => {
         if (selected.length !== currentBasis.pick) {
-            setError(currentBasis.pick === 2 ? 'Kies precies 2 antwoorden, in volgorde.' : 'Kies 1 antwoord.');
+            setError(currentBasis.pick === 2 ? t.errors.pickTwo : t.errors.pickOne);
             return;
         }
         const next = { ...scores };
@@ -459,16 +470,21 @@ export default function QuizTest({ setPage }) {
 
                 <Card isMobile={isMobile}>
                     <div>
-                        <Eyebrow>Testversie · 9 vragen · ± 5 minuten</Eyebrow>
+                        <Eyebrow>{t.eyebrow(BASIS_VRAGEN.length)}</Eyebrow>
                         <Title isMobile={isMobile}>{currentBasis.q}</Title>
                     </div>
 
                     <div style={{ background: PALETTE.bg, borderRadius: 10, padding: '9px 14px', fontSize: 13, color: PALETTE.soft, lineHeight: 1.4 }}>
-                        {currentBasis.pick === 2 ? (
-                            <>Kies <strong style={{ color: PALETTE.ink }}>precies 2 antwoorden</strong> — je eerste keuze weegt het zwaarst.</>
-                        ) : (
-                            <>Kies <strong style={{ color: PALETTE.ink }}>1 antwoord</strong> dat het beste bij jou past.</>
-                        )}
+                        {(() => {
+                            const hint = currentBasis.pick === 2 ? t.pickTwo : t.pickOne;
+                            return (
+                                <>
+                                    {hint.before}
+                                    <strong style={{ color: PALETTE.ink }}>{hint.strong}</strong>
+                                    {hint.after}
+                                </>
+                            );
+                        })()}
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: isMobile ? 7 : 8 }}>
@@ -491,7 +507,7 @@ export default function QuizTest({ setPage }) {
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <PrimaryBtn isMobile={isMobile} onClick={nextBasis} disabled={selected.length !== currentBasis.pick}>
-                            {basisStep + 1 === BASIS_VRAGEN.length ? 'Naar mijn profiel' : 'Volgende vraag'}
+                            {basisStep + 1 === BASIS_VRAGEN.length ? t.toProfile : t.nextQuestion}
                         </PrimaryBtn>
                     </div>
                 </Card>
@@ -503,12 +519,12 @@ export default function QuizTest({ setPage }) {
     if (phase === 'profiel') {
         return (
             <div>
-                <ProfielBanner isMobile={isMobile} eyebrow="Je profiel staat" text={VERDIEPING_INTRO}>
+                <ProfielBanner isMobile={isMobile} eyebrow={t.profileReady.eyebrow} text={VERDIEPING_INTRO}>
                     <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                         <PrimaryBtn isMobile={isMobile} onClick={() => { setVerdiepStep(0); setPhase('verdieping'); }}>
-                            Ja, maak scherper (3 min)
+                            {t.profileReady.refine}
                         </PrimaryBtn>
-                        <GhostBtn onClick={() => setPhase('profielScherp')}>Nee, ik ben klaar</GhostBtn>
+                        <GhostBtn onClick={() => setPhase('profielScherp')}>{t.profileReady.done}</GhostBtn>
                     </div>
                 </ProfielBanner>
                 <Results resultData={basisResult} setPage={setPage} />
@@ -529,7 +545,7 @@ export default function QuizTest({ setPage }) {
                 <Shell isMobile={isMobile} innerRef={topRef}>
                     <Card isMobile={isMobile}>
                         <div>
-                            <Eyebrow>Verdieping · duel {verdiepStep + 1} van 2</Eyebrow>
+                            <Eyebrow>{t.deepDive.duelEyebrow(verdiepStep + 1, 2)}</Eyebrow>
                             <Title isMobile={isMobile}>{DUEL_INTRO}</Title>
                         </div>
                         <div style={{ display: 'grid', gap: 10 }}>
@@ -553,7 +569,7 @@ export default function QuizTest({ setPage }) {
                 <Shell isMobile={isMobile} innerRef={topRef}>
                     <Card isMobile={isMobile}>
                         <div>
-                            <Eyebrow>Verdieping · onder druk</Eyebrow>
+                            <Eyebrow>{t.deepDive.pressureEyebrow}</Eyebrow>
                             <Title isMobile={isMobile}>{DRUK_VRAAG.q}</Title>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: 8 }}>
@@ -568,7 +584,7 @@ export default function QuizTest({ setPage }) {
                             ))}
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <PrimaryBtn isMobile={isMobile} onClick={() => setVerdiepStep(3)} disabled={!drukChoice}>Volgende</PrimaryBtn>
+                            <PrimaryBtn isMobile={isMobile} onClick={() => setVerdiepStep(3)} disabled={!drukChoice}>{t.next}</PrimaryBtn>
                         </div>
                     </Card>
                 </Shell>
@@ -580,15 +596,15 @@ export default function QuizTest({ setPage }) {
                 <Shell isMobile={isMobile} innerRef={topRef}>
                     <Card isMobile={isMobile}>
                         <div>
-                            <Eyebrow>Verdieping · werkplekgebruik</Eyebrow>
-                            <Title isMobile={isMobile}>Welke plekken gebruik je nu het meest?</Title>
-                            <p style={{ margin: '4px 0 0', color: PALETTE.soft, fontSize: 13 }}>Kies er drie.</p>
+                            <Eyebrow>{t.deepDive.workplaceEyebrow}</Eyebrow>
+                            <Title isMobile={isMobile}>{t.deepDive.workplaceNowTitle}</Title>
+                            <p style={{ margin: '4px 0 0', color: PALETTE.soft, fontSize: 13 }}>{t.deepDive.chooseThree}</p>
                         </div>
-                        <PlekGrid list={gebruikNu} setList={setGebruikNu} isMobile={isMobile} />
+                        <PlekGrid list={gebruikNu} setList={setGebruikNu} isMobile={isMobile} types={WERKPLEK_TYPES} />
                         <div style={{ borderTop: `1px solid ${PALETTE.line}`, paddingTop: 16 }}>
-                            <Title isMobile={isMobile}>Welke plekken mis je?</Title>
-                            <p style={{ margin: '4px 0 10px', color: PALETTE.soft, fontSize: 13 }}>Kies er drie.</p>
-                            <PlekGrid list={mistPlek} setList={setMistPlek} isMobile={isMobile} />
+                            <Title isMobile={isMobile}>{t.deepDive.workplaceMissTitle}</Title>
+                            <p style={{ margin: '4px 0 10px', color: PALETTE.soft, fontSize: 13 }}>{t.deepDive.chooseThree}</p>
+                            <PlekGrid list={mistPlek} setList={setMistPlek} isMobile={isMobile} types={WERKPLEK_TYPES} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <PrimaryBtn
@@ -596,7 +612,7 @@ export default function QuizTest({ setPage }) {
                                 onClick={() => setVerdiepStep(4)}
                                 disabled={gebruikNu.length !== 3 || mistPlek.length !== 3}
                             >
-                                Volgende
+                                {t.next}
                             </PrimaryBtn>
                         </div>
                     </Card>
@@ -608,9 +624,9 @@ export default function QuizTest({ setPage }) {
             <Shell isMobile={isMobile} innerRef={topRef}>
                 <Card isMobile={isMobile}>
                     <div>
-                        <Eyebrow>Verdieping · tot slot</Eyebrow>
+                        <Eyebrow>{t.deepDive.openEyebrow}</Eyebrow>
                         <Title isMobile={isMobile}>{OPEN_VRAAG.q}</Title>
-                        <p style={{ margin: '4px 0 0', color: PALETTE.soft, fontSize: 13 }}>Optioneel · max {OPEN_VRAAG.maxLength} tekens.</p>
+                        <p style={{ margin: '4px 0 0', color: PALETTE.soft, fontSize: 13 }}>{t.deepDive.openHint(OPEN_VRAAG.maxLength)}</p>
                     </div>
                     <textarea
                         value={openText}
@@ -630,7 +646,7 @@ export default function QuizTest({ setPage }) {
                     />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
                         <span style={{ fontSize: 12, color: '#a89e96' }}>{openText.length}/{OPEN_VRAAG.maxLength}</span>
-                        <PrimaryBtn isMobile={isMobile} onClick={() => setPhase('profielScherp')}>Toon mijn verscherpte profiel</PrimaryBtn>
+                        <PrimaryBtn isMobile={isMobile} onClick={() => setPhase('profielScherp')}>{t.deepDive.showSharper}</PrimaryBtn>
                     </div>
                 </Card>
             </Shell>
@@ -644,12 +660,8 @@ export default function QuizTest({ setPage }) {
             <div>
                 <ProfielBanner
                     isMobile={isMobile}
-                    eyebrow="Verscherpt profiel"
-                    text={
-                        veranderd
-                            ? 'Na de verdieping is je hoofdprofiel bijgesteld — de duels beslechtten een nipt gelijkspel.'
-                            : 'De verdieping bevestigde je hoofdprofiel en maakte de onderlinge verhouding scherper.'
-                    }
+                    eyebrow={t.sharpened.eyebrow}
+                    text={veranderd ? t.sharpened.changed : t.sharpened.confirmed}
                 >
                     {saveError && (
                         <p style={{ margin: 0, color: PALETTE.accent, fontSize: 14 }}>{saveError}</p>

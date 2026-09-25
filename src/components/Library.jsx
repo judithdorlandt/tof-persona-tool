@@ -12,7 +12,8 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { ARCHETYPES } from '../data';
+import { useArchetypes } from '../i18n/archetypes';
+import { useCopy } from '../i18n/LanguageContext';
 import { PageShell, SectionEyebrow } from '../ui/AppShell';
 
 const COLOR_MAP = {
@@ -37,22 +38,13 @@ const SOFT_MAP = {
     vernieuwer: '#F3DFD2',
 };
 
-const WORKPLACE_LABELS = {
-    focus: 'Concentratie',
-    work: 'Standaard',
-    hybride: 'Hybride',
-    meeting: 'Overleg',
-    project: 'Creatief',
-    team: 'Samenwerken',
-    learning: 'Leren',
-    retreat: 'Rust',
-    social: 'Informeel',
-};
-
 export default function Library() {
     const [openId, setOpenId] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
     const cardRefs = useRef({});
+    const ARCHETYPES = useArchetypes();
+    const { library: t } = useCopy();
+    const WORKPLACE_LABELS = t.workplaceLabels;
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -90,7 +82,7 @@ export default function Library() {
                 }}>
                     <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'var(--tof-accent-rose)', borderRadius: '4px 0 0 4px' }} />
                     <div style={{ paddingLeft: isMobile ? 8 : 16 }}>
-                        <SectionEyebrow>05 — Persona&apos;s</SectionEyebrow>
+                        <SectionEyebrow>{t.eyebrow}</SectionEyebrow>
                         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap', marginTop: 10 }}>
                             <h1 style={{
                                 margin: 0,
@@ -100,20 +92,20 @@ export default function Library() {
                                 lineHeight: 1.06,
                                 color: '#1f1b18',
                             }}>
-                                Ontdek de 8{' '}
+                                {t.titleLead}{' '}
                                 <em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>
-                                    persona&apos;s.
+                                    {t.titleAccent}
                                 </em>
                             </h1>
                             {!isMobile && (
                                 <p style={{ margin: 0, maxWidth: 300, fontSize: 14, lineHeight: 1.7, color: '#6F6A66', paddingBottom: 4, flexShrink: 0 }}>
-                                    Klik op een kaart om te ontdekken wat deze persoon nodig heeft — in werkplek, samenwerking en leiderschap.
+                                    {t.intro}
                                 </p>
                             )}
                         </div>
                         {isMobile && (
                             <p style={{ margin: 0, marginTop: 12, fontSize: 14, lineHeight: 1.65, color: '#6F6A66' }}>
-                                Klik op een kaart om te ontdekken wat deze persoon nodig heeft.
+                                {t.introMobile}
                             </p>
                         )}
                     </div>
@@ -165,8 +157,12 @@ export default function Library() {
                                         background: isOpen
                                             ? `linear-gradient(135deg, ${soft} 0%, #F7F3EE 100%)`
                                             : '#FFFFFF',
-                                        border: isOpen ? `1px solid ${accent}` : '1px solid var(--tof-border)',
+                                        // Losse zijden i.p.v. de `border`-shorthand: die botst met
+                                        // borderTop zodra isOpen wisselt (React-styling-waarschuwing).
                                         borderTop: `4px solid ${accent}`,
+                                        borderRight: isOpen ? `1px solid ${accent}` : '1px solid var(--tof-border)',
+                                        borderBottom: isOpen ? `1px solid ${accent}` : '1px solid var(--tof-border)',
+                                        borderLeft: isOpen ? `1px solid ${accent}` : '1px solid var(--tof-border)',
                                         borderRadius: 18,
                                         padding: 0,
                                         cursor: 'pointer',
@@ -249,10 +245,10 @@ export default function Library() {
                                                 gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
                                                 gap: 10,
                                             }}>
-                                                <InfoBlock accent={accent} label="Energie van">
+                                                <InfoBlock accent={accent} label={t.energyFrom}>
                                                     {persona.energy_from}
                                                 </InfoBlock>
-                                                <InfoBlock accent={accent} label="Frustreert">
+                                                <InfoBlock accent={accent} label={t.frustrates}>
                                                     {persona.frustration}
                                                 </InfoBlock>
                                             </div>
@@ -265,7 +261,7 @@ export default function Library() {
                                                 borderLeft: `4px solid ${accent}`,
                                             }}>
                                                 <div style={{ fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--tof-text-muted)', fontWeight: 700, marginBottom: 10 }}>
-                                                    Bricks — Ideale werkplekmix
+                                                    {t.bricksTitle}
                                                 </div>
 
                                                 {/* Alle werkplekken als score-pills */}
@@ -336,7 +332,7 @@ export default function Library() {
                                                     borderLeft: `4px solid ${accent}`,
                                                 }}>
                                                     <div style={{ fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--tof-text-muted)', fontWeight: 700, marginBottom: 8 }}>
-                                                        Wat helpt in leiderschap
+                                                        {t.leadershipTitle}
                                                     </div>
                                                     <div style={{ display: 'grid', gap: 6 }}>
                                                         {persona.leadership.slice(0, 3).map((item) => (
@@ -412,8 +408,8 @@ function MiniCard({ title, color, text }) {
             background: '#FFFFFF',
             borderRadius: 14,
             padding: '12px 13px',
-            borderTop: `4px solid ${color}`,
             border: '1px solid rgba(0,0,0,0.04)',
+            borderTop: `4px solid ${color}`,
         }}>
             <div style={{
                 fontFamily: "'Playfair Display', serif",

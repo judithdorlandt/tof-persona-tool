@@ -31,7 +31,7 @@ import {
     buildGedragssignalen,
     BAND,
 } from './werkplekProfielLogic';
-import { WERKPLEK_PROFIEL_COPY as COPY } from './werkplekProfielCopy.nl';
+import { useCopy, useLang } from '../i18n/LanguageContext';
 
 const ACCENT = 'var(--tof-accent-sage)';
 const ROSE = 'var(--tof-accent-rose)';
@@ -67,23 +67,39 @@ function soortPlek(voorbeeldplekken) {
     return voorbeeldplekken.slice(0, 3).join(' · ');
 }
 
-function resolveTeamName(sel) {
-    if (!sel) return 'jouw team';
+// Naam en "soort plek"-illustratie komen uit de copy (i18n); de logica levert
+// alleen het type-id. Fallback op het label uit werkplekmix.js.
+function typeCopy(COPY, type) {
+    const c = COPY.types?.[type.id];
+    return {
+        label: c?.label || type.label,
+        voorbeeldplekken: c?.voorbeeldplekken || type.voorbeeldplekken,
+    };
+}
+
+function resolveTeamName(sel, fallback) {
+    if (!sel) return fallback;
     if (typeof sel === 'string') return sel;
-    return sel.name || sel.team || 'jouw team';
+    return sel.name || sel.team || fallback;
 }
 
 export default function WerkplekProfiel({ teamResponses = [], selectedTeam, setPage }) {
     const isMobile = useIsMobile();
+    const { workplaceProfile: COPY } = useCopy();
 
-    const aggregate = useMemo(() => buildTeamAggregate(teamResponses), [teamResponses]);
+    const { lang } = useLang();
+
+    const aggregate = useMemo(
+        () => buildTeamAggregate(teamResponses, lang),
+        [teamResponses, lang]
+    );
     const profiel = useMemo(
         () => buildWerkplekProfiel(aantallenUitAggregate(aggregate)),
         [aggregate]
     );
     const signalen = useMemo(() => buildGedragssignalen(profiel.typen), [profiel.typen]);
 
-    const teamName = resolveTeamName(selectedTeam);
+    const teamName = resolveTeamName(selectedTeam, COPY.ui.teamFallback);
 
     // De #1 wordt als hero getoond; alle overige typen daaronder, gegroepeerd
     // per band. Zo verschijnt geen enkel type twee keer.
@@ -127,6 +143,7 @@ export default function WerkplekProfiel({ teamResponses = [], selectedTeam, setP
 // =========================
 
 function TeamSignatuur({ teamName }) {
+    const { workplaceProfile: COPY } = useCopy();
     return (
         <div style={{ borderLeft: `3px solid ${ACCENT}`, paddingLeft: SPACING.lg }}>
             <p
@@ -150,7 +167,9 @@ function TeamSignatuur({ teamName }) {
 // =========================
 
 function HeroBehoefte({ type, isMobile }) {
-    const plek = soortPlek(type.voorbeeldplekken);
+    const { workplaceProfile: COPY } = useCopy();
+    const tc = typeCopy(COPY, type);
+    const plek = soortPlek(tc.voorbeeldplekken);
     return (
         <section
             style={{
@@ -176,7 +195,7 @@ function HeroBehoefte({ type, isMobile }) {
                     letterSpacing: '-0.01em',
                 }}
             >
-                {type.label}
+                {tc.label}
             </h2>
 
             <p style={{ ...TYPE.bodyLarge, color: 'var(--tof-text-soft)', maxWidth: 640 }}>
@@ -197,6 +216,7 @@ function HeroBehoefte({ type, isMobile }) {
 // =========================
 
 function VolledigeBehoefte({ overige, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     if (!overige || overige.length === 0) return null;
 
     return (
@@ -216,6 +236,7 @@ function VolledigeBehoefte({ overige, isMobile }) {
 }
 
 function BandGroep({ band, typen, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     const bandCopy = COPY.band[band] || {};
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
@@ -256,8 +277,10 @@ function BandGroep({ band, typen, isMobile }) {
 }
 
 function BehoefteRij({ type, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     const s = BAND_STYLE[type.band] || BAND_STYLE[BAND.AANVULLEND];
-    const plek = soortPlek(type.voorbeeldplekken);
+    const tc = typeCopy(COPY, type);
+    const plek = soortPlek(tc.voorbeeldplekken);
     return (
         <article
             style={{
@@ -287,7 +310,7 @@ function BehoefteRij({ type, isMobile }) {
                         color: 'var(--tof-text)',
                     }}
                 >
-                    {type.label}
+                    {tc.label}
                 </h3>
                 {plek ? <SoortPlekRegel tekst={plek} /> : null}
             </div>
@@ -304,6 +327,7 @@ function BehoefteRij({ type, isMobile }) {
 // =========================
 
 function BandBadge({ band }) {
+    const { workplaceProfile: COPY } = useCopy();
     const s = BAND_STYLE[band] || BAND_STYLE[BAND.AANVULLEND];
     const bandCopy = COPY.band[band] || {};
     return (
@@ -330,6 +354,7 @@ function BandBadge({ band }) {
 }
 
 function SoortPlekRegel({ tekst }) {
+    const { workplaceProfile: COPY } = useCopy();
     if (!tekst) return null;
     return (
         <div style={{ display: 'grid', gap: 3 }}>
@@ -355,6 +380,7 @@ function SoortPlekRegel({ tekst }) {
 // =========================
 
 function SignalenBlok({ signalen, isMobile }) {
+    const { workplaceProfile: COPY } = useCopy();
     return (
         <section
             style={{

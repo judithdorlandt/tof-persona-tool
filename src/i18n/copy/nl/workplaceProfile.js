@@ -1,15 +1,19 @@
 /**
- * werkplekProfielCopy.nl.js — EXPERIMENTEEL
+ * workplaceProfile.js (NL) — ALLE zichtbare tekst voor het experimentele
+ * werkplekbehoefteprofiel (src/experimental/WerkplekProfiel*.jsx).
  *
- * ALLE zichtbare Nederlandse tekst voor het werkplekbehoefteprofiel.
- * Bewust losgekoppeld van de logica (werkplekProfielLogic.js) zodat dit later
- * één-op-één naar een vertaalbestand (NL/EN) kan verhuizen.
+ * Toon: behoefte, gebruik en gedrag — NOOIT m², aantallen plekken of
+ * inrichting. De "soort plek"-illustraties beschrijven het SOORT plek, niet
+ * hoeveel ervan. Er staan bewust geen getallen of percentages in.
  *
- * Toon: behoefte, gebruik en gedrag — NOOIT m², aantallen plekken of inrichting.
- * De "soort plek"-illustraties beschrijven het SOORT plek, niet hoeveel ervan.
+ * LOGICA-SLEUTELS (nooit vertalen):
+ *   - `band`    → kern / steun / aanvullend (BAND uit werkplekProfielLogic.js)
+ *   - `types`   → werkplektype-ids uit werkplekmix.js
+ *   - `gebruik` → dezelfde werkplektype-ids
+ *   - `signalen`→ signal-ids uit buildGedragssignalen()
  */
 
-export const WERKPLEK_PROFIEL_COPY = {
+const workplaceProfile = {
     ui: {
         eyebrow: 'Experimenteel — Werkplekbehoefte',
         title: 'Hoe dit team de werkomgeving',
@@ -22,6 +26,7 @@ export const WERKPLEK_PROFIEL_COPY = {
 
         // Signatuur-regel met de teamnaam.
         signatuur: 'Werkplekprofiel van',
+        teamFallback: 'jouw team',
 
         // Hero — de sterkste behoefte als dominant leespunt.
         heroEyebrow: 'Waar de energie van dit team naartoe gaat',
@@ -60,6 +65,75 @@ export const WERKPLEK_PROFIEL_COPY = {
             label: 'Aanvullend',
             kort: 'Beperkt nodig',
             uitleg: 'Af en toe waardevol; de afwezigheid ervan is voor dit team zelden een probleem.',
+        },
+    },
+
+    // Naam en "soort plek"-illustratie per werkplektype. De ids komen uit
+    // werkplekmix.js; die blijft de bron voor de LOGICA, deze lijst voor de TEKST.
+    types: {
+        standaard: {
+            label: 'Standaard werkplekken',
+            voorbeeldplekken: [
+                'Eenpersoonswerkplek (open/gesloten)',
+                'Tweepersoonswerkplek (open/gesloten)',
+                'Meerpersoonswerkplek open',
+            ],
+        },
+        concentratie: {
+            label: 'Concentratieplekken',
+            voorbeeldplekken: ['Eenpersoonswerkplek (gesloten)', 'Stiltezone in bibliotheeksetting'],
+        },
+        overleg: {
+            label: 'Overlegplekken',
+            voorbeeldplekken: ['Meerpersoonswerkplek (gepland/spontaan overleg)', 'Overlegruimte S/M/L'],
+        },
+        samenwerk: {
+            label: 'Samenwerkplekken',
+            voorbeeldplekken: ['Meerpersoonswerkplek (gesloten/open)', 'Teamruimte', 'Projecttafel'],
+        },
+        creatief: {
+            label: 'Creatieve plekken',
+            voorbeeldplekken: [
+                'Break-out',
+                'Brainstormruimte',
+                'Projectruimte',
+                'Scrumruimte',
+                'Obeyaruimte',
+                'Schrijfbare wanden',
+            ],
+        },
+        informeel: {
+            label: 'Informele plekken',
+            voorbeeldplekken: [
+                'Break-outruimte',
+                'Koffiepunt',
+                'Zitgebied',
+                'Horeca',
+                'Aanlandplekken',
+                'Informele zitjes',
+            ],
+        },
+        hybride: {
+            label: 'Hybride plekken',
+            voorbeeldplekken: [
+                'Videobelplek',
+                '1-/2-persoons gesloten voor digitaal overleg',
+                'Aanlandplek',
+            ],
+        },
+        rust: {
+            label: 'Rustplekken',
+            voorbeeldplekken: [
+                'Rustruimte',
+                'Stilteruimte',
+                'Gebedsruimte',
+                'Vitaliteitsruimte',
+                'Ontprikkelruimte',
+            ],
+        },
+        leer: {
+            label: 'Leerplekken',
+            voorbeeldplekken: ['Geen eigen bouwsteen — via teamruimte, break-out en ontmoetingsplein'],
         },
     },
 
@@ -106,4 +180,4 @@ export const WERKPLEK_PROFIEL_COPY = {
     },
 };
 
-export default WERKPLEK_PROFIEL_COPY;
+export default workplaceProfile;
