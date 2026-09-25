@@ -7,7 +7,6 @@ import {
     SecondaryButton,
     SectionEyebrow,
 } from '../ui/AppShell';
-import { downloadPersonaCardVectorPDF } from '../utils/personaCardPdf';
 import ResultsDownloadCard from './ResultsDownloadCard';
 import ResultsProfileCard from './ResultsProfileCard';
 
@@ -241,6 +240,10 @@ export default function Results({ resultData, setPage }) {
         const fileName = copy.download.fileName(firstName);
 
         try {
+            // Dynamisch: jsPDF (~0,5 MB) blijft zo uit de hoofdbundel.
+            const { downloadPersonaCardVectorPDF } = await import(
+                '../utils/personaCardPdf'
+            );
             downloadPersonaCardVectorPDF({
                 pdfData,
                 primaryColor,
