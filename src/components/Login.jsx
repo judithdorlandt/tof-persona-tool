@@ -14,12 +14,13 @@ import { TYPE, SPACING, RADIUS, useIsMobile } from '../ui/tokens';
  * Vraagt om e-mailadres → stuurt magic-link mail → toont "check je inbox".
  * Echte login (Supabase Auth) gebeurt op /auth/callback wanneer gebruiker klikt.
  */
-export default function Login({ setPage }) {
+/**
+ * `testerInvite` = binnengekomen via /start, de persoonlijke uitnodiging om de
+ * tool zelf te proberen. Nieuwe accounts krijgen dan invite_kind 'individual',
+ * zodat AuthCallback ze na het inloggen direct de quiz in stuurt.
+ */
+export default function Login({ setPage, testerInvite = false }) {
   const isMobile = useIsMobile();
-  // ?tester=1 komt uit een persoonlijke uitnodiging om de tool zelf te
-  // proberen. Nieuwe accounts krijgen dan invite_kind 'individual', zodat
-  // AuthCallback ze na het inloggen direct de quiz in stuurt.
-  const isTesterInvite = new URLSearchParams(window.location.search).get('tester') === '1';
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'error'
   const [errorMessage, setErrorMessage] = useState('');
@@ -38,7 +39,7 @@ export default function Login({ setPage }) {
     setStatus('sending');
     const { ok, error } = await sendMagicLink(
       cleanEmail,
-      isTesterInvite ? { invite_kind: 'individual' } : null
+      testerInvite ? { invite_kind: 'individual' } : null
     );
 
     if (!ok) {
@@ -85,8 +86,8 @@ export default function Login({ setPage }) {
   return (
     <PageShell>
       <HeroBlock
-        eyebrow={isTesterInvite ? 'FIJN DAT JE ER BENT' : 'INLOGGEN'}
-        title={isTesterInvite ? 'Even zelf ervaren.' : 'Welkom terug.'}
+        eyebrow={testerInvite ? 'FIJN DAT JE ER BENT' : 'INLOGGEN'}
+        title={testerInvite ? 'Even zelf ervaren.' : 'Welkom terug.'}
         lead="Vul je e-mailadres in. We sturen je een link om met één klik in te loggen — geen wachtwoord nodig."
       />
 

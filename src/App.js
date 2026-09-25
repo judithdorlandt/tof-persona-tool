@@ -45,6 +45,8 @@ const PAGE_TO_PATH = {
   teamdynamics: '/team/dynamics',
   teamselector: '/team/selector',
   login: '/login',
+  // Persoonlijke uitnodiging om de tool zelf te proberen (zie Admin).
+  testerlogin: '/start',
   authcallback: '/auth/callback',
   authconfirm: '/auth/confirm',
   admin: '/admin',
@@ -204,6 +206,9 @@ export default function App() {
       case 'login':
         return <Login setPage={navigate} />;
 
+      case 'testerlogin':
+        return <Login setPage={navigate} testerInvite />;
+
       case 'authcallback':
         return (
           <AuthCallback
@@ -258,7 +263,7 @@ export default function App() {
   };
 
   // Pagina's waar de Nav NIET getoond moet worden — landing en auth-flow.
-  const hideNav = page === 'landing' || page === 'login' || page === 'authcallback' || page === 'authconfirm';
+  const hideNav = page === 'landing' || page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm';
 
   return (
     <>

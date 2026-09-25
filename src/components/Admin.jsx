@@ -877,7 +877,7 @@ The Office Factory
 // user_metadata.invite_kind = 'individual', waardoor AuthCallback hem na het
 // inloggen direct de quiz in stuurt.
 
-const TESTER_LOGIN_URL = 'https://tof-persona-tool.netlify.app/login?tester=1';
+const TESTER_LOGIN_URL = 'https://tof-persona-tool.netlify.app/start';
 const INVITE_COOLDOWN_SECONDS = 60;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
