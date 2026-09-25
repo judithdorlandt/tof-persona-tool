@@ -187,13 +187,18 @@ export default function App() {
         );
 
       case 'teamselector':
-        return (
+        // Beheerder-tool: leest álle teams. Alleen voor ingelogde gebruikers
+        // (authenticated → policy #1), zodat anon niet alle responses kan
+        // opvragen. Niet-ingelogd → naar login.
+        return user ? (
           <TeamSelector
             setPage={navigate}
             setResultData={setResultData}
             setTeamResponses={setTeamResponses}
             setSelectedTeam={setSelectedTeam}
           />
+        ) : (
+          <Login setPage={navigate} />
         );
 
       case 'login':

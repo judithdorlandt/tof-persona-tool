@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
-import { supabase, getMyManagedTeams } from '../supabase';
+import { getMyManagedTeams, validateTeamAccessCode } from '../supabase';
 import { grantTeamAccess } from '../utils/access';
 import {
   PageShell,
@@ -66,20 +66,20 @@ export default function Home({ setPage }) {
     setCheckingCode(true);
     setLockError('');
 
-    const { data, error } = await supabase
-      .schema('private').from('responses')
-      .select('invite_code')
-      .eq('invite_code', code)
-      .limit(1);
-
-    if (error) {
-      console.error(error);
+    // Valideer de code tegen team_access_codes (de bron van toegangscodes),
+    // niet tegen responses — zo hoeven bezoekers geen leesrecht op responses
+    // te hebben (zie beveiligings-lockdown 006).
+    let access = null;
+    try {
+      access = await validateTeamAccessCode(code);
+    } catch (err) {
+      console.error(err);
       setLockError('Er ging iets mis bij het controleren van de code');
       setCheckingCode(false);
       return;
     }
 
-    if (!data || data.length === 0) {
+    if (!access) {
       setLockError('Onjuiste of onbekende code');
       setCheckingCode(false);
       return;

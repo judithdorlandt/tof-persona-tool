@@ -94,20 +94,28 @@ grant execute on function public.responses_for_codes(text[]) to anon, authentica
 
 
 -- ============================================================
--- SECTIE 3 — De schakelaar: direct leesrecht intrekken
+-- SECTIE 3 — De schakelaar: anon leesrecht intrekken
 -- ============================================================
--- PAS draaien NA stap 2 (client gebruikt de RPC) en na verificatie.
--- Hierna kan anon geen responses meer los opvragen; alleen via een
--- geldige, actieve code door de functie heen. Admin behoudt toegang
--- via de admin-policy (JWT-email) — controleer dat die policy bestaat
--- (zie 005 sectie 0c) vóór je dit draait, anders verliest ook admin
--- het overzicht.
+-- PAS draaien NA stap 2 (nieuwe frontend live met de RPC + auth-guard)
+-- en na verificatie. Hierna kan anon geen responses meer los opvragen;
+-- alleen via een geldige, actieve code door de functie heen.
+--
+-- Bestaande policies op private.responses (uit 005 §0c):
+--   1. "Authed mag responses lezen"   SELECT {authenticated} qual=true  → BLIJFT (admin + managers)
+--   2. "Iedereen mag response invoegen" INSERT {anon,authenticated}       → BLIJFT (respondenten)
+--   3. "Iedereen mag responses lezen"  SELECT {anon} qual=true            → WEG (dit is het lek)
+--
+-- LET OP — de anon INSERT blijft nodig (quiz). saveResponse doet sinds
+-- deze release GEEN .insert().select() meer, dus de insert heeft geen
+-- anon SELECT nodig. Deploy die frontend dus VÓÓR je dit draait.
 
+-- drop policy if exists "Iedereen mag responses lezen" on private.responses;
 -- revoke select on private.responses from anon;
 
--- -- Zorg dat de bijbehorende anon-SELECT-policy uit staat als je die
--- -- in 005 had aangezet (anders blijft select mogelijk):
--- drop policy if exists "responses_anon_select" on private.responses;
+-- Sanity na de revoke:
+--   * anon quiz invullen → nog steeds 201 (insert zonder select).
+--   * anon team-dashboard via geldige code → data via responses_for_code.
+--   * ingelogde admin/manager → volledige read via policy #1.
 
 
 -- ============================================================

@@ -337,14 +337,17 @@ export async function saveResponse(profile) {
       created_at: new Date().toISOString(),
     };
 
-    const { data, error } = await supabase
+    // Bewust GEEN .select() na de insert: anon respondenten mogen na de
+    // beveiligings-lockdown (006) niet meer uit responses lezen, en een
+    // insert().select() zou dan terugrollen. We hebben de teruggegeven rij
+    // hier niet nodig — succes/fout loopt via throw.
+    const { error } = await supabase
       .schema('private').from('responses')
-      .insert([payload])
-      .select();
+      .insert([payload]);
 
     if (error) throw error;
 
-    return data;
+    return true;
   } catch (err) {
     console.error('❌ Response error:', err?.message || err);
     throw new Error(describeError(err));
@@ -498,17 +501,32 @@ export async function getResponsesByTeam(team, organization = null, code = null)
 
     if (cleanCode) {
 
-      const { data: codeData, error: codeErr } = await supabase
+      // Anonieme bezoekers lezen via de SECURITY DEFINER-RPC die de code
+      // valideert en alléén dat team teruggeeft (006). Bestaat de functie
+      // nog niet (006 niet gedraaid), dan vallen we terug op de directe
+      // read — zo werkt het vóór én na de migratie. Ingelogde admin/manager
+      // krijgen exact dezelfde teamrijen.
+      let codeData = null;
 
-        .schema('private').from('responses')
+      const { data: rpcData, error: rpcErr } = await supabase
+        .rpc('responses_for_code', { p_code: cleanCode });
 
-        .select('*')
+      if (rpcErr) {
+        const missing = /(function|does not exist|not found|pgrst202|schema cache)/i
+          .test(String(rpcErr.message || rpcErr.code || ''));
+        if (!missing) throw rpcErr;
 
-        .eq('invite_code', cleanCode)
+        const { data: direct, error: directErr } = await supabase
+          .schema('private').from('responses')
+          .select('*')
+          .eq('invite_code', cleanCode)
+          .order('created_at', { ascending: true });
 
-        .order('created_at', { ascending: true });
-
-      if (codeErr) throw codeErr;
+        if (directErr) throw directErr;
+        codeData = direct;
+      } else {
+        codeData = rpcData;
+      }
 
       (codeData || []).forEach((r) => {
 
