@@ -57,9 +57,14 @@ export default function Nav({
     const resultItems = (hasResult && (IS_NATIVE || !isManager))
         ? [
             { key: 'results', label: t.results },
-            // De historie bestaat alleen in de app: daar staan je eerdere
-            // profielen op het toestel bewaard.
-            ...(IS_NATIVE ? [{ key: 'historie', label: t.history }] : []),
+            // De gespreksvoorbereiding en de historie bestaan alleen in de
+            // app: die staan allebei op het toestel bewaard.
+            ...(IS_NATIVE
+                ? [
+                    { key: 'gesprek', label: t.conversation },
+                    { key: 'historie', label: t.history },
+                ]
+                : []),
             { key: 'library', label: t.library },
         ]
         : [];

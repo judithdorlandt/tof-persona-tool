@@ -33,6 +33,14 @@ const native = {
     intro:
       'Everything you pinned and wrote down, on one screen. Stays on your device.',
     pinnedTitle: 'What you pinned',
+    // Headings above a pinned insight, per kind. The keys match `kind` in
+    // src/native/localStore.js.
+    kinds: {
+      workplace: 'Workplace',
+      leadership: 'Leadership',
+      energy: 'What gets me moving',
+      drain: 'What drains me',
+    },
     pinnedEmpty:
       'You have not pinned anything yet. Tap the plus next to an insight in your profile.',
     notesTitle: 'Your answers',

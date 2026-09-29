@@ -139,3 +139,40 @@ export function buildWorkplaceNeedsForMix(personas, workplaceLabels = {}) {
 export function buildLeadershipItems(primary) {
     return (primary?.leadership || []).slice(0, 3);
 }
+
+/**
+ * Zoekt bij elk vastgeprikt `{ kind, key }`-paar de tekst die erbij hoort.
+ *
+ * De opslag bewaart alleen de verwijzing, niet de tekst: zo staat er in de
+ * gespreksvoorbereiding altijd de formulering van vandaag, ook als de copy
+ * later wordt bijgeschaafd of de taal wisselt. Verwijzingen die nergens meer
+ * op slaan vallen stilzwijgend weg.
+ */
+export function resolvePinned(pinned, primary, workplaceLabels = {}) {
+    const leadership = buildLeadershipItems(primary);
+    const drains = (primary?.energycost || []).slice(0, 3);
+
+    return (pinned || [])
+        .map((pin) => {
+            switch (pin.kind) {
+                case 'workplace':
+                    return {
+                        ...pin,
+                        label: workplaceLabels[pin.key] || '',
+                        text: primary?.bricksProfileText?.[pin.key] || '',
+                    };
+                case 'leadership':
+                    return { ...pin, text: leadership[Number(pin.key)] || '' };
+                case 'energy':
+                    return { ...pin, text: primary?.energy_from || '' };
+                case 'drain':
+                    return { ...pin, text: drains[Number(pin.key)] || '' };
+                default:
+                    return { ...pin, text: '' };
+            }
+        })
+        // Zonder tekst is er niets te bespreken: een verwijzing die nergens
+        // meer op slaat verdwijnt, in plaats van als kale sleutel te blijven
+        // staan.
+        .filter((item) => item.text);
+}

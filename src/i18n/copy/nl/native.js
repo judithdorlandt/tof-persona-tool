@@ -33,6 +33,14 @@ const native = {
     intro:
       'Alles wat je hebt vastgeprikt en opgeschreven, op één scherm. Blijft op je toestel.',
     pinnedTitle: 'Wat je hebt vastgeprikt',
+    // Kopjes boven een vastgeprikt inzicht, per soort. De sleutels komen
+    // overeen met `kind` in src/native/localStore.js.
+    kinds: {
+      workplace: 'Werkplek',
+      leadership: 'Leiderschap',
+      energy: 'Wat mij in beweging brengt',
+      drain: 'Waar ik op leegloop',
+    },
     pinnedEmpty:
       'Je hebt nog niets vastgeprikt. Tik op de plus bij een inzicht in je profiel.',
     notesTitle: 'Jouw antwoorden',
