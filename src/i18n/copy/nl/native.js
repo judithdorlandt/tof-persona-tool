@@ -94,7 +94,12 @@ const native = {
     current: 'Je bekijkt dit profiel',
     view: 'Bekijken',
     remove: 'Verwijderen',
+    // Vegen is niet te zien; één regel boven de lijst wijst de weg.
+    swipeHint: 'Veeg een profiel naar links om het te verwijderen.',
+    // Verwijderen gaat nooit in één keer: de kaart vraagt het eerst na.
     confirmRemove: 'Dit profiel van je toestel verwijderen?',
+    confirmYes: 'Ja, verwijderen',
+    confirmCancel: 'Laat maar staan',
     hasNote: 'Met aantekening',
     mixLabel: 'Daarnaast',
     // Datum + tijd van afronden, in de taal van de app.

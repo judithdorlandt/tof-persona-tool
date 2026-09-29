@@ -93,7 +93,12 @@ const native = {
     current: 'You are viewing this profile',
     view: 'View',
     remove: 'Remove',
+    // Swiping is invisible; one line above the list points the way.
+    swipeHint: 'Swipe a profile to the left to remove it.',
+    // Removing never happens in one go: the card asks first.
     confirmRemove: 'Remove this profile from your device?',
+    confirmYes: 'Yes, remove it',
+    confirmCancel: 'Keep it',
     hasNote: 'Has a note',
     mixLabel: 'Alongside',
     formatDate: (iso) =>
