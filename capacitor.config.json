@@ -2,10 +2,24 @@
   "appId": "services.tof.persona",
   "appName": "TOF Persona",
   "webDir": "build",
+  "backgroundColor": "#F7F3EE",
   "ios": {
-    "contentInset": "always"
+    "contentInset": "never"
   },
   "android": {
     "allowMixedContent": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "backgroundColor": "#F7F3EE",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "backgroundColor": "#F7F3EE",
+      "overlaysWebView": true
+    }
   }
 }

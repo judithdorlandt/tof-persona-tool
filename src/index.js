@@ -20,7 +20,12 @@ import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { AuthProvider } from './auth/AuthContext';
 import { LanguageProvider } from './i18n/LanguageContext';
+import { initNativeShell } from './native/nativeShell';
 import reportWebVitals from './reportWebVitals';
+
+// Statusbalk, splash en viewport instellen vóór de eerste render. Op het web
+// is dit een no-op (zie src/native/nativeShell.js).
+initNativeShell();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

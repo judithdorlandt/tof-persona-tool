@@ -9,6 +9,10 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  /* In de app loopt de webview tot in de notch (viewport-fit=cover). De witte
+     balk vult die strook dan zelf op en de inhoud blijft eronder. In de
+     browser is deze inset 0px, dus het web verandert niet. */
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .inner {

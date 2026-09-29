@@ -5,6 +5,7 @@ import { useCopy, useLang } from '../../i18n/LanguageContext';
 import { saveResponse } from '../../supabase';
 import { IS_NATIVE } from '../../config/platform';
 import { saveProfile } from '../../native/localStore';
+import { tap } from '../../native/nativeShell';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
 import Results from '../../components/Results.jsx';
 import { getQuizData } from './quizTestData';
@@ -414,6 +415,11 @@ export default function QuizTest({ setPage }) {
         // Alleen fase en resultaat sturen het opslaan aan; `t` is puur fouttekst.
     }, [phase, scherpResult]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Iets zwaardere tik op het enige echte hoogtepunt: je profiel in beeld.
+    useEffect(() => {
+        if (phase === 'profiel' || phase === 'profielScherp') tap(true);
+    }, [phase]);
+
     const sortedBasis = useMemo(() => sortByScore(ARCHETYPES, scores), [ARCHETYPES, scores]);
     const duelPairs = useMemo(
         () => [
@@ -425,6 +431,10 @@ export default function QuizTest({ setPage }) {
 
     // ── Handlers ────────────────────────────────────────────────────────────────
     const toggleSelect = (option) => {
+        // Korte tik bij het kiezen van een antwoord, niet bij het weghalen.
+        // Buiten de updater, want die mag geen bijwerkingen hebben.
+        const alGekozen = selected.some((s) => s.text === option.text);
+        if (!alGekozen && selected.length < currentBasis.pick) tap();
         setSelected((prev) => {
             const exists = prev.some((s) => s.text === option.text);
             if (exists) return prev.filter((s) => s.text !== option.text);
@@ -448,6 +458,7 @@ export default function QuizTest({ setPage }) {
     };
 
     const kiesDuel = (archetypeId) => {
+        tap();
         setDuelBumps((prev) => ({ ...prev, [archetypeId]: (prev[archetypeId] || 0) + BUMP }));
         setVerdiepStep((s) => (s === 0 ? 1 : 2));
     };

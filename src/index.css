@@ -44,6 +44,14 @@ body {
   overflow-x: hidden;
 }
 
+/* Onderrand vrijhouden van de home-indicator, en in liggende stand van de
+   notch. Buiten de app zijn deze insets 0px, dus dit is web-neutraal. */
+main {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
 button,
 input,
 select,
