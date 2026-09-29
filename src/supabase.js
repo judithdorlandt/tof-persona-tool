@@ -513,6 +513,10 @@ export async function getResponsesByTeam(team, organization = null, code = null)
     const seen = new Set();
     const results = [];
 
+    // Heeft de RPC de teamrijen geleverd? Zo ja, dan is de naam-fallback
+    // verderop overbodig (zie daar).
+    let viaRpc = false;
+
     if (cleanCode) {
 
       // Anonieme bezoekers lezen via de SECURITY DEFINER-RPC die de code
@@ -540,6 +544,7 @@ export async function getResponsesByTeam(team, organization = null, code = null)
         codeData = direct;
       } else {
         codeData = rpcData;
+        viaRpc = true;
       }
 
       (codeData || []).forEach((r) => {
@@ -556,7 +561,12 @@ export async function getResponsesByTeam(team, organization = null, code = null)
 
     }
 
-    if (cleanTeam) {
+    // Fallback op teamnaam — alléén nodig als de RPC niet gelopen heeft.
+    // De RPC geeft namelijk óók de legacy-rijen zonder invite_code terug
+    // (die matcht hij op team + organisatie). Deze directe read is voor
+    // anon sinds migratie 006 verboden; zou hij hier toch draaien, dan
+    // gooit de 401 het hele — geslaagde — RPC-resultaat weg.
+    if (cleanTeam && !viaRpc) {
 
       let query = supabase
 
