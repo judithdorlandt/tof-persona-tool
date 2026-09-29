@@ -1,0 +1,11 @@
+{
+  "appId": "services.tof.persona",
+  "appName": "TOF Persona",
+  "webDir": "build",
+  "ios": {
+    "contentInset": "always"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
