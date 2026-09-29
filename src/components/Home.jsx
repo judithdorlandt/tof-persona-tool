@@ -153,6 +153,11 @@ export default function Home({ setPage }) {
                 {t.heroTitle}{' '}
                 <span
                   style={{
+                    // `font-family: inherit` is hier nodig: index.css zet
+                    // alle span's op de body-font, en die vlakke regel wint
+                    // van overerving. Zonder dit werd de cursieve kopregel
+                    // een kunstmatig schuingezette Inter i.p.v. Playfair.
+                    fontFamily: 'inherit',
                     color: 'var(--tof-accent-rose)',
                     fontStyle: 'italic',
                   }}
