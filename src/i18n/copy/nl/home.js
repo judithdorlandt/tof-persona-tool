@@ -30,6 +30,9 @@ const home = {
     contact: 'Contact',
     privacy:
       '🔒 Data wordt anoniem gebruikt voor analyse en niet gedeeld met derden. Naam is optioneel.',
+    // App-modus: er gaat niets naar een server, dus de webzin klopt daar niet.
+    privacyNative:
+      '🔒 Alles blijft op je toestel. Je antwoorden en je profiel gaan niet naar een server en worden met niemand gedeeld. Naam is optioneel.',
   },
 
   lock: {

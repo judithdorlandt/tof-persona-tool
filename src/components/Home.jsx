@@ -353,7 +353,7 @@ export default function Home({ setPage }) {
               color: 'var(--tof-text-muted)',
             }}
           >
-            {t.footer.privacy}
+            {IS_NATIVE ? t.footer.privacyNative : t.footer.privacy}
           </p>
         </div>
       </div>
