@@ -8,6 +8,8 @@ import React from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import { useCopy } from '../i18n/LanguageContext';
 import PinButton from './result/PinButton';
+import ResultDistribution from './result/ResultDistribution';
+import { riseIn } from './result/motion';
 
 // Lokale kopie — voorkomt circulaire import vanuit Results.jsx.
 // Wanneer dit op meer plekken nodig is → verplaatsen naar src/data.
@@ -140,7 +142,7 @@ export default function ResultsProfileCard({
                             }}
                         />
 
-                        {/* JOUW PROFIEL */}
+                        {/* JOUW PROFIEL — blok 0 van de gefaseerde opkomst */}
 
                         <div
                             style={{
@@ -148,6 +150,7 @@ export default function ResultsProfileCard({
                                 gap: 12,
                                 paddingLeft: isMobile ? 8 : 18,
                                 maxWidth: isMobile ? '100%' : 760,
+                                ...riseIn(0),
                             }}
                         >
                             {/* Eyebrow rij: badge + naam */}
@@ -232,6 +235,7 @@ export default function ResultsProfileCard({
                                 fontSize: 14,
                                 lineHeight: 1.7,
                                 border: '1px solid rgba(120, 90, 70, 0.06)',
+                                ...riseIn(1),
                             }}
                         >
                             <strong style={{ color: 'var(--tof-text)' }}>
@@ -250,6 +254,7 @@ export default function ResultsProfileCard({
                                 padding: isMobile ? '16px 16px' : '18px 22px',
                                 display: 'grid',
                                 gap: 10,
+                                ...riseIn(2),
                             }}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
@@ -292,61 +297,16 @@ export default function ResultsProfileCard({
                                 gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
                                 gap: isMobile ? 14 : 16,
                                 alignItems: 'start',
+                                ...riseIn(3),
                             }}
                         >
                             {/* LINKERKOLOM */}
                             <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
-                                <div
-                                    style={{
-                                        background: 'rgba(255,255,255,0.82)',
-                                        borderRadius: 14,
-                                        padding: '14px 16px',
-                                        border: '1px solid #E7DBCF',
-                                        display: 'grid',
-                                        gap: 10,
-                                    }}
-                                >
-                                    <div style={INFO_LABEL_STYLE}>{t.distributionLabel}</div>
-
-                                    <div style={{ display: 'grid', gap: 8 }}>
-                                        {topScoreEntries.map((item) => (
-                                            <div key={item.id} style={{ display: 'grid', gap: 4 }}>
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        justifyContent: 'space-between',
-                                                        alignItems: 'center',
-                                                        gap: 10,
-                                                        fontSize: 12,
-                                                        color: '#3F342F',
-                                                    }}
-                                                >
-                                                    <span style={{ fontWeight: 600 }}>{item.name}</span>
-                                                    <span>{item.percentage}%</span>
-                                                </div>
-
-                                                <div
-                                                    style={{
-                                                        height: 8,
-                                                        background: '#EADFD4',
-                                                        borderRadius: 999,
-                                                        overflow: 'hidden',
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            width: `${item.barWidth}%`,
-                                                            height: '100%',
-                                                            background: item.color,
-                                                            opacity: item.opacity,
-                                                            borderRadius: 999,
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                <ResultDistribution
+                                    label={t.distributionLabel}
+                                    labelStyle={INFO_LABEL_STYLE}
+                                    items={topScoreEntries}
+                                />
 
                                 <div
                                     style={{
@@ -586,6 +546,7 @@ export default function ResultsProfileCard({
                                     padding: isMobile ? '16px 16px' : '18px 22px',
                                     display: 'grid',
                                     gap: 12,
+                                    ...riseIn(4),
                                 }}
                             >
                                 <div style={INFO_LABEL_STYLE}>{t.drainLabel}</div>
@@ -619,6 +580,7 @@ export default function ResultsProfileCard({
                                     lineHeight: 1.45,
                                     fontStyle: 'italic',
                                     letterSpacing: '-0.01em',
+                                    ...riseIn(5),
                                 }}
                             >
                                 {primary.lquote}

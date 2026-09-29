@@ -94,6 +94,37 @@ img {
   }
 }
 
+/* Blokken die één voor één in beeld komen: iets verder omhoog dan tofFadeIn,
+   en met fill-mode `both` in de inline-stijl zodat een blok tijdens zijn
+   wachttijd nog onzichtbaar is. Zie src/components/result/motion.js. */
+@keyframes tofRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Wie in het systeem minder beweging heeft gevraagd, krijgt de eindtoestand
+   meteen te zien. `!important` is hier nodig omdat de animaties en overgangen
+   in inline-stijlen staan; anders wint de inline-regel van deze media-query. */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
 @keyframes skeletonLoading {
   0% {
     background-position: 200% 0;
