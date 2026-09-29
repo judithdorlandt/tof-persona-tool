@@ -7,6 +7,7 @@
 import React from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import { useCopy } from '../i18n/LanguageContext';
+import { getReadableTextOnColor } from '../lib/resultDerivations';
 import PinButton from './result/PinButton';
 import ResultDistribution from './result/ResultDistribution';
 import { riseIn } from './result/motion';
@@ -72,16 +73,6 @@ function InnerCard({ label, title, titleColor = '#1F1F1F', children }) {
     );
 }
 
-function getReadableQuoteColor(hexColor) {
-    const hex = String(hexColor || '').replace('#', '');
-    if (hex.length !== 6) return '#2F2521';
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.62 ? '#2F2521' : '#F7F3EE';
-}
-
 export default function ResultsProfileCard({
     isMobile,
     primary,
@@ -98,7 +89,7 @@ export default function ResultsProfileCard({
 }) {
     const { resultsCard } = useCopy();
     const t = resultsCard.profile;
-    const quoteTextColor = getReadableQuoteColor(primaryColor);
+    const quoteTextColor = getReadableTextOnColor(primaryColor);
 
     return (
                     <div
@@ -592,4 +583,4 @@ export default function ResultsProfileCard({
 
 // Re-export helpers for callers that nog gebruik maken van het oude
 // patroon in Results.jsx (alleen op tijdelijke basis aanwezig).
-export { INFO_LABEL_STYLE, leadText, InnerCard, getReadableQuoteColor };
+export { INFO_LABEL_STYLE, leadText, InnerCard };

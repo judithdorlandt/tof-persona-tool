@@ -23,6 +23,22 @@ export const PERSONA_COLORS = {
 
 export const DEFAULT_PERSONA_COLOR = PERSONA_COLORS.maker;
 
+/**
+ * Leesbare tekstkleur op een vlak in de persona-kleur.
+ *
+ * De acht kleuren lopen van donkerrood tot zandgeel; op de lichte varianten is
+ * wit onleesbaar. Boven een luminantie van 0,62 wordt de tekst dus donker.
+ */
+export function getReadableTextOnColor(hexColor) {
+    const hex = String(hexColor || '').replace('#', '');
+    if (hex.length !== 6) return '#2F2521';
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.62 ? '#2F2521' : '#F7F3EE';
+}
+
 /** Gewichten voor de werkplekmix: primair telt vol, daarna steeds minder. */
 const MIX_WEIGHTS = [1, 0.7, 0.45];
 

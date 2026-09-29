@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { IS_NATIVE } from '../config/platform';
 import { useArchetypes } from '../i18n/archetypes';
 import { useCopy, useLang } from '../i18n/LanguageContext';
 import {
@@ -16,6 +17,7 @@ import {
     buildWorkplaceNeedsForMix,
 } from '../lib/resultDerivations';
 import ProfileNotes from '../native/ProfileNotes';
+import ProfileScreen from '../native/ProfileScreen';
 import usePinned from '../native/usePinned';
 import ResultsDownloadCard from './ResultsDownloadCard';
 import ResultsProfileCard from './ResultsProfileCard';
@@ -235,6 +237,28 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
                     </SoftCard>
                 </div>
             </PageShell>
+        );
+    }
+
+    // In de app is dit hét scherm van de hele tool: één kolom, negen blokken,
+    // gemaakt om op een telefoon te lezen. De afleidingen hierboven zijn
+    // gedeeld, dus web en app rekenen hetzelfde. Op het web verandert er niets.
+    if (IS_NATIVE) {
+        return (
+            <ProfileScreen
+                isMobile={isMobile}
+                primary={primary}
+                secondary={secondary}
+                tertiary={tertiary}
+                primaryColor={primaryColor}
+                topScoreEntries={topScoreEntries}
+                bytesBehaviorBlocks={bytesBehaviorBlocks}
+                leadershipItems={leadershipItems}
+                bricksItems={bricksItems}
+                resultData={resultData}
+                pinning={pinning}
+                noteEntry={noteEntry}
+            />
         );
     }
 
