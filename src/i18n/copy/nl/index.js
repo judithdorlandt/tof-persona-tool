@@ -8,6 +8,7 @@ import intro from './intro';
 import kompasForms from './kompasForms';
 import landing from './landing';
 import library from './library';
+import nativeCopy from './native';
 import nav from './nav';
 import pricing from './pricing';
 import quiz from './quiz';
@@ -36,6 +37,7 @@ const nl = {
   kompasForms,
   landing,
   library,
+  native: nativeCopy,
   nav,
   pricing,
   quiz,

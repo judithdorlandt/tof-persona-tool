@@ -4,6 +4,7 @@ import { useArchetypes } from '../../i18n/archetypes';
 import { useCopy, useLang } from '../../i18n/LanguageContext';
 import { saveResponse } from '../../supabase';
 import { IS_NATIVE } from '../../config/platform';
+import { saveProfile } from '../../native/localStore';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
 import Results from '../../components/Results.jsx';
 import { getQuizData } from './quizTestData';
@@ -18,10 +19,10 @@ import { getQuizData } from './quizTestData';
  *   4. Optionele verdieping (2 duels, druk, werkplekgebruik, open vraag)
  *   5. Verscherpt profiel
  *
- * Het resultaat wordt bij afronden (fase 'profielScherp') één keer opgeslagen
- * in Supabase via saveResponse — zowel na de verdieping als wanneer iemand op
- * "Nee, ik ben klaar" klikt. Zo telt precies één rij mee in de dashboards en
- * bevat die het scherpste profiel.
+ * Het resultaat wordt bij afronden (fase 'profielScherp') één keer opgeslagen —
+ * zowel na de verdieping als wanneer iemand op "Nee, ik ben klaar" klikt. Op
+ * het web gaat dat via saveResponse naar Supabase (precies één rij met het
+ * scherpste profiel); in app-modus blijft het op het toestel.
  */
 
 const WEIGHTS = [3, 2]; // eerste keuze telt 3, tweede 2
@@ -318,6 +319,9 @@ export default function QuizTest({ setPage }) {
     // Opslag — bij afronden precies één keer naar Supabase.
     const savedRef = useRef(false);
     const [saveError, setSaveError] = useState('');
+    // App-modus: het bewaarde profiel op het toestel, zodat je er meteen een
+    // aantekening bij kunt maken.
+    const [bewaardProfiel, setBewaardProfiel] = useState(null);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -388,11 +392,15 @@ export default function QuizTest({ setPage }) {
 
     // Opslaan zodra het verscherpte profiel in beeld komt — één keer.
     // Beide paden ('Nee, ik ben klaar' en de afgeronde verdieping) landen hier.
-    // In app-modus slaan we niets op een server op: het profiel blijft op het
-    // toestel (fase 3 zorgt voor de lokale opslag).
+    // In app-modus gaat er niets naar een server: het profiel wordt op het
+    // toestel bewaard en verschijnt daar in je historie.
     useEffect(() => {
-        if (IS_NATIVE) return;
         if (phase !== 'profielScherp' || savedRef.current || !scherpResult) return;
+        if (IS_NATIVE) {
+            savedRef.current = true;
+            setBewaardProfiel(saveProfile(scherpResult));
+            return;
+        }
         savedRef.current = true;
         setSaveError('');
         (async () => {
@@ -671,7 +679,7 @@ export default function QuizTest({ setPage }) {
                         <p style={{ margin: 0, color: PALETTE.accent, fontSize: 14 }}>{saveError}</p>
                     )}
                 </ProfielBanner>
-                <Results resultData={scherpResult} setPage={setPage} />
+                <Results resultData={scherpResult} setPage={setPage} noteEntry={bewaardProfiel} />
             </div>
         );
     }

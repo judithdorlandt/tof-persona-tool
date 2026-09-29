@@ -7,6 +7,7 @@ import {
     SecondaryButton,
     SectionEyebrow,
 } from '../ui/AppShell';
+import ProfileNotes from '../native/ProfileNotes';
 import ResultsDownloadCard from './ResultsDownloadCard';
 import ResultsProfileCard from './ResultsProfileCard';
 
@@ -53,7 +54,10 @@ function getFirstName(fullName) {
     return cleaned.split(/\s+/)[0];
 }
 
-export default function Results({ resultData, setPage }) {
+// `noteEntry` is het bewaarde profiel uit de lokale opslag van de app. Alleen
+// als dat meekomt is er iets om een aantekening aan te hangen; op het web en
+// tijdens de quiz (nog niets bewaard) blijft het blok weg.
+export default function Results({ resultData, setPage, noteEntry = null }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
     const ARCHETYPES = useArchetypes();
     const { lang } = useLang();
@@ -338,6 +342,14 @@ export default function Results({ resultData, setPage }) {
                         setPage={setPage}
                         resultData={resultData}
                     />
+
+                    {noteEntry && (
+                        <ProfileNotes
+                            entryId={noteEntry.id}
+                            initialNote={noteEntry.note}
+                            isMobile={isMobile}
+                        />
+                    )}
 
                 </div> {/* einde maxWidth 920 wrapper */}
 

@@ -26,6 +26,8 @@ import Admin from './components/Admin.jsx';
 import StrategischKompas from './components/StrategischKompas.jsx';
 import StrategischKompasIntake from './components/StrategischKompasIntake.jsx';
 import StrategischKompasReview from './components/StrategischKompasReview.jsx';
+import History from './native/History.jsx';
+import { getCurrentEntry } from './native/localStore';
 
 // EXPERIMENTEEL — werkplekbehoefteprofiel, achter een feature-flag.
 import WerkplekProfiel from './experimental/WerkplekProfiel.jsx';
@@ -45,6 +47,17 @@ export default function App() {
   const { page } = resolvePath(location.pathname);
 
   const [resultData, setResultData] = useState(null);
+
+  // App-modus: het profiel staat op het toestel en blijft dus staan tussen
+  // sessies. Bij elke route-wissel opnieuw lezen, zodat een net afgeronde
+  // test en een keuze uit de historie meteen zichtbaar zijn.
+  const [nativeEntry, setNativeEntry] = useState(() =>
+    IS_NATIVE ? getCurrentEntry() : null
+  );
+  useEffect(() => {
+    if (IS_NATIVE) setNativeEntry(getCurrentEntry());
+  }, [location.pathname]);
+
   const [teamResponses, setTeamResponses] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
 
@@ -116,12 +129,22 @@ export default function App() {
         // setResultData is hier niet meer nodig.
         return <QuizTest setPage={navigate} />;
 
-      case 'results':
-        return resultData ? (
-          <Results resultData={resultData} setPage={navigate} />
-        ) : (
-          <Home setPage={navigate} />
+      case 'results': {
+        // Op het web komt het resultaat uit de sessie; in de app uit de
+        // lokale opslag — daar hoort ook het aantekeningenblok bij.
+        const shown = resultData || nativeEntry?.result;
+        if (!shown) return <Home setPage={navigate} />;
+        return (
+          <Results
+            resultData={shown}
+            setPage={navigate}
+            noteEntry={resultData ? null : nativeEntry}
+          />
         );
+      }
+
+      case 'historie':
+        return <History setPage={navigate} />;
 
       case 'team':
         return (
@@ -242,7 +265,7 @@ export default function App() {
         <Nav
           page={page}
           setPage={navigate}
-          hasResult={!!resultData}
+          hasResult={!!resultData || !!nativeEntry}
           currentUser={user}
           isManager={isManager}
           onLogout={handleLogout}

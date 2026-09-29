@@ -57,6 +57,9 @@ export default function Nav({
     const resultItems = (hasResult && (IS_NATIVE || !isManager))
         ? [
             { key: 'results', label: t.results },
+            // De historie bestaat alleen in de app: daar staan je eerdere
+            // profielen op het toestel bewaard.
+            ...(IS_NATIVE ? [{ key: 'historie', label: t.history }] : []),
             { key: 'library', label: t.library },
         ]
         : [];
