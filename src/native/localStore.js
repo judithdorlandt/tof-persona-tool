@@ -2,10 +2,14 @@
  * localStore.js — alles wat de app onthoudt, blijft op het toestel.
  *
  * In app-modus gaat er niets naar een server (besluit "alles lokaal"). Deze
- * laag bewaart de afgeronde profielen, de persoonlijke notitie per profiel en
+ * laag bewaart de afgeronde profielen, de gespreksvoorbereiding per profiel en
  * welk profiel je nu bekijkt. Eén sleutel in localStorage, één datamodel:
  *
- *   { version, currentId, entries: [{ id, savedAt, result, note }] }
+ *   { version, currentId, entries: [{ id, savedAt, result, notes, pinned }] }
+ *
+ * `notes` = de drie open vragen { recognize, drains, ask }.
+ * `pinned` = de inzichten die je aan je gesprek hebt vastgeprikt, als
+ * `{ kind, key }`-paren (bijv. `{ kind: 'workplace', key: 'focus' }`).
  *
  * `entries` staat nieuwste-eerst. localStorage is in een Capacitor-webview
  * gewoon persistent; mocht er later een native opslag nodig zijn, dan is dit
@@ -13,10 +17,28 @@
  */
 
 const KEY = 'tof_native_profiles';
-const VERSION = 1;
+const VERSION = 2;
 const MAX_ENTRIES = 50;
 
 const EMPTY = { version: VERSION, currentId: null, entries: [] };
+
+export const EMPTY_NOTES = { recognize: '', drains: '', ask: '' };
+
+/**
+ * Brengt één bewaard profiel naar het huidige model.
+ *
+ * v1 had één vrij tekstveld (`note`). Dat was in de praktijk het antwoord op
+ * "wat herken ik hierin?", dus daar landt het — niets van wat iemand heeft
+ * opgeschreven gaat verloren.
+ */
+function migrateEntry(entry) {
+    const { note, ...rest } = entry || {};
+    return {
+        ...rest,
+        notes: { ...EMPTY_NOTES, ...(entry?.notes || {}), ...(note ? { recognize: note } : {}) },
+        pinned: Array.isArray(entry?.pinned) ? entry.pinned : [],
+    };
+}
 
 function read() {
     try {
@@ -24,7 +46,11 @@ function read() {
         if (!raw) return { ...EMPTY };
         const parsed = JSON.parse(raw);
         if (!parsed || !Array.isArray(parsed.entries)) return { ...EMPTY };
-        return { version: VERSION, currentId: parsed.currentId || null, entries: parsed.entries };
+        return {
+            version: VERSION,
+            currentId: parsed.currentId || null,
+            entries: parsed.entries.map(migrateEntry),
+        };
     } catch (_e) {
         // Kapotte of geblokkeerde opslag mag de app nooit laten crashen.
         return { ...EMPTY };
@@ -51,7 +77,8 @@ export function saveProfile(result) {
         id: makeId(),
         savedAt: new Date().toISOString(),
         result,
-        note: '',
+        notes: { ...EMPTY_NOTES },
+        pinned: [],
     };
     const entries = [entry, ...state.entries].slice(0, MAX_ENTRIES);
     write({ version: VERSION, currentId: entry.id, entries });
@@ -78,11 +105,35 @@ export function selectEntry(id) {
     return state.entries.find((e) => e.id === id);
 }
 
-/** Persoonlijke notitie bij een profiel — verlaat het toestel nooit. */
-export function saveNote(id, note) {
+/**
+ * Antwoord op één van de drie gespreksvragen — verlaat het toestel nooit.
+ * `field` is 'recognize', 'drains' of 'ask'.
+ */
+export function saveNote(id, field, value) {
     const state = read();
-    const entries = state.entries.map((e) => (e.id === id ? { ...e, note } : e));
+    const entries = state.entries.map((e) =>
+        e.id === id ? { ...e, notes: { ...e.notes, [field]: value } } : e
+    );
     return write({ ...state, entries });
+}
+
+/**
+ * Prikt een inzicht aan je gesprek vast, of haalt het er weer af.
+ * Geeft de nieuwe lijst terug, zodat de UI meteen kan bijwerken.
+ */
+export function togglePin(id, pin) {
+    const state = read();
+    let updated = [];
+    const entries = state.entries.map((e) => {
+        if (e.id !== id) return e;
+        const exists = e.pinned.some((p) => p.kind === pin.kind && p.key === pin.key);
+        updated = exists
+            ? e.pinned.filter((p) => !(p.kind === pin.kind && p.key === pin.key))
+            : [...e.pinned, pin];
+        return { ...e, pinned: updated };
+    });
+    write({ ...state, entries });
+    return updated;
 }
 
 /** Verwijdert één profiel uit de historie. */

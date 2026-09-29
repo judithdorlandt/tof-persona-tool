@@ -4,9 +4,40 @@ const native = {
     eyebrow: 'Alleen voor jou',
     title: 'Jouw aantekeningen',
     intro:
-      'Wat herken je, en wat wil je onthouden? Deze notitie blijft op je toestel en wordt nergens naartoe gestuurd.',
-    placeholder: 'Wat wil je hier over jezelf vasthouden?',
+      'Drie vragen om je gesprek mee voor te bereiden. Wat je opschrijft blijft op je toestel en wordt nergens naartoe gestuurd.',
     saved: 'Opgeslagen op dit toestel',
+    // De drie open vragen. De sleutels komen overeen met het datamodel in
+    // src/native/localStore.js.
+    fields: {
+      recognize: {
+        label: 'Wat herken ik hierin?',
+        placeholder: 'Wat klopt er voor jou, en wat niet?',
+      },
+      drains: {
+        label: 'Wat kost mij nu energie in mijn werk of werkomgeving?',
+        placeholder: 'Waar loop je tegenaan?',
+      },
+      ask: {
+        label: 'Wat wil ik bespreken of vragen?',
+        placeholder: 'Waar wil je het over hebben?',
+      },
+    },
+  },
+  pin: {
+    add: 'Zet bij mijn gesprek',
+    remove: 'Haal van mijn gesprek',
+  },
+  prep: {
+    eyebrow: 'Voor je gesprek',
+    title: 'Jouw gespreksvoorbereiding',
+    intro:
+      'Alles wat je hebt vastgeprikt en opgeschreven, op één scherm. Blijft op je toestel.',
+    pinnedTitle: 'Wat je hebt vastgeprikt',
+    pinnedEmpty:
+      'Je hebt nog niets vastgeprikt. Tik op de plus bij een inzicht in je profiel.',
+    notesTitle: 'Jouw antwoorden',
+    notesEmpty: 'Je hebt de drie vragen nog niet beantwoord.',
+    backToProfile: 'Terug naar je profiel',
   },
   history: {
     eyebrow: 'Op dit toestel',

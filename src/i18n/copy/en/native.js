@@ -4,9 +4,40 @@ const native = {
     eyebrow: 'For your eyes only',
     title: 'Your notes',
     intro:
-      'What rings true, and what do you want to remember? This note stays on your device and is never sent anywhere.',
-    placeholder: 'What do you want to hold on to about yourself?',
+      'Three questions to prepare your conversation. What you write down stays on your device and is never sent anywhere.',
     saved: 'Saved on this device',
+    // The three open questions. The keys match the data model in
+    // src/native/localStore.js.
+    fields: {
+      recognize: {
+        label: 'What do I recognise in this?',
+        placeholder: 'What rings true for you, and what does not?',
+      },
+      drains: {
+        label: 'What is costing me energy in my work or workplace right now?',
+        placeholder: 'What are you running into?',
+      },
+      ask: {
+        label: 'What do I want to discuss or ask?',
+        placeholder: 'What do you want to talk about?',
+      },
+    },
+  },
+  pin: {
+    add: 'Add to my conversation',
+    remove: 'Remove from my conversation',
+  },
+  prep: {
+    eyebrow: 'For your conversation',
+    title: 'Your conversation prep',
+    intro:
+      'Everything you pinned and wrote down, on one screen. Stays on your device.',
+    pinnedTitle: 'What you pinned',
+    pinnedEmpty:
+      'You have not pinned anything yet. Tap the plus next to an insight in your profile.',
+    notesTitle: 'Your answers',
+    notesEmpty: 'You have not answered the three questions yet.',
+    backToProfile: 'Back to your profile',
   },
   history: {
     eyebrow: 'On this device',

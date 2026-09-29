@@ -278,7 +278,7 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
                     {noteEntry && (
                         <ProfileNotes
                             entryId={noteEntry.id}
-                            initialNote={noteEntry.note}
+                            initialNotes={noteEntry.notes}
                             isMobile={isMobile}
                         />
                     )}

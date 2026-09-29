@@ -127,6 +127,11 @@ export default function History({ setPage }) {
                         {entries.map((entry) => {
                             const kleur = COLOR_MAP[entry.result?.primary] || 'var(--tof-text)';
                             const isCurrent = entry.id === currentId;
+                            // Eén van de drie gespreksvragen beantwoord is al
+                            // genoeg voor het "met aantekening"-label.
+                            const heeftNotitie = Object.values(entry.notes || {}).some(
+                                (v) => v && v.trim()
+                            );
 
                             return (
                                 <div
@@ -167,12 +172,12 @@ export default function History({ setPage }) {
                                         </span>
                                     </div>
 
-                                    {(entry.note || isCurrent) && (
+                                    {(heeftNotitie || isCurrent) && (
                                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                             {isCurrent && (
                                                 <Badge>{copy.history.current}</Badge>
                                             )}
-                                            {entry.note ? <Badge>{copy.history.hasNote}</Badge> : null}
+                                            {heeftNotitie ? <Badge>{copy.history.hasNote}</Badge> : null}
                                         </div>
                                     )}
 
