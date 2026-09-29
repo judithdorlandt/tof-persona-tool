@@ -86,7 +86,6 @@ function Card({ children, isMobile }) {
                 background: 'white',
                 borderRadius: 20,
                 padding: isMobile ? '18px 16px' : '26px 30px 22px',
-                borderTop: `4px solid ${PALETTE.ink}`,
                 border: `1px solid ${PALETTE.line}`,
                 boxShadow: '0 12px 32px rgba(31,27,24,0.08)',
                 display: 'grid',
@@ -261,8 +260,13 @@ function ProfielBanner({ eyebrow, text, isMobile, children }) {
                     style={{
                         background: 'white',
                         borderRadius: 20,
-                        border: `1px solid ${PALETTE.line}`,
+                        // Losse zijden i.p.v. de `border`-shorthand: React
+                        // waarschuwt als shorthand en longhand in dezelfde
+                        // render allebei worden bijgewerkt.
                         borderTop: `4px solid ${PALETTE.accent}`,
+                        borderRight: `1px solid ${PALETTE.line}`,
+                        borderBottom: `1px solid ${PALETTE.line}`,
+                        borderLeft: `1px solid ${PALETTE.line}`,
                         boxShadow: '0 12px 32px rgba(31,27,24,0.08)',
                         padding: isMobile ? '18px 16px' : '22px 26px',
                         display: 'grid',
