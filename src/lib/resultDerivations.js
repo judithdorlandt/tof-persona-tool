@@ -1,0 +1,141 @@
+/**
+ * resultDerivations.js — alle afleidingen van een testuitslag, op één plek.
+ *
+ * Pure functies zonder React en zonder tekst: labels en kopjes komen als
+ * argument mee uit de i18n-laag. Zo rekenen het webresultaat, de PDF-kaart en
+ * het app-profielscherm gegarandeerd hetzelfde.
+ *
+ * De scoringslogica zelf (data.js/helpers.js) blijft ongemoeid; dit is
+ * uitsluitend presentatie-afleiding.
+ */
+
+/** Persona-kleuren uit de huisstijl. */
+export const PERSONA_COLORS = {
+    maker: '#B05252',
+    groeier: '#C28D6B',
+    presteerder: '#C7A24A',
+    denker: '#6F7F92',
+    verbinder: '#7F9A8A',
+    teamspeler: '#8B7F9A',
+    zekerzoeker: '#7D8A6B',
+    vernieuwer: '#D08C5B',
+};
+
+export const DEFAULT_PERSONA_COLOR = PERSONA_COLORS.maker;
+
+/** Gewichten voor de werkplekmix: primair telt vol, daarna steeds minder. */
+const MIX_WEIGHTS = [1, 0.7, 0.45];
+
+/** De negen werkplektypen uit het bricks-profiel. */
+const BRICKS_KEYS = [
+    'focus',
+    'work',
+    'hybride',
+    'meeting',
+    'project',
+    'team',
+    'learning',
+    'retreat',
+    'social',
+];
+
+/**
+ * De verdeling over de acht persona's, hoog naar laag.
+ *
+ * Het percentage is een **aandeel van het totaal**: elke score gedeeld door de
+ * som van alle scores. Daardoor tellen de acht balken samen op tot 100%, zoals
+ * je van een verdeling verwacht. (Eerder werd er door de hoogste score
+ * gedeeld; dan stond de winnaar altijd op 100% en telde het geheel nergens
+ * op — verwarrend, en onvergelijkbaar tussen twee testen.)
+ *
+ * Afronden per balk kan 99 of 101 opleveren; het grootste restje krijgt het
+ * verschil, zodat de som altijd exact 100 is.
+ */
+export function buildScoreDistribution(scores, archetypes = []) {
+    const entries = Object.entries(scores || {})
+        .map(([id, value]) => [id, Number(value) || 0])
+        .sort((a, b) => b[1] - a[1]);
+
+    const total = entries.reduce((sum, [, value]) => sum + value, 0);
+
+    const withShare = entries.map(([id, value]) => {
+        const archetype = archetypes.find((a) => a.id === id);
+        const exact = total > 0 ? (value / total) * 100 : 0;
+        return {
+            id,
+            name: archetype?.name || id,
+            value,
+            exact,
+            percentage: Math.floor(exact),
+            color: PERSONA_COLORS[id] || DEFAULT_PERSONA_COLOR,
+            opacity: 1,
+        };
+    });
+
+    // Restzetels verdelen: de grootste afrondingsresten krijgen elk 1 punt,
+    // tot de som 100 is.
+    const assigned = withShare.reduce((sum, item) => sum + item.percentage, 0);
+    const remainder = total > 0 ? 100 - assigned : 0;
+    withShare
+        .map((item, index) => ({ index, rest: item.exact - item.percentage }))
+        .sort((a, b) => b.rest - a.rest)
+        .slice(0, Math.max(remainder, 0))
+        .forEach(({ index }) => {
+            withShare[index].percentage += 1;
+        });
+
+    // `barWidth` is puur de tekening: de hoogste balk vult de breedte, de rest
+    // staat daar in verhouding toe. Een aandeel van het totaal blijft bij acht
+    // persona's rond de 20% steken; als balkbreedte leest dat als "bijna niks",
+    // terwijl het label de échte verhouding vertelt.
+    const topShare = withShare[0]?.exact || 0;
+    return withShare.map(({ exact, ...item }) => ({
+        ...item,
+        barWidth: topShare > 0 ? Math.max(Math.round((exact / topShare) * 100), 6) : 0,
+    }));
+}
+
+/** De drie sterkste werkplekbehoeften van de primaire persona. */
+export function buildBricksItems(primary, workplaceLabels = {}) {
+    if (!primary?.bricksProfile) return [];
+
+    return Object.entries(primary.bricksProfile)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([key, value]) => ({
+            key,
+            score: value,
+            label: workplaceLabels[key] || key,
+            text: primary?.bricksProfileText?.[key] || '',
+        }));
+}
+
+/** De werkplekbehoefte van de hele mix: primair, secundair en tertiair samen. */
+export function buildWorkplaceNeedsForMix(personas, workplaceLabels = {}) {
+    const present = (personas || []).filter(Boolean);
+
+    const totals = Object.fromEntries(BRICKS_KEYS.map((key) => [key, 0]));
+
+    present.forEach((persona, index) => {
+        const weight = MIX_WEIGHTS[index] ?? 0;
+        const profile = persona?.bricksProfile || {};
+        BRICKS_KEYS.forEach((key) => {
+            totals[key] += Number(profile[key] || 0) * weight;
+        });
+    });
+
+    return Object.entries(totals)
+        .sort((a, b) => b[1] - a[1])
+        .filter(([, value]) => value > 0)
+        .map(([key, value]) => ({
+            key,
+            score: Number(value.toFixed(1)),
+            label: workplaceLabels[key] || key,
+            text: present.map((p) => p?.bricksProfileText?.[key]).find(Boolean) || '',
+        }));
+}
+
+/** De drie leiderschapspunten die bij de primaire persona horen. */
+export function buildLeadershipItems(primary) {
+    return (primary?.leadership || []).slice(0, 3);
+}

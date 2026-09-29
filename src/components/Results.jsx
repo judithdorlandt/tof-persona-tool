@@ -7,20 +7,17 @@ import {
     SecondaryButton,
     SectionEyebrow,
 } from '../ui/AppShell';
+import {
+    PERSONA_COLORS as COLOR_MAP,
+    DEFAULT_PERSONA_COLOR,
+    buildBricksItems,
+    buildLeadershipItems,
+    buildScoreDistribution,
+    buildWorkplaceNeedsForMix,
+} from '../lib/resultDerivations';
 import ProfileNotes from '../native/ProfileNotes';
 import ResultsDownloadCard from './ResultsDownloadCard';
 import ResultsProfileCard from './ResultsProfileCard';
-
-const COLOR_MAP = {
-    maker: '#B05252',
-    groeier: '#C28D6B',
-    presteerder: '#C7A24A',
-    denker: '#6F7F92',
-    verbinder: '#7F9A8A',
-    teamspeler: '#8B7F9A',
-    zekerzoeker: '#7D8A6B',
-    vernieuwer: '#D08C5B',
-};
 
 const leadText = {
     margin: 0,
@@ -76,48 +73,18 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
     const secondary = getArchetype(resultData?.secondary);
     const tertiary = getArchetype(resultData?.tertiary);
 
-    const primaryColor = COLOR_MAP[primary?.id] || '#B05252';
+    const primaryColor = COLOR_MAP[primary?.id] || DEFAULT_PERSONA_COLOR;
     const workplaceLabels = copy.profile.workplaceLabels;
 
-    const scoreEntries = useMemo(() => {
-        return Object.entries(resultData?.scores || {}).sort((a, b) => b[1] - a[1]);
-    }, [resultData]);
+    const topScoreEntries = useMemo(
+        () => buildScoreDistribution(resultData?.scores, ARCHETYPES),
+        [resultData, ARCHETYPES]
+    );
 
-    const topScoreEntries = useMemo(() => {
-        const maxScore = Math.max(
-            ...Object.values(resultData?.scores || {}).map(Number),
-            1
-        );
-
-        return scoreEntries.map(([id, value]) => {
-            const archetype = getArchetype(id);
-            const normalizedPercentage = Math.round((Number(value) / maxScore) * 100);
-
-            return {
-                id,
-                name: archetype?.name || id,
-                value: Number(value),
-                percentage: normalizedPercentage,
-                color: COLOR_MAP[id] || primaryColor,
-                opacity: 1,
-            };
-        });
-        // `getArchetype` is een render-lokale helper over ARCHETYPES; die staat al in deps.
-    }, [scoreEntries, resultData, primaryColor, ARCHETYPES]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const bricksItems = useMemo(() => {
-        if (!primary?.bricksProfile) return [];
-
-        return Object.entries(primary.bricksProfile)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3)
-            .map(([key, value]) => ({
-                key,
-                score: value,
-                label: workplaceLabels[key] || key,
-                text: primary?.bricksProfileText?.[key] || '',
-            }));
-    }, [primary, workplaceLabels]);
+    const bricksItems = useMemo(
+        () => buildBricksItems(primary, workplaceLabels),
+        [primary, workplaceLabels]
+    );
 
     const bytesBehaviorBlocks = useMemo(() => {
         const blocks = copy.profile.bytesBlocks;
@@ -138,9 +105,7 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
         ].filter((item) => item.text);
     }, [primary, copy]);
 
-    const leadershipItems = useMemo(() => {
-        return (primary?.leadership || []).slice(0, 3);
-    }, [primary]);
+    const leadershipItems = useMemo(() => buildLeadershipItems(primary), [primary]);
 
     const leadershipSentence = useMemo(() => {
         if (!leadershipItems.length) return '';
@@ -148,44 +113,10 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
         return leadershipItems.join(' ');
     }, [leadershipItems]);
 
-    const workplaceNeedsForMix = useMemo(() => {
-        const personas = [primary, secondary, tertiary].filter(Boolean);
-
-        const totals = {
-            focus: 0,
-            work: 0,
-            hybride: 0,
-            meeting: 0,
-            project: 0,
-            team: 0,
-            learning: 0,
-            retreat: 0,
-            social: 0,
-        };
-
-        personas.forEach((persona, index) => {
-            const weight = index === 0 ? 1 : index === 1 ? 0.7 : 0.45;
-            const profile = persona?.bricksProfile || {};
-
-            Object.keys(totals).forEach((key) => {
-                totals[key] += Number(profile[key] || 0) * weight;
-            });
-        });
-
-        return Object.entries(totals)
-            .sort((a, b) => b[1] - a[1])
-            .filter(([, value]) => value > 0)
-            .map(([key, value]) => ({
-                key,
-                score: Number(value.toFixed(1)),
-                label: workplaceLabels[key] || key,
-                text:
-                    primary?.bricksProfileText?.[key] ||
-                    secondary?.bricksProfileText?.[key] ||
-                    tertiary?.bricksProfileText?.[key] ||
-                    '',
-            }));
-    }, [primary, secondary, tertiary, workplaceLabels]);
+    const workplaceNeedsForMix = useMemo(
+        () => buildWorkplaceNeedsForMix([primary, secondary, tertiary], workplaceLabels),
+        [primary, secondary, tertiary, workplaceLabels]
+    );
 
     const pdfData = useMemo(() => {
         const firstName = getFirstName(resultData?.name) || copy.download.nameFallback;
@@ -200,6 +131,7 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
                 verdeling: topScoreEntries.map((item) => ({
                     name: item.name,
                     pct: item.percentage,
+                    bar: item.barWidth,
                     color: item.color,
                     opacity: item.opacity ?? 1,
                 })),

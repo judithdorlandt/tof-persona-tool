@@ -326,7 +326,7 @@ export default function ResultsProfileCard({
                                                 >
                                                     <div
                                                         style={{
-                                                            width: `${Math.max(item.percentage, 6)}%`,
+                                                            width: `${item.barWidth}%`,
                                                             height: '100%',
                                                             background: item.color,
                                                             opacity: item.opacity,
