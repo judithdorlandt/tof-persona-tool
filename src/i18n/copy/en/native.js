@@ -1,5 +1,40 @@
-// Copy that only exists in the app: notes and history.
+// Copy that only exists in the app: start screen, notes and history.
 const native = {
+  start: {
+    eyebrow: 'On this device',
+    // With and without a saved profile the app opens on a different story.
+    title: 'Welcome back.',
+    intro:
+      'This is the profile you are looking at. It lives on your device and goes nowhere else.',
+    emptyTitle: 'Find out how you work.',
+    emptyIntro:
+      'Nine questions, a few minutes. After that you will know which workplace brings out your best — and it stays right here, for your eyes only.',
+    profileEyebrow: 'Your profile',
+    openProfile: 'View your profile',
+    startTest: 'Take the test',
+    // The three next steps below the profile card.
+    actions: {
+      history: {
+        title: 'History',
+        text: 'What shifts for you over time.',
+      },
+      library: {
+        title: 'All personas',
+        text: 'The eight profiles side by side.',
+      },
+      again: {
+        title: 'Test again',
+        text: 'New job, new situation? Take the test again.',
+      },
+    },
+    // Completion date without the time: on the start screen the year is enough.
+    formatDate: (iso) =>
+      new Date(iso).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+  },
   notes: {
     eyebrow: 'For your eyes only',
     title: 'Your notes',

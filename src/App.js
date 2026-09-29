@@ -26,6 +26,7 @@ import Admin from './components/Admin.jsx';
 import StrategischKompas from './components/StrategischKompas.jsx';
 import StrategischKompasIntake from './components/StrategischKompasIntake.jsx';
 import StrategischKompasReview from './components/StrategischKompasReview.jsx';
+import AppStart from './native/AppStart.jsx';
 import History from './native/History.jsx';
 import ConversationPrep from './native/ConversationPrep.jsx';
 import { getCurrentEntry } from './native/localStore';
@@ -106,17 +107,23 @@ export default function App() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [location.pathname]);
 
+  // Waar je op opent verschilt per platform: het web begint bij de uitleg,
+  // de app bij je eigen profiel.
+  const startScherm = IS_NATIVE
+    ? <AppStart setPage={navigate} />
+    : <Home setPage={navigate} />;
+
   const renderPage = () => {
     // App-modus: alleen stap 1. De cases hieronder blijven staan voor het
     // web; in de app zijn ze onbereikbaar en val je terug op de start.
-    if (!isPageAllowed(page)) return <Home setPage={navigate} />;
+    if (!isPageAllowed(page)) return startScherm;
 
     switch (page) {
       case 'landing':
         return <Landing setPage={navigate} />;
 
       case 'home':
-        return <Home setPage={navigate} />;
+        return startScherm;
 
       case 'intro':
         return <Intro setPage={navigate} />;
@@ -134,7 +141,7 @@ export default function App() {
         // Op het web komt het resultaat uit de sessie; in de app uit de
         // lokale opslag — daar hoort ook het aantekeningenblok bij.
         const shown = resultData || nativeEntry?.result;
-        if (!shown) return <Home setPage={navigate} />;
+        if (!shown) return startScherm;
         return (
           <Results
             resultData={shown}

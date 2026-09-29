@@ -1,5 +1,40 @@
-// Teksten die alleen in de app bestaan: notities en historie.
+// Teksten die alleen in de app bestaan: startscherm, notities en historie.
 const native = {
+  start: {
+    eyebrow: 'Op dit toestel',
+    // Met en zonder bewaard profiel opent de app op een ander verhaal.
+    title: 'Welkom terug.',
+    intro:
+      'Dit is het profiel dat je nu bekijkt. Het staat op je toestel en gaat nergens anders heen.',
+    emptyTitle: 'Ontdek hoe jij werkt.',
+    emptyIntro:
+      'Negen vragen, een paar minuten. Daarna weet je in welke werkomgeving jij tot je recht komt — en blijft dat hier staan, alleen voor jou.',
+    profileEyebrow: 'Jouw profiel',
+    openProfile: 'Bekijk je profiel',
+    startTest: 'Doe de test',
+    // De drie vervolgstappen onder de profielkaart.
+    actions: {
+      history: {
+        title: 'Historie',
+        text: 'Wat er in de loop van de tijd verschuift.',
+      },
+      library: {
+        title: "Alle persona's",
+        text: 'De acht profielen naast elkaar.',
+      },
+      again: {
+        title: 'Opnieuw testen',
+        text: 'Ander werk, andere situatie? Doe de test nog eens.',
+      },
+    },
+    // Datum van afronden, zonder tijd: op het startscherm is het jaartal genoeg.
+    formatDate: (iso) =>
+      new Date(iso).toLocaleDateString('nl-NL', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+  },
   notes: {
     eyebrow: 'Alleen voor jou',
     title: 'Jouw aantekeningen',
