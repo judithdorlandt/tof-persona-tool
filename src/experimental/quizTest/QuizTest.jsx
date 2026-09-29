@@ -3,6 +3,7 @@ import { ARCHETYPE_ORDER } from '../../data';
 import { useArchetypes } from '../../i18n/archetypes';
 import { useCopy, useLang } from '../../i18n/LanguageContext';
 import { saveResponse } from '../../supabase';
+import { IS_NATIVE } from '../../config/platform';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
 import Results from '../../components/Results.jsx';
 import { getQuizData } from './quizTestData';
@@ -387,7 +388,10 @@ export default function QuizTest({ setPage }) {
 
     // Opslaan zodra het verscherpte profiel in beeld komt — één keer.
     // Beide paden ('Nee, ik ben klaar' en de afgeronde verdieping) landen hier.
+    // In app-modus slaan we niets op een server op: het profiel blijft op het
+    // toestel (fase 3 zorgt voor de lokale opslag).
     useEffect(() => {
+        if (IS_NATIVE) return;
         if (phase !== 'profielScherp' || savedRef.current || !scherpResult) return;
         savedRef.current = true;
         setSaveError('');

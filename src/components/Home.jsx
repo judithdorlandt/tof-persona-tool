@@ -8,6 +8,7 @@ import {
   SecondaryButton,
 } from '../ui/AppShell';
 import { useCopy } from '../i18n/LanguageContext';
+import { IS_NATIVE } from '../config/platform';
 
 export default function Home({ setPage }) {
   const { home: t } = useCopy();
@@ -28,7 +29,10 @@ export default function Home({ setPage }) {
   //   1. AuthCallback heeft (om welke reden dan ook) niet correct
   //      gerouteerd na login.
   //   2. Een manager klikt later in de nav op "Home" — ook dan terug.
+  // In app-modus bestaat de teamomgeving niet en is er geen sessie — dus
+  // ook geen managercheck (en geen netwerkcall).
   useEffect(() => {
+    if (IS_NATIVE) return undefined;
     let cancelled = false;
     (async () => {
       try {
@@ -175,16 +179,20 @@ export default function Home({ setPage }) {
               {t.ctaStartTest}
             </PrimaryButton>
 
-            <PrimaryButton
-              onClick={() => setPage('team')}
-              style={{ background: 'var(--tof-accent-sage)' }}
-            >
-              {t.ctaForTeams}
-            </PrimaryButton>
+            {!IS_NATIVE && (
+              <>
+                <PrimaryButton
+                  onClick={() => setPage('team')}
+                  style={{ background: 'var(--tof-accent-sage)' }}
+                >
+                  {t.ctaForTeams}
+                </PrimaryButton>
 
-            <SecondaryButton onClick={openTeamLock}>
-              {t.ctaTeamEnvironment}
-            </SecondaryButton>
+                <SecondaryButton onClick={openTeamLock}>
+                  {t.ctaTeamEnvironment}
+                </SecondaryButton>
+              </>
+            )}
           </div>
 
           <div
@@ -209,7 +217,8 @@ export default function Home({ setPage }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, minmax(0, 1fr))',
+            gridTemplateColumns:
+              isMobile || IS_NATIVE ? '1fr' : 'repeat(2, minmax(0, 1fr))',
             gap: isMobile ? 14 : 24,
             alignItems: 'stretch',
           }}
@@ -223,7 +232,9 @@ export default function Home({ setPage }) {
             clickable
           />
 
-          <GreenTeamCard copy={t.teamCard} onClick={() => setPage('team')} />
+          {!IS_NATIVE && (
+            <GreenTeamCard copy={t.teamCard} onClick={() => setPage('team')} />
+          )}
         </div>
 
         <div
@@ -304,31 +315,35 @@ export default function Home({ setPage }) {
             {t.footer.body}
           </p>
 
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() =>
-                window.open('https://www.tof.services', '_blank', 'noopener,noreferrer')
-              }
-              style={footerLinkRose}
-            >
-              {t.footer.website}
-            </button>
+          {/* Links naar buiten horen niet in de app — die stuurt je de
+              browser uit en vormt een afkeuringsgrond in de stores. */}
+          {!IS_NATIVE && (
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  window.open('https://www.tof.services', '_blank', 'noopener,noreferrer')
+                }
+                style={footerLinkRose}
+              >
+                {t.footer.website}
+              </button>
 
-            <button
-              type="button"
-              onClick={() =>
-                window.open(
-                  'https://www.tof.services/contact',
-                  '_blank',
-                  'noopener,noreferrer'
-                )
-              }
-              style={footerLinkDark}
-            >
-              {t.footer.contact}
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() =>
+                  window.open(
+                    'https://www.tof.services/contact',
+                    '_blank',
+                    'noopener,noreferrer'
+                  )
+                }
+                style={footerLinkDark}
+              >
+                {t.footer.contact}
+              </button>
+            </div>
+          )}
 
           <p
             style={{

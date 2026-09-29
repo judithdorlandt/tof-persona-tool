@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
 
 import { useAuth } from './auth/AuthContext';
+import { IS_NATIVE, isPageAllowed } from './config/platform';
 import { useLang } from './i18n/LanguageContext';
 import { pagePath, resolvePath } from './i18n/routes';
 import { signOut, getMyManagedTeams } from './supabase';
@@ -92,6 +93,10 @@ export default function App() {
   }, [location.pathname]);
 
   const renderPage = () => {
+    // App-modus: alleen stap 1. De cases hieronder blijven staan voor het
+    // web; in de app zijn ze onbereikbaar en val je terug op de start.
+    if (!isPageAllowed(page)) return <Home setPage={navigate} />;
+
     switch (page) {
       case 'landing':
         return <Landing setPage={navigate} />;
@@ -228,7 +233,8 @@ export default function App() {
   };
 
   // Pagina's waar de Nav NIET getoond moet worden — landing en auth-flow.
-  const hideNav = page === 'landing' || page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm';
+  // In app-modus bestaan die pagina's niet, dus staat de nav er altijd.
+  const hideNav = !IS_NATIVE && (page === 'landing' || page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm');
 
   return (
     <>

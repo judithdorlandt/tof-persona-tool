@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import styles from './Nav.module.css';
 import { isAdminEmail } from '../supabase';
+import { IS_NATIVE } from '../config/platform';
 import { useCopy, useLang } from '../i18n/LanguageContext';
 
 export default function Nav({
@@ -35,17 +36,25 @@ export default function Nav({
     // Manager-mode: een ingelogde team-manager heeft geen behoefte aan de
     // marketing-flow (Home/Intro/Quiz). We tonen alleen "Mijn team(s)" en
     // — als hij óók admin is — "Admin". Niet-managers zien de volledige nav.
-    const baseItems = isManager
+    // App-modus kent alleen stap 1: start, de vragenlijst, je profiel en de
+    // bibliotheek. Geen teamomgeving, geen manager- of adminlinks.
+    const baseItems = IS_NATIVE
         ? [
-            { key: 'team', label: t.myTeam },
-        ]
-        : [
             { key: 'home', label: t.home },
             { key: 'intro', label: t.intro },
             { key: 'quiz', label: t.quiz },
-            { key: 'team', label: t.teamEnvironment },
-        ];
-    const resultItems = (hasResult && !isManager)
+        ]
+        : isManager
+            ? [
+                { key: 'team', label: t.myTeam },
+            ]
+            : [
+                { key: 'home', label: t.home },
+                { key: 'intro', label: t.intro },
+                { key: 'quiz', label: t.quiz },
+                { key: 'team', label: t.teamEnvironment },
+            ];
+    const resultItems = (hasResult && (IS_NATIVE || !isManager))
         ? [
             { key: 'results', label: t.results },
             { key: 'library', label: t.library },
@@ -57,11 +66,14 @@ export default function Nav({
     const managerItems = [];
 
     // Admin-link — alleen zichtbaar voor TOF-admins (zie ADMIN_EMAILS in supabase.js).
-    const adminItems = (currentUser && isAdminEmail(currentUser.email))
+    const adminItems = (!IS_NATIVE && currentUser && isAdminEmail(currentUser.email))
         ? [{ key: 'admin', label: t.admin }]
         : [];
 
     const items = [...baseItems, ...resultItems, ...managerItems, ...adminItems];
+
+    // In app-modus is er niets om uit te loggen — inloggen bestaat daar niet.
+    const showLogout = !IS_NATIVE && !!currentUser;
 
     function handleNavigate(target) {
         setPage(target);
@@ -130,7 +142,7 @@ export default function Nav({
                                 );
                             })}
 
-                            {currentUser ? (
+                            {showLogout ? (
                                 <button
                                     type="button"
                                     onClick={handleLogoutClick}
@@ -171,7 +183,7 @@ export default function Nav({
                             );
                         })}
 
-                        {currentUser ? (
+                        {showLogout ? (
                             <button
                                 type="button"
                                 onClick={handleLogoutClick}
