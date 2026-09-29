@@ -7,6 +7,7 @@
 import React from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import { useCopy } from '../i18n/LanguageContext';
+import PinButton from './result/PinButton';
 
 // Lokale kopie — voorkomt circulaire import vanuit Results.jsx.
 // Wanneer dit op meer plekken nodig is → verplaatsen naar src/data.
@@ -91,6 +92,7 @@ export default function ResultsProfileCard({
     leadershipItems,
     bricksItems,
     resultData,
+    pinning = null,
 }) {
     const { resultsCard } = useCopy();
     const t = resultsCard.profile;
@@ -250,7 +252,14 @@ export default function ResultsProfileCard({
                                 gap: 10,
                             }}
                         >
-                            <div style={INFO_LABEL_STYLE}>{t.motionLabel}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                                <div style={INFO_LABEL_STYLE}>{t.motionLabel}</div>
+                                <PinButton
+                                    pin={{ kind: 'energy', key: 'from' }}
+                                    pinning={pinning}
+                                    color={primaryColor}
+                                />
+                            </div>
 
                             <div
                                 style={{
@@ -406,9 +415,23 @@ export default function ResultsProfileCard({
                                                 fontSize: 13,
                                             }}
                                         >
-                                            {leadershipItems.map((item) => (
+                                            {leadershipItems.map((item, index) => (
                                                 <li key={item} style={{ marginBottom: 6 }}>
-                                                    {item}
+                                                    <span
+                                                        style={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'flex-start',
+                                                            gap: 10,
+                                                        }}
+                                                    >
+                                                        {item}
+                                                        <PinButton
+                                                            pin={{ kind: 'leadership', key: String(index) }}
+                                                            pinning={pinning}
+                                                            color={primaryColor}
+                                                        />
+                                                    </span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -457,17 +480,25 @@ export default function ResultsProfileCard({
                                                         {item.label}
                                                     </div>
 
-                                                    <div
-                                                        style={{
-                                                            fontSize: 11,
-                                                            color: primaryColor,
-                                                            background: '#F4EDE6',
-                                                            borderRadius: 999,
-                                                            padding: '4px 8px',
-                                                            fontWeight: 600,
-                                                        }}
-                                                    >
-                                                        {t.scorePrefix} {item.score}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                        <div
+                                                            style={{
+                                                                fontSize: 11,
+                                                                color: primaryColor,
+                                                                background: '#F4EDE6',
+                                                                borderRadius: 999,
+                                                                padding: '4px 8px',
+                                                                fontWeight: 600,
+                                                            }}
+                                                        >
+                                                            {t.scorePrefix} {item.score}
+                                                        </div>
+
+                                                        <PinButton
+                                                            pin={{ kind: 'workplace', key: item.key }}
+                                                            pinning={pinning}
+                                                            color={primaryColor}
+                                                        />
                                                     </div>
                                                 </div>
 
@@ -559,10 +590,15 @@ export default function ResultsProfileCard({
                             >
                                 <div style={INFO_LABEL_STYLE}>{t.drainLabel}</div>
                                 <div style={{ display: 'grid', gap: 8 }}>
-                                    {primary.energycost.slice(0, 3).map((item) => (
+                                    {primary.energycost.slice(0, 3).map((item, index) => (
                                         <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                                             <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, flexShrink: 0, lineHeight: 1.6 }}>×</span>
-                                            <span style={{ fontSize: 14, color: '#4D433D', lineHeight: 1.62 }}>{item}</span>
+                                            <span style={{ fontSize: 14, color: '#4D433D', lineHeight: 1.62, flex: 1 }}>{item}</span>
+                                            <PinButton
+                                                pin={{ kind: 'drain', key: String(index) }}
+                                                pinning={pinning}
+                                                color={primaryColor}
+                                            />
                                         </div>
                                     ))}
                                 </div>

@@ -16,6 +16,7 @@ import {
     buildWorkplaceNeedsForMix,
 } from '../lib/resultDerivations';
 import ProfileNotes from '../native/ProfileNotes';
+import usePinned from '../native/usePinned';
 import ResultsDownloadCard from './ResultsDownloadCard';
 import ResultsProfileCard from './ResultsProfileCard';
 
@@ -59,6 +60,8 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
     const ARCHETYPES = useArchetypes();
     const { lang } = useLang();
     const { resultsCard: copy } = useCopy();
+    // Alleen in de app, en alleen bij een bewaard profiel: `null` op het web.
+    const pinning = usePinned(noteEntry);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 900);
@@ -262,6 +265,7 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
                         leadershipItems={leadershipItems}
                         bricksItems={bricksItems}
                         resultData={resultData}
+                        pinning={pinning}
                     />
 
 
