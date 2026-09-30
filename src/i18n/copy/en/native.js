@@ -61,9 +61,14 @@ const native = {
       },
     },
   },
+  // `add`/`remove` are read aloud; `chipAdd`/`chipDone` appear on screen and so
+  // have to be short. `hint` sits once above the list and says where it goes.
   pin: {
     add: 'Add to my conversation',
     remove: 'Remove from my conversation',
+    chipAdd: 'Add',
+    chipDone: 'Added',
+    hint: 'Tap an insight to take it into your conversation.',
   },
   prep: {
     // It is one specific conversation: the one with your manager.

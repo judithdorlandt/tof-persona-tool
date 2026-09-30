@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import PinButton from '../components/result/PinButton';
+import PinRow from '../components/result/PinRow';
 import ResultDistribution from '../components/result/ResultDistribution';
 import { riseIn } from '../components/result/motion';
 import { useCopy } from '../i18n/LanguageContext';
@@ -231,48 +231,49 @@ export default function ProfileScreen({
                 {/* 5a — BEWEGING: wat jou in beweging brengt, waar je op leegloopt */}
                 {chapter === 'motion' && (
                     <Sectie label={t.motionLabel} accent={primaryColor} isMobile={isMobile} style={riseIn(4)}>
-                        <div style={{ display: 'grid', gap: 8 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
-                                <span
-                                    style={{
-                                        fontFamily: "'Playfair Display', serif",
-                                        fontWeight: 500,
-                                        fontSize: 20,
-                                        lineHeight: 1.18,
-                                        color: primaryColor,
-                                    }}
-                                >
-                                    {t.motionTitle}
-                                </span>
+                        <PinHint pinning={pinning} copy={native} />
 
-                                <PinButton pin={{ kind: 'energy', key: 'from' }} pinning={pinning} color={primaryColor} />
-                            </div>
+                        <PinRow pin={{ kind: 'energy', key: 'from' }} pinning={pinning} color={primaryColor}>
+                            <span
+                                style={{
+                                    display: 'block',
+                                    marginBottom: 6,
+                                    fontFamily: "'Playfair Display', serif",
+                                    fontWeight: 500,
+                                    fontSize: 20,
+                                    lineHeight: 1.18,
+                                    color: primaryColor,
+                                }}
+                            >
+                                {t.motionTitle}
+                            </span>
 
-                            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: 'var(--tof-text-soft)' }}>
+                            <span style={{ display: 'block', fontSize: 14, lineHeight: 1.7, color: 'var(--tof-text-soft)' }}>
                                 {primary?.energy_from}
-                            </p>
-                        </div>
+                            </span>
+                        </PinRow>
 
                         {drains.length > 0 && (
                             <div style={{ display: 'grid', gap: 8 }}>
                                 <div style={LABEL}>{t.drainLabel}</div>
 
                                 {drains.map((item, index) => (
-                                    <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                                        <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, lineHeight: 1.6, flexShrink: 0 }}>
-                                            ×
-                                        </span>
+                                    <PinRow
+                                        key={item}
+                                        pin={{ kind: 'drain', key: String(index) }}
+                                        pinning={pinning}
+                                        color={primaryColor}
+                                    >
+                                        <span style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                            <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, lineHeight: 1.62, flexShrink: 0 }}>
+                                                ×
+                                            </span>
 
-                                        <span style={{ flex: 1, fontSize: 14, lineHeight: 1.62, color: 'var(--tof-text-soft)' }}>
-                                            {item}
+                                            <span style={{ fontSize: 14, lineHeight: 1.62, color: 'var(--tof-text-soft)' }}>
+                                                {item}
+                                            </span>
                                         </span>
-
-                                        <PinButton
-                                            pin={{ kind: 'drain', key: String(index) }}
-                                            pinning={pinning}
-                                            color={primaryColor}
-                                        />
-                                    </div>
+                                    </PinRow>
                                 ))}
                             </div>
                         )}
@@ -288,24 +289,18 @@ export default function ProfileScreen({
                         isMobile={isMobile}
                         style={riseIn(4)}
                     >
+                        <PinHint pinning={pinning} copy={native} />
+
                         {/* De sterkste drie: dit is je mix, met uitleg erbij. */}
                         <div style={{ display: 'grid', gap: 10 }}>
                             {bricksItems.slice(0, 3).map((item) => (
-                                <div
+                                <PinRow
                                     key={item.key}
-                                    style={{
-                                        background: 'var(--tof-bg)',
-                                        borderRadius: 12,
-                                        padding: '12px 14px',
-                                        borderTop: '1px solid var(--tof-border)',
-                                        borderRight: '1px solid var(--tof-border)',
-                                        borderBottom: '1px solid var(--tof-border)',
-                                        borderLeft: `4px solid ${primaryColor}`,
-                                        display: 'grid',
-                                        gap: 6,
-                                    }}
+                                    pin={{ kind: 'workplace', key: item.key }}
+                                    pinning={pinning}
+                                    color={primaryColor}
                                 >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
                                         <span
                                             style={{
                                                 fontFamily: "'Playfair Display', serif",
@@ -318,32 +313,24 @@ export default function ProfileScreen({
                                             {item.label}
                                         </span>
 
-                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                                            <span
-                                                style={{
-                                                    fontSize: 11,
-                                                    fontWeight: 600,
-                                                    color: primaryColor,
-                                                    background: `${primaryColor}14`,
-                                                    borderRadius: 999,
-                                                    padding: '4px 8px',
-                                                }}
-                                            >
-                                                {t.scorePrefix} {item.score}
-                                            </span>
-
-                                            <PinButton
-                                                pin={{ kind: 'workplace', key: item.key }}
-                                                pinning={pinning}
-                                                color={primaryColor}
-                                            />
+                                        <span
+                                            style={{
+                                                fontSize: 11,
+                                                fontWeight: 600,
+                                                color: primaryColor,
+                                                background: `${primaryColor}14`,
+                                                borderRadius: 999,
+                                                padding: '4px 8px',
+                                            }}
+                                        >
+                                            {t.scorePrefix} {item.score}
                                         </span>
-                                    </div>
+                                    </span>
 
-                                    <p style={{ margin: 0, fontSize: 13, lineHeight: 1.62, color: 'var(--tof-text-soft)' }}>
+                                    <span style={{ display: 'block', fontSize: 13, lineHeight: 1.62, color: 'var(--tof-text-soft)' }}>
                                         {item.text}
-                                    </p>
-                                </div>
+                                    </span>
+                                </PinRow>
                             ))}
                         </div>
 
@@ -507,6 +494,23 @@ const CHIP = {
     // Apples ondergrens voor raakvlakken.
     minHeight: 40,
 };
+
+/**
+ * Eén regel uitleg boven een lijst waar je dingen uit kunt meenemen.
+ *
+ * Alleen in de app, en alleen als er echt iets te pinnen valt. Zonder deze
+ * regel is een chipje naast een zin een raadsel: je ziet wél dat er iets kan,
+ * maar niet wat je ermee opschiet.
+ */
+function PinHint({ pinning, copy }) {
+    if (!pinning) return null;
+
+    return (
+        <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: 'var(--tof-text-muted)' }}>
+            {copy.pin.hint}
+        </p>
+    );
+}
 
 /**
  * Eén blok op het profielscherm: kaart met een gekleurde bovenrand.

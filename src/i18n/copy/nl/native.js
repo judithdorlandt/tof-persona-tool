@@ -61,9 +61,16 @@ const native = {
       },
     },
   },
+  // Meenemen naar je gesprek. `add`/`remove` worden voorgelezen; `chipAdd`/
+  // `chipDone` staan op het scherm en moeten daarom kort zijn. `hint` staat één
+  // keer boven de lijst en legt uit waar het heen gaat — zonder die regel is
+  // een plusje naast een zin niet te begrijpen.
   pin: {
     add: 'Zet bij mijn gesprek',
     remove: 'Haal van mijn gesprek',
+    chipAdd: 'Meenemen',
+    chipDone: 'Meegenomen',
+    hint: 'Tik op een inzicht om het mee te nemen naar je gesprek.',
   },
   prep: {
     // Het gaat om één specifiek gesprek: dat met je leidinggevende. Zonder dat
