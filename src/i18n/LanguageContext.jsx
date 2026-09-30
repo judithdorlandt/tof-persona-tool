@@ -6,17 +6,19 @@
  * e-mailtemplate komt) valt de app terug op de laatst gekozen taal uit
  * localStorage.
  */
-import { createContext, useCallback, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { DEFAULT_LANG, LANGS, resolvePath, switchLangPath } from './routes';
+import { DEFAULT_LANG, LANGS, pagePath, resolvePath, switchLangPath } from './routes';
 import { getCopy } from './copy';
+import { IS_NATIVE } from '../config/platform';
 
 const STORAGE_KEY = 'tof_lang';
 
 const LanguageContext = createContext({
   lang: DEFAULT_LANG,
   setLang: () => {},
+  rememberLang: () => {},
   copy: getCopy(DEFAULT_LANG),
 });
 
@@ -57,9 +59,34 @@ export function LanguageProvider({ children }) {
     [page, location.search, routerNavigate]
   );
 
+  /**
+   * De taal vastleggen zonder te navigeren. De app gebruikt dit als je het
+   * landingsscherm verlaat: daarmee is de keuze gemaakt, ook als je gewoon
+   * de standaardtaal liet staan.
+   */
+  const rememberLang = useCallback(() => storeLang(lang), [lang]);
+
+  // De app start altijd op de kale root. Heb je hier eerder een taal gekozen,
+  // dan is het landingsscherm zijn werk kwijt: dan ga je meteen door naar de
+  // app, in díe taal. Alleen de allereerste start toont de landing.
+  //
+  // Eén keer bij het opstarten (useRef), anders zou een klik op "Nederlands"
+  // — die naar '/' navigeert — meteen worden weggestuurd. Op het web gebeurt
+  // dit niet: daar is de URL gedeeld en gebookmarkt, en beslist de link.
+  const startupHandled = useRef(false);
+  useEffect(() => {
+    if (startupHandled.current) return;
+    startupHandled.current = true;
+    if (!IS_NATIVE) return;
+    if (location.pathname !== '/') return;
+    const stored = readStoredLang();
+    if (!stored) return;
+    routerNavigate(pagePath('home', stored), { replace: true });
+  }, [location.pathname, routerNavigate]);
+
   const value = useMemo(
-    () => ({ lang, setLang, copy: getCopy(lang) }),
-    [lang, setLang]
+    () => ({ lang, setLang, rememberLang, copy: getCopy(lang) }),
+    [lang, setLang, rememberLang]
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

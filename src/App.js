@@ -270,9 +270,10 @@ export default function App() {
     }
   };
 
-  // Pagina's waar de Nav NIET getoond moet worden — landing en auth-flow.
-  // In app-modus bestaan die pagina's niet, dus staat de nav er altijd.
-  const hideNav = !IS_NATIVE && (page === 'landing' || page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm');
+  // Pagina's waar de Nav NIET getoond moet worden. De landing is in beide
+  // werelden een kaal merkscherm; de auth-pagina's bestaan alleen op het web.
+  const hideNav = page === 'landing'
+    || (!IS_NATIVE && (page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm'));
 
   return (
     <>

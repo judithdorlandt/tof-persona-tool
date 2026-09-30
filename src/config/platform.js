@@ -11,8 +11,12 @@ export const IS_NATIVE = process.env.REACT_APP_PLATFORM === 'native';
  * De enige pagina's die de app kent: stap 1, de individuele persona-tool,
  * plus de historie en de gespreksvoorbereiding die alleen in de app bestaan.
  * Alles daarbuiten valt terug op de startpagina.
+ *
+ * 'landing' staat er sinds de app daarop opent: hetzelfde merkscherm als het
+ * web, en tegelijk de plek waar je je taal kiest.
  */
 export const NATIVE_PAGES = [
+    'landing',
     'home',
     'intro',
     'quiz',
