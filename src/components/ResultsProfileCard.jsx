@@ -398,7 +398,10 @@ export default function ResultsProfileCard({
                                     titleColor={primaryColor}
                                 >
                                     <div style={{ display: 'grid', gap: 10 }}>
-                                        {bricksItems.map((item) => (
+                                        {/* De webkaart houdt het bij de sterkste
+                                            drie; de volledige rangorde staat in
+                                            de app (zie native/ProfileScreen). */}
+                                        {bricksItems.slice(0, 3).map((item) => (
                                             <div
                                                 key={item.key}
                                                 style={{

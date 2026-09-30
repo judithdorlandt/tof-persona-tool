@@ -104,6 +104,41 @@ export default function ConversationPrep({ setPage }) {
                     </Card>
                 ) : null}
 
+                {/* Wat je van je leidinggevende nodig hebt — in de ik-vorm, dus
+                    letterlijk voor te lezen. Stond eerst als "Leiderschap" in
+                    je profiel, maar sprak daar over jou in de derde persoon. */}
+                {primary?.needs?.length ? (
+                    <Card isMobile={isMobile}>
+                        <SectionEyebrow>{copy.prep.needsTitle}</SectionEyebrow>
+
+                        <p style={bodyText}>{copy.prep.needsIntro}</p>
+
+                        <ul
+                            style={{
+                                margin: 0,
+                                padding: 0,
+                                listStyle: 'none',
+                                display: 'grid',
+                                gap: 10,
+                            }}
+                        >
+                            {primary.needs.map((line) => (
+                                <li
+                                    key={line}
+                                    style={{
+                                        ...bodyText,
+                                        borderLeft: `4px solid ${color}`,
+                                        paddingLeft: 12,
+                                        color: 'var(--tof-text)',
+                                    }}
+                                >
+                                    {line}
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
+                ) : null}
+
                 <Card isMobile={isMobile}>
                     <SectionEyebrow>{copy.prep.pinnedTitle}</SectionEyebrow>
 

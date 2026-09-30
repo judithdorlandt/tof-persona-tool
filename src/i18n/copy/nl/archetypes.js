@@ -4,7 +4,7 @@
  * De structuur (id, cluster, bricksProfile) staat in `src/data.js`.
  * Voeg hier NOOIT logica of getallen toe die de app gebruikt om te rekenen.
  *
- * Let op: de arrays (kw, friction, consequence, leadership, mismatch,
+ * Let op: de arrays (kw, friction, consequence, leadership, needs, mismatch,
  * energycost, wd, ls, ct) moeten in elke taal even lang zijn — de UI rekent
  * op een gelijk aantal items.
  */
@@ -21,7 +21,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn voor de Maker bruikbaar in korte bursts — voor het uitwerken van een concept of het verwerken van feedback. Geen langdurige isolatie, maar gerichte momenten van uitwerking.',
       work: 'Standaard werkplekken zijn voor de Maker acceptabel als ze flexibel zijn en dicht bij creatieve zones liggen. Een vaste bureau zonder maakruimte rondom voelt beperkend.',
-      hybride: 'Hybride plekken zijn voor de Maker functioneel maar geen prioriteit. Snel schakelen mag digitaal of fysiek — zolang het het creatieve proces niet vertraagt.',
       meeting: 'Overlegplekken zijn voor de Maker alleen waardevol als ze klein en snel zijn. Een staand overleg van tien minuten werkt beter dan een uur in een vergaderzaal.',
       project: 'Creatieve plekken zijn de kern van de Maker. Whiteboards, projecttafels, prototypemateriaal en ruimte om ideeën zichtbaar te maken — dit is het natuurlijke habitat. Hoe meer ruimte om te maken, hoe beter.',
       team: 'Samenwerkplekken zijn voor de Maker cruciaal als ze actief zijn — grote tafels, schrijfwanden, ruimte om te bewegen. Geen formele vergaderomgevingen maar zones waar iets gemaakt wordt.',
@@ -45,6 +44,16 @@ const archetypes = {
       'Geef vrijheid binnen duidelijke kaders.',
       'Stuur op resultaat, niet op ieder stapje.',
       'Maak experimenteren normaal en veilig.',
+    ],
+    // `needs` = dezelfde leiderschapspunten, maar in de ik-vorm. `leadership`
+    // is geschreven tégen een leidinggevende, óver jou — in je eigen profiel
+    // was dat een vreemde spiegel. Deze regels kun je voorlezen in je gesprek;
+    // ze staan op het gespreksscherm (src/native/ConversationPrep.jsx).
+    // `leadership` blijft bestaan voor de module Teams en Bedrijf.
+    needs: [
+      'Ik heb vrijheid nodig in hóé ik iets aanpak — geef me het kader, niet het stappenplan.',
+      'Beoordeel me op wat er staat, niet op hoe ik daar gekomen ben.',
+      'Ik wil dingen kunnen uitproberen zonder dat het eerst overal langs moet.',
     ],
     lquote: 'Als je deze persoon te strak aanstuurt, raak je niet de chaos kwijt — maar juist de creativiteit.',
     mismatch: [
@@ -85,7 +94,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn voor de Groeier nuttig voor reflectie en verdieping na nieuwe ervaringen. Geen langdurige isolatie maar gerichte verwerkingsmomenten.',
       work: 'Standaard werkplekken zijn voor de Groeier acceptabel zolang er voldoende uitdaging en afwisseling in de omgeving is. Een vaste plek naast uitdagende collega\'s werkt beter dan een stille hoek.',
-      hybride: 'Hybride plekken zijn voor de Groeier functioneel maar niet ideaal. De Groeier leert het liefst in fysieke aanwezigheid waar nuance en interactie volledig mogelijk zijn.',
       meeting: 'Overlegplekken zijn voor de Groeier waardevol als het sparren, feedback ontvangen en ideeën toetsen mogelijk maakt. Vergaderen om te vergaderen werkt averechts.',
       project: 'Creatieve plekken spreken de Groeier aan omdat ze ruimte bieden voor experiment en nieuwe aanpakken. Niet als doel op zich maar als leermiddel en inspiratiebron.',
       team: 'Samenwerkplekken zijn voor de Groeier waardevol als leeromgeving. Samenwerken met mensen die anders denken of meer weten geeft energie. Co-creatie en kennisdeling in actie zijn de ideale samenwerkplek.',
@@ -109,6 +117,11 @@ const archetypes = {
       'Bespreek leerdoelen actief.',
       'Geef uitdagende opdrachten voor routine.',
       'Maak groei zichtbaar en concreet.',
+    ],
+    needs: [
+      'Ik wil het met je over mijn ontwikkeling hebben, niet alleen over mijn taken.',
+      'Geef me naast het vaste werk iets waar ik nog niet goed in ben.',
+      'Ik heb feedback nodig om te weten of ik echt vooruitga.',
     ],
     lquote: 'Als je deze persoon niet uitdaagt, verlies je eerst de energie — en daarna de persoon.',
     mismatch: [
@@ -149,7 +162,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn de absolute kern voor de Presteerder. Diepe focuszones zonder ruis, onderbreking of visuele afleiding zijn geen luxe maar noodzaak. Hier wordt het meeste werk gedaan en de meeste energie teruggewonnen.',
       work: 'Standaard werkplekken zijn voor de Presteerder acceptabel mits ze rustig, ergonomisch en goed uitgerust zijn. Zekerheid over beschikbaarheid op piekdagen is essentieel — geen hot-desking.',
-      hybride: 'Hybride plekken zijn voor de Presteerder functioneel en efficiënt. Snel schakelen zonder reistijd past goed bij het resultaatgerichte werkritme, mits de technische kwaliteit goed is.',
       meeting: 'Overlegplekken zijn voor de Presteerder tijdverlies tenzij ze leiden tot een helder besluit. Klein, functioneel en snel beschikbaar — geen grote vergaderzalen voor routineoverleg.',
       project: 'Creatieve plekken spreken de Presteerder weinig aan. Experiment zonder richting voelt als tijdverlies. Alleen interessant als er een concreet doel en een helder resultaat aan vastzit.',
       team: 'Samenwerkplekken zijn voor de Presteerder alleen waardevol als ze resultaatgericht zijn. Gerichte projectomgevingen met zichtbare voortgang en een duidelijk doel passen goed.',
@@ -173,6 +185,11 @@ const archetypes = {
       'Wees direct en helder.',
       'Erken resultaat expliciet.',
       'Maak prioriteiten zichtbaar en stabiel.',
+    ],
+    needs: [
+      'Zeg het me rechtstreeks — ik heb liever een duidelijk nee dan een vaag misschien.',
+      'Benoem het als iets gelukt is; anders weet ik niet of het telde.',
+      'Ik heb prioriteiten nodig die blijven staan, anders loop ik hard de verkeerde kant op.',
     ],
     lquote: 'Zonder helder doel gaat deze motor draaien — maar nergens naartoe.',
     mismatch: [
@@ -213,7 +230,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn voor de Denker de meest essentiële werkplek van alle archetypes. Volledig stille, afgesloten zones zonder visuele of auditieve prikkels zijn geen pretje maar een basisvoorwaarde voor goed functioneren.',
       work: 'Standaard werkplekken zijn voor de Denker alleen acceptabel als ze rustig genoeg zijn. Open kantoorlandschappen met veel beweging en geluid zijn een cognitieve belasting. Een vaste, stille plek geeft houvast.',
-      hybride: 'Hybride plekken zijn voor de Denker functioneel als de technische kwaliteit goed is. De optie om vanuit rust deel te nemen zonder fysiek aanwezig te zijn in een drukke ruimte wordt gewaardeerd.',
       meeting: 'Overlegplekken zijn voor de Denker uitputtend tenzij het overleg inhoudelijk goed voorbereid is. Spontaan overleg of vergaderen zonder scherpe vraag kost disproportioneel veel energie.',
       project: 'Creatieve plekken passen de Denker alleen als er rust en structuur in zitten. Open rommelige makerspaces werken averechts. Een stille analyseplek met whiteboard voor complexe vraagstukken is de uitzondering die werkt.',
       team: 'Samenwerkplekken zijn voor de Denker alleen zinvol als ze inhoudelijk en goed voorbereid zijn. Geen open brainstormsessies maar gestructureerde werkvormen met een scherpe inhoudelijke vraag.',
@@ -237,6 +253,11 @@ const archetypes = {
       'Geef informatie op tijd en volledig.',
       'Respecteer denktijd.',
       'Waardeer grondigheid zichtbaar.',
+    ],
+    needs: [
+      'Ik heb de volledige informatie nodig, en op tijd — half werk kan ik niet beoordelen.',
+      'Geef me denktijd voor je een antwoord verwacht.',
+      'Zorgvuldigheid kost mij tijd; ik wil weten dat dat gezien wordt.',
     ],
     lquote: 'Wie deze persoon haast, verliest vaak precies datgene wat de kwaliteit bewaakt.',
     mismatch: [
@@ -277,7 +298,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn voor de Verbinder functioneel maar geen bron van energie. Langdurig alleen werken in stilte kost meer dan het oplevert. Korte focusmomenten zijn prima — geen dagvullend patroon.',
       work: 'Standaard werkplekken zijn voor de Verbinder acceptabel als ze dicht bij het team zijn en spontaan contact mogelijk maken. Geïsoleerde werkplekken ver van de looproutes werken averechts.',
-      hybride: 'Hybride plekken zijn voor de Verbinder functioneel maar niet ideaal. Online contact voelt dunner dan fysiek. Goede hybride technologie vermindert dit gemis maar heft het niet op.',
       meeting: 'Overlegplekken zijn voor de Verbinder essentieel — maar dan plekken die echt contact mogelijk maken. Geen kille vergaderzalen maar omgevingen die uitnodigen tot gesprek, oogcontact en echte verbinding.',
       project: 'Creatieve plekken zijn voor de Verbinder interessant als ze samenwerken faciliteren. Samen iets maken of bedenken geeft energie — solo creatief werk minder.',
       team: 'Samenwerkplekken zijn voor de Verbinder de kern. Open, toegankelijke zones die spontane samenwerking uitlokken en ruimte bieden voor relatie én taak zijn het ideale werkklimaat.',
@@ -301,6 +321,11 @@ const archetypes = {
       'Maak bewust tijd voor contact.',
       'Betrek deze persona vroeg bij verandering.',
       'Zorg dat ontmoeting mogelijk en normaal is.',
+    ],
+    needs: [
+      'Ik heb echt contact nodig, niet alleen een overleg in de agenda.',
+      'Betrek me vroeg bij veranderingen, niet als het al besloten is.',
+      'Ik wil dat ontmoeten in ons werk gewoon is, niet iets wat erbij komt.',
     ],
     lquote: 'Een team zonder verbinder merkt pas wat er ontbreekt als iedereen nog wel samenwerkt, maar niemand meer verbonden is.',
     mismatch: [
@@ -341,7 +366,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn voor de Teamspeler acceptabel mits ze dicht bij het team zijn. Werken in een volledig geïsoleerde focusruimte ver van het team voelt onbehaaglijk. Een rustige plek binnen het teamgebied werkt beter.',
       work: 'Standaard werkplekken zijn voor de Teamspeler ideaal als ze vast en herkenbaar zijn. Een vaste plek in het team, altijd beschikbaar — dit geeft houvast en versterkt het teamgevoel. Geen hot-desking.',
-      hybride: 'Hybride plekken zijn voor de Teamspeler functioneel mits het team er goed mee overweg kan. Teamcohesie moet ook op afstand bewaakt worden — duidelijke hybride afspraken zijn essentieel.',
       meeting: 'Overlegplekken zijn voor de Teamspeler essentieel — maar dan vaste, herkenbare plekken die bij het team horen. Een vaste teamoverlegplek die teamrituelen en continuïteit ondersteunt werkt beter dan wisselende vergaderzalen.',
       project: 'Creatieve plekken zijn voor de Teamspeler interessant als het team er samen gebruik van maakt. Solo creatief werk in een creatieve zone past minder goed bij dit archetype.',
       team: 'Samenwerkplekken zijn de kern van de Teamspeler. Vaste teamzones met herkenbare inrichting en rituelen werken beter dan wisselende open samenwerkruimtes. Continuïteit en vertrouwdheid zijn de basis.',
@@ -365,6 +389,11 @@ const archetypes = {
       'Wees voorspelbaar en consistent.',
       'Kondig veranderingen op tijd aan.',
       'Maak teamdynamiek bespreekbaar.',
+    ],
+    needs: [
+      'Ik heb aan jou vooral voorspelbaarheid nodig: doen wat je zegt, zeggen wat je doet.',
+      'Vertel me op tijd wat er verandert, ook als het nog niet rond is.',
+      'Ik wil dat we het over het team kunnen hebben als het daar schuurt.',
     ],
     lquote: 'Als je het team als wisselgeld behandelt, verliest deze persoon zijn fundament.',
     mismatch: [
@@ -405,7 +434,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn voor de Zekerzoeker essentieel — bij voorkeur vaste, herkenbare plekken die elke dag beschikbaar zijn. Geen zoekwerk, geen onzekerheid over beschikbaarheid. Voorspelbaarheid is de sleutel.',
       work: 'Standaard werkplekken zijn voor de Zekerzoeker de belangrijkste werkplek. Een vaste plek die altijd beschikbaar is, ergonomisch goed ingericht en dicht bij bekende collega\'s. Geen hot-desking — zekerheid over de eigen plek is een basisvoorwaarde.',
-      hybride: 'Hybride plekken zijn voor de Zekerzoeker functioneel mits de technische afspraken helder en stabiel zijn. Onduidelijkheid over wie online is en wie fysiek aanwezig geeft spanning.',
       meeting: 'Overlegplekken zijn voor de Zekerzoeker alleen energiegevend als het overleg goed voorbereid en gestructureerd is. Spontane vergaderingen of overleggen zonder agenda kosten disproportioneel veel energie.',
       project: 'Creatieve plekken passen de Zekerzoeker slecht. Rommeligheid, experiment en onduidelijkheid over wat er verwacht wordt zijn het tegenovergestelde van wat energie geeft.',
       team: 'Samenwerkplekken zijn voor de Zekerzoeker acceptabel als de spelregels helder zijn. Wie zit waar, wat is het doel, hoe lang duurt het — als dat duidelijk is werkt samenwerken prima. Zonder structuur kost het te veel energie.',
@@ -429,6 +457,11 @@ const archetypes = {
       'Communiceer vroeg en volledig.',
       'Maak verwachtingen expliciet.',
       'Bied structuur in onzekere periodes.',
+    ],
+    needs: [
+      'Vertel me vroeg wat er speelt — onduidelijkheid kost mij meer dan slecht nieuws.',
+      'Maak expliciet wat je van me verwacht; ik vul het anders zelf in.',
+      'Als het onzeker wordt, heb ik structuur nodig, geen extra vrijheid.',
     ],
     lquote: 'Onduidelijkheid is voor deze persoon geen uitdaging, maar een aantasting van werkvermogen.',
     mismatch: [
@@ -469,7 +502,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Concentratieplekken zijn voor de Vernieuwer zelden de plek waar de beste ideeën ontstaan. Te veel stilte en structuur dempen het vooruitdenkende denken. Korte focusmomenten zijn functioneel voor uitwerking — niet de motor.',
       work: 'Standaard werkplekken zijn voor de Vernieuwer acceptabel als ze flexibel en inspirerend zijn. Een vaste saai bureau in een routineuze omgeving werkt remmend. Plekken die toekomstdenken normaliseren zijn beter.',
-      hybride: 'Hybride plekken zijn voor de Vernieuwer functioneel en efficiënt. Snel schakelen met mensen overal past goed bij het brede netwerk dat dit archetype onderhoudt.',
       meeting: 'Overlegplekken zijn voor de Vernieuwer waardevol als het overleg strategisch en toekomstgericht is. Operationeel bijpraten kost energie — visiegesprekken en strategische sessies geven energie.',
       project: 'Creatieve plekken zijn de kern van de Vernieuwer. Innovatiezones, experimenteerruimtes en omgevingen die beweging en vernieuwing normaliseren zijn het ideale habitat. Hoe meer ruimte voor experiment en toekomstgericht denken, hoe beter.',
       team: 'Samenwerkplekken zijn voor de Vernieuwer essentieel als ze gericht zijn op strategie en verkenning. Grote open innovatiezones waar ideeën kunnen botsen en nieuwe richtingen zichtbaar worden zijn het ideale samenwerkklimaat.',
@@ -493,6 +525,11 @@ const archetypes = {
       'Geef strategische ruimte.',
       'Verbind visie aan concrete experimenten.',
       'Zie deze persona als mede-ontwerper.',
+    ],
+    needs: [
+      'Ik heb ruimte nodig om verder vooruit te kijken dan dit kwartaal.',
+      'Laat me een idee klein uitproberen in plaats van het alleen te bespreken.',
+      'Betrek me bij wáár we heen gaan, niet alleen bij hoe we er komen.',
     ],
     lquote: 'Zonder podium bouwt deze persoon zijn eigen podium — en dat is zelden binnen dezelfde organisatie.',
     mismatch: [

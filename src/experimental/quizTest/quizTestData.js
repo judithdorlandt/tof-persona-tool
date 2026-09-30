@@ -52,11 +52,10 @@ export const ARCHETYPE_VOLGORDE = [
 /** Aantal te kiezen antwoorden per basisvraag (Bijlage A) — dit is logica. */
 export const BASIS_PICKS = [2, 2, 1, 1, 1, 2, 1, 2, 1];
 
-/** Data-ids van de negen werkplektypen — nooit vertalen. */
+/** Data-ids van de acht werkplektypen — nooit vertalen. */
 export const WERKPLEK_IDS = [
   'focus',
   'work',
-  'hybride',
   'meeting',
   'project',
   'team',

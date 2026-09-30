@@ -33,7 +33,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 1,
       work: 2,
-      hybride: 1,
       meeting: 2,
       project: 4,
       team: 3,
@@ -48,7 +47,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 2,
       work: 3,
-      hybride: 1,
       meeting: 2,
       project: 3,
       team: 2,
@@ -63,7 +61,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 4,
       work: 2,
-      hybride: 2,
       meeting: 1,
       project: 3,
       team: 1,
@@ -78,7 +75,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 4,
       work: 3,
-      hybride: 1,
       meeting: 1,
       project: 1,
       team: 1,
@@ -93,7 +89,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 1,
       work: 1,
-      hybride: 2,
       meeting: 3,
       project: 2,
       team: 3,
@@ -108,7 +103,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 1,
       work: 3,
-      hybride: 2,
       meeting: 3,
       project: 1,
       team: 4,
@@ -123,7 +117,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 3,
       work: 4,
-      hybride: 2,
       meeting: 1,
       project: 1,
       team: 2,
@@ -138,7 +131,6 @@ export const ARCHETYPE_STRUCTURE = {
     bricksProfile: {
       focus: 1,
       work: 1,
-      hybride: 2,
       meeting: 2,
       project: 4,
       team: 3,

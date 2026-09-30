@@ -72,6 +72,12 @@ const native = {
     title: 'Jouw gespreksvoorbereiding',
     intro:
       'Alles wat je hebt vastgeprikt en opgeschreven voor je volgende gesprek met je leidinggevende — je bila, je functioneringsgesprek, of gewoon een goed gesprek. Blijft op je toestel.',
+    // De leiderschapspunten van je persona, in de ik-vorm. Stonden eerst als
+    // hoofdstuk in je profiel, maar waren geschreven tégen een leidinggevende.
+    // Hier zijn ze wat ze moeten zijn: regels die je zelf kunt zeggen.
+    needsTitle: 'Wat ik nodig heb van mijn leidinggevende',
+    needsIntro:
+      'Dit hoort bij jouw persona. Pak eruit wat klopt, en laat de rest staan.',
     pinnedTitle: 'Wat je hebt vastgeprikt',
     // Kopjes boven een vastgeprikt inzicht, per soort. De sleutels komen
     // overeen met `kind` in src/native/localStore.js.
@@ -184,6 +190,10 @@ const native = {
   // De hoofdstukken van je profiel. Stonden eerst allemaal onder elkaar —
   // 4,3 schermen scrollen; nu kies je er één. De labels zijn korter dan de
   // koppen in het hoofdstuk zelf, want ze moeten op een knop passen.
+  //
+  // Op de knoppen staat gewone taal. Het TOF-model (Bricks · Bytes · Behavior ·
+  // Belonging) staat als klein kopje bóven het hoofdstuk — zie `chapterHeads`.
+  // Wie net negen vragen heeft ingevuld snapt "Digitaal" meteen en "Bytes" niet.
   chapters: {
     label: 'Onderdeel van je profiel',
     // "Beweging" was te abstract om op een knop te snappen; het gaat over waar
@@ -191,7 +201,21 @@ const native = {
     motion: 'Energie',
     workplace: 'Werkplek',
     bytes: 'Digitaal',
-    leadership: 'Leiderschap',
+    behavior: 'Gedrag',
+    culture: 'Cultuur',
+  },
+  // Kopje + titel boven de drie hoofdstukken die alleen in de app bestaan.
+  // Werkplek haalt zijn kop uit `resultsCard.profile` (Bricks), want die deelt
+  // hij met het web.
+  chapterHeads: {
+    bytes: { label: 'Bytes', title: 'Wat je digitaal nodig hebt' },
+    // Gedrag ging eerst schuil onder "Bytes & Behavior", alsof het een
+    // digitaal onderwerp was. Het gaat over hoe er gewerkt wordt.
+    behavior: { label: 'Behavior', title: 'Waar het voor jou gaat schuren' },
+    // Belonging bestond nog niet in de app, terwijl het juist de laag is die
+    // het gesprek over je plek in het team raakt. De drie regels komen uit
+    // `ct`: met wie je klikt, met wie het schuurt, en wat jij meebrengt.
+    culture: { label: 'Belonging', title: 'Jouw plek tussen je collega’s' },
   },
 };
 

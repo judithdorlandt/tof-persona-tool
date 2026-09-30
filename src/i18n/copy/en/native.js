@@ -71,6 +71,12 @@ const native = {
     title: 'Your conversation prep',
     intro:
       'Everything you pinned and wrote down for your next conversation with your manager — a one-to-one, a review, or simply a good talk. Stays on your device.',
+    // Your persona's leadership points, in the first person. They used to be a
+    // chapter in your profile, but were written to a manager about you. Here
+    // they are what they should be: lines you can say yourself.
+    needsTitle: 'What I need from my manager',
+    needsIntro:
+      'This comes with your persona. Take what rings true, and leave the rest.',
     pinnedTitle: 'What you pinned',
     // Headings above a pinned insight, per kind. The keys match `kind` in
     // src/native/localStore.js.
@@ -172,12 +178,20 @@ const native = {
     library: 'Personas',
     pinnedCount: (n) => (n === 1 ? '1 insight pinned' : `${n} insights pinned`),
   },
+  // Plain language on the buttons. The TOF model (Bricks · Bytes · Behavior ·
+  // Belonging) sits as a small heading above the chapter — see `chapterHeads`.
   chapters: {
     label: 'Part of your profile',
     motion: 'Energy',
     workplace: 'Workplace',
     bytes: 'Digital',
-    leadership: 'Leadership',
+    behavior: 'Behaviour',
+    culture: 'Culture',
+  },
+  chapterHeads: {
+    bytes: { label: 'Bytes', title: 'What you need digitally' },
+    behavior: { label: 'Behavior', title: 'Where it starts to chafe for you' },
+    culture: { label: 'Belonging', title: 'Your place among your colleagues' },
   },
 };
 

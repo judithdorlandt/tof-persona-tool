@@ -17,11 +17,13 @@ import { PageShell } from '../ui/AppShell';
  * vier telefoonschermen scrollen voordat je beneden was. Daarom is het scherm
  * nu in twee helften geknipt. Bovenaan staat wie je bent — dat lees je één keer
  * en dat verandert niet. Daaronder kies je zelf welk hoofdstuk je erbij wil:
- * Beweging, Werkplek, Digitaal of Leiderschap. Eén tegelijk, dus je kunt echt
- * lezen wat er staat.
+ * Energie, Werkplek, Digitaal, Gedrag of Cultuur. Eén tegelijk, dus je kunt
+ * echt lezen wat er staat. Die laatste vier volgen het TOF-model — Bricks,
+ * Bytes, Behavior, Belonging — maar op de knop staat gewone taal.
  *
- * Je aantekeningen staan hier niet meer. Die horen bij je gesprek, en dat is
- * een eigen scherm geworden (zie ConversationPrep.jsx, tabblad "Gesprek").
+ * Je aantekeningen staan hier niet meer, en Leiderschap ook niet. Allebei horen
+ * ze bij je gesprek, en dat is een eigen scherm geworden (ConversationPrep.jsx,
+ * tabblad "Gesprek").
  *
  * De afleidingen komen kant-en-klaar binnen uit `Results.jsx`, zodat web, PDF
  * en app gegarandeerd hetzelfde rekenen (zie src/lib/resultDerivations.js).
@@ -34,8 +36,6 @@ export default function ProfileScreen({
     tertiary,
     primaryColor,
     topScoreEntries,
-    bytesBehaviorBlocks,
-    leadershipItems,
     bricksItems,
     resultData,
     pinning = null,
@@ -43,18 +43,27 @@ export default function ProfileScreen({
 }) {
     const { resultsCard, native } = useCopy();
     const t = resultsCard.profile;
+    const heads = native.chapterHeads;
     const quoteTextColor = getReadableTextOnColor(primaryColor);
     const mix = [secondary, tertiary].filter(Boolean);
     const drains = (primary?.energycost || []).slice(0, 3);
+    const friction = primary?.friction || [];
+    const belonging = primary?.ct || [];
 
-    // Welk hoofdstuk je nu leest. "Beweging" staat vooraan omdat het over jou
-    // gaat; de andere drie gaan over wat je nodig hebt.
+    // Welk hoofdstuk je nu leest. "Energie" staat vooraan omdat het over jou
+    // gaat; de rest gaat over wat je nodig hebt. De volgorde daarna volgt het
+    // TOF-model: Bricks, Bytes, Behavior, Belonging.
+    //
+    // "Leiderschap" stond hier ook. Die teksten zijn geschreven tégen een
+    // leidinggevende, over jou — een vreemde spiegel in je eigen profiel. Ze
+    // staan nu in de ik-vorm op het gespreksscherm (ConversationPrep.jsx).
     const [chapter, setChapter] = useState('motion');
     const chapters = [
         { key: 'motion', label: native.chapters.motion, show: true },
         { key: 'workplace', label: native.chapters.workplace, show: bricksItems.length > 0 },
-        { key: 'bytes', label: native.chapters.bytes, show: bytesBehaviorBlocks.length > 0 },
-        { key: 'leadership', label: native.chapters.leadership, show: leadershipItems.length > 0 },
+        { key: 'bytes', label: native.chapters.bytes, show: !!primary?.bytes },
+        { key: 'behavior', label: native.chapters.behavior, show: friction.length > 0 },
+        { key: 'culture', label: native.chapters.culture, show: belonging.length > 0 },
     ].filter((c) => c.show);
 
     // De randen van de pagina; de hero trekt zich hier met een negatieve marge
@@ -180,13 +189,18 @@ export default function ProfileScreen({
                     </Sectie>
                 )}
 
-                {/* 4 — DE HOOFDSTUKKEN: vier knoppen, één hoofdstuk open */}
+                {/* 4 — DE HOOFDSTUKKEN: vijf knoppen, één hoofdstuk open */}
                 <div
                     role="group"
                     aria-label={native.chapters.label}
                     style={{
-                        display: 'grid',
-                        gridTemplateColumns: `repeat(${chapters.length}, 1fr)`,
+                        // Vijf knoppen passen niet naast elkaar op een smalle
+                        // telefoon, dus vallen ze om naar een tweede regel in
+                        // plaats van dat de tekst afbreekt. Gecentreerd, zodat
+                        // die tweede regel niet links blijft hangen.
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        justifyContent: 'center',
                         gap: 6,
                         ...riseIn(3),
                     }}
@@ -274,8 +288,9 @@ export default function ProfileScreen({
                         isMobile={isMobile}
                         style={riseIn(4)}
                     >
+                        {/* De sterkste drie: dit is je mix, met uitleg erbij. */}
                         <div style={{ display: 'grid', gap: 10 }}>
-                            {bricksItems.map((item) => (
+                            {bricksItems.slice(0, 3).map((item) => (
                                 <div
                                     key={item.key}
                                     style={{
@@ -331,70 +346,74 @@ export default function ProfileScreen({
                                 </div>
                             ))}
                         </div>
+
+                        {/* En de rest van de acht, zonder uitleg. Wat je mínder
+                            nodig hebt is voor een gesprek net zo bruikbaar — maar
+                            het hoeft niet evenveel ruimte te krijgen. */}
+                        {bricksItems.length > 3 && (
+                            <div style={{ display: 'grid', gap: 8 }}>
+                                <div style={LABEL}>{t.bricksRestLabel}</div>
+
+                                {bricksItems.slice(3).map((item) => (
+                                    <div
+                                        key={item.key}
+                                        style={{ display: 'flex', alignItems: 'center', gap: 10 }}
+                                    >
+                                        <span style={{ flex: 1, fontSize: 14, lineHeight: 1.5, color: 'var(--tof-text-soft)' }}>
+                                            {item.label}
+                                        </span>
+
+                                        {/* Een streepje in plaats van een getal: het
+                                            gaat om de verhouding, niet om de score.
+                                            Vier is het hoogste dat voorkomt. */}
+                                        <span
+                                            aria-hidden="true"
+                                            style={{ width: 44, height: 4, borderRadius: 999, background: 'var(--tof-border)' }}
+                                        >
+                                            <span
+                                                style={{
+                                                    display: 'block',
+                                                    width: `${(item.score / 4) * 100}%`,
+                                                    height: '100%',
+                                                    borderRadius: 999,
+                                                    background: primaryColor,
+                                                    opacity: 0.5,
+                                                }}
+                                            />
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </Sectie>
                 )}
 
-                {/* 5c — DIGITAAL: Bytes & Behavior */}
+                {/* 5c — DIGITAAL (Bytes): de gereedschappen die bij je passen */}
                 {chapter === 'bytes' && (
                     <Sectie
-                        label={t.bytesLabel}
-                        title={t.bytesTitle}
+                        label={heads.bytes.label}
+                        title={heads.bytes.title}
                         accent={primaryColor}
                         isMobile={isMobile}
                         style={riseIn(4)}
                     >
-                        <div style={{ display: 'grid', gap: 10 }}>
-                            {bytesBehaviorBlocks.map((item) => (
-                                <div
-                                    key={item.key}
-                                    style={{
-                                        background: 'var(--tof-bg)',
-                                        borderRadius: 12,
-                                        padding: '12px 14px',
-                                        borderTop: '1px solid var(--tof-border)',
-                                        borderRight: '1px solid var(--tof-border)',
-                                        borderBottom: '1px solid var(--tof-border)',
-                                        borderLeft: `4px solid ${primaryColor}`,
-                                        display: 'grid',
-                                        gap: 5,
-                                    }}
-                                >
-                                    <div style={{ ...LABEL, color: primaryColor, letterSpacing: 1.3 }}>
-                                        {item.label}
-                                    </div>
-
-                                    <div
-                                        style={{
-                                            fontFamily: "'Playfair Display', serif",
-                                            fontWeight: 500,
-                                            fontSize: 17,
-                                            lineHeight: 1.14,
-                                            color: 'var(--tof-text)',
-                                        }}
-                                    >
-                                        {item.title}
-                                    </div>
-
-                                    <p style={{ margin: 0, fontSize: 13, lineHeight: 1.66, color: 'var(--tof-text-soft)' }}>
-                                        {item.text}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
+                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: 'var(--tof-text-soft)' }}>
+                            {primary.bytes}
+                        </p>
                     </Sectie>
                 )}
 
-                {/* 5d — LEIDERSCHAP: wat helpt in leiderschap */}
-                {chapter === 'leadership' && (
+                {/* 5d — GEDRAG (Behavior): waar de manier van werken gaat wringen */}
+                {chapter === 'behavior' && (
                     <Sectie
-                        label={t.leadershipLabel}
-                        title={t.leadershipTitle}
+                        label={heads.behavior.label}
+                        title={heads.behavior.title}
                         accent={primaryColor}
                         isMobile={isMobile}
                         style={riseIn(4)}
                     >
                         <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 10 }}>
-                            {leadershipItems.map((item, index) => (
+                            {friction.map((item) => (
                                 <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                                     <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, lineHeight: 1.65, flexShrink: 0 }}>
                                         ·
@@ -403,12 +422,31 @@ export default function ProfileScreen({
                                     <span style={{ flex: 1, fontSize: 14, lineHeight: 1.65, color: 'var(--tof-text-soft)' }}>
                                         {item}
                                     </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </Sectie>
+                )}
 
-                                    <PinButton
-                                        pin={{ kind: 'leadership', key: String(index) }}
-                                        pinning={pinning}
-                                        color={primaryColor}
-                                    />
+                {/* 5e — CULTUUR (Belonging): je plek tussen de anderen */}
+                {chapter === 'culture' && (
+                    <Sectie
+                        label={heads.culture.label}
+                        title={heads.culture.title}
+                        accent={primaryColor}
+                        isMobile={isMobile}
+                        style={riseIn(4)}
+                    >
+                        <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 10 }}>
+                            {belonging.map((item) => (
+                                <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                    <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, lineHeight: 1.65, flexShrink: 0 }}>
+                                        ·
+                                    </span>
+
+                                    <span style={{ flex: 1, fontSize: 14, lineHeight: 1.65, color: 'var(--tof-text-soft)' }}>
+                                        {item}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
@@ -450,15 +488,16 @@ const LABEL = {
 };
 
 /**
- * Eén hoofdstukknop. Vier naast elkaar op de smalste telefoon, dus krap: 12 px
- * tekst en weinig lucht eromheen. Ze mogen niet afbreken — daarom `nowrap` en
- * geen langere labels dan in `native.chapters`.
+ * Eén hoofdstukknop. Vijf stuks, dus ze vullen niet de breedte maar krijgen de
+ * ruimte die hun woord nodig heeft; de regel breekt vanzelf. Binnen een knop
+ * mag de tekst níét afbreken — daarom `nowrap`, en geen langere labels dan die
+ * in `native.chapters`.
  */
 const CHIP = {
     borderRadius: 999,
     borderWidth: 1,
     borderStyle: 'solid',
-    padding: '10px 4px',
+    padding: '10px 14px',
     fontSize: 12,
     fontWeight: 600,
     lineHeight: 1.2,

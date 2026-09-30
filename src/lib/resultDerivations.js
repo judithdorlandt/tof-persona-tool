@@ -42,11 +42,18 @@ export function getReadableTextOnColor(hexColor) {
 /** Gewichten voor de werkplekmix: primair telt vol, daarna steeds minder. */
 const MIX_WEIGHTS = [1, 0.7, 0.45];
 
-/** De negen werkplektypen uit het bricks-profiel. */
+/**
+ * De acht werkplektypen uit het bricks-profiel.
+ *
+ * "Hybride" stond hier ook, maar is geen plek — het is een manier van werken.
+ * Je kunt een concentratieplek aanwijzen, een hybride plek niet. In de acht
+ * persona's kwam het dan ook nergens boven een 2 uit, waardoor het precies één
+ * keer in beeld verscheen: bij de Zekerzoeker, en daar alleen omdat het in de
+ * lijst nét vóór twee even hoge types stond. Een sorteertoeval, geen inzicht.
+ */
 const BRICKS_KEYS = [
     'focus',
     'work',
-    'hybride',
     'meeting',
     'project',
     'team',
@@ -111,15 +118,21 @@ export function buildScoreDistribution(scores, archetypes = []) {
     }));
 }
 
-/** De drie sterkste werkplekbehoeften van de primaire persona. */
+/**
+ * De werkplekbehoeften van de primaire persona, sterkste eerst.
+ *
+ * Alle acht komen mee, niet alleen de top drie: wat je wél nodig hebt is even
+ * bruikbaar in een gesprek als wat je níét nodig hebt. `rank` telt vanaf 0, dus
+ * wie alleen de sterkste drie wil tonen filtert op `rank < 3`.
+ */
 export function buildBricksItems(primary, workplaceLabels = {}) {
     if (!primary?.bricksProfile) return [];
 
     return Object.entries(primary.bricksProfile)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([key, value]) => ({
+        .map(([key, value], rank) => ({
             key,
+            rank,
             score: value,
             label: workplaceLabels[key] || key,
             text: primary?.bricksProfileText?.[key] || '',
