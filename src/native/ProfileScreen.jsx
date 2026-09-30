@@ -193,15 +193,18 @@ export default function ProfileScreen({
                 <div
                     role="group"
                     aria-label={native.chapters.label}
+                    className="tof-scroll-row"
                     style={{
-                        // Vijf knoppen passen niet naast elkaar op een smalle
-                        // telefoon, dus vallen ze om naar een tweede regel in
-                        // plaats van dat de tekst afbreekt. Gecentreerd, zodat
-                        // die tweede regel niet links blijft hangen.
+                        // Eén rij die je zijwaarts veegt. Omvallen gaf op een
+                        // telefoon vier knoppen met de vijfde er eenzaam onder;
+                        // dat las als een fout. De knop die half in beeld staat
+                        // laat vanzelf zien dat er meer is.
                         display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
+                        flexWrap: 'nowrap',
                         gap: 6,
+                        // Ruimte voor de rand van de actieve knop, anders wordt
+                        // die door de schuifrand afgesneden.
+                        padding: '2px 0',
                         ...riseIn(3),
                     }}
                 >
@@ -476,8 +479,8 @@ const LABEL = {
 };
 
 /**
- * Eén hoofdstukknop. Vijf stuks, dus ze vullen niet de breedte maar krijgen de
- * ruimte die hun woord nodig heeft; de regel breekt vanzelf. Binnen een knop
+ * Eén hoofdstukknop. Vijf stuks in een rij die je zijwaarts veegt: elke knop
+ * krijgt de ruimte die zijn woord nodig heeft en houdt die ook. Binnen een knop
  * mag de tekst níét afbreken — daarom `nowrap`, en geen langere labels dan die
  * in `native.chapters`.
  */
@@ -491,6 +494,9 @@ const CHIP = {
     lineHeight: 1.2,
     whiteSpace: 'nowrap',
     cursor: 'pointer',
+    // In een rij die niet omvalt zouden de knoppen anders worden platgedrukt
+    // tot de tekst niet meer past.
+    flexShrink: 0,
     // Apples ondergrens voor raakvlakken.
     minHeight: 40,
 };

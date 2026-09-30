@@ -4,8 +4,12 @@
 <head>
   <meta charset="utf-8" />
   <link rel="icon" href="/favicon.ico" />
-  <!-- Viewport -->
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Viewport. `viewport-fit=cover` MOET hier staan en niet pas via JavaScript:
+       iOS berekent env(safe-area-inset-*) alleen bij het laden van de pagina.
+       Zetten we het achteraf, dan blijven alle insets 0px en loopt de statusbalk
+       door de koptekst heen. Op het web verandert dit niets — buiten een notch
+       zijn de insets toch 0px. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
   <!-- Fonts: Inter + Playfair Display zitten in de bundel (zie src/index.js).
        Geen CDN, zodat de app ook offline in huisstijl blijft. -->

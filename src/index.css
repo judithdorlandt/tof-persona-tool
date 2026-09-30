@@ -42,6 +42,10 @@ body,
 
 body {
   overflow-x: hidden;
+  /* Haalt het dubbeltik-zoomen weg. Dat gebeurde per ongeluk bij het aantikken
+     van een antwoord: de pagina sprong in en daarna kon je hem heen en weer
+     schuiven. Knijpen om te vergroten blijft op het web gewoon werken. */
+  touch-action: manipulation;
 }
 
 /* Onderrand vrijhouden van de home-indicator, en in liggende stand van de
@@ -57,6 +61,10 @@ input,
 select,
 textarea {
   font: inherit;
+  /* iOS geeft een knop zonder eigen kleur systeemblauwe tekst — in de app
+     stonden de quizantwoorden daardoor blauw, terwijl ze in de browser gewoon
+     donker waren. Dit is de standaardregel uit elke CSS-reset. */
+  color: inherit;
 }
 
 h1,
@@ -75,6 +83,19 @@ div,
 li,
 a {
   font-family: var(--tof-font-body);
+}
+
+/* Een rij die je zijwaarts veegt, zonder zichtbare schuifbalk. Gebruikt voor de
+   hoofdstukknoppen in het app-profiel: vijf stuks passen niet naast elkaar op
+   een telefoon, en omvallen gaf een losse knop op een tweede regel. */
+.tof-scroll-row {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.tof-scroll-row::-webkit-scrollbar {
+  display: none;
 }
 
 img {

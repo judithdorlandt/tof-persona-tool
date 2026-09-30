@@ -12,16 +12,19 @@ import { IS_NATIVE } from '../config/platform';
 const TOF_BG = '#F7F3EE';
 
 /**
- * Laat de webview tot onder de notch en de home-indicator lopen. De
- * safe-area-insets in de CSS houden de inhoud daar weg. Alleen in app-modus,
- * zodat de webversie exact dezelfde viewport-meta houdt als nu.
+ * Zet het zoomen uit. `viewport-fit=cover` staat al in public/index.html — dat
+ * moet daar staan, want iOS berekent de safe-area-insets alleen bij het laden.
+ * Wat híér gebeurt is iets anders: in een app hoort de pagina niet te kunnen
+ * zoomen. Deed hij dat wel, dan kon je na een dubbeltik heen en weer schuiven
+ * en liep de tekst buiten beeld. Op het web blijft zoomen gewoon mogelijk —
+ * dat hoort daar, ook voor wie slecht ziet.
  */
-function enableFullBleedViewport() {
+function lockViewport() {
   const meta = document.querySelector('meta[name="viewport"]');
   if (meta) {
     meta.setAttribute(
       'content',
-      'width=device-width, initial-scale=1, viewport-fit=cover'
+      'width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no'
     );
   }
 }
@@ -29,7 +32,7 @@ function enableFullBleedViewport() {
 export async function initNativeShell() {
   if (!IS_NATIVE) return;
 
-  enableFullBleedViewport();
+  lockViewport();
 
   try {
     const { StatusBar, Style } = await import('@capacitor/status-bar');
