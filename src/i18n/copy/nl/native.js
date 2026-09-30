@@ -204,10 +204,10 @@ const native = {
     behavior: 'Gedrag',
     culture: 'Cultuur',
   },
-  // Kopje + titel boven de drie hoofdstukken die alleen in de app bestaan.
-  // Werkplek haalt zijn kop uit `resultsCard.profile` (Bricks), want die deelt
-  // hij met het web.
+  // Kopje + titel boven elk hoofdstuk. Staat de vakterm op de knop (Engels),
+  // dan staat het gewone woord erboven — en andersom. Zo zie je altijd allebei.
   chapterHeads: {
+    workplace: { label: 'Bricks', title: 'Jouw ideale werkplekmix' },
     bytes: { label: 'Bytes', title: 'Wat je digitaal nodig hebt' },
     // Gedrag ging eerst schuil onder "Bytes & Behavior", alsof het een
     // digitaal onderwerp was. Het gaat over hoe er gewerkt wordt.

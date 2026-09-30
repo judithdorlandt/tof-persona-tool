@@ -60,6 +60,11 @@ const archetypes = {
       'I want to try things out without everything having to be cleared first.',
     ],
     lquote: 'Manage this person too tightly and you will not lose the chaos — you will lose the creativity.',
+    // `quote` = the same truth as `lquote`, but said to you. `lquote` talks
+    // about you in the third person — as the closing line of your own profile
+    // that read like a case file. Only the app profile screen uses `quote`;
+    // the web, the PDF and the persona library keep `lquote`.
+    quote: 'Manage you too tightly and the chaos does not go — your creativity does.',
     mismatch: [
       'Workplaces without making space or visual tools.',
       'Cultures where conformity matters more than initiative.',
@@ -128,6 +133,7 @@ const archetypes = {
       'I need feedback to know whether I am actually moving forward.',
     ],
     lquote: 'Fail to challenge this person and you lose the energy first — and the person soon after.',
+    quote: 'If nobody challenges you, you lose your energy first — and your reason to stay soon after.',
     mismatch: [
       'Roles or teams where everything stays the same.',
       'A culture without feedback.',
@@ -196,6 +202,7 @@ const archetypes = {
       'I need priorities that hold, or I will run hard in the wrong direction.',
     ],
     lquote: 'Without a clear goal this engine keeps running — but goes nowhere.',
+    quote: 'Without a clear goal you keep running at full power — but you get nowhere.',
     mismatch: [
       'Workplaces without focus.',
       'Cultures where process matters more than results.',
@@ -264,6 +271,7 @@ const archetypes = {
       'Being thorough costs me time; I want to know that it is seen.',
     ],
     lquote: 'Rush this person and you often lose precisely the thing that safeguards the quality.',
+    quote: 'Rush you and you lose exactly the thing you safeguard the quality with.',
     mismatch: [
       'Work floors with constant noise.',
       'Cultures where speed matters more than substance.',
@@ -332,6 +340,7 @@ const archetypes = {
       'I want meeting each other to be normal in our work, not an extra.',
     ],
     lquote: 'A team without a connector only notices what is missing once everyone still works together but nobody feels connected.',
+    quote: 'A team without you only notices what has gone once everyone still works together but nobody feels connected.',
     mismatch: [
       'Workplaces designed for focus alone.',
       'Teams whose only contact is digital.',
@@ -400,6 +409,7 @@ const archetypes = {
       'I want us to be able to talk about the team when things chafe there.',
     ],
     lquote: 'Treat the team as small change and this person loses their foundation.',
+    quote: 'Treat the team as small change and you lose your foundation.',
     mismatch: [
       'Hot-desking and constantly shifting groups.',
       'A culture where everyone mainly works for themselves.',
@@ -468,6 +478,7 @@ const archetypes = {
       'When things get uncertain I need structure, not extra freedom.',
     ],
     lquote: 'For this person ambiguity is not a challenge but an erosion of their ability to work.',
+    quote: 'For you, ambiguity is not a challenge but something that erodes your ability to work.',
     mismatch: [
       'Environments with constant change.',
       'Vague expectations or incomplete information.',
@@ -536,6 +547,7 @@ const archetypes = {
       'Involve me in where we are going, not only in how we get there.',
     ],
     lquote: 'Without a platform this person builds their own — and that is rarely inside the same organisation.',
+    quote: 'Give you no platform and you will build your own — and that is rarely inside the same organisation.',
     mismatch: [
       'Environments with no room for renewal.',
       'Decision-making that keeps slowing renewal down.',

@@ -56,6 +56,11 @@ const archetypes = {
       'Ik wil dingen kunnen uitproberen zonder dat het eerst overal langs moet.',
     ],
     lquote: 'Als je deze persoon te strak aanstuurt, raak je niet de chaos kwijt — maar juist de creativiteit.',
+    // `quote` = dezelfde waarheid als `lquote`, maar tegen jou gezegd. `lquote`
+    // gaat óver je, in de derde persoon — als slotzin van je eigen profiel las
+    // dat als een dossier. Alleen het app-profielscherm gebruikt `quote`; het
+    // web, de PDF en de personabibliotheek houden `lquote`.
+    quote: 'Stuurt iemand jou te strak aan, dan verdwijnt niet de chaos — maar je creativiteit.',
     mismatch: [
       'Werkplekken zonder maakruimte of visuele hulpmiddelen.',
       'Culturen waarin conformiteit belangrijker is dan initiatief.',
@@ -124,6 +129,7 @@ const archetypes = {
       'Ik heb feedback nodig om te weten of ik echt vooruitga.',
     ],
     lquote: 'Als je deze persoon niet uitdaagt, verlies je eerst de energie — en daarna de persoon.',
+    quote: 'Daagt niemand je uit, dan verlies je eerst je energie — en daarna je zin om te blijven.',
     mismatch: [
       'Functies of teams waarin alles hetzelfde blijft.',
       'Een cultuur zonder feedback.',
@@ -192,6 +198,7 @@ const archetypes = {
       'Ik heb prioriteiten nodig die blijven staan, anders loop ik hard de verkeerde kant op.',
     ],
     lquote: 'Zonder helder doel gaat deze motor draaien — maar nergens naartoe.',
+    quote: 'Zonder helder doel blijf je op volle kracht draaien — maar kom je nergens.',
     mismatch: [
       'Werkplekken zonder focus.',
       'Culturen waarin proces belangrijker is dan resultaat.',
@@ -260,6 +267,7 @@ const archetypes = {
       'Zorgvuldigheid kost mij tijd; ik wil weten dat dat gezien wordt.',
     ],
     lquote: 'Wie deze persoon haast, verliest vaak precies datgene wat de kwaliteit bewaakt.',
+    quote: 'Wie jou haast, verliest precies datgene waarmee jij de kwaliteit bewaakt.',
     mismatch: [
       'Werkvloeren met continue ruis.',
       'Culturen waar snelheid belangrijker is dan inhoud.',
@@ -328,6 +336,7 @@ const archetypes = {
       'Ik wil dat ontmoeten in ons werk gewoon is, niet iets wat erbij komt.',
     ],
     lquote: 'Een team zonder verbinder merkt pas wat er ontbreekt als iedereen nog wel samenwerkt, maar niemand meer verbonden is.',
+    quote: 'Een team zonder jou merkt pas wat er weg is als iedereen nog samenwerkt, maar niemand zich meer verbonden voelt.',
     mismatch: [
       'Werkplekken die alleen op focus zijn ingericht.',
       'Teams die alleen digitaal contact hebben.',
@@ -396,6 +405,7 @@ const archetypes = {
       'Ik wil dat we het over het team kunnen hebben als het daar schuurt.',
     ],
     lquote: 'Als je het team als wisselgeld behandelt, verliest deze persoon zijn fundament.',
+    quote: 'Wordt het team als wisselgeld behandeld, dan raak jij je fundament kwijt.',
     mismatch: [
       'Hot-desking en continu wisselende groepen.',
       'Een cultuur waarin iedereen vooral voor zichzelf werkt.',
@@ -464,6 +474,7 @@ const archetypes = {
       'Als het onzeker wordt, heb ik structuur nodig, geen extra vrijheid.',
     ],
     lquote: 'Onduidelijkheid is voor deze persoon geen uitdaging, maar een aantasting van werkvermogen.',
+    quote: 'Onduidelijkheid is voor jou geen uitdaging, maar iets wat je werkvermogen aantast.',
     mismatch: [
       'Omgevingen met continue verandering.',
       'Vage verwachtingen of incomplete informatie.',
@@ -532,6 +543,7 @@ const archetypes = {
       'Betrek me bij wáár we heen gaan, niet alleen bij hoe we er komen.',
     ],
     lquote: 'Zonder podium bouwt deze persoon zijn eigen podium — en dat is zelden binnen dezelfde organisatie.',
+    quote: 'Krijg je geen podium, dan bouw je je eigen podium — en dat staat zelden binnen dezelfde organisatie.',
     mismatch: [
       'Omgevingen zonder ruimte voor vernieuwing.',
       'Besluitvorming die vernieuwing steeds vertraagt.',

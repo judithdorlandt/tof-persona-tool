@@ -282,8 +282,8 @@ export default function ProfileScreen({
                 {/* 5b — WERKPLEK: je ideale werkplekmix (Bricks) */}
                 {chapter === 'workplace' && (
                     <Sectie
-                        label={t.bricksLabel}
-                        title={t.bricksTitle}
+                        label={heads.workplace.label}
+                        title={heads.workplace.title}
                         accent={primaryColor}
                         isMobile={isMobile}
                         style={riseIn(4)}
@@ -453,8 +453,9 @@ export default function ProfileScreen({
                     </Sectie>
                 )}
 
-                {/* 6 — QUOTE: het slotakkoord, onder elk hoofdstuk */}
-                {primary?.lquote && (
+                {/* 6 — QUOTE: het slotakkoord, onder elk hoofdstuk. `quote`, niet
+                    `lquote`: dit is jouw profiel, dus de zin spreekt jou aan. */}
+                {primary?.quote && (
                     <div
                         style={{
                             background: primaryColor,
@@ -470,7 +471,7 @@ export default function ProfileScreen({
                             ...riseIn(5),
                         }}
                     >
-                        {primary.lquote}
+                        {primary.quote}
                     </div>
                 )}
 

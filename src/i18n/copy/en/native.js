@@ -178,20 +178,22 @@ const native = {
     library: 'Personas',
     pinnedCount: (n) => (n === 1 ? '1 insight pinned' : `${n} insights pinned`),
   },
-  // Plain language on the buttons. The TOF model (Bricks · Bytes · Behavior ·
-  // Belonging) sits as a small heading above the chapter — see `chapterHeads`.
+  // The other way round from Dutch: in English, Bricks · Bytes · Behavior ·
+  // Belonging are current workplace terms, so they belong on the buttons. The
+  // plain word sits above the chapter instead — see `chapterHeads`.
   chapters: {
     label: 'Part of your profile',
     motion: 'Energy',
-    workplace: 'Workplace',
-    bytes: 'Digital',
-    behavior: 'Behaviour',
-    culture: 'Culture',
+    workplace: 'Bricks',
+    bytes: 'Bytes',
+    behavior: 'Behavior',
+    culture: 'Belonging',
   },
   chapterHeads: {
-    bytes: { label: 'Bytes', title: 'What you need digitally' },
-    behavior: { label: 'Behavior', title: 'Where it starts to chafe for you' },
-    culture: { label: 'Belonging', title: 'Your place among your colleagues' },
+    workplace: { label: 'Workplace', title: 'Your ideal workplace mix' },
+    bytes: { label: 'Digital', title: 'What you need digitally' },
+    behavior: { label: 'Behaviour', title: 'Where it starts to chafe for you' },
+    culture: { label: 'Culture', title: 'Your place among your colleagues' },
   },
 };
 
