@@ -1,4 +1,5 @@
-// Copy that only exists in the app: start screen, notes and history.
+// Copy that only exists in the app: start screen, notes, history and the
+// privacy screen.
 const native = {
   start: {
     eyebrow: 'On this device',
@@ -12,6 +13,8 @@ const native = {
     profileEyebrow: 'Your profile',
     openProfile: 'View your profile',
     startTest: 'Take the test',
+    // Quiet footer line at the bottom of the start screen.
+    privacyLink: 'What this app keeps about you',
     // The three next steps below the profile card.
     actions: {
       history: {
@@ -109,6 +112,58 @@ const native = {
         hour: '2-digit',
         minute: '2-digit',
       }),
+  },
+  privacy: {
+    eyebrow: 'Your data',
+    title: 'Everything stays on your device',
+    intro:
+      'This app sends nothing to us or to anyone else. There is no account, no server and no internet connection needed. Below is exactly what is kept, and how to wipe it in one go.',
+    // Four blocks. `items` is an optional list below the text.
+    sections: [
+      {
+        title: 'What is kept',
+        text: 'Only what you make in the app yourself, stored inside the app:',
+        items: [
+          'Your persona profile: the outcome of the test and the date.',
+          'Your answers to the three conversation questions.',
+          'The insights you pinned to your conversation.',
+          'The language you picked.',
+        ],
+      },
+      {
+        title: 'What does not happen',
+        text: 'There is no reason for us to know more about you, so we do not:',
+        items: [
+          'No account, no email address, no password.',
+          'Your first name is only shown on screen during the test and is not kept.',
+          'No analytics, no trackers, no advertising.',
+          'No access to your contacts, location, camera or files.',
+        ],
+      },
+      {
+        title: 'Who can see it',
+        text: 'Only whoever can unlock your device. We cannot: there is no copy anywhere else. Delete the app and everything in it goes with it.',
+      },
+      {
+        title: 'Why it works this way',
+        text: 'Anyone who knows their manager might read along will not write down what is really going on. An honest conversation starts with notes that are yours alone.',
+      },
+    ],
+    eraseTitle: 'Erase everything',
+    eraseText:
+      'This wipes every profile, answer and pinned insight from this device in one go. It cannot be undone.',
+    eraseCount: (n) =>
+      n === 1
+        ? 'There is 1 profile on this device.'
+        : `There are ${n} profiles on this device.`,
+    eraseEmpty: 'There is nothing on this device right now.',
+    eraseButton: 'Erase everything',
+    eraseConfirm: 'Are you sure? Everything you wrote down will be gone.',
+    eraseYes: 'Yes, erase everything',
+    eraseCancel: 'Keep it',
+    eraseDone: 'Everything has been erased from this device.',
+    backHome: 'Back to start',
+    updated: 'Last updated: 30 September 2026',
   },
 };
 

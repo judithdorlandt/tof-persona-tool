@@ -159,6 +159,28 @@ export default function AppStart({ setPage }) {
                         </div>
                     </Kaart>
                 )}
+
+                {/* Beide stores eisen dat de privacyverklaring vindbaar is; in
+                    een app die offline werkt hoort die in de app te staan, niet
+                    achter een link naar buiten. */}
+                <button
+                    type="button"
+                    onClick={() => ga('privacy')}
+                    style={{
+                        justifySelf: 'start',
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--tof-font-body)',
+                        fontSize: 13,
+                        color: 'var(--tof-text-muted)',
+                        textDecoration: 'underline',
+                        ...riseIn(3),
+                    }}
+                >
+                    {t.privacyLink}
+                </button>
             </div>
         </PageShell>
     );

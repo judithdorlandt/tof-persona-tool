@@ -1,4 +1,5 @@
-// Teksten die alleen in de app bestaan: startscherm, notities en historie.
+// Teksten die alleen in de app bestaan: startscherm, notities, historie en
+// het privacyscherm.
 const native = {
   start: {
     eyebrow: 'Op dit toestel',
@@ -12,6 +13,8 @@ const native = {
     profileEyebrow: 'Jouw profiel',
     openProfile: 'Bekijk je profiel',
     startTest: 'Doe de test',
+    // Stille voetregel onderaan het startscherm, naar het privacyscherm.
+    privacyLink: 'Wat deze app over je bewaart',
     // De drie vervolgstappen onder de profielkaart.
     actions: {
       history: {
@@ -111,6 +114,60 @@ const native = {
         hour: '2-digit',
         minute: '2-digit',
       }),
+  },
+  privacy: {
+    eyebrow: 'Jouw gegevens',
+    title: 'Alles blijft op je toestel',
+    intro:
+      'Deze app stuurt niets naar ons of naar iemand anders. Er is geen account, geen server en geen internetverbinding nodig. Hieronder staat precies wat er wordt bewaard, en hoe je het in één keer weghaalt.',
+    // Vier blokken. `items` is telkens een opsomming onder de tekst; laat hem
+    // weg als er niets op te sommen valt.
+    sections: [
+      {
+        title: 'Wat er bewaard wordt',
+        text: 'Alleen wat je zelf in de app maakt, opgeslagen in de app zelf:',
+        items: [
+          'Je persona-profiel: de uitslag van de test en de datum.',
+          'Je antwoorden op de drie gespreksvragen.',
+          'De inzichten die je aan je gesprek hebt vastgeprikt.',
+          'Welke taal je hebt gekozen.',
+        ],
+      },
+      {
+        title: 'Wat er níét gebeurt',
+        text: 'Er is geen enkele reden om meer van je te weten, dus dat doen we ook niet:',
+        items: [
+          'Geen account, geen e-mailadres, geen wachtwoord.',
+          'Je voornaam wordt tijdens de test alleen op het scherm gebruikt en niet bewaard.',
+          'Geen statistieken, geen trackers, geen advertenties.',
+          'Geen toegang tot je contacten, locatie, camera of bestanden.',
+        ],
+      },
+      {
+        title: 'Wie erbij kan',
+        text: 'Alleen wie je toestel kan ontgrendelen. Wij kunnen er niet bij: er is geen kopie, ergens anders. Verwijder je de app, dan gaat alles wat hierin staat mee.',
+      },
+      {
+        title: 'Waarom dat zo is',
+        text: 'Wie weet dat zijn leidinggevende kan meelezen, schrijft niet op wat er werkelijk speelt. Een eerlijk gesprek begint bij aantekeningen die van jou alleen zijn.',
+      },
+    ],
+    // Het wisblok onderaan.
+    eraseTitle: 'Alles verwijderen',
+    eraseText:
+      'Hiermee wis je in één keer alle profielen, antwoorden en vastgeprikte inzichten van dit toestel. Dit kan niet ongedaan worden gemaakt.',
+    // Aantal bewaarde profielen, zodat je weet wat je weggooit.
+    eraseCount: (n) =>
+      n === 1 ? 'Er staat 1 profiel op dit toestel.' : `Er staan ${n} profielen op dit toestel.`,
+    eraseEmpty: 'Er staat op dit moment niets op dit toestel.',
+    eraseButton: 'Alles verwijderen',
+    eraseConfirm: 'Weet je het zeker? Alles wat je hebt opgeschreven verdwijnt.',
+    eraseYes: 'Ja, alles verwijderen',
+    eraseCancel: 'Laat maar staan',
+    eraseDone: 'Alles is van dit toestel verwijderd.',
+    backHome: 'Terug naar start',
+    // Datum van de laatste herziening van deze tekst.
+    updated: 'Laatst bijgewerkt: 30 september 2026',
   },
 };
 

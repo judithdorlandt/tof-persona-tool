@@ -143,3 +143,25 @@ export function deleteEntry(id) {
     const currentId = state.currentId === id ? entries[0]?.id || null : state.currentId;
     return write({ version: VERSION, currentId, entries });
 }
+
+/**
+ * Wist alles wat de app over je bewaart: profielen, antwoorden, vastgeprikte
+ * inzichten, welk profiel je bekeek.
+ *
+ * `removeItem` in plaats van een lege staat wegschrijven — dan blijft er ook
+ * geen skelet achter en is de sleutel daadwerkelijk weg van het toestel. Dat
+ * is wat "verwijderen" hoort te betekenen.
+ */
+export function clearAll() {
+    try {
+        window.localStorage.removeItem(KEY);
+        return true;
+    } catch (_e) {
+        return false;
+    }
+}
+
+/** Hoeveel profielen er nu op het toestel staan (voor het privacyscherm). */
+export function countEntries() {
+    return read().entries.length;
+}

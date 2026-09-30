@@ -20,10 +20,11 @@ export const NATIVE_PAGES = [
     'library',
     'historie',
     'gesprek',
+    'privacy',
 ];
 
 /** Pagina's die alleen in de app bestaan en op het web niets te zoeken hebben. */
-export const NATIVE_ONLY_PAGES = ['historie', 'gesprek'];
+export const NATIVE_ONLY_PAGES = ['historie', 'gesprek', 'privacy'];
 
 export function isPageAllowed(page) {
     if (IS_NATIVE) return NATIVE_PAGES.includes(page);

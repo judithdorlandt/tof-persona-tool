@@ -29,6 +29,7 @@ import StrategischKompasReview from './components/StrategischKompasReview.jsx';
 import AppStart from './native/AppStart.jsx';
 import History from './native/History.jsx';
 import ConversationPrep from './native/ConversationPrep.jsx';
+import Privacy from './native/Privacy.jsx';
 import { getCurrentEntry } from './native/localStore';
 
 // EXPERIMENTEEL — werkplekbehoefteprofiel, achter een feature-flag.
@@ -156,6 +157,9 @@ export default function App() {
 
       case 'gesprek':
         return <ConversationPrep setPage={navigate} />;
+
+      case 'privacy':
+        return <Privacy setPage={navigate} />;
 
       case 'team':
         return (
