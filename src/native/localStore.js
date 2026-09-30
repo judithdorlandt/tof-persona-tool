@@ -57,9 +57,23 @@ function read() {
     }
 }
 
+/**
+ * Wie er wil weten dat er iets veranderd is. De tabbalk gebruikt dit voor het
+ * getal bij "Gesprek": je prikt een inzicht vast op het profielscherm, en de
+ * teller onderin moet dan meteen meelopen — anders zie je nooit dat je iets
+ * aan het verzamelen bent.
+ */
+const listeners = new Set();
+
+export function subscribe(fn) {
+    listeners.add(fn);
+    return () => listeners.delete(fn);
+}
+
 function write(state) {
     try {
         window.localStorage.setItem(KEY, JSON.stringify(state));
+        listeners.forEach((fn) => fn());
         return true;
     } catch (_e) {
         return false;

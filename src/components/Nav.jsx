@@ -134,7 +134,14 @@ export default function Nav({
                         </div>
                     </button>
 
-                    {!isMobile ? (
+                    {/* App-modus: navigeren gebeurt in de balk onderin (zie
+                        native/TabBar.jsx), binnen duimbereik. Bovenin blijft
+                        alleen het merk en de taalkeuze staan — die laatste is
+                        sinds de landing wordt overgeslagen de enige plek waar
+                        je nog van taal kunt wisselen. */}
+                    {IS_NATIVE ? (
+                        langSwitch
+                    ) : !isMobile ? (
                         <div className={styles.navList}>
                             {items.map((item) => {
                                 const active = page === item.key;
@@ -175,7 +182,7 @@ export default function Nav({
                     )}
                 </div>
 
-                {isMobile && menuOpen && (
+                {!IS_NATIVE && isMobile && menuOpen && (
                     <div className={styles.menuPanel}>
                         {items.map((item) => {
                             const active = page === item.key;

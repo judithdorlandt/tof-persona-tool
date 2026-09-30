@@ -66,10 +66,11 @@ const native = {
     remove: 'Remove from my conversation',
   },
   prep: {
-    eyebrow: 'For your conversation',
+    // It is one specific conversation: the one with your manager.
+    eyebrow: 'With your manager',
     title: 'Your conversation prep',
     intro:
-      'Everything you pinned and wrote down, on one screen. Stays on your device.',
+      'Everything you pinned and wrote down for your next conversation with your manager — a one-to-one, a review, or simply a good talk. Stays on your device.',
     pinnedTitle: 'What you pinned',
     // Headings above a pinned insight, per kind. The keys match `kind` in
     // src/native/localStore.js.
@@ -81,8 +82,6 @@ const native = {
     },
     pinnedEmpty:
       'You have not pinned anything yet. Tap the plus next to an insight in your profile.',
-    notesTitle: 'Your answers',
-    notesEmpty: 'You have not answered the three questions yet.',
     backToProfile: 'Back to your profile',
   },
   history: {
@@ -164,6 +163,21 @@ const native = {
     eraseDone: 'Everything has been erased from this device.',
     backHome: 'Back to start',
     updated: 'Last updated: 30 September 2026',
+  },
+  tabs: {
+    label: 'Main menu',
+    profile: 'Profile',
+    conversation: 'Conversation',
+    history: 'History',
+    library: 'Personas',
+    pinnedCount: (n) => (n === 1 ? '1 insight pinned' : `${n} insights pinned`),
+  },
+  chapters: {
+    label: 'Part of your profile',
+    motion: 'Energy',
+    workplace: 'Workplace',
+    bytes: 'Digital',
+    leadership: 'Leadership',
   },
 };
 

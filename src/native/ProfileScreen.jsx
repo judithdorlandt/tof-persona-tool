@@ -1,18 +1,27 @@
+import { useState } from 'react';
+
 import PinButton from '../components/result/PinButton';
 import ResultDistribution from '../components/result/ResultDistribution';
 import { riseIn } from '../components/result/motion';
 import { useCopy } from '../i18n/LanguageContext';
 import { PERSONA_COLORS, getReadableTextOnColor } from '../lib/resultDerivations';
 import { PageShell } from '../ui/AppShell';
-import ProfileNotes from './ProfileNotes';
 
 /**
  * ProfileScreen — jouw profiel zoals de app het toont.
  *
  * Op het web is het resultaat één brede kaart met twee kolommen; dat leest op
- * een telefoon niet. Hier staat alles onder elkaar in negen blokken, in de
- * volgorde waarin je het wil lezen: eerst wie je bent, dan de verhouding, dan
- * wat dat betekent voor je werk, en onderaan ruimte voor je eigen woorden.
+ * een telefoon niet. Hier staat alles onder elkaar.
+ *
+ * Alles onder elkaar wérd het ook letterlijk: negen blokken, 3506 pixels, ruim
+ * vier telefoonschermen scrollen voordat je beneden was. Daarom is het scherm
+ * nu in twee helften geknipt. Bovenaan staat wie je bent — dat lees je één keer
+ * en dat verandert niet. Daaronder kies je zelf welk hoofdstuk je erbij wil:
+ * Beweging, Werkplek, Digitaal of Leiderschap. Eén tegelijk, dus je kunt echt
+ * lezen wat er staat.
+ *
+ * Je aantekeningen staan hier niet meer. Die horen bij je gesprek, en dat is
+ * een eigen scherm geworden (zie ConversationPrep.jsx, tabblad "Gesprek").
  *
  * De afleidingen komen kant-en-klaar binnen uit `Results.jsx`, zodat web, PDF
  * en app gegarandeerd hetzelfde rekenen (zie src/lib/resultDerivations.js).
@@ -37,6 +46,16 @@ export default function ProfileScreen({
     const quoteTextColor = getReadableTextOnColor(primaryColor);
     const mix = [secondary, tertiary].filter(Boolean);
     const drains = (primary?.energycost || []).slice(0, 3);
+
+    // Welk hoofdstuk je nu leest. "Beweging" staat vooraan omdat het over jou
+    // gaat; de andere drie gaan over wat je nodig hebt.
+    const [chapter, setChapter] = useState('motion');
+    const chapters = [
+        { key: 'motion', label: native.chapters.motion, show: true },
+        { key: 'workplace', label: native.chapters.workplace, show: bricksItems.length > 0 },
+        { key: 'bytes', label: native.chapters.bytes, show: bytesBehaviorBlocks.length > 0 },
+        { key: 'leadership', label: native.chapters.leadership, show: leadershipItems.length > 0 },
+    ].filter((c) => c.show);
 
     // De randen van de pagina; de hero trekt zich hier met een negatieve marge
     // weer uit, zodat de kleurwaas de hele breedte pakt.
@@ -161,57 +180,93 @@ export default function ProfileScreen({
                     </Sectie>
                 )}
 
-                {/* 4 — WAT JOU IN BEWEGING BRENGT / WAAR JE OP LEEGLOOPT */}
-                <Sectie label={t.motionLabel} accent={primaryColor} isMobile={isMobile} style={riseIn(3)}>
-                    <div style={{ display: 'grid', gap: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
-                            <span
+                {/* 4 — DE HOOFDSTUKKEN: vier knoppen, één hoofdstuk open */}
+                <div
+                    role="group"
+                    aria-label={native.chapters.label}
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: `repeat(${chapters.length}, 1fr)`,
+                        gap: 6,
+                        ...riseIn(3),
+                    }}
+                >
+                    {chapters.map((c) => {
+                        const isOpen = c.key === chapter;
+                        return (
+                            <button
+                                key={c.key}
+                                type="button"
+                                onClick={() => setChapter(c.key)}
+                                aria-pressed={isOpen}
                                 style={{
-                                    fontFamily: "'Playfair Display', serif",
-                                    fontWeight: 500,
-                                    fontSize: 20,
-                                    lineHeight: 1.18,
-                                    color: primaryColor,
+                                    ...CHIP,
+                                    // Het open hoofdstuk krijgt je eigen kleur; de rest
+                                    // blijft rustig, anders concurreren ze met de inhoud.
+                                    background: isOpen ? primaryColor : 'var(--tof-surface)',
+                                    color: isOpen ? getReadableTextOnColor(primaryColor) : 'var(--tof-text-soft)',
+                                    borderColor: isOpen ? primaryColor : 'var(--tof-border)',
                                 }}
                             >
-                                {t.motionTitle}
-                            </span>
+                                {c.label}
+                            </button>
+                        );
+                    })}
+                </div>
 
-                            <PinButton pin={{ kind: 'energy', key: 'from' }} pinning={pinning} color={primaryColor} />
-                        </div>
-
-                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: 'var(--tof-text-soft)' }}>
-                            {primary?.energy_from}
-                        </p>
-                    </div>
-
-                    {drains.length > 0 && (
+                {/* 5a — BEWEGING: wat jou in beweging brengt, waar je op leegloopt */}
+                {chapter === 'motion' && (
+                    <Sectie label={t.motionLabel} accent={primaryColor} isMobile={isMobile} style={riseIn(4)}>
                         <div style={{ display: 'grid', gap: 8 }}>
-                            <div style={LABEL}>{t.drainLabel}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                                <span
+                                    style={{
+                                        fontFamily: "'Playfair Display', serif",
+                                        fontWeight: 500,
+                                        fontSize: 20,
+                                        lineHeight: 1.18,
+                                        color: primaryColor,
+                                    }}
+                                >
+                                    {t.motionTitle}
+                                </span>
 
-                            {drains.map((item, index) => (
-                                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                                    <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, lineHeight: 1.6, flexShrink: 0 }}>
-                                        ×
-                                    </span>
+                                <PinButton pin={{ kind: 'energy', key: 'from' }} pinning={pinning} color={primaryColor} />
+                            </div>
 
-                                    <span style={{ flex: 1, fontSize: 14, lineHeight: 1.62, color: 'var(--tof-text-soft)' }}>
-                                        {item}
-                                    </span>
-
-                                    <PinButton
-                                        pin={{ kind: 'drain', key: String(index) }}
-                                        pinning={pinning}
-                                        color={primaryColor}
-                                    />
-                                </div>
-                            ))}
+                            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: 'var(--tof-text-soft)' }}>
+                                {primary?.energy_from}
+                            </p>
                         </div>
-                    )}
-                </Sectie>
 
-                {/* 5 — BRICKS: je ideale werkplekmix */}
-                {bricksItems.length > 0 && (
+                        {drains.length > 0 && (
+                            <div style={{ display: 'grid', gap: 8 }}>
+                                <div style={LABEL}>{t.drainLabel}</div>
+
+                                {drains.map((item, index) => (
+                                    <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                                        <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, lineHeight: 1.6, flexShrink: 0 }}>
+                                            ×
+                                        </span>
+
+                                        <span style={{ flex: 1, fontSize: 14, lineHeight: 1.62, color: 'var(--tof-text-soft)' }}>
+                                            {item}
+                                        </span>
+
+                                        <PinButton
+                                            pin={{ kind: 'drain', key: String(index) }}
+                                            pinning={pinning}
+                                            color={primaryColor}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </Sectie>
+                )}
+
+                {/* 5b — WERKPLEK: je ideale werkplekmix (Bricks) */}
+                {chapter === 'workplace' && (
                     <Sectie
                         label={t.bricksLabel}
                         title={t.bricksTitle}
@@ -279,14 +334,14 @@ export default function ProfileScreen({
                     </Sectie>
                 )}
 
-                {/* 6 — BYTES & BEHAVIOR */}
-                {bytesBehaviorBlocks.length > 0 && (
+                {/* 5c — DIGITAAL: Bytes & Behavior */}
+                {chapter === 'bytes' && (
                     <Sectie
                         label={t.bytesLabel}
                         title={t.bytesTitle}
                         accent={primaryColor}
                         isMobile={isMobile}
-                        style={riseIn(5)}
+                        style={riseIn(4)}
                     >
                         <div style={{ display: 'grid', gap: 10 }}>
                             {bytesBehaviorBlocks.map((item) => (
@@ -329,14 +384,14 @@ export default function ProfileScreen({
                     </Sectie>
                 )}
 
-                {/* 7 — WAT HELPT IN LEIDERSCHAP */}
-                {leadershipItems.length > 0 && (
+                {/* 5d — LEIDERSCHAP: wat helpt in leiderschap */}
+                {chapter === 'leadership' && (
                     <Sectie
                         label={t.leadershipLabel}
                         title={t.leadershipTitle}
                         accent={primaryColor}
                         isMobile={isMobile}
-                        style={riseIn(6)}
+                        style={riseIn(4)}
                     >
                         <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 10 }}>
                             {leadershipItems.map((item, index) => (
@@ -360,7 +415,7 @@ export default function ProfileScreen({
                     </Sectie>
                 )}
 
-                {/* 8 — QUOTE */}
+                {/* 6 — QUOTE: het slotakkoord, onder elk hoofdstuk */}
                 {primary?.lquote && (
                     <div
                         style={{
@@ -374,21 +429,10 @@ export default function ProfileScreen({
                             lineHeight: 1.45,
                             fontStyle: 'italic',
                             letterSpacing: '-0.01em',
-                            ...riseIn(7),
+                            ...riseIn(5),
                         }}
                     >
                         {primary.lquote}
-                    </div>
-                )}
-
-                {/* 9 — MIJN AANTEKENINGEN (alleen bij een bewaard profiel) */}
-                {noteEntry && (
-                    <div style={riseIn(8)}>
-                        <ProfileNotes
-                            entryId={noteEntry.id}
-                            initialNotes={noteEntry.notes}
-                            isMobile={isMobile}
-                        />
                     </div>
                 )}
 
@@ -403,6 +447,25 @@ const LABEL = {
     textTransform: 'uppercase',
     color: 'var(--tof-text-muted)',
     fontWeight: 700,
+};
+
+/**
+ * Eén hoofdstukknop. Vier naast elkaar op de smalste telefoon, dus krap: 12 px
+ * tekst en weinig lucht eromheen. Ze mogen niet afbreken — daarom `nowrap` en
+ * geen langere labels dan in `native.chapters`.
+ */
+const CHIP = {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    padding: '10px 4px',
+    fontSize: 12,
+    fontWeight: 600,
+    lineHeight: 1.2,
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+    // Apples ondergrens voor raakvlakken.
+    minHeight: 40,
 };
 
 /**

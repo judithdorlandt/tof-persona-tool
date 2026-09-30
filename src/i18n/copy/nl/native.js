@@ -66,10 +66,12 @@ const native = {
     remove: 'Haal van mijn gesprek',
   },
   prep: {
-    eyebrow: 'Voor je gesprek',
+    // Het gaat om één specifiek gesprek: dat met je leidinggevende. Zonder dat
+    // erbij te zeggen blijft "gesprek" een leeg woord.
+    eyebrow: 'Met je leidinggevende',
     title: 'Jouw gespreksvoorbereiding',
     intro:
-      'Alles wat je hebt vastgeprikt en opgeschreven, op één scherm. Blijft op je toestel.',
+      'Alles wat je hebt vastgeprikt en opgeschreven voor je volgende gesprek met je leidinggevende — je bila, je functioneringsgesprek, of gewoon een goed gesprek. Blijft op je toestel.',
     pinnedTitle: 'Wat je hebt vastgeprikt',
     // Kopjes boven een vastgeprikt inzicht, per soort. De sleutels komen
     // overeen met `kind` in src/native/localStore.js.
@@ -81,8 +83,6 @@ const native = {
     },
     pinnedEmpty:
       'Je hebt nog niets vastgeprikt. Tik op de plus bij een inzicht in je profiel.',
-    notesTitle: 'Jouw antwoorden',
-    notesEmpty: 'Je hebt de drie vragen nog niet beantwoord.',
     backToProfile: 'Terug naar je profiel',
   },
   history: {
@@ -168,6 +168,30 @@ const native = {
     backHome: 'Terug naar start',
     // Datum van de laatste herziening van deze tekst.
     updated: 'Laatst bijgewerkt: 30 september 2026',
+  },
+  // De balk onderaan het scherm — de vier plekken waar je heen kunt. Kort
+  // houden: dit moet naast elkaar passen op de smalste telefoon.
+  tabs: {
+    label: 'Hoofdmenu',
+    profile: 'Profiel',
+    conversation: 'Gesprek',
+    history: 'Historie',
+    library: "Persona's",
+    // Voorgelezen bij het aantal vastgeprikte inzichten op het gesprek-tabblad.
+    pinnedCount: (n) =>
+      n === 1 ? '1 inzicht vastgeprikt' : `${n} inzichten vastgeprikt`,
+  },
+  // De hoofdstukken van je profiel. Stonden eerst allemaal onder elkaar —
+  // 4,3 schermen scrollen; nu kies je er één. De labels zijn korter dan de
+  // koppen in het hoofdstuk zelf, want ze moeten op een knop passen.
+  chapters: {
+    label: 'Onderdeel van je profiel',
+    // "Beweging" was te abstract om op een knop te snappen; het gaat over waar
+    // je energie van krijgt en waar hij weglekt.
+    motion: 'Energie',
+    workplace: 'Werkplek',
+    bytes: 'Digitaal',
+    leadership: 'Leiderschap',
   },
 };
 

@@ -30,7 +30,8 @@ import AppStart from './native/AppStart.jsx';
 import History from './native/History.jsx';
 import ConversationPrep from './native/ConversationPrep.jsx';
 import Privacy from './native/Privacy.jsx';
-import { getCurrentEntry } from './native/localStore';
+import TabBar from './native/TabBar.jsx';
+import { getCurrentEntry, subscribe } from './native/localStore';
 
 // EXPERIMENTEEL — werkplekbehoefteprofiel, achter een feature-flag.
 import WerkplekProfiel from './experimental/WerkplekProfiel.jsx';
@@ -60,6 +61,14 @@ export default function App() {
   useEffect(() => {
     if (IS_NATIVE) setNativeEntry(getCurrentEntry());
   }, [location.pathname]);
+
+  // En ook zodra er iets op het toestel verandert zonder dat je van scherm
+  // wisselt — vastprikken op het profielscherm laat de teller in de tabbalk
+  // meteen meelopen.
+  useEffect(() => {
+    if (!IS_NATIVE) return undefined;
+    return subscribe(() => setNativeEntry(getCurrentEntry()));
+  }, []);
 
   const [teamResponses, setTeamResponses] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -275,6 +284,10 @@ export default function App() {
   const hideNav = page === 'landing'
     || (!IS_NATIVE && (page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm'));
 
+  // De balk onderin hoort bij een app die iets van je bewaart: zolang er geen
+  // profiel is, is er ook niets om heen te gaan en blijft hij weg.
+  const showTabBar = IS_NATIVE && !hideNav && !!nativeEntry;
+
   return (
     <>
       {!hideNav && (
@@ -287,7 +300,18 @@ export default function App() {
           onLogout={handleLogout}
         />
       )}
-      <main>{renderPage()}</main>
+      {/* De vaste balk ligt over de pagina heen, dus houdt de pagina onderaan
+          ruimte vrij — anders valt de laatste knop eronder. */}
+      <main style={showTabBar ? { paddingBottom: 'calc(56px + env(safe-area-inset-bottom, 0px))' } : undefined}>
+        {renderPage()}
+      </main>
+      {showTabBar && (
+        <TabBar
+          page={page}
+          setPage={navigate}
+          pinnedCount={nativeEntry.pinned?.length || 0}
+        />
+      )}
     </>
   );
 }

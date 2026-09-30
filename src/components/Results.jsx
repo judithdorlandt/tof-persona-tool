@@ -16,7 +16,6 @@ import {
     buildScoreDistribution,
     buildWorkplaceNeedsForMix,
 } from '../lib/resultDerivations';
-import ProfileNotes from '../native/ProfileNotes';
 import ProfileScreen from '../native/ProfileScreen';
 import usePinned from '../native/usePinned';
 import ResultsDownloadCard from './ResultsDownloadCard';
@@ -55,8 +54,8 @@ function getFirstName(fullName) {
 }
 
 // `noteEntry` is het bewaarde profiel uit de lokale opslag van de app. Alleen
-// als dat meekomt is er iets om een aantekening aan te hangen; op het web en
-// tijdens de quiz (nog niets bewaard) blijft het blok weg.
+// als dat meekomt kun je inzichten vastprikken en weet het scherm wanneer je
+// de test hebt afgerond; op het web en tijdens de quiz is het `null`.
 export default function Results({ resultData, setPage, noteEntry = null }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
     const ARCHETYPES = useArchetypes();
@@ -302,14 +301,6 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
                         setPage={setPage}
                         resultData={resultData}
                     />
-
-                    {noteEntry && (
-                        <ProfileNotes
-                            entryId={noteEntry.id}
-                            initialNotes={noteEntry.notes}
-                            isMobile={isMobile}
-                        />
-                    )}
 
                 </div> {/* einde maxWidth 920 wrapper */}
 

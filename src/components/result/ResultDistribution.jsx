@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BAR_DURATION, BAR_STAGGER, prefersReducedMotion } from './motion';
 
 /**
@@ -9,32 +9,50 @@ import { BAR_DURATION, BAR_STAGGER, prefersReducedMotion } from './motion';
  * src/lib/resultDerivations.js). De balken groeien één keer van niets naar hun
  * waarde, met een kleine vertraging per balk, zodat de rangorde zich
  * uitspreekt in plaats van in één klap te staan.
+ *
+ * Ze groeien pas **als het blok in beeld komt**. Stond het onder de vouw, dan
+ * was het groeien al voorbij tegen de tijd dat je er was en zag je alleen een
+ * stilstaand plaatje. Het gebeurt één keer: terugscrollen laat ze staan.
  */
 export default function ResultDistribution({ label, labelStyle, items }) {
     // `false` = alle balken nog op nul. Wie minder beweging wil begint
     // meteen op de eindbreedte, dan valt er niets te groeien.
     const [grown, setGrown] = useState(prefersReducedMotion);
+    const blokRef = useRef(null);
 
     useEffect(() => {
         if (grown) return undefined;
 
-        // Twee frames wachten. Het eerste laat de browser de balken écht op
-        // nul tekenen; pas in het tweede mag de breedte veranderen. Zonder die
-        // tussenstap zet React beide waarden in dezelfde paint en is er geen
-        // beginpunt om vanaf te animeren.
-        let second;
-        const first = requestAnimationFrame(() => {
-            second = requestAnimationFrame(() => setGrown(true));
-        });
+        const blok = blokRef.current;
+        if (!blok || typeof IntersectionObserver !== 'function') {
+            setGrown(true);
+            return undefined;
+        }
 
-        return () => {
-            cancelAnimationFrame(first);
-            if (second) cancelAnimationFrame(second);
-        };
+        const observer = new IntersectionObserver(
+            ([item]) => {
+                if (!item.isIntersecting) return;
+                observer.disconnect();
+                // Twee frames wachten. Het eerste laat de browser de balken écht
+                // op nul tekenen; pas in het tweede mag de breedte veranderen.
+                // Zonder die tussenstap zet React beide waarden in dezelfde
+                // paint en is er geen beginpunt om vanaf te animeren.
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => setGrown(true));
+                });
+            },
+            // Een kwart van het blok moet zichtbaar zijn: bij het randje van het
+            // scherm beginnen zou het groeien weer buiten beeld laten gebeuren.
+            { threshold: 0.25 }
+        );
+
+        observer.observe(blok);
+        return () => observer.disconnect();
     }, [grown]);
 
     return (
         <div
+            ref={blokRef}
             style={{
                 background: 'rgba(255,255,255,0.82)',
                 borderRadius: 14,

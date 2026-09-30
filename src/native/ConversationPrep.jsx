@@ -8,14 +8,19 @@ import {
 } from '../lib/resultDerivations';
 import { PageShell, PrimaryButton, SectionEyebrow } from '../ui/AppShell';
 import { getCurrentEntry } from './localStore';
+import ProfileNotes from './ProfileNotes';
 
 /**
  * ConversationPrep — alles wat je wilt bespreken, op één scherm.
  *
- * Bestaat alleen in app-modus. Dit is geen nieuw inzicht maar een samenvatting
- * van wat je zélf hebt aangewezen: de vastgeprikte punten uit je profiel en je
- * antwoorden op de drie vragen. Bewust zonder export of PDF — dit is om bij je
- * te hebben, niet om te versturen.
+ * Bestaat alleen in app-modus. Dit is geen nieuw inzicht maar wat je zélf hebt
+ * aangewezen: de vastgeprikte punten uit je profiel, en hieronder de drie vragen
+ * die je zelf invult. Bewust zonder export of PDF — dit is om bij je te hebben,
+ * niet om te versturen.
+ *
+ * De drie vragen stonden eerst onderaan je profiel, waar ze het scherm nog eens
+ * 767 pixels langer maakten en niemand ze ooit bereikte. Ze horen hier: op de
+ * plek waar je je gesprek voorbereidt.
  */
 export default function ConversationPrep({ setPage }) {
     const { native: copy, resultsCard } = useCopy();
@@ -36,14 +41,6 @@ export default function ConversationPrep({ setPage }) {
     const pinnedItems = useMemo(
         () => resolvePinned(entry?.pinned, primary, workplaceLabels),
         [entry, primary, workplaceLabels]
-    );
-
-    const answeredNotes = useMemo(
-        () =>
-            ['recognize', 'drains', 'ask']
-                .map((field) => ({ field, text: (entry?.notes?.[field] || '').trim() }))
-                .filter((item) => item.text),
-        [entry]
     );
 
     return (
@@ -149,24 +146,14 @@ export default function ConversationPrep({ setPage }) {
                     )}
                 </Card>
 
-                <Card isMobile={isMobile}>
-                    <SectionEyebrow>{copy.prep.notesTitle}</SectionEyebrow>
-
-                    {answeredNotes.length === 0 ? (
-                        <p style={bodyText}>{copy.prep.notesEmpty}</p>
-                    ) : (
-                        <div style={{ display: 'grid', gap: 14 }}>
-                            {answeredNotes.map(({ field, text }) => (
-                                <div key={field} style={{ display: 'grid', gap: 4 }}>
-                                    <span style={{ fontWeight: 600, fontSize: 15, color: 'var(--tof-text)' }}>
-                                        {copy.notes.fields[field].label}
-                                    </span>
-                                    <p style={{ ...bodyText, whiteSpace: 'pre-wrap' }}>{text}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </Card>
+                {/* Hier schrijf je zelf. Typen is opslaan, op het toestel. */}
+                {entry && (
+                    <ProfileNotes
+                        entryId={entry.id}
+                        initialNotes={entry.notes}
+                        isMobile={isMobile}
+                    />
+                )}
 
                 <div>
                     <PrimaryButton onClick={() => setPage('results')}>
