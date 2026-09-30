@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/ic_launcher_background"/>
-    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+    <!-- De achtergrond loopt bewust tot de rand door: met een inset houdt het
+         gekleurde vlak precies op waar het zichtbare gebied ophoudt, en dan
+         kan het parallax-effect van een launcher er doorzichtige hoeken
+         achter vandaan schuiven. `@capacitor/assets` zet die inset er bij een
+         regeneratie opnieuw op — zie scripts/make-app-assets.mjs. -->
+    <background android:drawable="@mipmap/ic_launcher_background" />
+    <foreground>
+        <inset android:drawable="@mipmap/ic_launcher_foreground" android:inset="16.7%" />
+    </foreground>
 </adaptive-icon>

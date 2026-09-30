@@ -22,6 +22,11 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<!-- De app versleutelt zelf niets; alles blijft op het toestel. Zonder deze
+	     sleutel vraagt App Store Connect bij elke upload opnieuw naar
+	     exportregels voor encryptie. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
