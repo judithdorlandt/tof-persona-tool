@@ -514,10 +514,17 @@ Niets hiervan houdt fase 8 nog tegen.
 | Punt | Besluit |
 | --- | --- |
 | Delen als platte tekst | **Ja, maar in fase 9** — samen met de privacyteksten |
-| Naam in de stores | **Als organisatie: The Office Factory** (vraagt een D-U-N-S-nummer) |
+| Naam in de stores | **Als individu** — inschrijving staat op naam, verkoper wordt "Judith Dorlandt" |
 | Mac of clouddienst voor iOS | **Deze Mac** — Xcode staat er, iOS loopt via SPM |
 | Eén taal of twee | **Twee** — de app kiest zelf tussen NL en EN |
 
-Hiervan is alleen het D-U-N-S-nummer een actie buiten de code, met doorlooptijd.
-Het bouwen van fase 8 kan daar niet op wachten en hoeft dat ook niet: het nummer
-is pas nodig bij het inschrijven, niet bij het bouwen.
+Dit is geen papieren keuze meer: de inschrijving bij Apple is op 30 september
+2026 afgerond als individu (team LLQ6SX9ML2) en de app draait getekend op de
+iPhone. Als ZZP'er is er geen D-U-N-S-nummer nodig — dat is alleen de weg voor
+een organisatie-account. Daarmee is de laatste actie met doorlooptijd buiten de
+code vervallen en houdt niets fase 8 nog tegen.
+
+Wat je ervoor terugkrijgt is dat je eigen naam in de App Store staat en niet die
+van The Office Factory. Omzetten naar een organisatie-account kan later, maar is
+een aparte aanvraag mét D-U-N-S-nummer; reken erop dat je dat niet even tussendoor
+doet.
