@@ -10,6 +10,7 @@ import {
 } from '../ui/AppShell';
 import { deleteEntry, getCurrentEntry, getHistory, selectEntry } from './localStore';
 import { tap } from './nativeShell';
+import PastConversation from './PastConversation';
 
 /** Hoe ver de kaart meeschuift, en vanaf waar de veeg telt. */
 const MAX_REVEAL = 104;
@@ -26,9 +27,13 @@ const SWIPE_THRESHOLD = 64;
  * (of gebruik de knop) en de kaart vraagt het eerst na. Dat is bewust geen
  * `window.confirm` — in een webview is dat een browserdialoog met de hostnaam
  * erin, precies het soort ding dat een app níet native laat voelen.
+ *
+ * Onder elk profiel hangen de gesprekken die je toen hebt gevoerd. Ze staan
+ * dichtgeklapt: dit blijft een lijst profielen, en pas als je er één opent wil
+ * je de gesprekken eronder lezen.
  */
 export default function History({ setPage }) {
-    const { native: copy } = useCopy();
+    const { native: copy, resultsCard } = useCopy();
     const ARCHETYPES = useArchetypes();
     const [entries, setEntries] = useState(() => getHistory());
     const [currentId, setCurrentId] = useState(() => getCurrentEntry()?.id || null);
@@ -44,6 +49,7 @@ export default function History({ setPage }) {
     }, []);
 
     const naamVan = (id) => ARCHETYPES.find((a) => a.id === id)?.name || '';
+    const workplaceLabels = resultsCard.profile.workplaceLabels;
 
     const open = (id) => {
         selectEntry(id);
@@ -155,11 +161,19 @@ export default function History({ setPage }) {
                                     .filter(Boolean)
                                     .join(' · ')}
                                 isCurrent={entry.id === currentId}
-                                // Eén van de drie gespreksvragen beantwoord is
-                                // al genoeg voor het "met aantekening"-label.
+                                // Eén beantwoorde gespreksvraag is al genoeg
+                                // voor het "met aantekening"-label.
                                 heeftNotitie={Object.values(entry.notes || {}).some(
                                     (v) => v && v.trim()
                                 )}
+                                // De gesprekken die onder dít profiel zijn
+                                // afgerond, nieuwste eerst. `primary` gaat als
+                                // archetype mee (niet als naam): de
+                                // vastgeprikte inzichten van toen worden
+                                // daaruit teruggezocht.
+                                gesprekken={entry.conversations || []}
+                                primary={ARCHETYPES.find((a) => a.id === entry.result?.primary)}
+                                workplaceLabels={workplaceLabels}
                                 pending={entry.id === pendingId}
                                 onOpen={() => open(entry.id)}
                                 onAskRemove={() => vraagNa(entry.id)}
@@ -183,10 +197,12 @@ export default function History({ setPage }) {
  */
 function HistoryCard({
     copy, isMobile, kleur, datum, naam, mix, isCurrent, heeftNotitie,
+    gesprekken, primary, workplaceLabels,
     pending, onOpen, onAskRemove, onConfirmRemove, onCancelRemove,
 }) {
     const [dx, setDx] = useState(0);
     const [dragging, setDragging] = useState(false);
+    const [toontGesprekken, setToontGesprekken] = useState(false);
     // Waar de vinger begon, en of deze beweging horizontaal of verticaal is.
     // `richting` blijft 'v' zodra je verticaal bent begonnen, zodat scrollen
     // nooit halverwege in een veeg verandert.
@@ -325,10 +341,13 @@ function HistoryCard({
                     </span>
                 </div>
 
-                {(heeftNotitie || isCurrent) && (
+                {(heeftNotitie || isCurrent || gesprekken.length > 0) && (
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         {isCurrent && <Badge>{copy.history.current}</Badge>}
                         {heeftNotitie ? <Badge>{copy.history.hasNote}</Badge> : null}
+                        {gesprekken.length > 0 ? (
+                            <Badge>{copy.history.conversations.count(gesprekken.length)}</Badge>
+                        ) : null}
                     </div>
                 )}
 
@@ -387,6 +406,50 @@ function HistoryCard({
                         >
                             {copy.history.remove}
                         </button>
+                    </div>
+                )}
+
+                {/* De gesprekken onder dit profiel. Dicht tenzij je ze opent —
+                    acht gesprekken uitgeklapt maken van elke kaart een pagina. */}
+                {gesprekken.length > 0 && !pending && (
+                    <div style={{ display: 'grid', gap: 12 }}>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                tap();
+                                setToontGesprekken((open) => !open);
+                            }}
+                            aria-expanded={toontGesprekken}
+                            style={{
+                                justifySelf: 'start',
+                                background: 'none',
+                                border: 'none',
+                                padding: 0,
+                                cursor: 'pointer',
+                                fontSize: 14,
+                                fontFamily: 'var(--tof-font-body)',
+                                color: 'var(--tof-text-muted)',
+                                textDecoration: 'underline',
+                                textUnderlineOffset: 3,
+                            }}
+                        >
+                            {toontGesprekken
+                                ? copy.history.conversations.hide
+                                : copy.history.conversations.show}
+                        </button>
+
+                        {toontGesprekken &&
+                            gesprekken.map((gesprek) => (
+                                <PastConversation
+                                    key={gesprek.id}
+                                    isMobile={isMobile}
+                                    color={kleur}
+                                    gesprek={gesprek}
+                                    primary={primary}
+                                    workplaceLabels={workplaceLabels}
+                                    compact
+                                />
+                            ))}
                     </div>
                 )}
             </div>

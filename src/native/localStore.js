@@ -8,10 +8,10 @@
  *   { version, currentId, entries: [{
  *       id, savedAt, result,
  *       notes, pinned,                              // het gesprek dat nu loopt
- *       conversations: [{ id, closedAt, notes, pinned }]   // wat je afrondde
+ *       conversations: [{ id, nummer, closedAt, notes, pinned }]  // afgerond
  *   }] }
  *
- * `notes` = de drie open vragen { recognize, drains, ask }.
+ * `notes` = de vier open vragen { recognize, drains, ask, outcome }.
  * `pinned` = de inzichten die je aan je gesprek hebt vastgeprikt, als
  * `{ kind, key }`-paren (bijv. `{ kind: 'workplace', key: 'focus' }`).
  *
@@ -31,9 +31,23 @@ const KEY = 'tof_native_profiles';
 const VERSION = 3;
 const MAX_ENTRIES = 50;
 
+/**
+ * Hoeveel afgeronde gesprekken er onder één profiel passen.
+ *
+ * Acht is geen technische grens maar een leesbare: daarboven wordt het een
+ * archief in plaats van een lijn die je kunt volgen. Valt het negende erin,
+ * dan valt het oudste eraf.
+ */
+const MAX_CONVERSATIONS = 8;
+
 const EMPTY = { version: VERSION, currentId: null, entries: [] };
 
-export const EMPTY_NOTES = { recognize: '', drains: '', ask: '' };
+/**
+ * De vier open vragen. De eerste drie bereid je vóór het gesprek voor;
+ * `outcome` schrijf je erna op. Ze staan in hetzelfde blok omdat ze bij
+ * hetzelfde gesprek horen en dus samen mee verhuizen bij het afronden.
+ */
+export const EMPTY_NOTES = { recognize: '', drains: '', ask: '', outcome: '' };
 
 /** Is er in dit gesprek iets vastgelegd? Leeg afronden heeft geen zin. */
 function heeftInhoud(notes, pinned) {
@@ -183,8 +197,14 @@ export function closeConversation(id) {
     const entry = state.entries.find((e) => e.id === id);
     if (!entry || !heeftInhoud(entry.notes, entry.pinned)) return false;
 
+    // Het nummer staat vast zodra het gesprek is afgerond. Zou het uit de
+    // lengte van de lijst komen, dan schoof het hele rijtje op zodra het
+    // oudste gesprek eraf valt — en dan heet je derde gesprek ineens je
+    // tweede. `conversations` staat nieuwste-eerst, dus [0] heeft het hoogste.
+    const eerder = entry.conversations || [];
     const afgerond = {
         id: makeId(),
+        nummer: (eerder[0]?.nummer || eerder.length) + 1,
         closedAt: new Date().toISOString(),
         notes: { ...entry.notes },
         pinned: [...entry.pinned],
@@ -196,7 +216,10 @@ export function closeConversation(id) {
                 ...e,
                 notes: { ...EMPTY_NOTES },
                 pinned: [],
-                conversations: [afgerond, ...(e.conversations || [])],
+                conversations: [afgerond, ...(e.conversations || [])].slice(
+                    0,
+                    MAX_CONVERSATIONS
+                ),
             }
             : e
     );

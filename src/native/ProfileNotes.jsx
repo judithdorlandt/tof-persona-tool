@@ -4,17 +4,20 @@ import { SectionEyebrow } from '../ui/AppShell';
 import { EMPTY_NOTES, saveNote } from './localStore';
 
 /**
- * ProfileNotes — de drie gespreksvragen bij een bewaard profiel.
+ * ProfileNotes — open vragen bij een bewaard profiel.
  *
  * Alleen in app-modus zichtbaar. De antwoorden gaan naar de lokale opslag en
  * verlaten het toestel niet: geen netwerkcall, geen account, geen back-up.
  * Er is geen opslaan-knop — typen is opslaan (met een korte adempauze).
+ *
+ * `fields` en `head` komen van buiten, want het gespreksscherm gebruikt dit
+ * blok twee keer op twee momenten: de drie vragen waarmee je je gesprek
+ * voorbereidt, en daaronder wat er uit het gesprek kwam. Dezelfde opslag,
+ * dezelfde adempauze, een ander kopje.
  */
-const FIELDS = ['recognize', 'drains', 'ask'];
-
 const SAVE_DELAY = 500;
 
-export default function ProfileNotes({ entryId, initialNotes, isMobile }) {
+export default function ProfileNotes({ entryId, initialNotes, isMobile, fields, head }) {
     const { native: copy } = useCopy();
     const [notes, setNotes] = useState({ ...EMPTY_NOTES, ...initialNotes });
     const [bewaard, setBewaard] = useState(false);
@@ -56,7 +59,7 @@ export default function ProfileNotes({ entryId, initialNotes, isMobile }) {
                 gap: 14,
             }}
         >
-            <SectionEyebrow>{copy.notes.eyebrow}</SectionEyebrow>
+            <SectionEyebrow>{head.eyebrow}</SectionEyebrow>
 
             <h2
                 style={{
@@ -68,14 +71,14 @@ export default function ProfileNotes({ entryId, initialNotes, isMobile }) {
                     color: 'var(--tof-text)',
                 }}
             >
-                {copy.notes.title}
+                {head.title}
             </h2>
 
             <p style={{ margin: 0, color: 'var(--tof-text-soft)', lineHeight: 1.7, fontSize: 15 }}>
-                {copy.notes.intro}
+                {head.intro}
             </p>
 
-            {FIELDS.map((field) => (
+            {fields.map((field) => (
                 <label key={field} style={{ display: 'grid', gap: 8 }}>
                     <span
                         style={{
