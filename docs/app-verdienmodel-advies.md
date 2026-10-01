@@ -430,9 +430,9 @@ maanden ophouden. De volgorde is dus: uitbrengen, en de rest erbij bouwen.
 
 **Fase 8 — de app uitbrengen zoals hij nu is.** Gratis, alles lokaal, *Data Not
 Collected*, geen koppeling, geen account. Fase 0 tot 7 zijn af; dit is de lichtste
-review die je ooit gaat krijgen. Nog te beslissen blijft wat in hoofdstuk 8 van de
-briefing staat: delen als platte tekst, de rechtspersoon waaronder de app
-verschijnt, en één taal of twee.
+review die je ooit gaat krijgen. Hoofdstuk 8 van de briefing is inmiddels beslist
+(zie §11): de app verschijnt als **The Office Factory**, in **twee talen**, gebouwd
+op deze Mac; delen als platte tekst schuift mee naar fase 9.
 
 **Fase 9 — de koppeling, als update.** Opt-in delen met een teamcode: naamvraag
 standaard uit, vastgelegde toestemming, intrek-token, nieuwe privacyteksten en
@@ -508,5 +508,16 @@ Niets hiervan houdt fase 8 nog tegen.
   groot de teams zijn. Zodra die twee er zijn, reken ik de staffels door.
 - **De drempel** van vijf: past dat getal bij jouw klanten?
 - **Het juridische spoor** (§7): wie doet dat, en vóór of na de koppeling?
-- Uit hoofdstuk 8 van de app-briefing staan nog open: delen als platte tekst, de
-  naam waaronder de app verschijnt, en één taal of twee in de stores.
+
+### Hoofdstuk 8 van de app-briefing — beslist
+
+| Punt | Besluit |
+| --- | --- |
+| Delen als platte tekst | **Ja, maar in fase 9** — samen met de privacyteksten |
+| Naam in de stores | **Als organisatie: The Office Factory** (vraagt een D-U-N-S-nummer) |
+| Mac of clouddienst voor iOS | **Deze Mac** — Xcode staat er, iOS loopt via SPM |
+| Eén taal of twee | **Twee** — de app kiest zelf tussen NL en EN |
+
+Hiervan is alleen het D-U-N-S-nummer een actie buiten de code, met doorlooptijd.
+Het bouwen van fase 8 kan daar niet op wachten en hoeft dat ook niet: het nummer
+is pas nodig bij het inschrijven, niet bij het bouwen.
