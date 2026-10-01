@@ -8,6 +8,7 @@ import { useLang } from './i18n/LanguageContext';
 import { pagePath, resolvePath } from './i18n/routes';
 import { signOut, getMyManagedTeams } from './supabase';
 
+import Bijdragen from './components/Bijdragen.jsx';
 import Landing from './components/Landing.jsx';
 import Nav from './components/Nav.jsx';
 import Home from './components/Home.jsx';
@@ -160,6 +161,11 @@ export default function App() {
           />
         );
       }
+
+      // Het profiel uit de app bij een team leggen. Alleen op het web, want de
+      // app stuurt zelf niets; zie components/Bijdragen.jsx.
+      case 'bijdragen':
+        return <Bijdragen setPage={navigate} />;
 
       case 'historie':
         return <History setPage={navigate} />;

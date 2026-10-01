@@ -471,7 +471,11 @@ export default function ProfileScreen({
                     profiel af, dan komt de vraag hoe dat zich tot de rest
                     verhoudt. Zie native/TeamInvite.jsx. */}
                 <div style={riseIn(6)}>
-                    <TeamInvite isMobile={isMobile} accent={primaryColor} />
+                    <TeamInvite
+                        isMobile={isMobile}
+                        accent={primaryColor}
+                        resultData={resultData}
+                    />
                 </div>
 
             </div>

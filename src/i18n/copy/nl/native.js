@@ -135,11 +135,11 @@ const native = {
     title: 'Dit is jouw beeld.',
     intro:
       'Het wordt pas echt interessant als je het naast je team legt: wie vult wie aan, waar gaat het schuren, en wat vraagt dat van jullie werkomgeving. Dat gesprek gaat over jullie samen, en daar is de teamomgeving voor.',
-    haveCode: {
+    contribute: {
       title: 'Ik heb een teamcode',
       text:
-        'Je organisatie werkt al met TOF. Op de website vul je je code in en zie je het beeld van je team.',
-      button: 'Naar de teamomgeving',
+        'Je organisatie werkt al met TOF. Breng je profiel in bij je team: de website gaat open met je persona erin, daar vul je je teamcode in en kies je zelf of je het verstuurt. De app verstuurt zelf niets.',
+      button: 'Profiel inbrengen',
     },
     askOrg: {
       title: 'Vraag je organisatie om TOF',

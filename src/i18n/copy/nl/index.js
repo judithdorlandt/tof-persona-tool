@@ -2,6 +2,7 @@ import admin from './admin';
 import archetypes from './archetypes';
 import auth from './auth';
 import common from './common';
+import contribute from './contribute';
 import feedback from './feedback';
 import home from './home';
 import intro from './intro';
@@ -31,6 +32,7 @@ const nl = {
   archetypes,
   auth,
   common,
+  contribute,
   feedback,
   home,
   intro,

@@ -1,4 +1,6 @@
-import { useCopy } from '../i18n/LanguageContext';
+import { useCopy, useLang } from '../i18n/LanguageContext';
+import { pagePath } from '../i18n/routes';
+import { handoffUrl } from '../lib/profileHandoff';
 import { getReadableTextOnColor } from '../lib/resultDerivations';
 import { SectionEyebrow } from '../ui/AppShell';
 
@@ -10,26 +12,37 @@ import { SectionEyebrow } from '../ui/AppShell';
  *
  * Twee dingen die deze kaart bewust NIET doet:
  *
- * - niets verzamelen. Geen e-mailadres, geen "laat je gegevens achter". De
- *   route naar je organisatie loopt via je eigen mail-app, met een tekst die je
- *   nog kunt aanpassen. De app weet niet of je hem verstuurt, en dat hoort ook
- *   niet. Zonder dat zou het privacyscherm ("deze app stuurt niets") niet meer
- *   waar zijn.
+ * - niets verzamelen. Geen e-mailadres, geen "laat je gegevens achter". Beide
+ *   routes lopen naar buiten: je profiel inbrengen gebeurt op de website, en de
+ *   vraag aan je organisatie via je eigen mail-app met een tekst die je nog
+ *   kunt aanpassen. De app weet van geen van beide of je ze afmaakt, en dat
+ *   hoort ook niet. Zonder dat zou het privacyscherm ("deze app stuurt niets")
+ *   niet meer waar zijn.
  * - niets verkopen. Een teamomgeving wordt door een organisatie afgenomen, niet
  *   door jou hier in de app. Deze kaart wijst alleen de weg.
+ *
+ * Inbrengen werkt daarom als overhandigen, niet als versturen: de app bouwt een
+ * adres met je persona en scores in het hash-deel (zie lib/profileHandoff.js)
+ * en opent dat. Op de website zie je wat erin staat, vul je je teamcode in en
+ * klik je zelf op versturen. Zonder afgerond profiel valt die route terug op de
+ * website zelf — dan is er niets te overhandigen.
  *
  * De links gaan naar buiten en dus niet in de webview: Capacitor opent een
  * http-adres dat niet bij de app hoort in de systeembrowser, en een mailto in
  * de mail-app. `target="_blank"` maakt dat expliciet en houdt het op het web
  * (waar dit scherm niet komt, maar goed) net zo netjes.
  */
-export default function TeamInvite({ isMobile, accent }) {
+export default function TeamInvite({ isMobile, accent, resultData = null }) {
     const { native } = useCopy();
+    const { lang } = useLang();
     const t = native.team;
 
     const mailto = `mailto:?subject=${encodeURIComponent(t.askOrg.subject)}&body=${encodeURIComponent(
         t.askOrg.body.join('\n')
     )}`;
+
+    const inbrengen =
+        handoffUrl(resultData, t.siteUrl, pagePath('bijdragen', lang)) || t.siteUrl;
 
     return (
         <div
@@ -67,10 +80,10 @@ export default function TeamInvite({ isMobile, accent }) {
 
             <Route
                 accent={accent}
-                title={t.haveCode.title}
-                text={t.haveCode.text}
-                button={t.haveCode.button}
-                href={t.siteUrl}
+                title={t.contribute.title}
+                text={t.contribute.text}
+                button={t.contribute.button}
+                href={inbrengen}
                 primair
             />
 

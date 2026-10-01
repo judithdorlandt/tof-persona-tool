@@ -132,11 +132,11 @@ const native = {
     title: 'This is your picture.',
     intro:
       'It gets genuinely interesting when you put it next to your team: who complements whom, where things start to rub, and what that asks of your workplace. That conversation is about all of you together, and that is what the team environment is for.',
-    haveCode: {
+    contribute: {
       title: 'I have a team code',
       text:
-        "Your organisation already works with TOF. Enter your code on the website and you will see your team's picture.",
-      button: 'Go to the team environment',
+        'Your organisation already works with TOF. Add your profile to your team: the website opens with your persona in it, you enter your team code there and decide for yourself whether to send it. The app sends nothing itself.',
+      button: 'Add my profile',
     },
     askOrg: {
       title: 'Ask your organisation for TOF',

@@ -93,7 +93,9 @@ export default function Home({ setPage }) {
 
     grantTeamAccess(code);
     closeTeamLock();
-    setPage('teamintro');
+    // De page-key is 'team' (zie i18n/routes.js). Met 'teamintro' bestaat er
+    // geen pad en valt pagePath terug op de landingspagina.
+    setPage('team');
   }
 
   return (
