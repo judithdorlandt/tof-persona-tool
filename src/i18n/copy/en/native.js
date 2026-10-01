@@ -160,6 +160,12 @@ const native = {
     // The quiet line at the bottom, even if you take neither route.
     siteLabel: 'www.persona-tool.nl',
     siteUrl: 'https://www.persona-tool.nl',
+    // NOTE: two different addresses, and that is deliberate. `siteUrl` is the
+    // story site — that is where you read what TOF is. `appUrl` is the web app
+    // itself, with /contribute, the team space and the questionnaire. Adding a
+    // profile has to go to `appUrl`; the story site has no /contribute and
+    // would drop you on its front page.
+    appUrl: 'https://tof-persona-tool.netlify.app',
   },
   history: {
     eyebrow: 'On this device',

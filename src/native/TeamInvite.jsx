@@ -41,8 +41,13 @@ export default function TeamInvite({ isMobile, accent, resultData = null }) {
         t.askOrg.body.join('\n')
     )}`;
 
+    // Naar de webapp (`appUrl`), niet naar de verhaalsite (`siteUrl`) — daar
+    // bestaat /bijdragen niet. Zonder afgerond profiel gaat de knop naar
+    // dezelfde pagina zonder profiel erin; die legt zelf uit wat er mist.
+    const bijdragenPad = pagePath('bijdragen', lang);
     const inbrengen =
-        handoffUrl(resultData, t.siteUrl, pagePath('bijdragen', lang)) || t.siteUrl;
+        handoffUrl(resultData, t.appUrl, bijdragenPad)
+        || `${t.appUrl.replace(/\/+$/, '')}${bijdragenPad}`;
 
     return (
         <div

@@ -163,6 +163,12 @@ const native = {
     // De stille regel onderaan, ook als je geen van beide routes kiest.
     siteLabel: 'www.persona-tool.nl',
     siteUrl: 'https://www.persona-tool.nl',
+    // LET OP: twee verschillende adressen, en dat is geen slordigheid.
+    // `siteUrl` is de verhaalsite — daar lees je wat TOF is. `appUrl` is de
+    // webapp zelf, met /bijdragen, de teamomgeving en de vragenlijst. Het
+    // profiel inbrengen moet naar `appUrl`; op de verhaalsite bestaat
+    // /bijdragen niet en land je op de voorpagina.
+    appUrl: 'https://tof-persona-tool.netlify.app',
   },
   history: {
     eyebrow: 'Op dit toestel',
