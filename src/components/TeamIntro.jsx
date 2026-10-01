@@ -16,6 +16,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+import { APP_IN_STORE } from '../config/appStore';
 import {
     isMakerAccess,
     isAdminAccess,
@@ -76,10 +77,6 @@ const MODULE_STRUCTURE = [
         demoHref: 'https://tof-persona-demo.netlify.app/#kompas',
     },
 ];
-
-// De app staat nog niet in de App Store. Eén vlag, zodat er bij publicatie geen
-// tekst gezocht hoeft te worden.
-const APP_IN_STORE = false;
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 
