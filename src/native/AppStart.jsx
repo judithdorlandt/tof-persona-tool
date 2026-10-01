@@ -32,6 +32,11 @@ export default function AppStart({ setPage }) {
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
+    // De voornaam die je bij de kennismaking invulde. Hij reist mee in het
+    // bewaarde profiel (QuizTest spreidt de aanmelding in het resultaat uit) en
+    // blijft dus net zo goed op dit toestel als de rest. Leeg gelaten? Dan
+    // groet het scherm je zonder naam.
+    const naam = (entry?.result?.name || '').trim();
     const primary = ARCHETYPES.find((a) => a.id === entry?.result?.primary);
     const kleur = PERSONA_COLORS[primary?.id] || DEFAULT_PERSONA_COLOR;
     const heeftProfiel = Boolean(primary);
@@ -65,7 +70,7 @@ export default function AppStart({ setPage }) {
                             color: 'var(--tof-text)',
                         }}
                     >
-                        {heeftProfiel ? t.title : t.emptyTitle}
+                        {heeftProfiel ? t.title(naam) : t.emptyTitle}
                     </h1>
 
                     <p

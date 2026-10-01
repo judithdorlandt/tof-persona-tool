@@ -29,6 +29,11 @@ const signup = {
   firstNameLabel: 'First name',
   firstNamePlaceholder: 'What is your name?',
   firstNameHint: 'Add your name and your persona becomes properly personal.',
+  // In the app this is the only introduction there is, and the name stays on
+  // the device afterwards: the start screen greets you with it. That belongs
+  // here, because you are not filling in a form — you are naming your own app.
+  firstNameHintNative:
+    'Stays on this device. The app will greet you with it when you open it.',
 
   teamLabel: 'Team',
   teamPlaceholder: 'Leave this blank if your department is one team',

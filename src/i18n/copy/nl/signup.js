@@ -29,6 +29,11 @@ const signup = {
   firstNameLabel: 'Voornaam',
   firstNamePlaceholder: 'Hoe heet je?',
   firstNameHint: 'Leuk voor je persoonlijke persona als je je naam invult!',
+  // In de app is dit de enige kennismaking die er is, en de naam blijft daarna
+  // op het toestel staan: het startscherm groet je ermee. Dat hoort hier te
+  // staan, want je vult je naam niet in voor een formulier maar voor jezelf.
+  firstNameHintNative:
+    'Blijft op dit toestel. De app begroet je er straks mee als je hem opent.',
 
   teamLabel: 'Team',
   teamPlaceholder: 'Laat leeg als je afdeling één team is',

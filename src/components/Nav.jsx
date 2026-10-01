@@ -9,6 +9,7 @@ import styles from './Nav.module.css';
 import { isAdminEmail } from '../supabase';
 import { IS_NATIVE } from '../config/platform';
 import { useCopy, useLang } from '../i18n/LanguageContext';
+import { tap } from '../native/nativeShell';
 
 export default function Nav({
     page,
@@ -119,12 +120,21 @@ export default function Nav({
         <div className={styles.bar}>
             <div className={styles.inner}>
                 <div className={styles.row}>
+                    {/* Het logo is ook de weg terug: naar je eigen overzicht
+                        (in de app het startscherm), of naar je teamoverzicht
+                        als je als manager bent ingelogd. Zonder label is dat
+                        voor een schermlezer een plaatje in een knop. */}
                     <button
                         type="button"
-                        onClick={() => handleNavigate(isManager ? 'team' : 'home')}
+                        onClick={() => {
+                            tap();
+                            handleNavigate(isManager ? 'team' : 'home');
+                        }}
                         className={styles.logoBtn}
+                        aria-label={isManager ? t.logoToTeam : t.logoToHome}
+                        title={isManager ? t.logoToTeam : t.logoToHome}
                     >
-                        <img src={tofLogo} alt={t.logoAlt} className={styles.logoImg} />
+                        <img src={tofLogo} alt="" className={styles.logoImg} />
                         <div className={styles.brand}>
                             <span className={styles.brandTitle}>
                                 <span className={styles.brandWord}>The Office</span>

@@ -4,7 +4,9 @@ const native = {
   start: {
     eyebrow: 'On this device',
     // With and without a saved profile the app opens on a different story.
-    title: 'Welcome back.',
+    // If you filled in your first name, the app opens with your name in it.
+    // Not as a trick: this is your app, on your device, and that may show.
+    title: (name) => (name ? `Welcome back, ${name}.` : 'Welcome back.'),
     intro:
       'This is the profile you are looking at. It lives on your device and goes nowhere else.',
     emptyTitle: 'Find out how you work.',
@@ -44,8 +46,9 @@ const native = {
     intro:
       'Three questions to prepare your conversation. What you write down stays on your device and is never sent anywhere.',
     saved: 'Saved on this device',
-    // The three open questions. The keys match the data model in
-    // src/native/localStore.js.
+    // The four open questions. The keys match the data model in
+    // src/native/localStore.js. You fill in the first three before the
+    // conversation and `outcome` afterwards — hence its own block on screen.
     fields: {
       recognize: {
         label: 'What do I recognise in this?',
@@ -58,6 +61,10 @@ const native = {
       ask: {
         label: 'What do I want to discuss or ask?',
         placeholder: 'What do you want to talk about?',
+      },
+      outcome: {
+        label: 'What came out of it?',
+        placeholder: 'What was said, and what will you do?',
       },
     },
   },
@@ -94,22 +101,40 @@ const native = {
     pinnedEmpty:
       'You have not pinned anything yet. Tap the plus next to an insight in your profile.',
     backToProfile: 'Back to your profile',
+    // The second block of open questions, after the conversation. Same storage
+    // as the three above, a different moment — and so its own heading.
+    report: {
+      eyebrow: 'Afterwards',
+      title: 'What came out of the conversation',
+      intro:
+        'Write it down while it is still fresh. It belongs to this conversation and travels with it into your history.',
+    },
     // Closing a conversation. The page goes blank again and what you wrote down
-    // moves to the list below, with the date on it.
+    // moves to your history, with the date on it. Deliberately one button:
+    // closing is starting a new conversation under the same profile.
     close: {
       title: 'Had the conversation?',
       text:
-        "Log it with today's date. You start with a clean page for your next conversation, and what you wrote down now stays readable below.",
-      button: 'Close this conversation',
+        "Log it with today's date and start with a clean page for your next one. Your profile stays as it is — that changes more slowly than your conversations.",
+      button: 'Close and start a new conversation',
       confirm: 'Close this conversation and start with a clean page?',
       confirmYes: 'Yes, close it',
       confirmCancel: 'Not yet',
       done: 'Your conversation is logged. You can read it back below.',
+      // Only after closing, as a quiet question. Before the button it would
+      // hold you up; here it is a thought for next time.
+      personaCheck: (persona) =>
+        persona
+          ? `Do you still recognise yourself in ${persona}? Your work changes; your profile may move with it.`
+          : 'Do you still recognise yourself in your profile? Your work changes; your profile may move with it.',
+      personaCheckButton: 'Take the test again',
     },
-    // Closed conversations, newest first.
+    // The last closed conversation stays here; the rest live in your history,
+    // under the profile they belong to.
     past: {
-      title: 'Earlier conversations',
+      title: 'Your previous conversation',
       intro: 'What you wrote down then. Here to read back, nothing more.',
+      allButton: 'All conversations in your history',
       // Heading above one closed conversation: "Conversation 2 · 14 October
       // 2026". Numbering runs forward in time, so 1 is the oldest.
       label: (nummer) => `Conversation ${nummer}`,
@@ -126,7 +151,11 @@ const native = {
   // The step after your own profile: putting your picture next to your team's.
   // That does not happen in the app — the team environment lives on the website,
   // and the app collects nothing for it. Two routes, because there are two
-  // situations: your organisation already uses TOF, or it does not yet.
+  // situations: your organisation already uses The Office Factory, or not yet.
+  //
+  // The name is spelled out here rather than shortened to "TOF": this is the
+  // one place in the app where you put something to somebody else, and then it
+  // should carry a name that means something outside this app too.
   team: {
     eyebrow: 'The next step',
     title: 'This is your picture.',
@@ -135,31 +164,47 @@ const native = {
     contribute: {
       title: 'I have a team code',
       text:
-        'Your organisation already works with TOF. Add your profile to your team: the website opens with your persona in it, you enter your team code there and decide for yourself whether to send it. The app sends nothing itself.',
+        'Your organisation already works with The Office Factory. Add your profile to your team: the website opens with your persona in it, you enter your team code there and decide for yourself whether to send it. The app sends nothing itself.',
       button: 'Add my profile',
     },
     askOrg: {
-      title: 'Ask your organisation for TOF',
+      title: 'Ask your organisation for The Office Factory',
       text:
-        'Not in use with you yet? Put it to your manager or HR. Your own mail app opens with a text you can still edit — the app sends nothing itself.',
+        'Not in use with you yet? Put it to your manager or HR. The text is ready; you choose where to open it and edit it yourself — the app sends nothing itself.',
       button: 'Draft an email',
-      subject: 'TOF Persona for our team',
+      // The app has no idea where your mail lives. `mailto:` opens the default
+      // mail app, which plenty of people never set up — then nothing happens
+      // and the button looks broken. Hence the question first, and a last route
+      // that always works: copy the text.
+      chooseLabel: 'Where is your mail?',
+      providers: {
+        app: 'My mail app',
+        gmail: 'Gmail',
+        outlook: 'Outlook',
+        copy: 'Copy the text',
+      },
+      copied: 'Copied. Paste it into a new email.',
+      copyFailed: 'Copying did not work. Select the text above yourself.',
+      subject: "The Office Factory's Persona tool for our team",
       // Separate lines; they are joined with line breaks.
       body: [
         'Hi,',
         '',
-        'I took the TOF Persona test and it gave me a picture of how I work and what I need from my work environment. That turned into a useful conversation with myself.',
+        "I took The Office Factory's Persona test and it gave me a picture of how I work and what I need from my work environment. That turned into a useful conversation with myself.",
         '',
         "What would really help me is putting that picture next to the team's: who complements whom, where the friction sits, and what that asks of our workplaces and working agreements. That is what a team environment is for.",
         '',
-        'There is more about it on www.persona-tool.nl. Shall we look at whether this is something for us?',
+        'There is more about the tool on www.persona-tool.nl, and about The Office Factory on www.tof.services. Shall we look at whether this is something for us?',
         '',
         'Best,',
       ],
     },
-    // The quiet line at the bottom, even if you take neither route.
+    // The quiet lines at the bottom, even if you take neither route. Two
+    // addresses with two roles: the tool, and the firm behind it.
     siteLabel: 'www.persona-tool.nl',
     siteUrl: 'https://www.persona-tool.nl',
+    businessLabel: 'www.tof.services',
+    businessUrl: 'https://www.tof.services',
     // NOTE: two different addresses, and that is deliberate. `siteUrl` is the
     // story site — that is where you read what TOF is. `appUrl` is the web app
     // itself, with /contribute, the team space and the questionnaire. Adding a
@@ -186,6 +231,14 @@ const native = {
     confirmCancel: 'Keep it',
     hasNote: 'Has a note',
     mixLabel: 'Alongside',
+    // The closed conversations under one profile. They start folded: the
+    // history is a list of profiles, and only when you open one do you want to
+    // see the conversations underneath.
+    conversations: {
+      count: (n) => (n === 1 ? '1 conversation' : `${n} conversations`),
+      show: 'View conversations',
+      hide: 'Hide conversations',
+    },
     formatDate: (iso) =>
       new Date(iso).toLocaleString('en-GB', {
         day: 'numeric',
@@ -207,6 +260,7 @@ const native = {
         text: 'Only what you make in the app yourself, stored inside the app:',
         items: [
           'Your persona profile: the outcome of the test and the date.',
+          'Your first name, if you filled it in — so the app can greet you by name.',
           'Your answers to the three conversation questions.',
           'The insights you pinned to your conversation.',
           'The conversations you closed, with the date on them.',
@@ -218,7 +272,7 @@ const native = {
         text: 'There is no reason for us to know more about you, so we do not:',
         items: [
           'No account, no email address, no password.',
-          'Your first name is only shown on screen during the test and is not kept.',
+          'Your first name stays on this device; we never see it.',
           'No analytics, no trackers, no advertising.',
           'No access to your contacts, location, camera or files.',
         ],

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useCopy, useLang } from '../i18n/LanguageContext';
 import { pagePath } from '../i18n/routes';
 import { handoffUrl } from '../lib/profileHandoff';
@@ -14,8 +15,8 @@ import { SectionEyebrow } from '../ui/AppShell';
  *
  * - niets verzamelen. Geen e-mailadres, geen "laat je gegevens achter". Beide
  *   routes lopen naar buiten: je profiel inbrengen gebeurt op de website, en de
- *   vraag aan je organisatie via je eigen mail-app met een tekst die je nog
- *   kunt aanpassen. De app weet van geen van beide of je ze afmaakt, en dat
+ *   vraag aan je organisatie in de mail die jij zelf kiest, met een tekst die
+ *   je nog kunt aanpassen. De app weet van geen van beide of je ze afmaakt, en dat
  *   hoort ook niet. Zonder dat zou het privacyscherm ("deze app stuurt niets")
  *   niet meer waar zijn.
  * - niets verkopen. Een teamomgeving wordt door een organisatie afgenomen, niet
@@ -37,9 +38,10 @@ export default function TeamInvite({ isMobile, accent, resultData = null }) {
     const { lang } = useLang();
     const t = native.team;
 
-    const mailto = `mailto:?subject=${encodeURIComponent(t.askOrg.subject)}&body=${encodeURIComponent(
-        t.askOrg.body.join('\n')
-    )}`;
+    // De mailroute vouwt pas open als je hem kiest: zolang je niets vraagt,
+    // hoeft er geen rijtje providers in beeld te staan.
+    const [mailOpen, setMailOpen] = useState(false);
+    const [kopie, setKopie] = useState('');
 
     // Naar de webapp (`appUrl`), niet naar de verhaalsite (`siteUrl`) — daar
     // bestaat /bijdragen niet. Zonder afgerond profiel gaat de knop naar
@@ -48,6 +50,44 @@ export default function TeamInvite({ isMobile, accent, resultData = null }) {
     const inbrengen =
         handoffUrl(resultData, t.appUrl, bijdragenPad)
         || `${t.appUrl.replace(/\/+$/, '')}${bijdragenPad}`;
+
+    const onderwerp = t.askOrg.subject;
+    const tekst = t.askOrg.body.join('\n');
+
+    // Dezelfde tekst, drie adressen. `mailto:` is de enige die een app op het
+    // toestel nodig heeft; de andere twee openen een webformulier dat het al
+    // ingevuld heeft staan. Welke er werkt weet alleen jij, dus kies zelf.
+    const mailRoutes = [
+        {
+            key: 'app',
+            label: t.askOrg.providers.app,
+            href: `mailto:?subject=${encodeURIComponent(onderwerp)}&body=${encodeURIComponent(tekst)}`,
+        },
+        {
+            key: 'gmail',
+            label: t.askOrg.providers.gmail,
+            href: `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(
+                onderwerp
+            )}&body=${encodeURIComponent(tekst)}`,
+        },
+        {
+            key: 'outlook',
+            label: t.askOrg.providers.outlook,
+            href: `https://outlook.office.com/mail/deeplink/compose?subject=${encodeURIComponent(
+                onderwerp
+            )}&body=${encodeURIComponent(tekst)}`,
+        },
+    ];
+
+    async function kopieer() {
+        try {
+            await navigator.clipboard.writeText(`${onderwerp}\n\n${tekst}`);
+            setKopie('ok');
+        } catch (_e) {
+            // Zonder https of zonder toestemming bestaat het klembord niet.
+            setKopie('mislukt');
+        }
+    }
 
     return (
         <div
@@ -97,33 +137,141 @@ export default function TeamInvite({ isMobile, accent, resultData = null }) {
                 title={t.askOrg.title}
                 text={t.askOrg.text}
                 button={t.askOrg.button}
-                href={mailto}
-            />
-
-            <a
-                href={t.siteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                    justifySelf: 'start',
-                    fontSize: 13,
-                    color: 'var(--tof-text-muted)',
-                    textDecoration: 'underline',
-                    textUnderlineOffset: 3,
-                }}
+                onClick={() => setMailOpen((open) => !open)}
+                expanded={mailOpen}
             >
-                {t.siteLabel}
-            </a>
+                {mailOpen ? (
+                    <div style={{ display: 'grid', gap: 8, marginTop: 2 }}>
+                        <span
+                            style={{
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: 'var(--tof-text)',
+                            }}
+                        >
+                            {t.askOrg.chooseLabel}
+                        </span>
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                            {mailRoutes.map((route) => (
+                                <a
+                                    key={route.key}
+                                    href={route.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ ...KEUZE, borderColor: accent, color: accent }}
+                                >
+                                    {route.label}
+                                </a>
+                            ))}
+
+                            {/* Werkt ook als geen enkele mailroute iets opent. */}
+                            <button
+                                type="button"
+                                onClick={kopieer}
+                                style={{ ...KEUZE, borderColor: accent, color: accent }}
+                            >
+                                {t.askOrg.providers.copy}
+                            </button>
+                        </div>
+
+                        {kopie ? (
+                            <span
+                                role="status"
+                                style={{ fontSize: 13, color: 'var(--tof-text-soft)' }}
+                            >
+                                {kopie === 'ok' ? t.askOrg.copied : t.askOrg.copyFailed}
+                            </span>
+                        ) : null}
+                    </div>
+                ) : null}
+            </Route>
+
+            {/* Twee adressen, twee rollen: het verhaal achter de tool, en het
+                bureau dat hem maakt. */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+                <Voet href={t.siteUrl}>{t.siteLabel}</Voet>
+                <Voet href={t.businessUrl}>{t.businessLabel}</Voet>
+            </div>
         </div>
     );
 }
 
+/** Stille link onderaan de kaart. */
+function Voet({ href, children }) {
+    return (
+        <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+                fontSize: 13,
+                color: 'var(--tof-text-muted)',
+                textDecoration: 'underline',
+                textUnderlineOffset: 3,
+            }}
+        >
+            {children}
+        </a>
+    );
+}
+
+/** Eén mailroute. Zelfde maat als de hoofdknoppen, maar rustiger. */
+const KEUZE = {
+    minHeight: 44,
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '0 16px',
+    borderRadius: 999,
+    fontFamily: 'var(--tof-font-body)',
+    fontSize: 14,
+    fontWeight: 600,
+    textDecoration: 'none',
+    background: 'var(--tof-surface)',
+    border: '1px solid',
+    cursor: 'pointer',
+};
+
 /**
- * Eén van de twee routes. De knop is een `<a>` en geen `<button>`: hij verlaat
- * de app, en dan hoort er ook een adres achter te zitten — voor wie lang
- * indrukt, en voor een schermlezer die "link" wil zeggen in plaats van "knop".
+ * Eén van de twee routes.
+ *
+ * Met `href` is de knop een `<a>` en geen `<button>`: hij verlaat de app, en
+ * dan hoort er ook een adres achter te zitten — voor wie lang indrukt, en voor
+ * een schermlezer die "link" wil zeggen in plaats van "knop". Met `onClick`
+ * gebeurt het omgekeerde: er gaat niets open, er vouwt iets uit, en dan is het
+ * een echte knop die zegt of hij open staat.
  */
-function Route({ accent, title, text, button, href, primair = false }) {
+function Route({
+    accent,
+    title,
+    text,
+    button,
+    href,
+    onClick,
+    expanded,
+    primair = false,
+    children = null,
+}) {
+    const knopStijl = {
+        justifySelf: 'start',
+        // Apples ondergrens voor raakvlakken; een link is hier een knop.
+        minHeight: 44,
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '0 18px',
+        borderRadius: 999,
+        fontFamily: 'var(--tof-font-body)',
+        fontSize: 14,
+        fontWeight: 600,
+        textDecoration: 'none',
+        cursor: 'pointer',
+        background: primair ? accent : 'transparent',
+        // Elke persona heeft een eigen kleur, en niet elke kleur verdraagt
+        // witte tekst.
+        color: primair ? getReadableTextOnColor(accent) : accent,
+        border: `1px solid ${accent}`,
+    };
+
     return (
         <div
             style={{
@@ -151,30 +299,22 @@ function Route({ accent, title, text, button, href, primair = false }) {
                 {text}
             </p>
 
-            <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                    justifySelf: 'start',
-                    // Apples ondergrens voor raakvlakken; een link is hier een knop.
-                    minHeight: 44,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    padding: '0 18px',
-                    borderRadius: 999,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    background: primair ? accent : 'transparent',
-                    // Elke persona heeft een eigen kleur, en niet elke kleur
-                    // verdraagt witte tekst.
-                    color: primair ? getReadableTextOnColor(accent) : accent,
-                    border: `1px solid ${accent}`,
-                }}
-            >
-                {button}
-            </a>
+            {href ? (
+                <a href={href} target="_blank" rel="noopener noreferrer" style={knopStijl}>
+                    {button}
+                </a>
+            ) : (
+                <button
+                    type="button"
+                    onClick={onClick}
+                    aria-expanded={expanded}
+                    style={knopStijl}
+                >
+                    {button}
+                </button>
+            )}
+
+            {children}
         </div>
     );
 }

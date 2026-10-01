@@ -29,13 +29,14 @@ kun je overnemen. De Engelse formuleringen staan kant-en-klaar in
 >
 > **Wat we bewaren, en waar**
 > De app bewaart je persona-profiel (de uitslag van de test en de datum), je
-> antwoorden op de drie gespreksvragen, de inzichten die je aan je gesprek hebt
-> vastgeprikt, en welke taal je hebt gekozen. Dat staat in de opslag van de app
-> op je toestel. Er is geen server, geen database en geen kopie elders.
+> voornaam als je die hebt ingevuld, je antwoorden op de drie gespreksvragen, de
+> inzichten die je aan je gesprek hebt vastgeprikt, en welke taal je hebt
+> gekozen. Dat staat in de opslag van de app op je toestel. Er is geen server,
+> geen database en geen kopie elders.
 >
 > **Wat we niet doen**
-> Er is geen account, geen e-mailadres en geen wachtwoord. Je voornaam wordt
-> tijdens de test alleen op het scherm gebruikt en niet bewaard. We gebruiken
+> Er is geen account, geen e-mailadres en geen wachtwoord. Je voornaam blijft op
+> je toestel en bereikt ons nooit. We gebruiken
 > geen statistieken, geen trackers en geen advertenties. De app vraagt geen
 > toegang tot je contacten, locatie, camera of bestanden. De app heeft geen
 > internetverbinding nodig en maakt er ook geen gebruik van.

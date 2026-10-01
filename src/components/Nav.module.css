@@ -28,16 +28,33 @@
   gap: 16px;
 }
 
-/* ===== Logo button ===== */
+/* ===== Logo button =====
+   Het logo is de weg terug naar je overzicht. Dat moet je kunnen voelen: een
+   raakvlak van minstens 44px (Apples ondergrens), een zichtbare indruk bij het
+   tikken, en geen grijze blokflits van de webview eroverheen. */
 .logoBtn {
   display: flex;
   align-items: center;
   gap: 12px;
   background: transparent;
   border: none;
-  padding: 0;
+  padding: 4px 8px;
+  margin-left: -8px;
+  min-height: 44px;
+  border-radius: 14px;
   cursor: pointer;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.logoBtn:hover { background: #FBF6F1; }
+.logoBtn:active {
+  transform: scale(0.97);
+  background: #F6EDE6;
+}
+.logoBtn:focus-visible {
+  outline: 2px solid var(--tof-accent-rose);
+  outline-offset: 2px;
 }
 .logoImg {
   width: 40px;

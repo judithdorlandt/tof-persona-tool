@@ -4,7 +4,9 @@ const native = {
   start: {
     eyebrow: 'Op dit toestel',
     // Met en zonder bewaard profiel opent de app op een ander verhaal.
-    title: 'Welkom terug.',
+    // Vulde je je voornaam in, dan opent de app met jouw naam erin. Niet als
+    // trucje: dit is jouw app, op jouw toestel, en dat mag je zien.
+    title: (naam) => (naam ? `Welkom terug, ${naam}.` : 'Welkom terug.'),
     intro:
       'Dit is het profiel dat je nu bekijkt. Het staat op je toestel en gaat nergens anders heen.',
     emptyTitle: 'Ontdek hoe jij werkt.',
@@ -44,8 +46,9 @@ const native = {
     intro:
       'Drie vragen om je gesprek mee voor te bereiden. Wat je opschrijft blijft op je toestel en wordt nergens naartoe gestuurd.',
     saved: 'Opgeslagen op dit toestel',
-    // De drie open vragen. De sleutels komen overeen met het datamodel in
-    // src/native/localStore.js.
+    // De vier open vragen. De sleutels komen overeen met het datamodel in
+    // src/native/localStore.js. De eerste drie vul je vóór het gesprek in,
+    // `outcome` erna — daarom staat die in een eigen blok op het scherm.
     fields: {
       recognize: {
         label: 'Wat herken ik hierin?',
@@ -58,6 +61,10 @@ const native = {
       ask: {
         label: 'Wat wil ik bespreken of vragen?',
         placeholder: 'Waar wil je het over hebben?',
+      },
+      outcome: {
+        label: 'Wat kwam eruit?',
+        placeholder: 'Wat is er gezegd, en wat gaan jullie doen?',
       },
     },
   },
@@ -97,22 +104,40 @@ const native = {
     pinnedEmpty:
       'Je hebt nog niets vastgeprikt. Tik op de plus bij een inzicht in je profiel.',
     backToProfile: 'Terug naar je profiel',
+    // Het tweede blok met open vragen, ná het gesprek. Zelfde opslag als de
+    // drie vragen erboven, ander moment — en dus een eigen kopje.
+    report: {
+      eyebrow: 'Na afloop',
+      title: 'Wat er uit het gesprek kwam',
+      intro:
+        'Schrijf het op zolang het nog vers is. Het hoort bij dit gesprek en gaat straks mee naar je historie.',
+    },
     // Een gesprek afronden. Daarna staat het blad weer leeg en verhuist wat je
-    // had opgeschreven naar de lijst eronder, met de datum erbij.
+    // had opgeschreven naar je historie, met de datum erbij. Bewust één knop:
+    // afronden ís een nieuw gesprek beginnen onder hetzelfde profiel.
     close: {
       title: 'Gesprek gehad?',
       text:
-        'Leg het vast met de datum van vandaag. Je begint dan met een leeg blad voor je volgende gesprek, en wat je nu hebt opgeschreven kun je hieronder altijd terugvinden.',
-      button: 'Gesprek afronden',
+        'Leg het vast met de datum van vandaag en begin met een leeg blad voor je volgende gesprek. Je profiel blijft hetzelfde — dat verandert langzamer dan je gesprekken.',
+      button: 'Afronden en nieuw gesprek beginnen',
       confirm: 'Dit gesprek afronden en met een leeg blad beginnen?',
       confirmYes: 'Ja, afronden',
       confirmCancel: 'Nog niet',
       done: 'Je gesprek is vastgelegd. Hieronder kun je het teruglezen.',
+      // Pas ná het afronden, als een stille vraag. Vóór de knop zou het je
+      // tegenhouden; hier is het een gedachte voor de volgende keer.
+      personaCheck: (persona) =>
+        persona
+          ? `Herken je je nog in ${persona}? Je werk verandert; je profiel mag meebewegen.`
+          : 'Herken je je nog in je profiel? Je werk verandert; je profiel mag meebewegen.',
+      personaCheckButton: 'Opnieuw testen',
     },
-    // De afgeronde gesprekken, nieuwste eerst.
+    // Het laatste afgeronde gesprek blijft hier staan; de rest zit in je
+    // historie, onder het profiel waar ze bij horen.
     past: {
-      title: 'Eerdere gesprekken',
+      title: 'Je vorige gesprek',
       intro: 'Wat je toen hebt opgeschreven. Alleen om terug te lezen.',
+      allButton: 'Alle gesprekken in je historie',
       // Kop boven één afgerond gesprek: "Gesprek 2 · 14 oktober 2026". De
       // nummering loopt op in de tijd, dus gesprek 1 is het oudste.
       label: (nummer) => `Gesprek ${nummer}`,
@@ -129,7 +154,11 @@ const native = {
   // De stap ná je eigen profiel: je beeld naast dat van je team leggen. Dat
   // gebeurt niet in de app — de teamomgeving staat op de website, en de app
   // verzamelt daarvoor niets. Twee routes, want er zijn twee situaties: je
-  // organisatie werkt al met TOF, of nog niet.
+  // organisatie werkt al met The Office Factory, of nog niet.
+  //
+  // Hier staat de naam voluit en niet als "TOF": dit is de enige plek in de
+  // app waar je iets aan iemand anders voorlegt, en dan hoort er een naam te
+  // staan die buiten deze app ook iets betekent.
   team: {
     eyebrow: 'De volgende stap',
     title: 'Dit is jouw beeld.',
@@ -138,31 +167,47 @@ const native = {
     contribute: {
       title: 'Ik heb een teamcode',
       text:
-        'Je organisatie werkt al met TOF. Breng je profiel in bij je team: de website gaat open met je persona erin, daar vul je je teamcode in en kies je zelf of je het verstuurt. De app verstuurt zelf niets.',
+        'Je organisatie werkt al met The Office Factory. Breng je profiel in bij je team: de website gaat open met je persona erin, daar vul je je teamcode in en kies je zelf of je het verstuurt. De app verstuurt zelf niets.',
       button: 'Profiel inbrengen',
     },
     askOrg: {
-      title: 'Vraag je organisatie om TOF',
+      title: 'Vraag je organisatie om The Office Factory',
       text:
-        'Nog niet in gebruik bij jullie? Leg het voor aan je leidinggevende of HR. Je eigen mail gaat open met een tekst die je nog kunt aanpassen — de app verstuurt zelf niets.',
+        'Nog niet in gebruik bij jullie? Leg het voor aan je leidinggevende of HR. De tekst staat klaar; je kiest zelf waar je hem opent en past hem aan — de app verstuurt zelf niets.',
       button: 'Mail opstellen',
-      subject: 'TOF Persona voor ons team',
+      // Waar je mail staat, weet de app niet. `mailto:` opent de standaard
+      // mail-app, en die heeft lang niet iedereen ingesteld — dan gebeurt er
+      // niets en lijkt de knop stuk. Daarom eerst de vraag, en als laatste een
+      // route die altijd werkt: de tekst kopiëren.
+      chooseLabel: 'Waar staat je mail?',
+      providers: {
+        app: 'Mijn mail-app',
+        gmail: 'Gmail',
+        outlook: 'Outlook',
+        copy: 'Tekst kopiëren',
+      },
+      copied: 'Gekopieerd. Plak de tekst in een nieuwe mail.',
+      copyFailed: 'Kopiëren lukte niet. Selecteer de tekst hierboven zelf.',
+      subject: 'De Persona-tool van The Office Factory voor ons team',
       // Losse regels; ze worden met regeleinden aan elkaar geplakt.
       body: [
         'Hoi,',
         '',
-        'Ik heb de TOF Persona-test gedaan en daar een beeld uit gekregen van hoe ik werk en wat ik van mijn werkomgeving nodig heb. Dat werd een nuttig gesprek met mezelf.',
+        'Ik heb de Persona-test van The Office Factory gedaan en daar een beeld uit gekregen van hoe ik werk en wat ik van mijn werkomgeving nodig heb. Dat werd een nuttig gesprek met mezelf.',
         '',
         'Wat mij pas echt zou helpen, is dat beeld naast dat van het team leggen: wie vult wie aan, waar zit de wrijving, en wat vraagt dat van onze werkplekken en werkafspraken. Daar is een teamomgeving voor.',
         '',
-        'Meer erover staat op www.persona-tool.nl. Zullen we kijken of dit iets voor ons is?',
+        'Meer over de tool staat op www.persona-tool.nl, en over The Office Factory op www.tof.services. Zullen we kijken of dit iets voor ons is?',
         '',
         'Groet,',
       ],
     },
-    // De stille regel onderaan, ook als je geen van beide routes kiest.
+    // De stille regels onderaan, ook als je geen van beide routes kiest. Twee
+    // adressen met twee rollen: de tool, en het bureau erachter.
     siteLabel: 'www.persona-tool.nl',
     siteUrl: 'https://www.persona-tool.nl',
+    businessLabel: 'www.tof.services',
+    businessUrl: 'https://www.tof.services',
     // LET OP: twee verschillende adressen, en dat is geen slordigheid.
     // `siteUrl` is de verhaalsite — daar lees je wat TOF is. `appUrl` is de
     // webapp zelf, met /bijdragen, de teamomgeving en de vragenlijst. Het
@@ -190,6 +235,14 @@ const native = {
     confirmCancel: 'Laat maar staan',
     hasNote: 'Met aantekening',
     mixLabel: 'Daarnaast',
+    // De afgeronde gesprekken onder één profiel. Ze staan dichtgeklapt: de
+    // historie is een lijst profielen, en pas als je er één opent wil je de
+    // gesprekken eronder zien.
+    conversations: {
+      count: (n) => (n === 1 ? '1 gesprek' : `${n} gesprekken`),
+      show: 'Gesprekken bekijken',
+      hide: 'Gesprekken verbergen',
+    },
     // Datum + tijd van afronden, in de taal van de app.
     formatDate: (iso) =>
       new Date(iso).toLocaleString('nl-NL', {
@@ -213,6 +266,7 @@ const native = {
         text: 'Alleen wat je zelf in de app maakt, opgeslagen in de app zelf:',
         items: [
           'Je persona-profiel: de uitslag van de test en de datum.',
+          'Je voornaam, als je die invulde — zodat de app je bij naam kan aanspreken.',
           'Je antwoorden op de drie gespreksvragen.',
           'De inzichten die je aan je gesprek hebt vastgeprikt.',
           'De gesprekken die je hebt afgerond, met de datum erbij.',
@@ -224,7 +278,7 @@ const native = {
         text: 'Er is geen enkele reden om meer van je te weten, dus dat doen we ook niet:',
         items: [
           'Geen account, geen e-mailadres, geen wachtwoord.',
-          'Je voornaam wordt tijdens de test alleen op het scherm gebruikt en niet bewaard.',
+          'Je voornaam blijft op dit toestel; wij zien hem nooit.',
           'Geen statistieken, geen trackers, geen advertenties.',
           'Geen toegang tot je contacten, locatie, camera of bestanden.',
         ],

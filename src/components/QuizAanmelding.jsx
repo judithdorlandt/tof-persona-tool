@@ -396,7 +396,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
           onChange={wijzig('voornaam')}
           placeholder={t.firstNamePlaceholder}
         />
-        <p style={S.hint}>{t.firstNameHint}</p>
+        <p style={S.hint}>{IS_NATIVE ? t.firstNameHintNative : t.firstNameHint}</p>
 
         {!soloModus && (
           <>
