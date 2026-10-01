@@ -61,10 +61,13 @@ const admin = {
     organizationPlaceholder: 'Bv. Gemeente Nijkerk',
     teamLabel: 'Team / Afdeling',
     teamPlaceholder: 'Bv. Bestuurszaken',
-    moduleLabel: 'Module',
+    // Insight en Dynamics zijn samen Module 2 geworden. Ze blijven twee
+    // toegangsniveaus in de database, dus het label noemt het niveau en niet
+    // langer een modulenummer — dat klopte niet meer.
+    moduleLabel: 'Toegangsniveau',
     moduleOptions: {
-      insight: 'Module 01 — Insight (€1.500)',
-      dynamics: 'Module 02 — Dynamics (€8.500)',
+      insight: 'Team Insight',
+      dynamics: 'Team Insight + Dynamics',
     },
     leaderEmailLabel: 'Leider e-mail (optioneel)',
     leaderEmailPlaceholder: 'l.janssen@nijkerk.nl',
@@ -82,8 +85,8 @@ const admin = {
   justCreated: {
     eyebrow: 'Team aangemaakt',
     moduleLabels: {
-      insight: 'Module 01 — Insight',
-      dynamics: 'Module 02 — Dynamics',
+      insight: 'Team Insight',
+      dynamics: 'Team Insight + Dynamics',
     },
     dismiss: 'Sluiten',
     codeLabel: 'Code',
@@ -186,12 +189,12 @@ The Office Factory
     empty: '—',
   },
 
-  /** Schakelaar tussen module 01 en 02 op de detailpagina. */
+  /** Schakelaar tussen de twee weergaven binnen Module 2 op de detailpagina. */
   moduleToggle: {
-    ariaLabel: 'Module',
+    ariaLabel: 'Weergave',
     options: {
-      insight: '01 — Team Insight',
-      dynamics: '02 — Team Dynamics',
+      insight: 'Team Insight',
+      dynamics: 'Team Dynamics',
     },
   },
 

@@ -15,7 +15,7 @@ import React, { useEffect, useRef } from 'react';
 import { useCopy } from '../i18n/LanguageContext';
 
 // Welke module-kaart als "huidige" wordt uitgelicht (index in copy.stack).
-const CURRENT_STACK_INDEX = 2;
+const CURRENT_STACK_INDEX = 3;
 
 export default function StrategischKompas({ setPage }) {
     const { strategicCompass: t } = useCopy();
@@ -212,10 +212,16 @@ export default function StrategischKompas({ setPage }) {
               .sk-deliver-list li strong { color: var(--tof-text); font-weight: 600; }
 
               /* Stack */
-              .sk-stack { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 32px; }
+              /* Vier kaarten: gelijke breedte én gelijke hoogte, zodat de
+                 ladder als één rij leest. */
+              .sk-stack {
+                display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 16px; margin-top: 32px; align-items: stretch;
+              }
               .sk-stack-card {
                 background: var(--tof-surface); border: 1px solid var(--tof-border);
-                border-radius: 8px; padding: 36px 28px;
+                border-radius: 8px; padding: 32px 24px;
+                display: flex; flex-direction: column;
               }
               .sk-stack-card.is-current {
                 border: 2px solid var(--tof-accent-rose);
@@ -229,14 +235,10 @@ export default function StrategischKompas({ setPage }) {
               .sk-stack-card.is-current .sk-stack-num { color: var(--tof-accent-rose); }
               .sk-stack-title {
                 font-family: var(--tof-font-heading);
-                font-size: 22px; font-weight: 500; margin: 0 0 12px;
+                font-size: 20px; font-weight: 500; margin: 0 0 12px;
                 color: var(--tof-text);
               }
-              .sk-stack-body { font-size: 14px; line-height: 1.6; color: var(--tof-text-soft); margin: 0 0 20px; }
-              .sk-stack-price {
-                font-family: var(--tof-font-heading);
-                font-size: 18px; font-style: italic; color: var(--tof-accent-rose);
-              }
+              .sk-stack-body { font-size: 14px; line-height: 1.6; color: var(--tof-text-soft); margin: 0; }
 
               /* CTA */
               .sk-cta-section {
@@ -269,6 +271,11 @@ export default function StrategischKompas({ setPage }) {
               /* Reveal */
               [data-sk-reveal] { opacity: 0; transform: translateY(20px); transition: opacity 0.8s, transform 0.8s; }
               [data-sk-reveal].sk-visible { opacity: 1; transform: none; }
+
+              /* Tablet: vier kaarten naast elkaar wordt te smal om te lezen. */
+              @media (max-width: 1024px) {
+                .sk-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+              }
 
               /* Mobile */
               @media (max-width: 768px) {
@@ -436,7 +443,6 @@ export default function StrategischKompas({ setPage }) {
                                 <div className="sk-stack-num">{card.num}</div>
                                 <h3 className="sk-stack-title">{card.title}</h3>
                                 <p className="sk-stack-body">{card.body}</p>
-                                <div className="sk-stack-price">{card.price}</div>
                             </div>
                         ))}
                     </div>

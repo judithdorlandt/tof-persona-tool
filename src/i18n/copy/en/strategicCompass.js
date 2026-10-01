@@ -2,38 +2,40 @@ const strategicCompass = {
   back: '← Back to team space',
 
   hero: {
-    eyebrow: 'Module 03 · The Strategic Compass',
+    eyebrow: 'Module 04 · The Strategic Compass',
     titleLead: 'What the world asks of you, translated into ',
     titleAccent: 'who your team is',
     titleTail: '.',
     sub: 'For management teams, boards and workplace leads. External trends connected to your team personas — a compass for the next three to five years.',
     cta: 'Explore the approach',
-    meta: '3–5 YEARS · 8–12 WEEK PROGRAMME · €20.000',
+    meta: '3–5 YEARS · FOUR-MONTH PROGRAMME · €20.000',
   },
 
   why: {
-    eyebrow: 'Why Module 3',
+    eyebrow: 'Why Module 4',
     titleLead: 'Strategy without a view of people is a ',
     titleAccent: 'compass without north',
     titleTail: '.',
     lead: 'Many strategy programmes look outward — trends, market, technology. Others look inward — culture, leadership, teams. The Strategic Compass does both. Trends always land differently depending on who actually works there.',
-    compareHeads: ['Module 1', 'Module 2', 'Module 3'],
+    // The paid modules side by side. Module 1 (the free app) is deliberately
+    // absent: it is the way in, not an alternative to this programme.
+    compareHeads: ['Module 2', 'Module 3', 'Module 4'],
     compareRows: [
       {
         label: 'Perspective',
-        cells: ['Inward — the individual', 'Inward — the team', 'Outside in'],
+        cells: ['Inward — the team', 'Inward — the organisation', 'Outside in'],
       },
       {
         label: 'Time horizon',
-        cells: ['Now', 'The coming quarters', '3–5 years'],
+        cells: ['The coming quarters', 'This year', '3–5 years'],
       },
       {
         label: 'Output',
-        cells: ['Persona card', 'Team Dynamics report', 'Strategic direction document'],
+        cells: ['Team dashboard + session', 'Organisation landscape', 'Strategic direction document'],
       },
       {
         label: 'Audience',
-        cells: ['Everyone', 'Team leads, HR', 'Management team, board, workplace leads'],
+        cells: ['Team leads, HR', 'Leadership, HR, workplace leads', 'Management team and board'],
       },
     ],
   },
@@ -94,7 +96,7 @@ const strategicCompass = {
     titleLead: 'Five steps to ',
     titleAccent: 'your compass',
     titleTail: '.',
-    lead: 'The Strategic Compass is built over 8 to 12 weeks, in close collaboration with your management team or board. Not a report that gathers dust — a living document embedded in your rhythm.',
+    lead: 'The Strategic Compass is built over four months, in close collaboration with your management team or board. Not a report that gathers dust — a living document embedded in your rhythm.',
   },
 
   steps: [
@@ -113,7 +115,7 @@ const strategicCompass = {
     {
       num: '03',
       name: 'Persona overlay',
-      meta: 'From Module 1 + 2',
+      meta: 'From Module 2 + 3',
       body: 'How do your personas relate to those trends? A Maker-heavy team in a DEIB-driven organisation needs something very different from a Connector-heavy team.',
     },
     {
@@ -156,31 +158,33 @@ const strategicCompass = {
   ],
 
   stackSection: {
-    eyebrow: 'Where Module 3 fits',
-    titleLead: 'Three modules, one ',
+    eyebrow: 'Where Module 4 fits',
+    titleLead: 'Four modules, one ',
     titleAccent: 'story',
     titleTail: '.',
-    lead: 'Module 3 stands on the shoulders of Modules 1 and 2. Only once you know who works here and how they work together can you look meaningfully at where you want to go.',
+    lead: 'Module 4 stands on the shoulders of the modules before it. Only once you know who works here, how teams work together and what the organisation looks like can you look meaningfully at where you want to go.',
   },
 
   stack: [
     {
-      num: 'Module 01 · Persona Insight',
+      num: 'Module 01 · The Persona app',
       title: 'Who are you?',
-      body: 'Self-service persona tool. Personal insight into working style and workplace needs.',
-      price: '€1.500',
+      body: 'The app on your phone. Your own profile, your workplace needs, your conversation prep.',
     },
     {
-      num: 'Module 02 · Team Dynamics',
+      num: 'Module 02 · Team Insight & Dynamics',
       title: 'How do you work together?',
-      body: 'Team report plus session. Persona mix, tensions and workplace needs.',
-      price: '€8.500',
+      body: 'Team dashboard plus the session. Persona mix, tensions, workplace needs and quick wins.',
     },
     {
-      num: 'Module 03 · Strategic Compass',
+      num: 'Module 03 · Organisation landscape',
+      title: 'What do you see across teams?',
+      body: 'All teams side by side, with interpretation for leadership, HR and workplace.',
+    },
+    {
+      num: 'Module 04 · Strategic Compass',
       title: 'Where are we heading?',
       body: 'Outside in — trends and personas translated into strategy.',
-      price: '€20.000',
     },
   ],
 

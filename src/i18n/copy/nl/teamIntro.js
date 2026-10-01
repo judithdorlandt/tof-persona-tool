@@ -1,49 +1,70 @@
 /**
- * teamIntro — alle teksten van TeamIntro.jsx (de verkoopintro voor de drie
- * modules, de manager-welkom, het toegangspaneel en de toegangsmodal).
+ * teamIntro — alle teksten van TeamIntro.jsx (de verkoopintro voor de modules,
+ * de manager-welkom, het toegangspaneel en de toegangsmodal).
  *
- * De module-ids (insight/dynamics/strategic) zijn logica-sleutels uit
- * utils/access.js — die blijven ongewijzigd, alleen de teksten zijn vertaald.
+ * De module-ids hier zijn presentatie-sleutels. Ze staan los van de
+ * niveau-sleutels in utils/access.js (insight/dynamics/strategic): die blijven
+ * ongewijzigd, zodat alle bestaande toegangscodes gewoon blijven werken.
+ *
+ * De ladder loopt per publiek, niet per product: ik → wij → het geheel → de
+ * koers. Module 1 is de gratis ingang en staat daarom apart boven de drie
+ * betaalde kaarten; als vierde prijskaart zou "gratis" lezen als proefversie.
  */
 const teamIntro = {
   modules: {
-    insight: {
-      eyebrow: 'Module 1 · Voor teams',
-      title: 'Team Insight & Quick Wins',
+    app: {
+      eyebrow: 'Module 1 · Voor iedereen',
+      title: 'De Persona-app',
+      hook: 'Begin bij jezelf. Gratis, in een paar minuten, zonder account.',
+      bullets: [
+        'Je eigen profiel: waar je energie van krijgt en waar je leegloopt',
+        'Wat dat betekent voor je werkplek en je afspraken',
+        'Alles blijft op je telefoon — er gaat niets naar een server',
+        'Heb je een teamcode? Dan voeg je je profiel toe aan je team',
+      ],
+      cta: 'Ik heb een teamcode',
+      store: 'Te downloaden als TOF Persona in de App Store.',
+      storeSoon: 'Binnenkort in de App Store.',
+      webCta: 'Of doe de test hier →',
+    },
+    teams: {
+      eyebrow: 'Module 2 · Voor teams',
+      title: 'Team Insight & Dynamics',
       hook: 'Je weet wie er in je team zit. Maar weet je ook hoe het team écht werkt?',
       bullets: [
         'Zie in één oogopslag welke werkstijlen domineren',
         'Ontdek waar energie zit — en waar wrijving ontstaat',
-        'Krijg directe werkplekbehoefte per team',
-        'Vier concrete quick wins die je morgen kunt toepassen',
+        'Begrijp waarom tempo, structuur en besluitvorming botsen',
+        'Werkplekbehoefte en concrete quick wins per team',
+        'Live sessie waarin we het samen lezen — online of op locatie',
       ],
-      what: 'Een teamdashboard klaar voor een teamoverleg, werkplek\u00ADbeslissing of leiderschapsgesprek.',
+      what: 'Eén teamdashboard plus de sessie waarin het gesprek ontstaat. Inzicht en duiding horen bij elkaar, dus je koopt ze niet meer apart.',
       cta: 'Naar de teamomgeving',
     },
-    dynamics: {
-      eyebrow: 'Module 2 · Voor teams & organisaties',
-      title: 'Team Dynamics Sessie',
-      hook: 'Je ziet de verdeling. Maar waarom loopt de samenwerking soms vast?',
+    bedrijf: {
+      eyebrow: 'Module 3 · Voor directie & huisvesting',
+      title: 'Het Organisatie-landschap',
+      hook: 'Eén team is een momentopname. Pas meerdere teams laten het patroon zien.',
       bullets: [
-        'Spanningsvelden tussen persona\'s zichtbaar gemaakt',
-        'Inzicht in waarom tempo, structuur en besluitvorming botsen',
-        'Concrete leiderschapsimplicaties per persona-combinatie',
-        'Live toelichting — online of op locatie',
+        'Alle teams naast elkaar: waar zit de dominante werkstijl, waar de uitzondering',
+        'Werkstijl per afdeling, en wat dat vraagt van de huisvesting',
+        'Patronen die je op teamniveau niet kunt zien',
+        'Duiding voor directie, HR en huisvesting in één taal',
       ],
-      what: 'Een verdiept dashboard, toegelicht in een sessie. Van inzicht naar actie.',
-      cta: 'Naar Team Dynamics',
+      what: 'Een rapport over je hele organisatie plus een directiesessie. Het landschap ontstaat vanaf drie teams.',
+      cta: 'Plan een gesprek',
     },
     strategic: {
-      eyebrow: 'Module 3 · Voor MT, bestuur, huisvesting',
+      eyebrow: 'Module 4 · Voor MT & bestuur',
       title: 'Het Strategisch Kompas',
       hook: 'Wat de wereld vraagt, vertaald naar wie je team is.',
       bullets: [
         'Trend-radar: 8 gecureerde trends over werk, leiderschap en AI',
-        'Persona-overlay: welke trends raken juist jullie team het hardst',
+        'Persona-overlay: welke trends raken juist jullie organisatie het hardst',
         'Strategische keuzes voor leiderschap, werkomgeving en cultuur',
         'Levend richtingsdocument — jaarlijks bijgewerkt, geen plan in een la',
       ],
-      what: 'Een Strategisch Kompas-document (~20 pagina\'s) plus halfdaagse MT-sessie. Traject van 8–12 weken, volledig op maat.',
+      what: 'Een traject van vier maanden: intake, Strategisch Kompas-document (~20 pagina\'s), MT-sessie en review. Volledig op maat.',
       cta: 'Ontdek het Strategisch Kompas',
     },
   },
@@ -88,8 +109,10 @@ const teamIntro = {
     manyTeams: (n) => `Je hebt toegang tot ${n} teams.`,
     logout: 'Uitloggen',
     adminNoTeams: 'Kies een team uit het overzicht om te openen.',
-    upgradeLead: 'Meer dan Team Insight nodig?',
-    upgradeLink: 'Vraag Dynamics-toegang aan →',
+    // Insight en Dynamics zijn samen Module 2 geworden, dus "upgrade naar
+    // Dynamics" bestaat niet meer als los product. De volgende stap is Module 3.
+    upgradeLead: 'Meerdere teams in beeld brengen?',
+    upgradeLink: 'Vraag naar het Organisatie-landschap →',
     teamFallback: 'Team',
     levelDynamics: 'Team Insight + Dynamics',
     levelInsight: 'Team Insight',

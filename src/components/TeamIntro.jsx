@@ -50,16 +50,20 @@ import { useCopy } from '../i18n/LanguageContext';
 
 const MODULE_STRUCTURE = [
     {
-        id: 'insight',
+        id: 'teams',
         accent: 'var(--tof-accent-sage)',
         soft: '#EAF0EB',
-        ctaType: 'access-insight',
+        // 'any': de modal accepteert elk codeniveau en stuurt zelf door naar het
+        // juiste dashboard. Insight en Dynamics zijn één aankoop geworden, dus
+        // de bezoeker hoeft niet meer te weten welk niveau zijn code heeft.
+        ctaType: 'access-any',
     },
     {
-        id: 'dynamics',
+        id: 'bedrijf',
         accent: 'var(--tof-accent-rose)',
         soft: '#F4DFDF',
-        ctaType: 'access-dynamics',
+        ctaType: 'link',
+        ctaHref: 'https://www.tof.services/contact',
     },
     {
         id: 'strategic',
@@ -72,6 +76,10 @@ const MODULE_STRUCTURE = [
         demoHref: 'https://tof-persona-demo.netlify.app/#kompas',
     },
 ];
+
+// De app staat nog niet in de App Store. Eén vlag, zodat er bij publicatie geen
+// tekst gezocht hoeft te worden.
+const APP_IN_STORE = false;
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 
@@ -497,12 +505,25 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     </div>
                 </div>
 
+                {/* ── MODULE 1 · DE GRATIS INGANG ─────────────────────── */}
+                {/* Bewust geen vierde prijskaart: "gratis" naast betaalde      */}
+                {/* kaarten leest als proefversie. Als strook is hij de ingang. */}
+                <AppStrip
+                    mod={t.modules.app}
+                    isMobile={isMobile}
+                    onCode={() => openAccessModal('any')}
+                    onTest={() => setPage('quiz')}
+                />
+
                 {/* ── MODULE KAARTEN ──────────────────────────────────── */}
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(0, 1fr))',
                     gap: isMobile ? 12 : 16,
-                    alignItems: 'start',
+                    // Dicht: alle drie even hoog, anders leest de ene module als
+                    // minder dan de andere. Open: terug naar 'start', zodat de
+                    // open kaart de dichte kaarten niet meetrekt.
+                    alignItems: openId ? 'start' : 'stretch',
                 }}>
                     {modules.map((mod) => {
                         const isOpen = openId === mod.id;
@@ -516,8 +537,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                                 isMobile={isMobile}
                                 onToggle={() => handleToggle(mod.id)}
                                 onCta={() => {
-                                    if (mod.ctaType === 'access-insight') openAccessModal('insight');
-                                    else if (mod.ctaType === 'access-dynamics') openAccessModal('dynamics');
+                                    if (mod.ctaType === 'access-any') openAccessModal('any');
                                     else if (mod.ctaType === 'page' && mod.ctaPage) setPage(mod.ctaPage);
                                     else if (mod.ctaType === 'link') window.open(mod.ctaHref, '_blank', 'noopener,noreferrer');
                                 }}
@@ -1027,6 +1047,65 @@ function AccessModal({
 
 // ─── MODULE KAART ─────────────────────────────────────────────────────────────
 
+// ─── MODULE 1 · DE APP ────────────────────────────────────────────────────────
+// Volle breedte, altijd open, geen prijs. Hij verkoopt niet — hij vult. Het
+// codeveld is hier het werkpaard: wie de app al heeft, hoeft niets uit te
+// rollen om met een team te beginnen.
+
+function AppStrip({ mod, isMobile, onCode, onTest }) {
+    const accent = 'var(--tof-accent-sage)';
+
+    return (
+        <div style={{
+            background: 'var(--tof-surface)',
+            border: '1px solid var(--tof-border)',
+            borderTop: `4px solid ${accent}`,
+            borderRadius: 18,
+            boxShadow: 'var(--tof-shadow)',
+            padding: isMobile ? '20px 18px' : '26px 30px',
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1fr) minmax(0, 1fr)',
+            gap: isMobile ? 18 : 32,
+            alignItems: 'start',
+        }}>
+            <div style={{ display: 'grid', gap: 10 }}>
+                <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accent }}>
+                    {mod.eyebrow}
+                </div>
+                <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 24 : 27, lineHeight: 1.1, color: 'var(--tof-text)' }}>
+                    {mod.title}
+                </h2>
+                <p style={{ margin: 0, fontSize: isMobile ? 14 : 15, lineHeight: 1.6, color: 'var(--tof-text-soft)' }}>
+                    {mod.hook}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginTop: 4 }}>
+                    <PrimaryButton onClick={onCode}>{mod.cta}</PrimaryButton>
+                    <SecondaryButton onClick={onTest}>{mod.webCta}</SecondaryButton>
+                </div>
+                <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: 'var(--tof-text-muted)' }}>
+                    {APP_IN_STORE ? mod.store : mod.storeSoon}
+                </p>
+            </div>
+
+            <div style={{ display: 'grid', gap: 8 }}>
+                {mod.bullets.map((b, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                        <div style={{
+                            width: 20, height: 20, borderRadius: 999,
+                            background: '#EAF0EB',
+                            border: `1.5px solid ${accent}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 10, fontWeight: 700, color: accent,
+                            flexShrink: 0, marginTop: 1,
+                        }}>✓</div>
+                        <span style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--tof-text-soft)' }}>{b}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef }) {
     const t = useCopy().teamIntro.card;
 
@@ -1038,6 +1117,9 @@ function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef 
                 transition: 'opacity 0.25s ease, transform 0.25s ease',
                 opacity: isDimmed ? 0.55 : 1,
                 transform: isOpen ? 'translateY(-2px)' : 'translateY(0)',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
             }}
         >
             <button
@@ -1064,16 +1146,21 @@ function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef 
                     display: 'flex',
                     flexDirection: 'column',
                     minHeight: isOpen ? undefined : 220,
+                    flex: 1,
                 }}
             >
                 <div style={{ padding: isMobile ? '18px 16px 16px' : '20px 22px 18px', display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                         <div style={{ display: 'grid', gap: 10 }}>
-                            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: mod.accent === 'var(--tof-text)' ? 'var(--tof-text-muted)' : mod.accent }}>
+                            {/* Vaste hoogtes voor eyebrow en titel: de ene module
+                                heeft een langere doelgroep of naam dan de andere,
+                                en zonder dit beginnen de koppen op verschillende
+                                hoogtes. Twee regels is de langste die voorkomt. */}
+                            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, lineHeight: 1.4, minHeight: isMobile ? undefined : 31, color: mod.accent === 'var(--tof-text)' ? 'var(--tof-text-muted)' : mod.accent }}>
                                 {mod.eyebrow}
                             </div>
 
-                            <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 22 : 23, lineHeight: 1.1, color: 'var(--tof-text)' }}>
+                            <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 22 : 23, lineHeight: 1.1, minHeight: isMobile ? undefined : 51, color: 'var(--tof-text)' }}>
                                 {mod.title}
                             </h2>
 

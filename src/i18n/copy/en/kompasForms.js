@@ -1,5 +1,5 @@
 /**
- * kompasForms.js (EN) — copy for Module 3 · Strategic Compass:
+ * kompasForms.js (EN) — copy for Module 4 · Strategic Compass:
  *   - the dashboard (TeamStrategic.jsx)
  *   - the intake questionnaire (StrategischKompasIntake.jsx)
  *   - the three-month check (StrategischKompasReview.jsx)
@@ -16,7 +16,7 @@
 const kompasForms = {
     // ── Dashboard (TeamStrategic) ────────────────────────────────────────────
     dashboard: {
-        eyebrow: 'Module 3 · Strategic Compass',
+        eyebrow: 'Module 4 · Strategic Compass',
         back: '← Back',
         backToTool: '← Back to the Persona Tool',
         thisOrganization: 'this organisation',
@@ -70,12 +70,12 @@ const kompasForms = {
 
     // ── Intake questionnaire ─────────────────────────────────────────────────
     intake: {
-        eyebrow: 'Module 3 · Strategic Compass · Intake',
+        eyebrow: 'Module 4 · Strategic Compass · Intake',
         title: 'The start of your',
         titleAccent: 'compass',
         intro:
             'This questionnaire is the starting point of your Strategic Compass. Together with the ' +
-            'persona data from Modules 1 and 2 and the eight trends, your answers form the basis for ' +
+            'persona data from Modules 2 and 3 and the eight trends, your answers form the basis for ' +
             'the design conversation. There is no automated outcome — this is input that we turn into ' +
             'direction together. Take your time; honest short answers are worth more than complete ones.',
 
@@ -150,18 +150,18 @@ const kompasForms = {
         },
 
         done: {
-            eyebrow: 'Module 3 · Strategic Compass',
+            eyebrow: 'Module 4 · Strategic Compass',
             title: 'Thank you.',
             body:
                 'Your input has been saved. Judith will read it through and combine it with your ' +
                 'persona data and the eight trends. In the design conversation it all comes together into your compass.',
-            back: '← Back to Module 3',
+            back: '← Back to Module 4',
         },
     },
 
     // ── Three-month check ────────────────────────────────────────────────────
     review: {
-        eyebrow: 'Module 3 · Strategic Compass · Three-month check',
+        eyebrow: 'Module 4 · Strategic Compass · Three-month check',
         title: 'Three months',
         titleAccent: 'on',
         intro: 'Three months on. This short check looks at what has changed, so that the compass moves with you.',
@@ -205,10 +205,10 @@ const kompasForms = {
         },
 
         done: {
-            eyebrow: 'Module 3 · Strategic Compass',
+            eyebrow: 'Module 4 · Strategic Compass',
             title: 'Thank you.',
             body: 'Your input has been saved. Judith will read it through so the compass can move with you.',
-            back: '← Back to Module 3',
+            back: '← Back to Module 4',
         },
     },
 

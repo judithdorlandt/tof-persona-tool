@@ -53,10 +53,10 @@ const admin = {
     organizationPlaceholder: 'E.g. Nijkerk Council',
     teamLabel: 'Team / Department',
     teamPlaceholder: 'E.g. Corporate Affairs',
-    moduleLabel: 'Module',
+    moduleLabel: 'Access level',
     moduleOptions: {
-      insight: 'Module 01 — Insight (€1,500)',
-      dynamics: 'Module 02 — Dynamics (€8,500)',
+      insight: 'Team Insight',
+      dynamics: 'Team Insight + Dynamics',
     },
     leaderEmailLabel: 'Team leader email (optional)',
     leaderEmailPlaceholder: 'l.janssen@nijkerk.nl',
@@ -73,8 +73,8 @@ const admin = {
   justCreated: {
     eyebrow: 'Team created',
     moduleLabels: {
-      insight: 'Module 01 — Insight',
-      dynamics: 'Module 02 — Dynamics',
+      insight: 'Team Insight',
+      dynamics: 'Team Insight + Dynamics',
     },
     dismiss: 'Close',
     codeLabel: 'Code',
@@ -175,10 +175,10 @@ The Office Factory
   },
 
   moduleToggle: {
-    ariaLabel: 'Module',
+    ariaLabel: 'View',
     options: {
-      insight: '01 — Team Insight',
-      dynamics: '02 — Team Dynamics',
+      insight: 'Team Insight',
+      dynamics: 'Team Dynamics',
     },
   },
 

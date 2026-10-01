@@ -2,38 +2,40 @@ const strategicCompass = {
   back: '← Terug naar teamomgeving',
 
   hero: {
-    eyebrow: 'Module 03 · Het Strategisch Kompas',
+    eyebrow: 'Module 04 · Het Strategisch Kompas',
     titleLead: 'Wat de wereld vraagt, vertaald naar ',
     titleAccent: 'wie je team is',
     titleTail: '.',
     sub: "Voor MT, bestuur en huisvesting. Externe trends gekoppeld aan jouw team-persona's — een kompas voor de komende drie tot vijf jaar.",
     cta: 'Ontdek de aanpak',
-    meta: '3–5 JAAR · TRAJECT VAN 8–12 WEKEN · €20.000',
+    meta: '3–5 JAAR · TRAJECT VAN 4 MAANDEN · €20.000',
   },
 
   why: {
-    eyebrow: 'Waarom Module 3',
+    eyebrow: 'Waarom Module 4',
     titleLead: 'Strategie zonder mensbeeld is een ',
     titleAccent: 'kompas zonder noord',
     titleTail: '.',
     lead: 'Veel strategie-trajecten kijken naar de buitenwereld — trends, markt, technologie. Andere kijken naar binnen — cultuur, leiderschap, teams. Het Strategisch Kompas doet beide. Trends raken organisaties altijd anders, afhankelijk van wie er werkt.',
-    compareHeads: ['Module 1', 'Module 2', 'Module 3'],
+    // De betaalde modules naast elkaar. Module 1 (de gratis app) staat hier
+    // bewust niet in: die is de ingang, geen alternatief voor dit traject.
+    compareHeads: ['Module 2', 'Module 3', 'Module 4'],
     compareRows: [
       {
         label: 'Blik',
-        cells: ['Naar binnen — individu', 'Naar binnen — team', 'Van buiten naar binnen'],
+        cells: ['Naar binnen — het team', 'Naar binnen — de organisatie', 'Van buiten naar binnen'],
       },
       {
         label: 'Tijdshorizon',
-        cells: ['Nu', 'Komende kwartalen', '3–5 jaar'],
+        cells: ['Komende kwartalen', 'Dit jaar', '3–5 jaar'],
       },
       {
         label: 'Output',
-        cells: ['Persona-kaart', 'Team-dynamics rapport', 'Strategisch richtingsdocument'],
+        cells: ['Teamdashboard + sessie', 'Organisatie-landschap', 'Strategisch richtingsdocument'],
       },
       {
         label: 'Doelgroep',
-        cells: ['Iedereen', 'Teamleiders, HR', 'MT, bestuur, huisvesting'],
+        cells: ['Teamleiders, HR', 'Directie, HR, huisvesting', 'MT en bestuur'],
       },
     ],
   },
@@ -94,7 +96,7 @@ const strategicCompass = {
     titleLead: 'In 5 stappen naar ',
     titleAccent: 'jouw kompas',
     titleTail: '.',
-    lead: 'Het Strategisch Kompas wordt gebouwd over 8 tot 12 weken, in nauwe samenwerking met MT of bestuur. Geen losse adviesnota — een levend document dat ingebed wordt in jullie ritme.',
+    lead: 'Het Strategisch Kompas wordt gebouwd over vier maanden, in nauwe samenwerking met MT of bestuur. Geen losse adviesnota — een levend document dat ingebed wordt in jullie ritme.',
   },
 
   steps: [
@@ -113,7 +115,7 @@ const strategicCompass = {
     {
       num: '03',
       name: 'Persona-overlay',
-      meta: 'Uit Module 1 + 2',
+      meta: 'Uit Module 2 + 3',
       body: "Hoe verhouden jullie persona's zich tot die trends? Een Maker-zwaar team in een DEIB-gedreven organisatie vraagt iets héél anders dan een Verbinder-zwaar team.",
     },
     {
@@ -156,31 +158,33 @@ const strategicCompass = {
   ],
 
   stackSection: {
-    eyebrow: 'Waar Module 3 in past',
-    titleLead: 'Drie modules, één ',
+    eyebrow: 'Waar Module 4 in past',
+    titleLead: 'Vier modules, één ',
     titleAccent: 'verhaal',
     titleTail: '.',
-    lead: 'Module 3 staat op de schouders van Module 1 en 2. Pas als je weet wie er werkt en hoe ze samenwerken, kan je betekenisvol kijken naar waar je heen wilt.',
+    lead: 'Module 4 staat op de schouders van de modules ervoor. Pas als je weet wie er werkt, hoe teams samenwerken en hoe de organisatie eruitziet, kan je betekenisvol kijken naar waar je heen wilt.',
   },
 
   stack: [
     {
-      num: 'Module 01 · Persona Insight',
+      num: 'Module 01 · De Persona-app',
       title: 'Wie ben jij?',
-      body: 'Self-service persona-tool. Individueel inzicht in werkstijl en werkplek­behoefte.',
-      price: '€1.500',
+      body: 'De app op je telefoon. Je eigen profiel, je werkplekbehoefte, je gespreksvoorbereiding.',
     },
     {
-      num: 'Module 02 · Team Dynamics',
+      num: 'Module 02 · Team Insight & Dynamics',
       title: 'Hoe werken jullie samen?',
-      body: 'Team-rapport plus sessie. Persona-mix, spanningen, werkplek­behoefte.',
-      price: '€8.500',
+      body: 'Teamdashboard plus de sessie. Persona-mix, spanningen, werkplek­behoefte en quick wins.',
     },
     {
-      num: 'Module 03 · Strategisch Kompas',
+      num: 'Module 03 · Organisatie-landschap',
+      title: 'Wat zie je over teams heen?',
+      body: 'Alle teams naast elkaar, met duiding voor directie, HR en huisvesting.',
+    },
+    {
+      num: 'Module 04 · Strategisch Kompas',
       title: 'Waar gaan we naartoe?',
       body: "Buiten naar binnen — trends + persona's vertaald naar strategie.",
-      price: '€20.000',
     },
   ],
 
