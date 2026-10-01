@@ -171,33 +171,39 @@ const native = {
       button: 'Profiel inbrengen',
     },
     askOrg: {
-      title: 'Vraag je organisatie om The Office Factory',
+      title: 'Laat het je leidinggevende zien',
       text:
-        'Nog niet in gebruik bij jullie? Leg het voor aan je leidinggevende of HR. De tekst staat klaar; je kiest zelf waar je hem opent en past hem aan — de app verstuurt zelf niets.',
-      button: 'Mail opstellen',
-      // Waar je mail staat, weet de app niet. `mailto:` opent de standaard
-      // mail-app, en die heeft lang niet iedereen ingesteld — dan gebeurt er
-      // niets en lijkt de knop stuk. Daarom eerst de vraag, en als laatste een
-      // route die altijd werkt: de tekst kopiëren.
-      chooseLabel: 'Waar staat je mail?',
-      providers: {
-        app: 'Mijn mail-app',
-        gmail: 'Gmail',
-        outlook: 'Outlook',
-        copy: 'Tekst kopiëren',
-      },
-      copied: 'Gekopieerd. Plak de tekst in een nieuwe mail.',
-      copyFailed: 'Kopiëren lukte niet. Selecteer de tekst hierboven zelf.',
-      subject: 'De Persona-tool van The Office Factory voor ons team',
+        'De tekst staat klaar, met jouw persona erin. Kopieer hem, plak hem in een mail aan je leidinggevende en pas hem aan waar dat nodig is — de app verstuurt zelf niets.',
+      // Kopiëren in plaats van een mail openen. Waar je mail staat weet de app
+      // niet: `mailto:` opent de standaard mail-app, en die heeft lang niet
+      // iedereen ingesteld — dan gebeurt er niets en lijkt de knop stuk.
+      // Kopiëren werkt overal, en het is ook eerlijker: je plakt hem waar je
+      // toch al je mail schrijft en verandert eraan wat je wilt.
+      button: 'Tekst kopiëren',
+      copied:
+        'Gekopieerd. Plak de tekst in een mail aan je leidinggevende en pas hem aan waar dat nodig is.',
+      copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
+      // Deze mail wordt niet door ons geschreven maar door jou verstuurd, en
+      // dat moet je eraan kunnen horen. Geen folder over The Office Factory:
+      // één enthousiaste medewerker die iets heeft ontdekt en het aan zijn
+      // leidinggevende laat zien. Daarom staat je persona erin — dat is het
+      // enige echte bewijs dat je in handen hebt — en eindigt hij niet met een
+      // vraag ("zullen we kijken of...") maar met een opdracht: doe hem zelf.
+      subject: (persona) =>
+        persona
+          ? `Ik kwam eruit als ${persona} — en dit wil ik met het team doen`
+          : 'Ik heb de Persona-test gedaan — en dit wil ik met het team doen',
       // Losse regels; ze worden met regeleinden aan elkaar geplakt.
-      body: [
+      body: (persona) => [
         'Hoi,',
         '',
-        'Ik heb de Persona-test van The Office Factory gedaan en daar een beeld uit gekregen van hoe ik werk en wat ik van mijn werkomgeving nodig heb. Dat werd een nuttig gesprek met mezelf.',
+        `Ik heb de Persona-test gedaan en werd er even stil van.${
+          persona ? ` Ik kom eruit als ${persona}.` : ''
+        } Voor het eerst staat er concreet waarom ik op sommige dagen leegloop en op andere alles aankan — en wat ik daarvoor van mijn werkplek en van jou nodig heb. Ik heb er aantekeningen bij gemaakt die ik graag een keer met je doorneem.`,
         '',
-        'Wat mij pas echt zou helpen, is dat beeld naast dat van het team leggen: wie vult wie aan, waar zit de wrijving, en wat vraagt dat van onze werkplekken en werkafspraken. Daar is een teamomgeving voor.',
+        'Dit is nog maar mijn eigen beeld. Wat ik pas écht interessant vind: dezelfde tool kan dit voor het hele team. Dan zie je wie wie aanvult, waar het schuurt, en wat dat betekent voor onze werkplekken en onze afspraken.',
         '',
-        'Meer over de tool staat op www.persona-tool.nl, en over The Office Factory op www.tof.services. Zullen we kijken of dit iets voor ons is?',
+        'Je kan de app downloaden als TOF Persona in de App Store.',
         '',
         'Groet,',
       ],

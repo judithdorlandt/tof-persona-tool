@@ -168,33 +168,39 @@ const native = {
       button: 'Add my profile',
     },
     askOrg: {
-      title: 'Ask your organisation for The Office Factory',
+      title: 'Show it to your manager',
       text:
-        'Not in use with you yet? Put it to your manager or HR. The text is ready; you choose where to open it and edit it yourself — the app sends nothing itself.',
-      button: 'Draft an email',
-      // The app has no idea where your mail lives. `mailto:` opens the default
-      // mail app, which plenty of people never set up — then nothing happens
-      // and the button looks broken. Hence the question first, and a last route
-      // that always works: copy the text.
-      chooseLabel: 'Where is your mail?',
-      providers: {
-        app: 'My mail app',
-        gmail: 'Gmail',
-        outlook: 'Outlook',
-        copy: 'Copy the text',
-      },
-      copied: 'Copied. Paste it into a new email.',
-      copyFailed: 'Copying did not work. Select the text above yourself.',
-      subject: "The Office Factory's Persona tool for our team",
+        'The text is ready, with your persona in it. Copy it, paste it into an email to your manager and change whatever you like — the app sends nothing itself.',
+      // Copying rather than opening a mail. The app has no idea where your mail
+      // lives: `mailto:` opens the default mail app, which plenty of people
+      // never set up — then nothing happens and the button looks broken.
+      // Copying works everywhere, and it is more honest too: you paste it where
+      // you write your mail anyway and change what you want.
+      button: 'Copy the text',
+      copied:
+        'Copied. Paste it into an email to your manager and change whatever you like.',
+      copyFailed: 'Copying did not work. Please try again.',
+      // This email is not written by us but sent by you, and you should be able
+      // to hear that. No brochure about The Office Factory: one enthusiastic
+      // employee who found something and is showing it to their manager. Hence
+      // your persona in it — the only real proof you are holding — and no
+      // closing question ("shall we look at whether...") but an instruction:
+      // try it yourself.
+      subject: (persona) =>
+        persona
+          ? `I came out as a ${persona} — and I want to do this with the team`
+          : 'I took the Persona test — and I want to do this with the team',
       // Separate lines; they are joined with line breaks.
-      body: [
+      body: (persona) => [
         'Hi,',
         '',
-        "I took The Office Factory's Persona test and it gave me a picture of how I work and what I need from my work environment. That turned into a useful conversation with myself.",
+        `I took the Persona test and it genuinely stopped me for a moment.${
+          persona ? ` I come out as a ${persona}.` : ''
+        } For the first time it spells out why some days drain me and others I can take on anything — and what I need from my workspace and from you to get there. I made notes I would like to go through with you.`,
         '',
-        "What would really help me is putting that picture next to the team's: who complements whom, where the friction sits, and what that asks of our workplaces and working agreements. That is what a team environment is for.",
+        "This is still only my own picture. What I find genuinely interesting: the same tool can do this for the whole team. You see who complements whom, where it rubs, and what that means for our workspaces and our working agreements.",
         '',
-        'There is more about the tool on www.persona-tool.nl, and about The Office Factory on www.tof.services. Shall we look at whether this is something for us?',
+        'You can download the app as TOF Persona in the App Store.',
         '',
         'Best,',
       ],
