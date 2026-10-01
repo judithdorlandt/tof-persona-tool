@@ -169,7 +169,13 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   // geen keuze. Die velden verbergen we; alleen "wie ben jij" blijft over.
   // In app-modus is er per definitie niemand anders: geen organisatie, geen
   // afdeling, geen teamcode — alleen "wie ben jij".
-  const soloModus = IS_NATIVE || (organisatieVast && afdelingVast);
+  //
+  // Dit leidt bewust af uit de data en niet uit `organisatieVast && afdelingVast`:
+  // die tweede hangt aan `form.organisatie`, die pas in een effect wordt gezet.
+  // In de render ertussen stond solo-modus even op false en flitste "Kies je
+  // team" voorbij. Eén zichtbare rij = één organisatie met één afdeling, en dat
+  // weten we meteen.
+  const soloModus = IS_NATIVE || (!viaLink && !orgVast && zichtbareRijen.length === 1);
 
   function kiesOrganisatie(e) {
     const org = e.target.value;
@@ -307,6 +313,21 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
       boxShadow: '0 4px 14px rgba(31,27,24,0.18)',
     },
   };
+
+  // Zolang de codes laden is `rijen` leeg, en dan lijkt elke bezoeker een
+  // teamkiezer: `soloModus` kan pas kloppen als we weten hoeveel organisaties
+  // er zijn. Tot die tijd tonen we geen kop en geen velden — anders flitst
+  // "Kies je team" voorbij bij iemand die in zijn eentje test.
+  if (laden) {
+    return (
+      <div className="fade-up" style={S.page}>
+        <div style={S.card}>
+          <div style={S.eyebrow}>{t.eyebrow}</div>
+          <p style={{ ...S.hint, marginTop: 0 }}>{t.organizationLoading}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fade-up" style={S.page}>
