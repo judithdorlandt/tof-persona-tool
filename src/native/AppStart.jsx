@@ -55,6 +55,14 @@ export default function AppStart({ setPage }) {
                     gap: isMobile ? 20 : 28,
                     width: '100%',
                     maxWidth: 720,
+                    // Wie nog geen profiel heeft ziet maar drie dingen; op een
+                    // groot toestel bungelen die anders bovenin met een halve
+                    // lege pagina eronder. Midden op het scherm is dezelfde
+                    // rust, maar dan opzettelijk. Met profiel blijft alles waar
+                    // het stond: dan is er genoeg om te vullen.
+                    ...(heeftProfiel
+                        ? null
+                        : { minHeight: 'calc(100vh - 210px)', alignContent: 'center' }),
                 }}
             >
                 <div style={{ display: 'grid', gap: 12, ...riseIn(0) }}>

@@ -168,6 +168,12 @@ const quizData = {
   verdiepingIntro:
     'Je profiel staat. Wil je nog drie minuten? Dan wordt jouw beeld scherper — en het teambeeld ook.',
 
+  // In de app is er geen teambeeld: daar gaat niets de telefoon uit. Die halve
+  // zin zou een belofte zijn die de app niet waarmaakt — en een beoordelaar in
+  // de winkel leest hem ook zo.
+  verdiepingIntroApp:
+    'Je profiel staat. Wil je nog drie minuten? Dan wordt jouw beeld scherper.',
+
   // ── Verdieping — V1/V2: duels (sleutels = archetype-ids) ─────────────────
   duelEssentie: {
     maker: 'Ik begin en zoek onderweg de vorm',

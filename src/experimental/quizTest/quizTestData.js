@@ -24,6 +24,7 @@
  * De losse named exports (BASIS_VRAGEN, DRUK_VRAAG, …) blijven bestaan en zijn
  * de Nederlandse variant — zo blijven bestaande aanroepers werken.
  */
+import { IS_NATIVE } from '../../config/platform';
 import { getCopy } from '../../i18n/copy';
 import nlQuizData from '../../i18n/copy/nl/quizData';
 import enQuizData from '../../i18n/copy/en/quizData';
@@ -86,7 +87,9 @@ export function getQuizData(lang = 'nl') {
     DRUK_VRAAG: { q: t.druk.q, a: t.druk.a },
     WERKPLEK_TYPES: WERKPLEK_IDS.map((id) => ({ id, label: t.werkplek[id] })),
     OPEN_VRAAG: { q: t.open.q, maxLength: OPEN_VRAAG_MAX_LENGTH },
-    VERDIEPING_INTRO: t.verdiepingIntro,
+    // Op het web wordt het teambeeld inderdaad scherper; in de app bestaat dat
+    // teambeeld niet. Eén zin verschil, dezelfde vragen.
+    VERDIEPING_INTRO: IS_NATIVE ? t.verdiepingIntroApp : t.verdiepingIntro,
     DUEL_ESSENTIE: { ...t.duelEssentie },
     DUEL_INTRO: t.duelIntro,
   };

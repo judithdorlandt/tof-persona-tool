@@ -168,6 +168,12 @@ const quizData = {
   verdiepingIntro:
     'Your profile is ready. Have another three minutes? It will sharpen your picture — and the team picture too.',
 
+  // The app has no team picture: nothing leaves the phone there. That half
+  // sentence would promise something the app does not do — and a store
+  // reviewer reads it that way too.
+  verdiepingIntroApp:
+    'Your profile is ready. Have another three minutes? It will sharpen your picture.',
+
   // ── Deep dive — V1/V2: duels (keys are archetype ids) ────────────────────
   duelEssentie: {
     maker: 'I start, and find the shape as I go',
