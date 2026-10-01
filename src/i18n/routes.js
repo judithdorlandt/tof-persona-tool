@@ -13,6 +13,17 @@ export const LANGS = ['nl', 'en'];
 export const DEFAULT_LANG = 'nl';
 export const EN_PREFIX = '/en';
 
+/**
+ * De naam van elke taal in die taal zélf. Bewust hier en niet in de
+ * copy-bestanden: "English" hoort English te blijven, ook op een Nederlands
+ * scherm. Een taal erbij = een regel hier, een regel in LANGS en een
+ * slugtabel hieronder.
+ */
+export const LANG_NAMES = {
+  nl: 'Nederlands',
+  en: 'English',
+};
+
 // Paden die in beide talen identiek zijn (zie toelichting hierboven).
 const NEUTRAL_PAGES = ['authcallback', 'authconfirm'];
 
@@ -25,6 +36,10 @@ const SLUGS = {
     library: '/library',
     quiz: '/quiz',
     results: '/results',
+    bijdragen: '/bijdragen',
+    historie: '/historie',
+    gesprek: '/gesprek',
+    privacy: '/privacy',
     team: '/team',
     teamdashboard: '/team/dashboard',
     teamdynamics: '/team/dynamics',
@@ -48,6 +63,10 @@ const SLUGS = {
     library: '/library',
     quiz: '/quiz',
     results: '/results',
+    bijdragen: '/contribute',
+    historie: '/history',
+    gesprek: '/conversation',
+    privacy: '/privacy',
     team: '/team',
     teamdashboard: '/team/dashboard',
     teamdynamics: '/team/dynamics',

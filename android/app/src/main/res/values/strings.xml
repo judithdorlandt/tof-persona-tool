@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TOF Persona</string>
+    <string name="title_activity_main">TOF Persona</string>
+    <string name="package_name">services.tof.persona</string>
+    <string name="custom_url_scheme">services.tof.persona</string>
+</resources>

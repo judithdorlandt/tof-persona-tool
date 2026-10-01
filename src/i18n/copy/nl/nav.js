@@ -8,6 +8,8 @@ const nav = {
   teamEnvironment: 'Teamomgeving',
   results: 'Resultaat',
   library: "Persona's",
+  history: 'Historie',
+  conversation: 'Mijn gesprek',
   admin: 'Admin',
   logout: 'Uitloggen',
   logoutWithEmail: (email) => `Uitloggen (${email})`,

@@ -3,10 +3,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './index.css';
 
 import { useAuth } from './auth/AuthContext';
+import { IS_NATIVE, isPageAllowed } from './config/platform';
 import { useLang } from './i18n/LanguageContext';
 import { pagePath, resolvePath } from './i18n/routes';
 import { signOut, getMyManagedTeams } from './supabase';
 
+import Bijdragen from './components/Bijdragen.jsx';
 import Landing from './components/Landing.jsx';
 import Nav from './components/Nav.jsx';
 import Home from './components/Home.jsx';
@@ -25,6 +27,12 @@ import Admin from './components/Admin.jsx';
 import StrategischKompas from './components/StrategischKompas.jsx';
 import StrategischKompasIntake from './components/StrategischKompasIntake.jsx';
 import StrategischKompasReview from './components/StrategischKompasReview.jsx';
+import AppStart from './native/AppStart.jsx';
+import History from './native/History.jsx';
+import ConversationPrep from './native/ConversationPrep.jsx';
+import Privacy from './native/Privacy.jsx';
+import TabBar from './native/TabBar.jsx';
+import { getCurrentEntry, subscribe } from './native/localStore';
 
 // EXPERIMENTEEL — werkplekbehoefteprofiel, achter een feature-flag.
 import WerkplekProfiel from './experimental/WerkplekProfiel.jsx';
@@ -44,6 +52,25 @@ export default function App() {
   const { page } = resolvePath(location.pathname);
 
   const [resultData, setResultData] = useState(null);
+
+  // App-modus: het profiel staat op het toestel en blijft dus staan tussen
+  // sessies. Bij elke route-wissel opnieuw lezen, zodat een net afgeronde
+  // test en een keuze uit de historie meteen zichtbaar zijn.
+  const [nativeEntry, setNativeEntry] = useState(() =>
+    IS_NATIVE ? getCurrentEntry() : null
+  );
+  useEffect(() => {
+    if (IS_NATIVE) setNativeEntry(getCurrentEntry());
+  }, [location.pathname]);
+
+  // En ook zodra er iets op het toestel verandert zonder dat je van scherm
+  // wisselt — vastprikken op het profielscherm laat de teller in de tabbalk
+  // meteen meelopen.
+  useEffect(() => {
+    if (!IS_NATIVE) return undefined;
+    return subscribe(() => setNativeEntry(getCurrentEntry()));
+  }, []);
+
   const [teamResponses, setTeamResponses] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
 
@@ -91,13 +118,23 @@ export default function App() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [location.pathname]);
 
+  // Waar je op opent verschilt per platform: het web begint bij de uitleg,
+  // de app bij je eigen profiel.
+  const startScherm = IS_NATIVE
+    ? <AppStart setPage={navigate} />
+    : <Home setPage={navigate} />;
+
   const renderPage = () => {
+    // App-modus: alleen stap 1. De cases hieronder blijven staan voor het
+    // web; in de app zijn ze onbereikbaar en val je terug op de start.
+    if (!isPageAllowed(page)) return startScherm;
+
     switch (page) {
       case 'landing':
         return <Landing setPage={navigate} />;
 
       case 'home':
-        return <Home setPage={navigate} />;
+        return startScherm;
 
       case 'intro':
         return <Intro setPage={navigate} />;
@@ -111,12 +148,33 @@ export default function App() {
         // setResultData is hier niet meer nodig.
         return <QuizTest setPage={navigate} />;
 
-      case 'results':
-        return resultData ? (
-          <Results resultData={resultData} setPage={navigate} />
-        ) : (
-          <Home setPage={navigate} />
+      case 'results': {
+        // Op het web komt het resultaat uit de sessie; in de app uit de
+        // lokale opslag — daar hoort ook het aantekeningenblok bij.
+        const shown = resultData || nativeEntry?.result;
+        if (!shown) return startScherm;
+        return (
+          <Results
+            resultData={shown}
+            setPage={navigate}
+            noteEntry={resultData ? null : nativeEntry}
+          />
         );
+      }
+
+      // Het profiel uit de app bij een team leggen. Alleen op het web, want de
+      // app stuurt zelf niets; zie components/Bijdragen.jsx.
+      case 'bijdragen':
+        return <Bijdragen setPage={navigate} />;
+
+      case 'historie':
+        return <History setPage={navigate} />;
+
+      case 'gesprek':
+        return <ConversationPrep setPage={navigate} />;
+
+      case 'privacy':
+        return <Privacy setPage={navigate} />;
 
       case 'team':
         return (
@@ -227,8 +285,14 @@ export default function App() {
     }
   };
 
-  // Pagina's waar de Nav NIET getoond moet worden — landing en auth-flow.
-  const hideNav = page === 'landing' || page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm';
+  // Pagina's waar de Nav NIET getoond moet worden. De landing is in beide
+  // werelden een kaal merkscherm; de auth-pagina's bestaan alleen op het web.
+  const hideNav = page === 'landing'
+    || (!IS_NATIVE && (page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm'));
+
+  // De balk onderin hoort bij een app die iets van je bewaart: zolang er geen
+  // profiel is, is er ook niets om heen te gaan en blijft hij weg.
+  const showTabBar = IS_NATIVE && !hideNav && !!nativeEntry;
 
   return (
     <>
@@ -236,13 +300,24 @@ export default function App() {
         <Nav
           page={page}
           setPage={navigate}
-          hasResult={!!resultData}
+          hasResult={!!resultData || !!nativeEntry}
           currentUser={user}
           isManager={isManager}
           onLogout={handleLogout}
         />
       )}
-      <main>{renderPage()}</main>
+      {/* De vaste balk ligt over de pagina heen, dus houdt de pagina onderaan
+          ruimte vrij — anders valt de laatste knop eronder. */}
+      <main style={showTabBar ? { paddingBottom: 'calc(56px + env(safe-area-inset-bottom, 0px))' } : undefined}>
+        {renderPage()}
+      </main>
+      {showTabBar && (
+        <TabBar
+          page={page}
+          setPage={navigate}
+          pinnedCount={nativeEntry.pinned?.length || 0}
+        />
+      )}
     </>
   );
 }

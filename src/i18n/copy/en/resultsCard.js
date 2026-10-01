@@ -35,6 +35,8 @@ const resultsCard = {
     bricksTitle: 'Your ideal workplace mix',
     // Followed by the score number.
     scorePrefix: 'score',
+    // Above the workplaces that come after the strongest three.
+    bricksRestLabel: 'Needed less',
 
     bytesLabel: 'Bytes & Behavior',
     bytesTitle: 'What you need',
@@ -47,11 +49,12 @@ const resultsCard = {
 
     drainLabel: 'What drains you',
 
-    // Labels for the nine workplace types (keys are language-neutral).
+    // Labels for the eight workplace types (keys are language-neutral).
+    // "Hybrid spaces" used to be here too; see src/lib/resultDerivations.js for
+    // why a hybrid space is not a space.
     workplaceLabels: {
       focus: 'Focus spaces',
       work: 'Standard workstations',
-      hybride: 'Hybrid spaces',
       meeting: 'Meeting spaces',
       project: 'Creative spaces',
       team: 'Collaboration spaces',

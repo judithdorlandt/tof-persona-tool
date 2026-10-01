@@ -3,7 +3,6 @@ import { getArchetypes } from '../i18n/archetypes';
 export const WORKPLACE_KEYS = [
     'focus',
     'work',
-    'hybride',
     'meeting',
     'project',
     'team',
@@ -15,7 +14,6 @@ export const WORKPLACE_KEYS = [
 export const WORKPLACE_LABELS = {
     focus: 'Concentratieplekken',
     work: 'Standaard werkplekken',
-    hybride: 'Hybride plekken',
     meeting: 'Overlegplekken',
     project: 'Creatieve plekken',
     team: 'Samenwerkplekken',
@@ -27,7 +25,6 @@ export const WORKPLACE_LABELS = {
 export const WORKPLACE_COLORS = {
     focus: '#6F7F92',
     work: '#A8A29B',
-    hybride: '#B8A48B',
     meeting: '#7F9A8A',
     project: '#D08C5B',
     team: '#8B7F9A',

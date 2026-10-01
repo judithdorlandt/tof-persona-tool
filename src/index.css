@@ -42,6 +42,18 @@ body,
 
 body {
   overflow-x: hidden;
+  /* Haalt het dubbeltik-zoomen weg. Dat gebeurde per ongeluk bij het aantikken
+     van een antwoord: de pagina sprong in en daarna kon je hem heen en weer
+     schuiven. Knijpen om te vergroten blijft op het web gewoon werken. */
+  touch-action: manipulation;
+}
+
+/* Onderrand vrijhouden van de home-indicator, en in liggende stand van de
+   notch. Buiten de app zijn deze insets 0px, dus dit is web-neutraal. */
+main {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 button,
@@ -49,6 +61,10 @@ input,
 select,
 textarea {
   font: inherit;
+  /* iOS geeft een knop zonder eigen kleur systeemblauwe tekst — in de app
+     stonden de quizantwoorden daardoor blauw, terwijl ze in de browser gewoon
+     donker waren. Dit is de standaardregel uit elke CSS-reset. */
+  color: inherit;
 }
 
 h1,
@@ -69,6 +85,19 @@ a {
   font-family: var(--tof-font-body);
 }
 
+/* Een rij die je zijwaarts veegt, zonder zichtbare schuifbalk. Gebruikt voor de
+   hoofdstukknoppen in het app-profiel: vijf stuks passen niet naast elkaar op
+   een telefoon, en omvallen gaf een losse knop op een tweede regel. */
+.tof-scroll-row {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.tof-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
 img {
   max-width: 100%;
   display: block;
@@ -83,6 +112,37 @@ img {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Blokken die één voor één in beeld komen: iets verder omhoog dan tofFadeIn,
+   en met fill-mode `both` in de inline-stijl zodat een blok tijdens zijn
+   wachttijd nog onzichtbaar is. Zie src/components/result/motion.js. */
+@keyframes tofRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Wie in het systeem minder beweging heeft gevraagd, krijgt de eindtoestand
+   meteen te zien. `!important` is hier nodig omdat de animaties en overgangen
+   in inline-stijlen staan; anders wint de inline-regel van deze media-query. */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 }
 

@@ -271,9 +271,12 @@ function renderFront(pdf, data, primaryColor, c) {
     pdf.setLineWidth(0.45);
     pdf.line(colLeftX, lineY, colLeftX + lineLen, lineY);
 
-    // Filled portion (persona-kleur)
+    // Filled portion (persona-kleur). `bar` is de tekening (hoogste = vol),
+    // `pct` het werkelijke aandeel dat als label meegaat. Zie
+    // src/lib/resultDerivations.js.
     const pct = Math.max(0, Math.min(100, Number(row.pct) || 0));
-    const fillW = lineLen * (pct / 100);
+    const bar = Math.max(0, Math.min(100, Number(row.bar ?? row.pct) || 0));
+    const fillW = lineLen * (bar / 100);
     if (fillW > 0.3) {
       setDraw(pdf, row.color || primaryColor);
       pdf.setLineWidth(0.9);

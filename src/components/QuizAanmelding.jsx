@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabase';
 import { useCopy } from '../i18n/LanguageContext';
+import { IS_NATIVE } from '../config/platform';
 
 /**
  * QuizAanmelding — Supabase-gedreven aanmeldformulier voor "Test jezelf".
@@ -45,7 +46,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   const isDemoOrg = (naam) => String(naam || '').toLowerCase().includes('demo');
 
   const [rijen, setRijen] = useState([]); // [{ organization, team, code }]
-  const [laden, setLaden] = useState(true);
+  const [laden, setLaden] = useState(!IS_NATIVE);
   const [fout, setFout] = useState('');
 
   const [form, setForm] = useState({
@@ -58,7 +59,10 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   });
 
   // Actieve team-codes ophalen uit Supabase.
+  // In app-modus bestaan teams niet: alles blijft op het toestel, dus er
+  // wordt hier niets opgehaald.
   useEffect(() => {
+    if (IS_NATIVE) return undefined;
     let actief = true;
     async function haalCodes() {
       setLaden(true);
@@ -163,7 +167,9 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   // Solo-modus: iemand test de tool voor zichzelf, zonder uitnodigingslink.
   // Organisatie, afdeling en teamcode staan dan vast — dat is administratie,
   // geen keuze. Die velden verbergen we; alleen "wie ben jij" blijft over.
-  const soloModus = organisatieVast && afdelingVast;
+  // In app-modus is er per definitie niemand anders: geen organisatie, geen
+  // afdeling, geen teamcode — alleen "wie ben jij".
+  const soloModus = IS_NATIVE || (organisatieVast && afdelingVast);
 
   function kiesOrganisatie(e) {
     const org = e.target.value;
@@ -187,13 +193,15 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
 
   function verstuur(e) {
     e.preventDefault();
-    if (!form.organisatie) {
-      setFout(t.errors.pickOrganization);
-      return;
-    }
-    if (!form.afdeling) {
-      setFout(t.errors.pickDepartment);
-      return;
+    if (!IS_NATIVE) {
+      if (!form.organisatie) {
+        setFout(t.errors.pickOrganization);
+        return;
+      }
+      if (!form.afdeling) {
+        setFout(t.errors.pickDepartment);
+        return;
+      }
     }
     setFout('');
 

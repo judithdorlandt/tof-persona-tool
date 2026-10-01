@@ -36,7 +36,6 @@ import { buildTeamAggregate } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
 import { useLang, useCopy } from '../i18n/LanguageContext';
 import { hasTeamLevel, LEVEL_DYNAMICS, isAdminAccess } from '../utils/access';
-import { generateTeamInsightPDF } from '../utils/teamInsightPDF';
 import { logPdfDownload } from '../supabase';
 
 // EXPERIMENTEEL — link naar het werkplekbehoefteprofiel, alleen als de flag aanstaat.
@@ -186,7 +185,12 @@ export default function TeamDashboard({
                 actions={
                     <>
                         <PrimaryButton
-                            onClick={() => {
+                            onClick={async () => {
+                                // Dynamisch: jsPDF (~0,5 MB) blijft zo uit de
+                                // hoofdbundel en laadt pas bij de download.
+                                const { generateTeamInsightPDF } = await import(
+                                    '../utils/teamInsightPDF'
+                                );
                                 generateTeamInsightPDF({
                                     aggregate,
                                     insights,

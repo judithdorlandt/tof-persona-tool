@@ -4,7 +4,7 @@
  * The structure (id, cluster, bricksProfile) lives in `src/data.js`.
  * Never add logic or numbers the app calculates with here.
  *
- * Note: the arrays (kw, friction, consequence, leadership, mismatch,
+ * Note: the arrays (kw, friction, consequence, leadership, needs, mismatch,
  * energycost, wd, ls, ct) must have the same length in every language —
  * the UI relies on a matching number of items.
  *
@@ -24,7 +24,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces work for the Maker in short bursts — to develop a concept or process feedback. Not prolonged isolation, but targeted moments of refinement.',
       work: 'Standard workstations are fine for the Maker as long as they are flexible and sit close to creative zones. A fixed desk with no making space around it feels restrictive.',
-      hybride: 'Hybrid spaces are functional for the Maker but never a priority. Switching quickly can happen digitally or physically — as long as it does not slow the creative process.',
       meeting: 'Meeting spaces are only valuable to the Maker when they are small and fast. A ten-minute stand-up beats an hour in a boardroom.',
       project: 'Creative spaces are the Maker\'s core. Whiteboards, project tables, prototyping materials and room to make ideas visible — this is the natural habitat. The more space to make, the better.',
       team: 'Collaboration spaces are crucial for the Maker when they are active — large tables, writable walls, room to move. Not formal meeting environments but zones where something gets built.',
@@ -49,7 +48,23 @@ const archetypes = {
       'Steer on results, not on every single step.',
       'Make experimenting normal and safe.',
     ],
+    // `needs` = the same leadership points, but in the first person.
+    // `leadership` is written to a manager, about you — an odd mirror to find
+    // inside your own profile. These lines are yours to read out in the
+    // conversation; they live on the conversation screen
+    // (src/native/ConversationPrep.jsx). `leadership` stays for the Teams and
+    // Company modules.
+    needs: [
+      'I need freedom in how I approach something — give me the frame, not the steps.',
+      'Judge me on what I deliver, not on how I got there.',
+      'I want to try things out without everything having to be cleared first.',
+    ],
     lquote: 'Manage this person too tightly and you will not lose the chaos — you will lose the creativity.',
+    // `quote` = the same truth as `lquote`, but said to you. `lquote` talks
+    // about you in the third person — as the closing line of your own profile
+    // that read like a case file. Only the app profile screen uses `quote`;
+    // the web, the PDF and the persona library keep `lquote`.
+    quote: 'Manage you too tightly and the chaos does not go — your creativity does.',
     mismatch: [
       'Workplaces without making space or visual tools.',
       'Cultures where conformity matters more than initiative.',
@@ -88,7 +103,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces are useful for the Grower for reflection and depth after new experiences. Not prolonged isolation but targeted moments to process.',
       work: 'Standard workstations are fine for the Grower as long as the environment offers enough challenge and variety. A fixed spot beside stimulating colleagues works better than a quiet corner.',
-      hybride: 'Hybrid spaces are functional for the Grower but not ideal. The Grower learns best in person, where nuance and interaction are fully available.',
       meeting: 'Meeting spaces are valuable to the Grower when they allow sparring, receiving feedback and testing ideas. Meeting for the sake of meeting has the opposite effect.',
       project: 'Creative spaces appeal to the Grower because they make room for experiment and new approaches. Not as an end in themselves but as a way to learn and find inspiration.',
       team: 'Collaboration spaces are valuable to the Grower as a learning environment. Working with people who think differently or know more is energising. Co-creation and knowledge sharing in action are the ideal collaboration setting.',
@@ -113,7 +127,13 @@ const archetypes = {
       'Give challenging assignments alongside routine.',
       'Make growth visible and concrete.',
     ],
+    needs: [
+      'I want to talk about my development, not only about my tasks.',
+      'Alongside the steady work, give me something I am not good at yet.',
+      'I need feedback to know whether I am actually moving forward.',
+    ],
     lquote: 'Fail to challenge this person and you lose the energy first — and the person soon after.',
+    quote: 'If nobody challenges you, you lose your energy first — and your reason to stay soon after.',
     mismatch: [
       'Roles or teams where everything stays the same.',
       'A culture without feedback.',
@@ -152,7 +172,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces are the absolute core for the Achiever. Deep focus zones without noise, interruption or visual distraction are not a luxury but a necessity. This is where most of the work gets done and most of the energy is regained.',
       work: 'Standard workstations are fine for the Achiever provided they are quiet, ergonomic and well equipped. Certainty about availability on peak days is essential — no hot-desking.',
-      hybride: 'Hybrid spaces are functional and efficient for the Achiever. Switching quickly without travel time suits the results-driven rhythm, provided the technical quality is good.',
       meeting: 'Meeting spaces are wasted time for the Achiever unless they lead to a clear decision. Small, functional and quickly available — no large boardrooms for routine discussion.',
       project: 'Creative spaces hold little appeal for the Achiever. Experiment without direction feels like wasted time. Only interesting when there is a concrete goal and a clear outcome attached.',
       team: 'Collaboration spaces are only valuable to the Achiever when they are results-driven. Focused project environments with visible progress and a clear goal are a good fit.',
@@ -177,7 +196,13 @@ const archetypes = {
       'Acknowledge results explicitly.',
       'Keep priorities visible and stable.',
     ],
+    needs: [
+      'Tell me straight — I would rather have a clear no than a vague maybe.',
+      'Say it when something worked; otherwise I do not know whether it counted.',
+      'I need priorities that hold, or I will run hard in the wrong direction.',
+    ],
     lquote: 'Without a clear goal this engine keeps running — but goes nowhere.',
+    quote: 'Without a clear goal you keep running at full power — but you get nowhere.',
     mismatch: [
       'Workplaces without focus.',
       'Cultures where process matters more than results.',
@@ -216,7 +241,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces are the single most essential workplace for the Thinker of all the archetypes. Fully quiet, enclosed zones without visual or auditory stimuli are not a treat but a basic condition for functioning well.',
       work: 'Standard workstations only work for the Thinker when they are quiet enough. Open-plan floors with a lot of movement and noise are a cognitive burden. A fixed, quiet spot provides an anchor.',
-      hybride: 'Hybrid spaces are functional for the Thinker when the technical quality is good. The option to join from somewhere calm rather than being physically present in a busy room is appreciated.',
       meeting: 'Meeting spaces are draining for the Thinker unless the discussion is properly prepared. Impromptu meetings or discussions without a sharp question cost a disproportionate amount of energy.',
       project: 'Creative spaces only suit the Thinker when they have calm and structure built in. Open, cluttered maker spaces have the opposite effect. A quiet analysis space with a whiteboard for complex questions is the exception that works.',
       team: 'Collaboration spaces are only worthwhile for the Thinker when they have substance and are well prepared. Not open brainstorm sessions but structured formats with a sharp, substantive question.',
@@ -241,7 +265,13 @@ const archetypes = {
       'Respect thinking time.',
       'Value thoroughness visibly.',
     ],
+    needs: [
+      'I need the full picture, and in good time — I cannot judge half a story.',
+      'Give me thinking time before you expect an answer.',
+      'Being thorough costs me time; I want to know that it is seen.',
+    ],
     lquote: 'Rush this person and you often lose precisely the thing that safeguards the quality.',
+    quote: 'Rush you and you lose exactly the thing you safeguard the quality with.',
     mismatch: [
       'Work floors with constant noise.',
       'Cultures where speed matters more than substance.',
@@ -280,7 +310,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces are functional for the Connector but not a source of energy. Working alone in silence for long stretches costs more than it gives. Short focus moments are fine — not a pattern that fills the day.',
       work: 'Standard workstations are fine for the Connector when they sit close to the team and allow spontaneous contact. Isolated workstations far from the walking routes have the opposite effect.',
-      hybride: 'Hybrid spaces are functional for the Connector but not ideal. Online contact feels thinner than being there. Good hybrid technology reduces that loss but does not remove it.',
       meeting: 'Meeting spaces are essential for the Connector — but spaces that make real contact possible. Not cold boardrooms but environments that invite conversation, eye contact and genuine connection.',
       project: 'Creative spaces interest the Connector when they make collaboration easier. Making or devising something together is energising — solo creative work less so.',
       team: 'Collaboration spaces are the Connector\'s core. Open, accessible zones that invite spontaneous collaboration and leave room for both relationship and task are the ideal working climate.',
@@ -305,7 +334,13 @@ const archetypes = {
       'Involve this persona early in change.',
       'Make sure encounter is possible and normal.',
     ],
+    needs: [
+      'I need real contact, not just a meeting in the calendar.',
+      'Involve me early in change, not once it has been decided.',
+      'I want meeting each other to be normal in our work, not an extra.',
+    ],
     lquote: 'A team without a connector only notices what is missing once everyone still works together but nobody feels connected.',
+    quote: 'A team without you only notices what has gone once everyone still works together but nobody feels connected.',
     mismatch: [
       'Workplaces designed for focus alone.',
       'Teams whose only contact is digital.',
@@ -344,7 +379,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces are fine for the Team Player provided they are close to the team. Working in a fully isolated focus room far from the team feels uncomfortable. A quiet spot within the team area works better.',
       work: 'Standard workstations are ideal for the Team Player when they are fixed and recognisable. A settled place within the team, always available — this gives an anchor and strengthens the sense of team. No hot-desking.',
-      hybride: 'Hybrid spaces are functional for the Team Player provided the team can handle them well. Team cohesion has to be looked after at a distance too — clear hybrid agreements are essential.',
       meeting: 'Meeting spaces are essential for the Team Player — but fixed, recognisable spaces that belong to the team. A settled team meeting space that supports team rituals and continuity works better than rotating boardrooms.',
       project: 'Creative spaces interest the Team Player when the team uses them together. Solo creative work in a creative zone is a weaker fit for this archetype.',
       team: 'Collaboration spaces are the Team Player\'s core. Fixed team zones with a recognisable layout and rituals work better than rotating open collaboration rooms. Continuity and familiarity are the foundation.',
@@ -369,7 +403,13 @@ const archetypes = {
       'Announce changes in good time.',
       'Make team dynamics discussable.',
     ],
+    needs: [
+      'What I need from you most is predictability: do what you say, say what you do.',
+      'Tell me in good time what is changing, even if it is not settled yet.',
+      'I want us to be able to talk about the team when things chafe there.',
+    ],
     lquote: 'Treat the team as small change and this person loses their foundation.',
+    quote: 'Treat the team as small change and you lose your foundation.',
     mismatch: [
       'Hot-desking and constantly shifting groups.',
       'A culture where everyone mainly works for themselves.',
@@ -408,7 +448,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces are essential for the Stabiliser — preferably fixed, recognisable places that are available every day. No hunting around, no uncertainty about availability. Predictability is the key.',
       work: 'Standard workstations are the Stabiliser\'s most important workplace. A fixed spot that is always available, ergonomically well set up and close to familiar colleagues. No hot-desking — certainty about your own place is a basic condition.',
-      hybride: 'Hybrid spaces are functional for the Stabiliser provided the technical agreements are clear and stable. Uncertainty about who is online and who is physically present creates tension.',
       meeting: 'Meeting spaces only give the Stabiliser energy when the discussion is well prepared and structured. Impromptu meetings or discussions without an agenda cost a disproportionate amount of energy.',
       project: 'Creative spaces are a poor fit for the Stabiliser. Messiness, experiment and uncertainty about what is expected are the opposite of what gives energy.',
       team: 'Collaboration spaces are fine for the Stabiliser when the ground rules are clear. Who sits where, what the goal is, how long it takes — once that is clear, collaborating works well. Without structure it costs too much energy.',
@@ -433,7 +472,13 @@ const archetypes = {
       'Make expectations explicit.',
       'Offer structure in uncertain periods.',
     ],
+    needs: [
+      'Tell me early what is going on — uncertainty costs me more than bad news.',
+      'Make your expectations explicit; otherwise I will fill them in myself.',
+      'When things get uncertain I need structure, not extra freedom.',
+    ],
     lquote: 'For this person ambiguity is not a challenge but an erosion of their ability to work.',
+    quote: 'For you, ambiguity is not a challenge but something that erodes your ability to work.',
     mismatch: [
       'Environments with constant change.',
       'Vague expectations or incomplete information.',
@@ -472,7 +517,6 @@ const archetypes = {
     bricksProfileText: {
       focus: 'Focus spaces are rarely where the Innovator\'s best ideas appear. Too much silence and structure dampen forward-looking thinking. Short focus moments are functional for working things out — not the engine.',
       work: 'Standard workstations are fine for the Innovator when they are flexible and inspiring. A dull fixed desk in a routine setting slows things down. Places that normalise thinking about the future work better.',
-      hybride: 'Hybrid spaces are functional and efficient for the Innovator. Switching quickly with people anywhere suits the broad network this archetype maintains.',
       meeting: 'Meeting spaces are valuable to the Innovator when the discussion is strategic and future-focused. Operational catch-ups cost energy — vision conversations and strategy sessions give it.',
       project: 'Creative spaces are the Innovator\'s core. Innovation zones, experimentation rooms and environments that normalise momentum and renewal are the ideal habitat. The more room for experiment and future-focused thinking, the better.',
       team: 'Collaboration spaces are essential to the Innovator when they are aimed at strategy and exploration. Large open innovation zones where ideas can collide and new directions become visible are the ideal collaborative climate.',
@@ -497,7 +541,13 @@ const archetypes = {
       'Connect vision to concrete experiments.',
       'See this persona as a co-designer.',
     ],
+    needs: [
+      'I need room to look further ahead than this quarter.',
+      'Let me try an idea out small instead of only discussing it.',
+      'Involve me in where we are going, not only in how we get there.',
+    ],
     lquote: 'Without a platform this person builds their own — and that is rarely inside the same organisation.',
+    quote: 'Give you no platform and you will build your own — and that is rarely inside the same organisation.',
     mismatch: [
       'Environments with no room for renewal.',
       'Decision-making that keeps slowing renewal down.',

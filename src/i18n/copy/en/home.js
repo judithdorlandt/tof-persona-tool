@@ -30,6 +30,9 @@ const home = {
     contact: 'Contact',
     privacy:
       '🔒 Data is used anonymously for analysis and is never shared with third parties. Your name is optional.',
+    // App mode: nothing goes to a server, so the web sentence is untrue there.
+    privacyNative:
+      '🔒 Everything stays on your device. Your answers and your profile are never sent to a server or shared with anyone. Your name is optional.',
   },
 
   lock: {

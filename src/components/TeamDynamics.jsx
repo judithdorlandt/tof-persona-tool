@@ -36,7 +36,6 @@ import {
     getMaturity,
     getSignatureLine,
 } from '../insights';
-import { generateTeamDynamicsPDF } from '../utils/teamDynamicsPDF';
 import { logPdfDownload } from '../supabase';
 import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, getReliability, collectPersonaPeople, findMentionedPersona, formatPeople, describeAxis } from './teamDynamicsLogic';
 
@@ -351,7 +350,12 @@ export default function TeamDynamics({
                 actions={
                     <>
                         <PrimaryButton
-                            onClick={() => {
+                            onClick={async () => {
+                                // Dynamisch: jsPDF (~0,5 MB) blijft zo uit de
+                                // hoofdbundel en laadt pas bij de download.
+                                const { generateTeamDynamicsPDF } = await import(
+                                    '../utils/teamDynamicsPDF'
+                                );
                                 generateTeamDynamicsPDF({
                                     aggregate: pdfAggregate,
                                     dynamicsAxes,

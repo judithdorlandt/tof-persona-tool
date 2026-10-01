@@ -10,7 +10,10 @@
  */
 
 .wrapper {
-  min-height: 100vh;
+  /* `main` houdt de home-indicator vrij met padding; zonder deze aftrek zou
+     dit scherm daardoor net iets hoger worden dan het venster en gaan
+     schuiven. Buiten de app is de inset 0px, dus web-neutraal. */
+  min-height: calc(100vh - env(safe-area-inset-bottom, 0px));
   background: var(--tof-bg);
   display: flex;
   align-items: center;
@@ -68,6 +71,33 @@
   color: var(--tof-text-muted);
   font-size: clamp(14px, 2vw, 17px);
   line-height: 1.7;
+}
+
+/* Taalkeuze — op het web en in de app. Wrapt vanzelf zodra er meer talen
+   bij komen. */
+.langRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.langBtn {
+  background: transparent;
+  border: 1px solid var(--tof-border);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-family: var(--tof-font-body);
+  font-size: 13px;
+  color: var(--tof-text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.langBtnActive {
+  border-color: var(--tof-accent-rose);
+  color: var(--tof-accent-rose);
 }
 
 .cta {

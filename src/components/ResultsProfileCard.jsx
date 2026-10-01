@@ -7,6 +7,10 @@
 import React from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import { useCopy } from '../i18n/LanguageContext';
+import { getReadableTextOnColor } from '../lib/resultDerivations';
+import PinButton from './result/PinButton';
+import ResultDistribution from './result/ResultDistribution';
+import { riseIn } from './result/motion';
 
 // Lokale kopie — voorkomt circulaire import vanuit Results.jsx.
 // Wanneer dit op meer plekken nodig is → verplaatsen naar src/data.
@@ -69,16 +73,6 @@ function InnerCard({ label, title, titleColor = '#1F1F1F', children }) {
     );
 }
 
-function getReadableQuoteColor(hexColor) {
-    const hex = String(hexColor || '').replace('#', '');
-    if (hex.length !== 6) return '#2F2521';
-    const r = parseInt(hex.slice(0, 2), 16);
-    const g = parseInt(hex.slice(2, 4), 16);
-    const b = parseInt(hex.slice(4, 6), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return luminance > 0.62 ? '#2F2521' : '#F7F3EE';
-}
-
 export default function ResultsProfileCard({
     isMobile,
     primary,
@@ -91,10 +85,11 @@ export default function ResultsProfileCard({
     leadershipItems,
     bricksItems,
     resultData,
+    pinning = null,
 }) {
     const { resultsCard } = useCopy();
     const t = resultsCard.profile;
-    const quoteTextColor = getReadableQuoteColor(primaryColor);
+    const quoteTextColor = getReadableTextOnColor(primaryColor);
 
     return (
                     <div
@@ -138,7 +133,7 @@ export default function ResultsProfileCard({
                             }}
                         />
 
-                        {/* JOUW PROFIEL */}
+                        {/* JOUW PROFIEL — blok 0 van de gefaseerde opkomst */}
 
                         <div
                             style={{
@@ -146,6 +141,7 @@ export default function ResultsProfileCard({
                                 gap: 12,
                                 paddingLeft: isMobile ? 8 : 18,
                                 maxWidth: isMobile ? '100%' : 760,
+                                ...riseIn(0),
                             }}
                         >
                             {/* Eyebrow rij: badge + naam */}
@@ -230,6 +226,7 @@ export default function ResultsProfileCard({
                                 fontSize: 14,
                                 lineHeight: 1.7,
                                 border: '1px solid rgba(120, 90, 70, 0.06)',
+                                ...riseIn(1),
                             }}
                         >
                             <strong style={{ color: 'var(--tof-text)' }}>
@@ -248,9 +245,17 @@ export default function ResultsProfileCard({
                                 padding: isMobile ? '16px 16px' : '18px 22px',
                                 display: 'grid',
                                 gap: 10,
+                                ...riseIn(2),
                             }}
                         >
-                            <div style={INFO_LABEL_STYLE}>{t.motionLabel}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                                <div style={INFO_LABEL_STYLE}>{t.motionLabel}</div>
+                                <PinButton
+                                    pin={{ kind: 'energy', key: 'from' }}
+                                    pinning={pinning}
+                                    color={primaryColor}
+                                />
+                            </div>
 
                             <div
                                 style={{
@@ -283,61 +288,16 @@ export default function ResultsProfileCard({
                                 gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
                                 gap: isMobile ? 14 : 16,
                                 alignItems: 'start',
+                                ...riseIn(3),
                             }}
                         >
                             {/* LINKERKOLOM */}
                             <div style={{ display: 'grid', gap: 14, alignContent: 'start' }}>
-                                <div
-                                    style={{
-                                        background: 'rgba(255,255,255,0.82)',
-                                        borderRadius: 14,
-                                        padding: '14px 16px',
-                                        border: '1px solid #E7DBCF',
-                                        display: 'grid',
-                                        gap: 10,
-                                    }}
-                                >
-                                    <div style={INFO_LABEL_STYLE}>{t.distributionLabel}</div>
-
-                                    <div style={{ display: 'grid', gap: 8 }}>
-                                        {topScoreEntries.map((item) => (
-                                            <div key={item.id} style={{ display: 'grid', gap: 4 }}>
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        justifyContent: 'space-between',
-                                                        alignItems: 'center',
-                                                        gap: 10,
-                                                        fontSize: 12,
-                                                        color: '#3F342F',
-                                                    }}
-                                                >
-                                                    <span style={{ fontWeight: 600 }}>{item.name}</span>
-                                                    <span>{item.percentage}%</span>
-                                                </div>
-
-                                                <div
-                                                    style={{
-                                                        height: 8,
-                                                        background: '#EADFD4',
-                                                        borderRadius: 999,
-                                                        overflow: 'hidden',
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            width: `${Math.max(item.percentage, 6)}%`,
-                                                            height: '100%',
-                                                            background: item.color,
-                                                            opacity: item.opacity,
-                                                            borderRadius: 999,
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                <ResultDistribution
+                                    label={t.distributionLabel}
+                                    labelStyle={INFO_LABEL_STYLE}
+                                    items={topScoreEntries}
+                                />
 
                                 <div
                                     style={{
@@ -406,9 +366,23 @@ export default function ResultsProfileCard({
                                                 fontSize: 13,
                                             }}
                                         >
-                                            {leadershipItems.map((item) => (
+                                            {leadershipItems.map((item, index) => (
                                                 <li key={item} style={{ marginBottom: 6 }}>
-                                                    {item}
+                                                    <span
+                                                        style={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            alignItems: 'flex-start',
+                                                            gap: 10,
+                                                        }}
+                                                    >
+                                                        {item}
+                                                        <PinButton
+                                                            pin={{ kind: 'leadership', key: String(index) }}
+                                                            pinning={pinning}
+                                                            color={primaryColor}
+                                                        />
+                                                    </span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -424,7 +398,10 @@ export default function ResultsProfileCard({
                                     titleColor={primaryColor}
                                 >
                                     <div style={{ display: 'grid', gap: 10 }}>
-                                        {bricksItems.map((item) => (
+                                        {/* De webkaart houdt het bij de sterkste
+                                            drie; de volledige rangorde staat in
+                                            de app (zie native/ProfileScreen). */}
+                                        {bricksItems.slice(0, 3).map((item) => (
                                             <div
                                                 key={item.key}
                                                 style={{
@@ -457,17 +434,25 @@ export default function ResultsProfileCard({
                                                         {item.label}
                                                     </div>
 
-                                                    <div
-                                                        style={{
-                                                            fontSize: 11,
-                                                            color: primaryColor,
-                                                            background: '#F4EDE6',
-                                                            borderRadius: 999,
-                                                            padding: '4px 8px',
-                                                            fontWeight: 600,
-                                                        }}
-                                                    >
-                                                        {t.scorePrefix} {item.score}
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                        <div
+                                                            style={{
+                                                                fontSize: 11,
+                                                                color: primaryColor,
+                                                                background: '#F4EDE6',
+                                                                borderRadius: 999,
+                                                                padding: '4px 8px',
+                                                                fontWeight: 600,
+                                                            }}
+                                                        >
+                                                            {t.scorePrefix} {item.score}
+                                                        </div>
+
+                                                        <PinButton
+                                                            pin={{ kind: 'workplace', key: item.key }}
+                                                            pinning={pinning}
+                                                            color={primaryColor}
+                                                        />
                                                     </div>
                                                 </div>
 
@@ -555,14 +540,20 @@ export default function ResultsProfileCard({
                                     padding: isMobile ? '16px 16px' : '18px 22px',
                                     display: 'grid',
                                     gap: 12,
+                                    ...riseIn(4),
                                 }}
                             >
                                 <div style={INFO_LABEL_STYLE}>{t.drainLabel}</div>
                                 <div style={{ display: 'grid', gap: 8 }}>
-                                    {primary.energycost.slice(0, 3).map((item) => (
+                                    {primary.energycost.slice(0, 3).map((item, index) => (
                                         <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                                             <span style={{ color: primaryColor, fontWeight: 700, fontSize: 14, flexShrink: 0, lineHeight: 1.6 }}>×</span>
-                                            <span style={{ fontSize: 14, color: '#4D433D', lineHeight: 1.62 }}>{item}</span>
+                                            <span style={{ fontSize: 14, color: '#4D433D', lineHeight: 1.62, flex: 1 }}>{item}</span>
+                                            <PinButton
+                                                pin={{ kind: 'drain', key: String(index) }}
+                                                pinning={pinning}
+                                                color={primaryColor}
+                                            />
                                         </div>
                                     ))}
                                 </div>
@@ -583,6 +574,7 @@ export default function ResultsProfileCard({
                                     lineHeight: 1.45,
                                     fontStyle: 'italic',
                                     letterSpacing: '-0.01em',
+                                    ...riseIn(5),
                                 }}
                             >
                                 {primary.lquote}
@@ -594,4 +586,4 @@ export default function ResultsProfileCard({
 
 // Re-export helpers for callers that nog gebruik maken van het oude
 // patroon in Results.jsx (alleen op tijdelijke basis aanwezig).
-export { INFO_LABEL_STYLE, leadText, InnerCard, getReadableQuoteColor };
+export { INFO_LABEL_STYLE, leadText, InnerCard };

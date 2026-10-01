@@ -35,6 +35,8 @@ const resultsCard = {
     bricksTitle: 'Jouw ideale werkplekmix',
     // Wordt gevolgd door het scoregetal.
     scorePrefix: 'score',
+    // Boven de werkplekken die ná de sterkste drie komen.
+    bricksRestLabel: 'Minder nodig',
 
     bytesLabel: 'Bytes & Behavior',
     bytesTitle: 'Wat jij nodig hebt',
@@ -47,11 +49,12 @@ const resultsCard = {
 
     drainLabel: 'Waar je op leegloopt',
 
-    // Labels van de negen werkplektypen (sleutels zijn taalonafhankelijk).
+    // Labels van de acht werkplektypen (sleutels zijn taalonafhankelijk).
+    // "Hybride plekken" stond hier ook; zie src/lib/resultDerivations.js voor
+    // waarom een hybride plek geen plek is.
     workplaceLabels: {
       focus: 'Concentratieplekken',
       work: 'Standaard werkplekken',
-      hybride: 'Hybride plekken',
       meeting: 'Overlegplekken',
       project: 'Creatieve plekken',
       team: 'Samenwerkplekken',

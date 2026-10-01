@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import tofLogo from '../assets/tof-logo.png';
 import styles from './Nav.module.css';
 import { isAdminEmail } from '../supabase';
+import { IS_NATIVE } from '../config/platform';
 import { useCopy, useLang } from '../i18n/LanguageContext';
 
 export default function Nav({
@@ -35,19 +36,35 @@ export default function Nav({
     // Manager-mode: een ingelogde team-manager heeft geen behoefte aan de
     // marketing-flow (Home/Intro/Quiz). We tonen alleen "Mijn team(s)" en
     // — als hij óók admin is — "Admin". Niet-managers zien de volledige nav.
-    const baseItems = isManager
+    // App-modus kent alleen stap 1: start, de vragenlijst, je profiel en de
+    // bibliotheek. Geen teamomgeving, geen manager- of adminlinks.
+    const baseItems = IS_NATIVE
         ? [
-            { key: 'team', label: t.myTeam },
-        ]
-        : [
             { key: 'home', label: t.home },
             { key: 'intro', label: t.intro },
             { key: 'quiz', label: t.quiz },
-            { key: 'team', label: t.teamEnvironment },
-        ];
-    const resultItems = (hasResult && !isManager)
+        ]
+        : isManager
+            ? [
+                { key: 'team', label: t.myTeam },
+            ]
+            : [
+                { key: 'home', label: t.home },
+                { key: 'intro', label: t.intro },
+                { key: 'quiz', label: t.quiz },
+                { key: 'team', label: t.teamEnvironment },
+            ];
+    const resultItems = (hasResult && (IS_NATIVE || !isManager))
         ? [
             { key: 'results', label: t.results },
+            // De gespreksvoorbereiding en de historie bestaan alleen in de
+            // app: die staan allebei op het toestel bewaard.
+            ...(IS_NATIVE
+                ? [
+                    { key: 'gesprek', label: t.conversation },
+                    { key: 'historie', label: t.history },
+                ]
+                : []),
             { key: 'library', label: t.library },
         ]
         : [];
@@ -57,11 +74,14 @@ export default function Nav({
     const managerItems = [];
 
     // Admin-link — alleen zichtbaar voor TOF-admins (zie ADMIN_EMAILS in supabase.js).
-    const adminItems = (currentUser && isAdminEmail(currentUser.email))
+    const adminItems = (!IS_NATIVE && currentUser && isAdminEmail(currentUser.email))
         ? [{ key: 'admin', label: t.admin }]
         : [];
 
     const items = [...baseItems, ...resultItems, ...managerItems, ...adminItems];
+
+    // In app-modus is er niets om uit te loggen — inloggen bestaat daar niet.
+    const showLogout = !IS_NATIVE && !!currentUser;
 
     function handleNavigate(target) {
         setPage(target);
@@ -114,7 +134,17 @@ export default function Nav({
                         </div>
                     </button>
 
-                    {!isMobile ? (
+                    {/* App-modus: navigeren gebeurt in de balk onderin (zie
+                        native/TabBar.jsx), binnen duimbereik. Bovenin blijft
+                        alleen het merk staan.
+
+                        Geen taalknop in de app. Je kiest je taal bij het
+                        openen, die keuze wordt onthouden, en daarna hoort een
+                        app niet halverwege van taal te wisselen — dat is een
+                        instelling, geen navigatie. Op het web blijft de knop
+                        wél staan: daar kom je binnen via een gedeelde link en
+                        beslist die link de taal. */}
+                    {IS_NATIVE ? null : !isMobile ? (
                         <div className={styles.navList}>
                             {items.map((item) => {
                                 const active = page === item.key;
@@ -130,7 +160,7 @@ export default function Nav({
                                 );
                             })}
 
-                            {currentUser ? (
+                            {showLogout ? (
                                 <button
                                     type="button"
                                     onClick={handleLogoutClick}
@@ -155,7 +185,7 @@ export default function Nav({
                     )}
                 </div>
 
-                {isMobile && menuOpen && (
+                {!IS_NATIVE && isMobile && menuOpen && (
                     <div className={styles.menuPanel}>
                         {items.map((item) => {
                             const active = page === item.key;
@@ -171,7 +201,7 @@ export default function Nav({
                             );
                         })}
 
-                        {currentUser ? (
+                        {showLogout ? (
                             <button
                                 type="button"
                                 onClick={handleLogoutClick}

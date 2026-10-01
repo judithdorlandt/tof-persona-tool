@@ -3,6 +3,9 @@ import { ARCHETYPE_ORDER } from '../../data';
 import { useArchetypes } from '../../i18n/archetypes';
 import { useCopy, useLang } from '../../i18n/LanguageContext';
 import { saveResponse } from '../../supabase';
+import { IS_NATIVE } from '../../config/platform';
+import { saveProfile } from '../../native/localStore';
+import { tap } from '../../native/nativeShell';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
 import Results from '../../components/Results.jsx';
 import { getQuizData } from './quizTestData';
@@ -17,10 +20,10 @@ import { getQuizData } from './quizTestData';
  *   4. Optionele verdieping (2 duels, druk, werkplekgebruik, open vraag)
  *   5. Verscherpt profiel
  *
- * Het resultaat wordt bij afronden (fase 'profielScherp') één keer opgeslagen
- * in Supabase via saveResponse — zowel na de verdieping als wanneer iemand op
- * "Nee, ik ben klaar" klikt. Zo telt precies één rij mee in de dashboards en
- * bevat die het scherpste profiel.
+ * Het resultaat wordt bij afronden (fase 'profielScherp') één keer opgeslagen —
+ * zowel na de verdieping als wanneer iemand op "Nee, ik ben klaar" klikt. Op
+ * het web gaat dat via saveResponse naar Supabase (precies één rij met het
+ * scherpste profiel); in app-modus blijft het op het toestel.
  */
 
 const WEIGHTS = [3, 2]; // eerste keuze telt 3, tweede 2
@@ -83,7 +86,6 @@ function Card({ children, isMobile }) {
                 background: 'white',
                 borderRadius: 20,
                 padding: isMobile ? '18px 16px' : '26px 30px 22px',
-                borderTop: `4px solid ${PALETTE.ink}`,
                 border: `1px solid ${PALETTE.line}`,
                 boxShadow: '0 12px 32px rgba(31,27,24,0.08)',
                 display: 'grid',
@@ -258,8 +260,13 @@ function ProfielBanner({ eyebrow, text, isMobile, children }) {
                     style={{
                         background: 'white',
                         borderRadius: 20,
-                        border: `1px solid ${PALETTE.line}`,
+                        // Losse zijden i.p.v. de `border`-shorthand: React
+                        // waarschuwt als shorthand en longhand in dezelfde
+                        // render allebei worden bijgewerkt.
                         borderTop: `4px solid ${PALETTE.accent}`,
+                        borderRight: `1px solid ${PALETTE.line}`,
+                        borderBottom: `1px solid ${PALETTE.line}`,
+                        borderLeft: `1px solid ${PALETTE.line}`,
                         boxShadow: '0 12px 32px rgba(31,27,24,0.08)',
                         padding: isMobile ? '18px 16px' : '22px 26px',
                         display: 'grid',
@@ -317,6 +324,9 @@ export default function QuizTest({ setPage }) {
     // Opslag — bij afronden precies één keer naar Supabase.
     const savedRef = useRef(false);
     const [saveError, setSaveError] = useState('');
+    // App-modus: het bewaarde profiel op het toestel, zodat je er meteen een
+    // aantekening bij kunt maken.
+    const [bewaardProfiel, setBewaardProfiel] = useState(null);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -387,8 +397,15 @@ export default function QuizTest({ setPage }) {
 
     // Opslaan zodra het verscherpte profiel in beeld komt — één keer.
     // Beide paden ('Nee, ik ben klaar' en de afgeronde verdieping) landen hier.
+    // In app-modus gaat er niets naar een server: het profiel wordt op het
+    // toestel bewaard en verschijnt daar in je historie.
     useEffect(() => {
         if (phase !== 'profielScherp' || savedRef.current || !scherpResult) return;
+        if (IS_NATIVE) {
+            savedRef.current = true;
+            setBewaardProfiel(saveProfile(scherpResult));
+            return;
+        }
         savedRef.current = true;
         setSaveError('');
         (async () => {
@@ -402,6 +419,11 @@ export default function QuizTest({ setPage }) {
         // Alleen fase en resultaat sturen het opslaan aan; `t` is puur fouttekst.
     }, [phase, scherpResult]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Iets zwaardere tik op het enige echte hoogtepunt: je profiel in beeld.
+    useEffect(() => {
+        if (phase === 'profiel' || phase === 'profielScherp') tap(true);
+    }, [phase]);
+
     const sortedBasis = useMemo(() => sortByScore(ARCHETYPES, scores), [ARCHETYPES, scores]);
     const duelPairs = useMemo(
         () => [
@@ -413,6 +435,10 @@ export default function QuizTest({ setPage }) {
 
     // ── Handlers ────────────────────────────────────────────────────────────────
     const toggleSelect = (option) => {
+        // Korte tik bij het kiezen van een antwoord, niet bij het weghalen.
+        // Buiten de updater, want die mag geen bijwerkingen hebben.
+        const alGekozen = selected.some((s) => s.text === option.text);
+        if (!alGekozen && selected.length < currentBasis.pick) tap();
         setSelected((prev) => {
             const exists = prev.some((s) => s.text === option.text);
             if (exists) return prev.filter((s) => s.text !== option.text);
@@ -436,6 +462,7 @@ export default function QuizTest({ setPage }) {
     };
 
     const kiesDuel = (archetypeId) => {
+        tap();
         setDuelBumps((prev) => ({ ...prev, [archetypeId]: (prev[archetypeId] || 0) + BUMP }));
         setVerdiepStep((s) => (s === 0 ? 1 : 2));
     };
@@ -667,7 +694,7 @@ export default function QuizTest({ setPage }) {
                         <p style={{ margin: 0, color: PALETTE.accent, fontSize: 14 }}>{saveError}</p>
                     )}
                 </ProfielBanner>
-                <Results resultData={scherpResult} setPage={setPage} />
+                <Results resultData={scherpResult} setPage={setPage} noteEntry={bewaardProfiel} />
             </div>
         );
     }
