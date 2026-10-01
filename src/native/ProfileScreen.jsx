@@ -6,6 +6,7 @@ import { riseIn } from '../components/result/motion';
 import { useCopy } from '../i18n/LanguageContext';
 import { PERSONA_COLORS, getReadableTextOnColor } from '../lib/resultDerivations';
 import { PageShell } from '../ui/AppShell';
+import TeamInvite from './TeamInvite';
 
 /**
  * ProfileScreen — jouw profiel zoals de app het toont.
@@ -464,6 +465,14 @@ export default function ProfileScreen({
                         {primary.quote}
                     </div>
                 )}
+
+                {/* 7 — DE STAP HIERNA: jouw beeld naast dat van je team. Bewust
+                    onder de slotzin en niet ergens halverwege: eerst is je eigen
+                    profiel af, dan komt de vraag hoe dat zich tot de rest
+                    verhoudt. Zie native/TeamInvite.jsx. */}
+                <div style={riseIn(6)}>
+                    <TeamInvite isMobile={isMobile} accent={primaryColor} />
+                </div>
 
             </div>
         </PageShell>

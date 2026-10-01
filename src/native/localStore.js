@@ -5,31 +5,49 @@
  * laag bewaart de afgeronde profielen, de gespreksvoorbereiding per profiel en
  * welk profiel je nu bekijkt. Eén sleutel in localStorage, één datamodel:
  *
- *   { version, currentId, entries: [{ id, savedAt, result, notes, pinned }] }
+ *   { version, currentId, entries: [{
+ *       id, savedAt, result,
+ *       notes, pinned,                              // het gesprek dat nu loopt
+ *       conversations: [{ id, closedAt, notes, pinned }]   // wat je afrondde
+ *   }] }
  *
  * `notes` = de drie open vragen { recognize, drains, ask }.
  * `pinned` = de inzichten die je aan je gesprek hebt vastgeprikt, als
  * `{ kind, key }`-paren (bijv. `{ kind: 'workplace', key: 'focus' }`).
  *
- * `entries` staat nieuwste-eerst. localStorage is in een Capacitor-webview
- * gewoon persistent; mocht er later een native opslag nodig zijn, dan is dit
- * het enige bestand dat verandert.
+ * Waarom het lopende gesprek níet in `conversations` zit: er is er altijd
+ * precies één open, en die hoort op een vaste plek te staan. Zo hoeft de rest
+ * van de app (vastprikken, de teller in de balk, het label "met aantekening"
+ * in de historie) niet te weten dat gesprekken bestaan — die kijken gewoon
+ * naar `notes` en `pinned`, net als eerst. Afronden verhuist het gesprek naar
+ * `conversations` en laat een leeg blad achter.
+ *
+ * `entries` staat nieuwste-eerst, `conversations` ook. localStorage is in een
+ * Capacitor-webview gewoon persistent; mocht er later een native opslag nodig
+ * zijn, dan is dit het enige bestand dat verandert.
  */
 
 const KEY = 'tof_native_profiles';
-const VERSION = 2;
+const VERSION = 3;
 const MAX_ENTRIES = 50;
 
 const EMPTY = { version: VERSION, currentId: null, entries: [] };
 
 export const EMPTY_NOTES = { recognize: '', drains: '', ask: '' };
 
+/** Is er in dit gesprek iets vastgelegd? Leeg afronden heeft geen zin. */
+function heeftInhoud(notes, pinned) {
+    const geschreven = Object.values(notes || {}).some((v) => v && v.trim());
+    return geschreven || (pinned || []).length > 0;
+}
+
 /**
  * Brengt één bewaard profiel naar het huidige model.
  *
  * v1 had één vrij tekstveld (`note`). Dat was in de praktijk het antwoord op
- * "wat herken ik hierin?", dus daar landt het — niets van wat iemand heeft
- * opgeschreven gaat verloren.
+ * "wat herken ik hierin?", dus daar landt het. v2 kende nog geen gesprekken;
+ * wat daar stond is simpelweg het gesprek dat nog loopt. Niets van wat iemand
+ * heeft opgeschreven gaat verloren.
  */
 function migrateEntry(entry) {
     const { note, ...rest } = entry || {};
@@ -37,6 +55,7 @@ function migrateEntry(entry) {
         ...rest,
         notes: { ...EMPTY_NOTES, ...(entry?.notes || {}), ...(note ? { recognize: note } : {}) },
         pinned: Array.isArray(entry?.pinned) ? entry.pinned : [],
+        conversations: Array.isArray(entry?.conversations) ? entry.conversations : [],
     };
 }
 
@@ -93,6 +112,7 @@ export function saveProfile(result) {
         result,
         notes: { ...EMPTY_NOTES },
         pinned: [],
+        conversations: [],
     };
     const entries = [entry, ...state.entries].slice(0, MAX_ENTRIES);
     write({ version: VERSION, currentId: entry.id, entries });
@@ -148,6 +168,46 @@ export function togglePin(id, pin) {
     });
     write({ ...state, entries });
     return updated;
+}
+
+/**
+ * Rondt het lopende gesprek af: het krijgt de datum van vandaag, verhuist naar
+ * de lijst afgeronde gesprekken en je begint met een leeg blad.
+ *
+ * Een leeg gesprek afronden doet niets — dan zou je een lege bladzijde met een
+ * datum erop bewaren. Geeft terug of er echt iets is afgerond, zodat het scherm
+ * weet of het iets te melden heeft.
+ */
+export function closeConversation(id) {
+    const state = read();
+    const entry = state.entries.find((e) => e.id === id);
+    if (!entry || !heeftInhoud(entry.notes, entry.pinned)) return false;
+
+    const afgerond = {
+        id: makeId(),
+        closedAt: new Date().toISOString(),
+        notes: { ...entry.notes },
+        pinned: [...entry.pinned],
+    };
+
+    const entries = state.entries.map((e) =>
+        e.id === id
+            ? {
+                ...e,
+                notes: { ...EMPTY_NOTES },
+                pinned: [],
+                conversations: [afgerond, ...(e.conversations || [])],
+            }
+            : e
+    );
+
+    write({ ...state, entries });
+    return true;
+}
+
+/** Valt er iets af te ronden? Het scherm verbergt de knop als dat niet zo is. */
+export function hasOpenConversation(entry) {
+    return heeftInhoud(entry?.notes, entry?.pinned);
 }
 
 /** Verwijdert één profiel uit de historie. */

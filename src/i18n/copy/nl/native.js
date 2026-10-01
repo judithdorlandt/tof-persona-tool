@@ -97,6 +97,72 @@ const native = {
     pinnedEmpty:
       'Je hebt nog niets vastgeprikt. Tik op de plus bij een inzicht in je profiel.',
     backToProfile: 'Terug naar je profiel',
+    // Een gesprek afronden. Daarna staat het blad weer leeg en verhuist wat je
+    // had opgeschreven naar de lijst eronder, met de datum erbij.
+    close: {
+      title: 'Gesprek gehad?',
+      text:
+        'Leg het vast met de datum van vandaag. Je begint dan met een leeg blad voor je volgende gesprek, en wat je nu hebt opgeschreven kun je hieronder altijd terugvinden.',
+      button: 'Gesprek afronden',
+      confirm: 'Dit gesprek afronden en met een leeg blad beginnen?',
+      confirmYes: 'Ja, afronden',
+      confirmCancel: 'Nog niet',
+      done: 'Je gesprek is vastgelegd. Hieronder kun je het teruglezen.',
+    },
+    // De afgeronde gesprekken, nieuwste eerst.
+    past: {
+      title: 'Eerdere gesprekken',
+      intro: 'Wat je toen hebt opgeschreven. Alleen om terug te lezen.',
+      // Kop boven één afgerond gesprek: "Gesprek 2 · 14 oktober 2026". De
+      // nummering loopt op in de tijd, dus gesprek 1 is het oudste.
+      label: (nummer) => `Gesprek ${nummer}`,
+      noAnswer: 'Niets opgeschreven',
+      nothingPinned: 'Niets vastgeprikt',
+      formatDate: (iso) =>
+        new Date(iso).toLocaleDateString('nl-NL', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+    },
+  },
+  // De stap ná je eigen profiel: je beeld naast dat van je team leggen. Dat
+  // gebeurt niet in de app — de teamomgeving staat op de website, en de app
+  // verzamelt daarvoor niets. Twee routes, want er zijn twee situaties: je
+  // organisatie werkt al met TOF, of nog niet.
+  team: {
+    eyebrow: 'De volgende stap',
+    title: 'Dit is jouw beeld.',
+    intro:
+      'Het wordt pas echt interessant als je het naast je team legt: wie vult wie aan, waar gaat het schuren, en wat vraagt dat van jullie werkomgeving. Dat gesprek gaat over jullie samen, en daar is de teamomgeving voor.',
+    haveCode: {
+      title: 'Ik heb een teamcode',
+      text:
+        'Je organisatie werkt al met TOF. Op de website vul je je code in en zie je het beeld van je team.',
+      button: 'Naar de teamomgeving',
+    },
+    askOrg: {
+      title: 'Vraag je organisatie om TOF',
+      text:
+        'Nog niet in gebruik bij jullie? Leg het voor aan je leidinggevende of HR. Je eigen mail gaat open met een tekst die je nog kunt aanpassen — de app verstuurt zelf niets.',
+      button: 'Mail opstellen',
+      subject: 'TOF Persona voor ons team',
+      // Losse regels; ze worden met regeleinden aan elkaar geplakt.
+      body: [
+        'Hoi,',
+        '',
+        'Ik heb de TOF Persona-test gedaan en daar een beeld uit gekregen van hoe ik werk en wat ik van mijn werkomgeving nodig heb. Dat werd een nuttig gesprek met mezelf.',
+        '',
+        'Wat mij pas echt zou helpen, is dat beeld naast dat van het team leggen: wie vult wie aan, waar zit de wrijving, en wat vraagt dat van onze werkplekken en werkafspraken. Daar is een teamomgeving voor.',
+        '',
+        'Meer erover staat op www.persona-tool.nl. Zullen we kijken of dit iets voor ons is?',
+        '',
+        'Groet,',
+      ],
+    },
+    // De stille regel onderaan, ook als je geen van beide routes kiest.
+    siteLabel: 'www.persona-tool.nl',
+    siteUrl: 'https://www.persona-tool.nl',
   },
   history: {
     eyebrow: 'Op dit toestel',
@@ -143,6 +209,7 @@ const native = {
           'Je persona-profiel: de uitslag van de test en de datum.',
           'Je antwoorden op de drie gespreksvragen.',
           'De inzichten die je aan je gesprek hebt vastgeprikt.',
+          'De gesprekken die je hebt afgerond, met de datum erbij.',
           'Welke taal je hebt gekozen.',
         ],
       },

@@ -94,6 +94,72 @@ const native = {
     pinnedEmpty:
       'You have not pinned anything yet. Tap the plus next to an insight in your profile.',
     backToProfile: 'Back to your profile',
+    // Closing a conversation. The page goes blank again and what you wrote down
+    // moves to the list below, with the date on it.
+    close: {
+      title: 'Had the conversation?',
+      text:
+        "Log it with today's date. You start with a clean page for your next conversation, and what you wrote down now stays readable below.",
+      button: 'Close this conversation',
+      confirm: 'Close this conversation and start with a clean page?',
+      confirmYes: 'Yes, close it',
+      confirmCancel: 'Not yet',
+      done: 'Your conversation is logged. You can read it back below.',
+    },
+    // Closed conversations, newest first.
+    past: {
+      title: 'Earlier conversations',
+      intro: 'What you wrote down then. Here to read back, nothing more.',
+      // Heading above one closed conversation: "Conversation 2 · 14 October
+      // 2026". Numbering runs forward in time, so 1 is the oldest.
+      label: (nummer) => `Conversation ${nummer}`,
+      noAnswer: 'Nothing written down',
+      nothingPinned: 'Nothing pinned',
+      formatDate: (iso) =>
+        new Date(iso).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+    },
+  },
+  // The step after your own profile: putting your picture next to your team's.
+  // That does not happen in the app — the team environment lives on the website,
+  // and the app collects nothing for it. Two routes, because there are two
+  // situations: your organisation already uses TOF, or it does not yet.
+  team: {
+    eyebrow: 'The next step',
+    title: 'This is your picture.',
+    intro:
+      'It gets genuinely interesting when you put it next to your team: who complements whom, where things start to rub, and what that asks of your workplace. That conversation is about all of you together, and that is what the team environment is for.',
+    haveCode: {
+      title: 'I have a team code',
+      text:
+        "Your organisation already works with TOF. Enter your code on the website and you will see your team's picture.",
+      button: 'Go to the team environment',
+    },
+    askOrg: {
+      title: 'Ask your organisation for TOF',
+      text:
+        'Not in use with you yet? Put it to your manager or HR. Your own mail app opens with a text you can still edit — the app sends nothing itself.',
+      button: 'Draft an email',
+      subject: 'TOF Persona for our team',
+      // Separate lines; they are joined with line breaks.
+      body: [
+        'Hi,',
+        '',
+        'I took the TOF Persona test and it gave me a picture of how I work and what I need from my work environment. That turned into a useful conversation with myself.',
+        '',
+        "What would really help me is putting that picture next to the team's: who complements whom, where the friction sits, and what that asks of our workplaces and working agreements. That is what a team environment is for.",
+        '',
+        'There is more about it on www.persona-tool.nl. Shall we look at whether this is something for us?',
+        '',
+        'Best,',
+      ],
+    },
+    // The quiet line at the bottom, even if you take neither route.
+    siteLabel: 'www.persona-tool.nl',
+    siteUrl: 'https://www.persona-tool.nl',
   },
   history: {
     eyebrow: 'On this device',
@@ -137,6 +203,7 @@ const native = {
           'Your persona profile: the outcome of the test and the date.',
           'Your answers to the three conversation questions.',
           'The insights you pinned to your conversation.',
+          'The conversations you closed, with the date on them.',
           'The language you picked.',
         ],
       },

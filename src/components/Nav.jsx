@@ -136,12 +136,15 @@ export default function Nav({
 
                     {/* App-modus: navigeren gebeurt in de balk onderin (zie
                         native/TabBar.jsx), binnen duimbereik. Bovenin blijft
-                        alleen het merk en de taalkeuze staan — die laatste is
-                        sinds de landing wordt overgeslagen de enige plek waar
-                        je nog van taal kunt wisselen. */}
-                    {IS_NATIVE ? (
-                        langSwitch
-                    ) : !isMobile ? (
+                        alleen het merk staan.
+
+                        Geen taalknop in de app. Je kiest je taal bij het
+                        openen, die keuze wordt onthouden, en daarna hoort een
+                        app niet halverwege van taal te wisselen — dat is een
+                        instelling, geen navigatie. Op het web blijft de knop
+                        wél staan: daar kom je binnen via een gedeelde link en
+                        beslist die link de taal. */}
+                    {IS_NATIVE ? null : !isMobile ? (
                         <div className={styles.navList}>
                             {items.map((item) => {
                                 const active = page === item.key;
