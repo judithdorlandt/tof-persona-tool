@@ -183,9 +183,9 @@ const native = {
       // This email is not written by us but sent by you, and you should be able
       // to hear that. No brochure about The Office Factory: one enthusiastic
       // employee who found something and is showing it to their manager. Hence
-      // your persona in it — the only real proof you are holding — and no
-      // closing question ("shall we look at whether...") but an instruction:
-      // try it yourself.
+      // your persona in it — the only real proof you are holding — and it ends
+      // on an open question to your manager, not on a pitch. You are asking for
+      // something; you are not selling anything.
       subject: (persona) =>
         persona
           ? `I came out as a ${persona} — and I want to do this with the team`
@@ -198,7 +198,7 @@ const native = {
           persona ? ` I come out as a ${persona}.` : ''
         } For the first time it spells out why some days drain me and others I can take on anything — and what I need from my workspace and from you to get there. I made notes I would like to go through with you.`,
         '',
-        "This is still only my own picture. What I find genuinely interesting: the same tool can do this for the whole team. You see who complements whom, where it rubs, and what that means for our workspaces and our working agreements.",
+        'This is who I am, but I am really curious about how we work as a team. Would it be an idea to do this together with the team?',
         '',
         'You can download the app as TOF Persona in the App Store.',
         '',

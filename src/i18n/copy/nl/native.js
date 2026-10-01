@@ -187,8 +187,9 @@ const native = {
       // dat moet je eraan kunnen horen. Geen folder over The Office Factory:
       // één enthousiaste medewerker die iets heeft ontdekt en het aan zijn
       // leidinggevende laat zien. Daarom staat je persona erin — dat is het
-      // enige echte bewijs dat je in handen hebt — en eindigt hij niet met een
-      // vraag ("zullen we kijken of...") maar met een opdracht: doe hem zelf.
+      // enige echte bewijs dat je in handen hebt — en eindigt hij op een open
+      // vraag aan je leidinggevende, niet op een pitch. Jij vraagt iets; je
+      // verkoopt niets.
       subject: (persona) =>
         persona
           ? `Ik kwam eruit als ${persona} — en dit wil ik met het team doen`
@@ -201,7 +202,7 @@ const native = {
           persona ? ` Ik kom eruit als ${persona}.` : ''
         } Voor het eerst staat er concreet waarom ik op sommige dagen leegloop en op andere alles aankan — en wat ik daarvoor van mijn werkplek en van jou nodig heb. Ik heb er aantekeningen bij gemaakt die ik graag een keer met je doorneem.`,
         '',
-        'Dit is nog maar mijn eigen beeld. Wat ik pas écht interessant vind: dezelfde tool kan dit voor het hele team. Dan zie je wie wie aanvult, waar het schuurt, en wat dat betekent voor onze werkplekken en onze afspraken.',
+        'Dit is wie ik ben, maar ik ben heel benieuwd hoe we als team werken. Is het een idee om dit samen met het team te doen?',
         '',
         'Je kan de app downloaden als TOF Persona in de App Store.',
         '',
