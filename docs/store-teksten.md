@@ -164,13 +164,24 @@ opnamelijst onder de tekst.
 
 **EN — Apple beoordeelt in het Engels**
 ```
+A NOTE ON THE BUILD
+
+While preparing the screen recording we found and fixed a display issue in build
+1: on every screen after the first one, the logo in the top bar failed to load.
+Build 2 of version 1.0.0 has been uploaded and contains that fix. The recording
+below was made on a device build of that same corrected code, so it shows the
+version we are asking you to review. Nothing else changed between build 1 and
+build 2.
+
 1. SCREEN RECORDING
 
 Attached is a screen recording made on a physical iPhone running the latest
-version of iOS. It starts with launching the app and shows the complete typical
-user flow: language choice, start screen, the nine questions, the resulting
-profile, the persona library, the conversation notes and the privacy screen with
-the single action that erases everything.
+version of iOS, on a freshly installed copy of the app. It starts with launching
+the app and shows the complete typical user flow: language choice, the empty
+start screen, the nine questions, the resulting profile, the conversation notes,
+the history with the saved profile, the persona library, and finally the privacy
+screen, where one action erases everything — after which the history is empty
+again.
 
 2. PURPOSE AND TARGET AUDIENCE
 
