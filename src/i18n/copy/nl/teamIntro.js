@@ -29,7 +29,7 @@ const teamIntro = {
     },
     teams: {
       eyebrow: 'Module 2 · Voor teams',
-      title: 'Team Insight & Dynamics',
+      title: 'Teaminzicht & Dynamiek',
       hook: 'Je weet wie er in je team zit. Maar weet je ook hoe het team écht werkt?',
       bullets: [
         'Zie in één oogopslag welke werkstijlen domineren',
@@ -81,7 +81,7 @@ const teamIntro = {
     greetingHighlight: 'jouw team(s) staan klaar.',
     titleLead: 'Jouw team(s) ',
     titleHighlight: 'staan klaar.',
-    lead: 'Klik op een team hieronder om het Team Insight-dashboard te openen.',
+    lead: 'Klik op een team hieronder om het Teaminzicht-dashboard te openen.',
   },
 
   hero: {
@@ -109,32 +109,32 @@ const teamIntro = {
     manyTeams: (n) => `Je hebt toegang tot ${n} teams.`,
     logout: 'Uitloggen',
     adminNoTeams: 'Kies een team uit het overzicht om te openen.',
-    // Insight en Dynamics zijn samen Module 2 geworden, dus "upgrade naar
-    // Dynamics" bestaat niet meer als los product. De volgende stap is Module 3.
+    // Inzicht en Dynamiek zijn samen Module 2 geworden, dus "upgrade naar
+    // Dynamiek" bestaat niet meer als los product. De volgende stap is Module 3.
     upgradeLead: 'Meerdere teams in beeld brengen?',
     upgradeLink: 'Vraag naar het Organisatie-landschap →',
     teamFallback: 'Team',
-    levelDynamics: 'Team Insight + Dynamics',
-    levelInsight: 'Team Insight',
-    openInsight: 'Insight →',
-    openDynamics: 'Dynamics →',
+    levelDynamics: 'Teaminzicht + Dynamiek',
+    levelInsight: 'Teaminzicht',
+    openInsight: 'Inzicht →',
+    openDynamics: 'Dynamiek →',
   },
 
   modal: {
     any: {
       eyebrow: 'Toegangscode',
       title: 'Voer je toegangscode in',
-      lead: 'We herkennen zelf of je toegang hebt tot Team Insight of Team Dynamics — je komt automatisch op het juiste dashboard.',
+      lead: 'We herkennen zelf of je toegang hebt tot Teaminzicht of Teamdynamiek — je komt automatisch op het juiste dashboard.',
     },
     dynamics: {
       eyebrow: 'Module 2',
-      title: 'Toegangscode Team Dynamics',
-      lead: 'Voer je toegangscode voor Team Dynamics in. Deze code geeft ook toegang tot Team Insight.',
+      title: 'Toegangscode Teamdynamiek',
+      lead: 'Voer je toegangscode voor Teamdynamiek in. Deze code geeft ook toegang tot Teaminzicht.',
     },
     insight: {
       eyebrow: 'Module 1',
-      title: 'Toegangscode Team Insight',
-      lead: 'Voer je toegangscode voor Team Insight in.',
+      title: 'Toegangscode Teaminzicht',
+      lead: 'Voer je toegangscode voor Teaminzicht in.',
     },
     placeholder: 'Voer code in',
     busy: 'Bezig…',
@@ -145,7 +145,7 @@ const teamIntro = {
   errors: {
     empty: 'Voer eerst een toegangscode in.',
     unknownCode: 'Onjuiste of onbekende code.',
-    insightOnly: 'Deze code geeft alleen toegang tot Team Insight, niet tot Team Dynamics.',
+    insightOnly: 'Deze code geeft alleen toegang tot Teaminzicht, niet tot Teamdynamiek.',
     generic: 'Er ging iets mis. Probeer het opnieuw.',
   },
 

@@ -1,5 +1,5 @@
 /**
- * teamInsightText — Module 1 · Team Insight, de gegenereerde zinnen.
+ * teamInsightText — Module 1 · Teaminzicht, de gegenereerde zinnen.
  *
  * Hoort bij de pure logica in `src/utils/TeamInsights.js`. Die functie
  * (`buildTeamInsights`) draait zowel in het TeamDashboard-scherm als in de

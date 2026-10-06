@@ -172,7 +172,7 @@ const strategicCompass = {
       body: 'De app op je telefoon. Je eigen profiel, je werkplekbehoefte, je gespreksvoorbereiding.',
     },
     {
-      num: 'Module 02 · Team Insight & Dynamics',
+      num: 'Module 02 · Teaminzicht & Dynamiek',
       title: 'Hoe werken jullie samen?',
       body: 'Teamdashboard plus de sessie. Persona-mix, spanningen, werkplek­behoefte en quick wins.',
     },

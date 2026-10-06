@@ -9,7 +9,7 @@
  *   - signature  : de afsluitende signatuurzin onder een teamdashboard
  *
  * Verschijnt o.a. in `src/components/TeamDynamics.jsx` (signatuurzin en de
- * drie assen in het Dynamiek-paneel) en in de Team Dynamics PDF.
+ * drie assen in het Dynamiek-paneel) en in de Teamdynamiek PDF.
  *
  * Sleutels die logica zijn en dus NOOIT vertaald worden:
  *   - confidence-niveaus: low / emerging / reliable / strong

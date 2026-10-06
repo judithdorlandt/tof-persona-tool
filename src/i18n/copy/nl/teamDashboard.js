@@ -1,5 +1,5 @@
 /**
- * teamDashboard — Module 1 · Team Insight (src/components/TeamDashboard.jsx).
+ * teamDashboard — Module 1 · Teaminzicht (src/components/TeamDashboard.jsx).
  *
  * De vier tegels staan in `tiles`. De sleutels daarvan (`personas`,
  * `workplace`, `tension`, `quickwins`) zijn logica-ids uit TeamDashboard.jsx —
@@ -10,7 +10,7 @@
  */
 const teamDashboard = {
   hero: {
-    eyebrow: '01 — Team Insight',
+    eyebrow: '01 — Teaminzicht',
     title: 'Teaminzicht voor',
     lead: 'Wat werkstijlen zijn, wat het team van de werkplek vraagt en waar de eerste kansen liggen.',
     downloadPdf: 'Download als PDF',
@@ -73,18 +73,18 @@ const teamDashboard = {
 
   bridge: {
     available: {
-      eyebrow: 'Team Dynamics beschikbaar',
+      eyebrow: 'Teamdynamiek beschikbaar',
       lead: 'Zie de onderliggende patronen: waarom deze samenstelling werkt of schuurt.',
-      cta: 'Naar Team Dynamics →',
+      cta: 'Naar Teamdynamiek →',
     },
     locked: {
       eyebrow: 'Dieper kijken?',
       // De kop wordt opgebouwd als: before + <em>emphasis</em> + after.
-      titleBefore: 'Team Dynamics laat zien',
+      titleBefore: 'Teamdynamiek laat zien',
       titleEmphasis: 'waarom',
       titleAfter: 'deze patronen ontstaan.',
       lead: 'Spanningsvelden tussen werkstijlen, leiderschapsimplicaties en de keuze tussen tempo en reflectie — in één verdiept dashboard, toegelicht in een sessie.',
-      unlock: 'Dynamics ontgrendelen',
+      unlock: 'Dynamiek ontgrendelen',
       plan: 'Plan een gesprek',
     },
   },

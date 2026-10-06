@@ -20,7 +20,7 @@ const pricing = {
     },
     {
       eyebrow: 'Team',
-      title: 'Team Insight & Quick Wins',
+      title: 'Teaminzicht & Quick Wins',
       price: '€1.250',
       text: 'Van losse profielen naar helder teaminzicht — inclusief wat je morgen al anders kunt doen.',
       bullets: [
@@ -33,7 +33,7 @@ const pricing = {
     },
     {
       eyebrow: 'Sessie',
-      title: 'Team Dynamics Sessie',
+      title: 'Teamdynamiek-sessie',
       price: '€2.500',
       text: 'Hier ontstaat het echte gesprek over samenwerking, spanningen en wat dit vraagt van leiderschap.',
       bullets: [
@@ -50,7 +50,7 @@ const pricing = {
       price: 'vanaf €3.950',
       text: 'Voor organisaties die teamdynamiek willen koppelen aan visie, ambitie en werkplekstrategie.',
       bullets: [
-        'Alles uit Team Insight + sessie',
+        'Alles uit Teaminzicht + sessie',
         'Verdieping op visie en richting',
         'Vertaling naar samenwerking, leiderschap en werkplek',
         'Concrete strategische interventies',
@@ -62,7 +62,7 @@ const pricing = {
   note: {
     eyebrow: 'Twijfel waar je moet starten?',
     title: 'Begin klein.',
-    body: 'De meeste organisaties starten met een Team Insight Scan en gebruiken dat als basis voor verdere keuzes. Je hoeft het nog niet groot te maken om het goed te doen.',
+    body: 'De meeste organisaties starten met een Teaminzicht-scan en gebruiken dat als basis voor verdere keuzes. Je hoeft het nog niet groot te maken om het goed te doen.',
   },
 };
 

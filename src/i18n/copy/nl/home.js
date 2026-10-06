@@ -20,7 +20,7 @@ const home = {
     eyebrow: 'Alleen voor organisaties',
     titleLine1: 'Je team werkt.',
     titleLine2: 'Werkt het ook samen?',
-    text: 'Bekijk wat Team Insight, Team Dynamics en strategisch werkplekinzicht voor jouw organisatie kunnen betekenen.',
+    text: 'Bekijk wat Teaminzicht, Teamdynamiek en strategisch werkplekinzicht voor jouw organisatie kunnen betekenen.',
   },
 
   footer: {

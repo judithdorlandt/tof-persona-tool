@@ -1,5 +1,5 @@
 /**
- * teamDynamics — Module 2 · Team Dynamics.
+ * teamDynamics — Module 2 · Teamdynamiek.
  *
  * Hoort bij `src/components/TeamDynamics.jsx` en de pure logica in
  * `src/components/teamDynamicsLogic.js`.
@@ -26,26 +26,26 @@ function joinParts(parts = []) {
 
 const teamDynamics = {
   hero: {
-    eyebrow: '02 — Team Dynamics',
-    title: 'Team Dynamics voor',
+    eyebrow: '02 — Teamdynamiek',
+    title: 'Teamdynamiek voor',
     lead: 'Waar samenwerking schuurt, waarom tempo en reflectie botsen, en wat dat vraagt van leiderschap.',
     downloadPdf: 'Download als PDF',
-    backToInsight: '← Naar Team Insight',
+    backToInsight: '← Naar Teaminzicht',
     otherTeam: 'Ander team',
   },
 
   noAccess: {
     title: 'Geen toegang tot',
-    titleAccent: 'Team Dynamics',
-    lead: 'Voer je toegangscode voor Team Dynamics in via de teamomgeving. Deze code geeft ook toegang tot Team Insight.',
+    titleAccent: 'Teamdynamiek',
+    lead: 'Voer je toegangscode voor Teamdynamiek in via de teamomgeving. Deze code geeft ook toegang tot Teaminzicht.',
     cta: 'Naar teamomgeving',
   },
 
   noData: {
     title: 'Geen teamdata voor',
-    lead: 'Laad eerst een team via Team Insight.',
-    cta: '← Naar Team Insight',
-    embedded: 'Geen responses om Dynamics op te baseren.',
+    lead: 'Laad eerst een team via Teaminzicht.',
+    cta: '← Naar Teaminzicht',
+    embedded: 'Geen responses om de dynamiek op te baseren.',
   },
 
   // Als er geen teamnaam bekend is.
