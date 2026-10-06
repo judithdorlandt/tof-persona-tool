@@ -162,115 +162,84 @@ Review Information* — daar blijft hij staan voor elke volgende versie.
 Punt 1 kan alleen Judith leveren: een schermopname op een echt toestel. Zie de
 opnamelijst onder de tekst.
 
+Het Notes-veld stopt bij 4000 tekens, dus de tekst hieronder past daar precies
+in. Zet in het **antwoord** deze alinea erboven — in Notes hoort hij niet thuis,
+want bij een volgende versie slaat hij nergens meer op:
+
+```
+NOTE ON THE BUILD: while preparing the recording we found and fixed a display
+issue in build 1 — the logo in the top bar failed to load on every screen after
+the first. Build 2 of 1.0.0 contains that fix and is the build attached here. The
+recording was made on a device build of that same corrected code.
+```
+
 **EN — Apple beoordeelt in het Engels**
 ```
-A NOTE ON THE BUILD
-
-While preparing the screen recording we found and fixed a display issue in build
-1: on every screen after the first one, the logo in the top bar failed to load.
-Build 2 of version 1.0.0 has been uploaded and contains that fix. The recording
-below was made on a device build of that same corrected code, so it shows the
-version we are asking you to review. Nothing else changed between build 1 and
-build 2.
-
 1. SCREEN RECORDING
-
-Attached is a screen recording made on a physical iPhone running the latest
-version of iOS, on a freshly installed copy of the app. It starts with launching
-the app and shows the complete typical user flow: language choice, the empty
-start screen, the nine questions, the resulting profile, the conversation notes,
-the history with the saved profile, the persona library, and finally the privacy
-screen, where one action erases everything — after which the history is empty
-again.
+Attached: a recording on a physical iPhone on the latest iOS, on a freshly
+installed copy. It begins with launching the app and shows the full flow:
+language choice, the empty start screen, the nine questions, the profile, the
+conversation notes, the history with the saved profile, the persona library, and
+the privacy screen, where one action erases everything — after which the history
+is empty again.
 
 2. PURPOSE AND TARGET AUDIENCE
+TOF Persona is a self-reflection tool about how someone works. Nine questions
+produce a work-style profile (one of eight personas) describing their strengths,
+what drains them and what they need from the people around them. It is a starting
+point for a conversation with a colleague or manager; four note fields record
+what came out of it. The audience is adults at work: employees, teams, managers.
+It is not a medical, psychological or diagnostic instrument and makes no such
+claim. Nothing in it is unsuitable for any age, hence the 4+ rating.
 
-TOF Persona is a self-reflection tool about how someone works. The user answers
-nine questions and receives a work-style profile (one of eight personas) with a
-description, their strengths, what drains them and what they need from the people
-around them. It is meant as the starting point for a conversation with a
-colleague or a manager, and the app offers four note fields to write down what
-came out of that conversation.
+3. SETUP AND ACCESS
+Nothing to set up or unlock. No account, login, registration or subscription, so
+there are no demo credentials. Everything is available on first launch. Flow:
+launch, choose Dutch or English, tap the button that starts the test, answer nine
+questions (tap one or two options, tap again to deselect, then continue), and the
+profile appears.
 
-The audience is adults in a work context: employees, teams, managers. It is not
-aimed at children and contains no content that is unsuitable for any age, hence
-the 4+ rating.
+On a fresh install the start screen deliberately shows only the test button and a
+privacy link. Once a profile exists it also shows the persona library, the
+conversation notes and the history, and a tab bar appears. The reviewer therefore
+needs to finish the nine questions once to see the whole app.
 
-This is not a medical, psychological or diagnostic instrument and the app makes
-no such claim anywhere. It is a reflection and conversation aid.
-
-3. SETUP AND ACCESS INSTRUCTIONS
-
-There is nothing to set up and nothing to unlock. The app has no account, no
-login, no registration and no subscription, so there are no demo credentials to
-provide. Every feature is available immediately on first launch.
-
-The full flow: launch the app, choose Dutch or English, tap the button that
-starts the test, answer nine questions (tap one or two options per question, tap
-again to deselect, then continue), and the profile appears.
-
-On a fresh install the start screen deliberately shows only two things: the
-button that starts the test, and a link to the privacy screen. Once a profile
-exists, the start screen shows that profile plus the persona library, the
-conversation notes and the history of earlier profiles, and a tab bar appears at
-the bottom. So the reviewer needs to complete the nine questions once to see the
-whole app.
-
-The notes the user writes are user-generated content only in the technical sense:
-they are stored exclusively in local storage on that one device, are never
-uploaded, and can never be seen by any other user. There is therefore no feed, no
-sharing between users and nothing that could require a reporting or blocking
-mechanism.
+The notes a user writes are stored only on that one device, are never uploaded
+and can never be seen by any other user. There is no feed and no sharing between
+users, so no content reporting or blocking mechanism applies.
 
 4. EXTERNAL SERVICES, TOOLS OR PLATFORMS
+None. All core functionality runs on the device. No backend or database, no
+authentication service, no payment processor, no AI service, no data provider, no
+analytics or crash-reporting SDK, no advertising, no third-party tracking. The
+questions, the scoring, the persona texts and the fonts are all bundled, so not
+even a font CDN is contacted. The app makes no network requests of its own, which
+is why App Privacy is declared "Data Not Collected".
 
-None. The app delivers all of its core functionality on the device itself.
-
-Specifically: no backend or database, no authentication service, no payment
-processor, no AI or machine-learning service, no external data provider, no
-analytics or crash-reporting SDK, no advertising SDK, no third-party tracking.
-The questions, the scoring and the persona texts are all bundled in the app. The
-fonts are bundled too, so the app does not even call a font CDN.
-
-The app therefore makes no network requests of its own, which is why App Privacy
-is declared as "Data Not Collected".
-
-The only network activity that can occur at all is when the user deliberately
-taps one of two optional links, which open our own website
-(www.persona-tool.nl, www.tof.services) in Safari, outside the app. The app does
-not send any user data along with them. One of these links can carry the persona
-name and scores of the profile the user chose to hand over to their team, and
-that only happens on an explicit tap, with the user seeing and confirming the
-data on the website before anything is stored there.
+The only possible network activity is when the user deliberately taps one of two
+optional links, which open our own website (www.persona-tool.nl,
+www.tof.services) in Safari, outside the app. No user data is sent with them. One
+of those links can carry the persona name and scores of a profile the user wants
+to hand to their team; that happens only on an explicit tap, and the user sees
+and confirms the data on the website before anything is stored there.
 
 Because there is no account and no server copy, there is no account deletion
-flow. Instead the privacy screen inside the app lists everything that is stored
-on the device and offers one action that erases all of it.
+flow. Instead the privacy screen lists everything stored on the device and offers
+one action that erases all of it.
 
 5. REGIONAL DIFFERENCES
-
-There are none. The app functions identically in every region: the same
-questions, the same personas, the same features, no geofencing, no region-based
-content and no server that could vary by country.
-
-The app is localised in Dutch and English. The user picks the language on the
-first screen after installing, which is a choice they make themselves and is not
-derived from their region, their carrier or their device settings. Both
-localisations offer exactly the same functionality.
+None. The app works identically in every region: the same questions, the same
+personas, no geofencing, no region-based content, no server that could vary by
+country. It is localised in Dutch and English; the user picks the language on the
+first screen, and that choice is not derived from their region or device.
 
 6. REGULATED INDUSTRY AND THIRD-PARTY CONTENT
-
-The app does not operate in a regulated industry. It has nothing to do with
-health care, medicine, finance, banking, insurance, gambling, cryptocurrency,
-tobacco, alcohol, firearms, legal services or any other regulated field, so no
-licence or permit documentation applies.
-
-All content in the app is our own. The questions, the eight persona
-descriptions and every piece of text were written by The Office Factory. The app
-contains no third-party brands, logos, likenesses or licensed material. The
-bundled typefaces (Inter and Playfair Display) are used under the SIL Open Font
-License, which permits bundling in an application.
-
+Not a regulated industry: nothing to do with health care, medicine, finance,
+banking, insurance, gambling, cryptocurrency, tobacco, alcohol, firearms or legal
+services, so no licence documentation applies. All content is our own — the
+questions and the eight persona descriptions were written by The Office Factory.
+No third-party brands, logos, likenesses or licensed material. The bundled
+typefaces (Inter and Playfair Display) are used under the SIL Open Font License.
 The app is published by Judith Dorlandt, trading as The Office Factory.
 ```
 
