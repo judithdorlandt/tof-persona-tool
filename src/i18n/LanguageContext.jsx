@@ -19,6 +19,7 @@ const LanguageContext = createContext({
   lang: DEFAULT_LANG,
   setLang: () => {},
   rememberLang: () => {},
+  langChosen: false,
   copy: getCopy(DEFAULT_LANG),
 });
 
@@ -66,9 +67,15 @@ export function LanguageProvider({ children }) {
    */
   const rememberLang = useCallback(() => storeLang(lang), [lang]);
 
-  // De app start altijd op de kale root. Heb je hier eerder een taal gekozen,
-  // dan is het landingsscherm zijn werk kwijt: dan ga je meteen door naar de
-  // app, in díe taal. Alleen de allereerste start toont de landing.
+  // Is er al ooit een taal vastgelegd? Eén keer bepaald bij het opstarten en
+  // daarna bevroren voor deze sessie: de landing mag de taalkeuze niet
+  // wegmoffelen op het moment dat je erop klikt (een klik slaat de taal
+  // immers direct op).
+  const langChosen = useRef(readStoredLang() !== null).current;
+
+  // De app start altijd op de kale root. Heb je hier eerder Engels gekozen,
+  // dan brengt dit je naar de Engelse landing — het scherm zelf blijf je
+  // elke start zien, alleen de taalkeuze verdwijnt (zie Landing.jsx).
   //
   // Eén keer bij het opstarten (useRef), anders zou een klik op "Nederlands"
   // — die naar '/' navigeert — meteen worden weggestuurd. Op het web gebeurt
@@ -80,13 +87,13 @@ export function LanguageProvider({ children }) {
     if (!IS_NATIVE) return;
     if (location.pathname !== '/') return;
     const stored = readStoredLang();
-    if (!stored) return;
-    routerNavigate(pagePath('home', stored), { replace: true });
+    if (!stored || stored === DEFAULT_LANG) return;
+    routerNavigate(pagePath('landing', stored), { replace: true });
   }, [location.pathname, routerNavigate]);
 
   const value = useMemo(
-    () => ({ lang, setLang, rememberLang, copy: getCopy(lang) }),
-    [lang, setLang, rememberLang]
+    () => ({ lang, setLang, rememberLang, langChosen, copy: getCopy(lang) }),
+    [lang, setLang, rememberLang, langChosen]
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
