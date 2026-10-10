@@ -13,7 +13,7 @@
  *
  * Bij publicatie: zet deze op true. Verder is er niets te zoeken.
  */
-export const APP_IN_STORE = false;
+export const APP_IN_STORE = true;
 
 /**
  * Kan je de test nog in de browser doen? Alleen zolang de app er niet is.
