@@ -29,16 +29,20 @@ formulier.
 Dit veld mag je later wijzigen zonder nieuwe beoordeling. Gebruik het voor wat
 tijdelijk is; de omschrijving hieronder is voor wat blijft.
 
+Dit is woordelijk de regel van het startscherm van de app. Bewust kort: de
+omschrijving begint er direct onder met "Ontdek hoe jij werkt" en vertelt
+hetzelfde verhaal uitgebreider. De eerste versie van dit veld begon met
+"Negen vragen, een paar minuten…" — precies de zin waarmee de omschrijving ook
+opent, waardoor die twee keer onder elkaar op de productpagina stonden.
+
 **NL**
 ```
-Negen vragen, een paar minuten. Daarna weet je in welke werkomgeving jij tot je
-recht komt — en dat blijft op je eigen toestel, alleen voor jou.
+Inzicht in werkstijl, teamdynamiek en werkplek.
 ```
 
 **EN**
 ```
-Nine questions, a few minutes. Afterwards you know which work environment brings
-out your best — and it stays on your own device, for your eyes only.
+Insight into working style, team dynamics and workplace.
 ```
 
 ---
