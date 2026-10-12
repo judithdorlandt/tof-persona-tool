@@ -16,11 +16,17 @@ en dan passen we deze teksten aan.
 | --- | --- | --- |
 | Appnaam (30) | `TOF Persona` | `TOF Persona` |
 | Ondertitel — alleen Apple (30) | `Ontdek hoe jij werkt` | `Discover how you work` |
-| Korte omschrijving — alleen Google (80) | `Negen vragen, één helder beeld van je werkstijl. Alles blijft op je toestel.` | `Nine questions, one clear picture of how you work. Everything stays on your device.` |
+| Korte omschrijving — alleen Google (80) | `Negen vragen, één helder beeld van je werkstijl. Alles blijft op je toestel.` | `Nine questions, one clear picture of how you work. It all stays on your device.` |
 
 De appnaam is bewust kort. "TOF" alleen is te generiek om terug te vinden,
 "The Office Factory Persona Tool" past niet in dertig tekens en leest als een
 formulier.
+
+De korte omschrijving telde in het Engels eerst 83 tekens en paste dus niet in
+de tachtig die Google toestaat — "Everything stays on your device" werd "It all
+stays on your device". De Nederlandse zat met 76 wel goed; dat verschil valt
+makkelijk mis te lopen, want Apple kent dit veld niet en controleert het dus ook
+niet voor je.
 
 ---
 
