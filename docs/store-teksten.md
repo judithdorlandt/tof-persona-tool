@@ -16,24 +16,32 @@ en dan passen we deze teksten aan.
 | --- | --- | --- |
 | Appnaam (30) | `TOF Persona` | `TOF Persona` |
 | Ondertitel — alleen Apple (30) | `Ontdek hoe jij werkt` | `Discover how you work` |
-| Korte omschrijving — alleen Google (80) | `Negen vragen, één helder beeld van je werkstijl. Alles blijft op je toestel.` | `Nine questions, one clear picture of how you work. It all stays on your device.` |
+| Korte omschrijving — alleen Google (80) | `Inzicht in werkstijl, teamdynamiek en werkplek.` | `Insight into working style, team dynamics and workplace.` |
 
 De appnaam is bewust kort. "TOF" alleen is te generiek om terug te vinden,
 "The Office Factory Persona Tool" past niet in dertig tekens en leest als een
 formulier.
 
-De korte omschrijving telde in het Engels eerst 83 tekens en paste dus niet in
-de tachtig die Google toestaat — "Everything stays on your device" werd "It all
-stays on your device". De Nederlandse zat met 76 wel goed; dat verschil valt
-makkelijk mis te lopen, want Apple kent dit veld niet en controleert het dus ook
-niet voor je.
+De korte omschrijving is woordelijk dezelfde regel als Apple's promotietekst
+hieronder, zodat de twee winkels hetzelfde zeggen. Google kent namelijk geen
+apart promotietekst-veld; dit is de enige plek waar die regel past.
+
+Er stond eerst een langere zin ("Negen vragen, één helder beeld van je
+werkstijl. Alles blijft op je toestel."). Die herhaalde de eerste regel van de
+omschrijving, die er op de winkelpagina direct onder staat — hetzelfde dubbele
+dat bij Apple al uit de promotietekst was gehaald. De Engelse versie ervan telde
+bovendien 83 tekens en paste niet eens in de tachtig die Google toestaat; de
+Nederlandse zat met 76 net goed. Dat verschil valt makkelijk mis te lopen, want
+Apple kent dit veld niet en rekent het dus ook niet voor je na.
 
 ---
 
-## 2. Promotietekst — alleen Apple (170)
+## 2. Promotietekst — Apple (170), bij Google de korte omschrijving (80)
 
-Dit veld mag je later wijzigen zonder nieuwe beoordeling. Gebruik het voor wat
-tijdelijk is; de omschrijving hieronder is voor wat blijft.
+Bij Apple mag je dit veld later wijzigen zonder nieuwe beoordeling. Gebruik het
+voor wat tijdelijk is; de omschrijving hieronder is voor wat blijft. Zodra je
+hem tijdelijk maakt, loopt hij wél uit de pas met Google — daar is het de korte
+omschrijving uit §1 en die verandert niet mee.
 
 Dit is woordelijk de regel van het startscherm van de app. Bewust kort: de
 omschrijving begint er direct onder met "Ontdek hoe jij werkt" en vertelt
