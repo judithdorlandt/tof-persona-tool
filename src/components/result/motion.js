@@ -17,9 +17,13 @@
 export const RISE_DURATION = 400;
 export const RISE_STAGGER = 60;
 
-/** Balken: 600 ms groeien, 40 ms tussen twee balken. */
-export const BAR_DURATION = 600;
-export const BAR_STAGGER = 40;
+/**
+ * Balken: 900 ms groeien, 90 ms tussen twee balken — samen ruim anderhalve
+ * seconde. Stond eerst op 600/40; dat was voorbij voordat je het zag, zeker
+ * als het blok al in beeld stond toen het profiel openging.
+ */
+export const BAR_DURATION = 900;
+export const BAR_STAGGER = 90;
 
 /**
  * Inline-stijl voor het `index`-de blok dat in beeld komt.

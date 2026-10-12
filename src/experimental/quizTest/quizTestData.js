@@ -24,7 +24,6 @@
  * De losse named exports (BASIS_VRAGEN, DRUK_VRAAG, …) blijven bestaan en zijn
  * de Nederlandse variant — zo blijven bestaande aanroepers werken.
  */
-import { IS_NATIVE } from '../../config/platform';
 import { getCopy } from '../../i18n/copy';
 import nlQuizData from '../../i18n/copy/nl/quizData';
 import enQuizData from '../../i18n/copy/en/quizData';
@@ -73,7 +72,7 @@ export const OPEN_VRAAG_MAX_LENGTH = 200;
  *
  * Geeft exact dezelfde vormen terug als de oude named exports:
  *   { BASIS_VRAGEN, DRUK_VRAAG, WERKPLEK_TYPES, OPEN_VRAAG,
- *     VERDIEPING_INTRO, DUEL_ESSENTIE, DUEL_INTRO }
+ *     DUEL_ESSENTIE, DUEL_INTRO }
  */
 export function getQuizData(lang = 'nl') {
   const t = quizTexts(lang);
@@ -87,9 +86,6 @@ export function getQuizData(lang = 'nl') {
     DRUK_VRAAG: { q: t.druk.q, a: t.druk.a },
     WERKPLEK_TYPES: WERKPLEK_IDS.map((id) => ({ id, label: t.werkplek[id] })),
     OPEN_VRAAG: { q: t.open.q, maxLength: OPEN_VRAAG_MAX_LENGTH },
-    // Op het web wordt het teambeeld inderdaad scherper; in de app bestaat dat
-    // teambeeld niet. Eén zin verschil, dezelfde vragen.
-    VERDIEPING_INTRO: IS_NATIVE ? t.verdiepingIntroApp : t.verdiepingIntro,
     DUEL_ESSENTIE: { ...t.duelEssentie },
     DUEL_INTRO: t.duelIntro,
   };
@@ -113,8 +109,6 @@ export const WERKPLEK_TYPES = NL.WERKPLEK_TYPES;
 
 /** Verdieping — V5: open vraag. */
 export const OPEN_VRAAG = NL.OPEN_VRAAG;
-
-export const VERDIEPING_INTRO = NL.VERDIEPING_INTRO;
 
 /**
  * Verdieping — V1/V2: duels. Twee keuzes tussen precies de twee archetypen die

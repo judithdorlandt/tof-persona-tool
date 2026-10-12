@@ -220,6 +220,12 @@ Twee dingen die bij Apple ook voorkwamen en hier terugkeren:
 
 De content rating loopt via IARC: <https://www.globalratings.com>
 
+De vragenlijst is op 11 oktober 2026 ingevuld; de classificatie staat live.
+IARC gaf er een **Global Rating ID** bij: `ca6c483d-0032-8262-8d50-3fa774f42009`.
+Die is alleen nodig als de app ooit in een andere winkel komt die IARC gebruikt
+— dan vul je dat nummer in en vervalt de vragenlijst. Voor Google Play zelf hoef
+je er niets mee te doen.
+
 ---
 
 ## 6. Beeldmateriaal

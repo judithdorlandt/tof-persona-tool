@@ -7,11 +7,10 @@ import { IS_NATIVE } from '../config/platform';
 
 /**
  * Hoe lang de landing blijft staan als hij zichzelf afsluit (elke start ná de
- * eerste). Het scherm faadt in 0,8s in en in 0,42s uit, dus bij 1,8s staat het
- * beeld ruim een seconde stil: lang genoeg om te lezen, kort genoeg om niet
- * als wachten te voelen.
+ * eerste). Het scherm faadt in 0,8s in en in 0,42s uit, dus bij 2,8s staat het
+ * beeld ruim twee seconden stil. Stond eerst op 1800 ms; dat voelde te vluchtig.
  */
-const AUTO_ENTER_MS = 1800;
+const AUTO_ENTER_MS = 2800;
 
 export default function Landing({ setPage }) {
     const { landing: t } = useCopy();

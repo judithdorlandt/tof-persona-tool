@@ -15,9 +15,20 @@ const quiz = {
   next: 'Next',
 
   profileReady: {
-    eyebrow: 'Your profile is ready',
+    eyebrow: 'Your profile is calculated',
+    closeTitle: 'Two personas finish almost level',
+    closeBody:
+      'Two of the eight end up nearly tied. Which of them comes out on top is a matter of a few points right now. A couple of short choices settle it.',
+    clearTitle: 'One persona clearly stands out',
+    clearBody:
+      'Your answers point one way, and going deeper will not change much about that. Do it for yourself \u2014 and for the conversation you will have about it.',
     refine: 'Yes, sharpen it (3 min)',
-    done: 'No, I am done',
+    done: 'Show my profile',
+    saveHint: 'Either way: after this your profile is settled and saved.',
+  },
+
+  reveal: {
+    eyebrow: 'Your persona',
   },
 
   deepDive: {
@@ -34,6 +45,8 @@ const quiz = {
 
   sharpened: {
     eyebrow: 'Sharpened profile',
+    basisEyebrow: 'Your profile',
+    basis: 'This is your profile, based on your nine answers.',
     changed: 'Going deeper shifted your main profile — the duels settled a near tie.',
     confirmed: 'Going deeper confirmed your main profile and sharpened the balance between the others.',
   },

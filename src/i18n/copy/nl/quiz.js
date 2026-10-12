@@ -22,11 +22,28 @@ const quiz = {
   toProfile: 'Naar mijn profiel',
   next: 'Volgende',
 
-  // Tussenscherm: profiel staat, verdieping is optioneel.
+  // Het keuzemoment na de negen vragen. Je profiel is dan wél berekend maar
+  // nog niet in beeld: welke knop je ook kiest, je komt via de onthulling bij
+  // je profiel en pas daar wordt het bewaard. Twee toonzettingen — als de
+  // nummers 1 en 2 vlak bij elkaar liggen duwen we richting de verdieping,
+  // anders is die vooral voor jezelf. De persona's worden bewust niet
+  // genoemd; dat zou de onthulling verklappen.
   profileReady: {
-    eyebrow: 'Je profiel staat',
+    eyebrow: 'Je profiel is berekend',
+    closeTitle: 'Twee persona\u2019s liggen vlak bij elkaar',
+    closeBody:
+      'Twee van de acht eindigen bijna gelijk. Welke van die twee bovenaan komt, scheelt nu maar een paar punten. Met een paar korte keuzes beslecht je dat zelf.',
+    clearTitle: 'E\u00e9n persona komt er duidelijk uit',
+    clearBody:
+      'Je antwoorden wijzen \u00e9\u00e9n kant op; daar verandert de verdieping weinig aan. Doe hem vooral voor jezelf \u2014 en voor het gesprek dat je erover voert.',
     refine: 'Ja, maak scherper (3 min)',
-    done: 'Nee, ik ben klaar',
+    done: 'Toon mijn profiel',
+    saveHint: 'Wat je ook kiest: hierna staat je profiel vast en wordt het bewaard.',
+  },
+
+  // Het onthullingsmoment vlak voordat je profiel in beeld komt.
+  reveal: {
+    eyebrow: 'Jouw persona',
   },
 
   deepDive: {
@@ -43,6 +60,10 @@ const quiz = {
 
   sharpened: {
     eyebrow: 'Verscherpt profiel',
+    // Wie de verdieping oversloeg krijgt deze regel: er valt niets te
+    // vergelijken, dus doe ook niet alsof.
+    basisEyebrow: 'Je profiel',
+    basis: 'Dit is je profiel, op basis van je negen antwoorden.',
     changed: 'Na de verdieping is je hoofdprofiel bijgesteld — de duels beslechtten een nipt gelijkspel.',
     confirmed: 'De verdieping bevestigde je hoofdprofiel en maakte de onderlinge verhouding scherper.',
   },

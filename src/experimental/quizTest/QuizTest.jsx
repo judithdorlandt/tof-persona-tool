@@ -8,6 +8,7 @@ import { saveProfile } from '../../native/localStore';
 import { tap } from '../../native/nativeShell';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
 import Results from '../../components/Results.jsx';
+import Onthulling from './Onthulling.jsx';
 import { getQuizData } from './quizTestData';
 
 /**
@@ -16,14 +17,16 @@ import { getQuizData } from './quizTestData';
  * Verkorte flow uit het analysestuk "Korter afnemen, scherper prijzen":
  *   1. Aanmelden (hergebruikt QuizAanmelding)
  *   2. 9 basisvragen met vast antwoordpatroon (5x één keuze, 4x twee in volgorde)
- *   3. Profiel IN BEELD (hergebruikt Results)
+ *   3. Keuzescherm ZONDER profiel: verdiepen of meteen onthullen
  *   4. Optionele verdieping (2 duels, druk, werkplekgebruik, open vraag)
- *   5. Verscherpt profiel
+ *   5. Onthulling, daarna het profiel (hergebruikt Results)
  *
- * Het resultaat wordt bij afronden (fase 'profielScherp') één keer opgeslagen —
- * zowel na de verdieping als wanneer iemand op "Nee, ik ben klaar" klikt. Op
- * het web gaat dat via saveResponse naar Supabase (precies één rij met het
- * scherpste profiel); in app-modus blijft het op het toestel.
+ * Het profiel is al berekend bij stap 3, maar komt bewust nog niet in beeld.
+ * Eerder stond het er wél, en dan scrolde men eraan voorbij zonder ooit op een
+ * knop te drukken — waardoor er niets werd opgeslagen en je de volgende keer
+ * opnieuw mocht beginnen. Nu loopt elke weg naar je profiel via fase
+ * 'profielScherp', en daar wordt het één keer bewaard: op het web via
+ * saveResponse naar Supabase, in app-modus op het toestel zelf.
  */
 
 const WEIGHTS = [3, 2]; // eerste keuze telt 3, tweede 2
@@ -63,16 +66,22 @@ function Shell({ children, isMobile, innerRef }) {
     return (
         <div
             style={{
-                minHeight: 'calc(100vh - 88px)',
+                // Op de telefoon GEEN minimumhoogte: die was op de webkop van
+                // 88 px gerekend, terwijl de app een kop van 69 px en een
+                // tabbalk van 56 px heeft. Samen 125 px, dus de pagina was
+                // altijd een paar tientallen pixels scrollbaar — precies het
+                // "wegzakken" van de vraag. Zonder minimumhoogte scrollt er
+                // niets meer zodra de inhoud past.
+                minHeight: isMobile ? 'auto' : 'calc(100vh - 88px)',
                 display: 'flex',
                 alignItems: isMobile ? 'flex-start' : 'center',
                 justifyContent: 'center',
-                padding: isMobile ? '12px 12px 24px' : '24px 20px',
+                padding: isMobile ? '8px 12px 12px' : '24px 20px',
                 background: PALETTE.bg,
                 boxSizing: 'border-box',
             }}
         >
-            <div ref={innerRef} style={{ width: '100%', maxWidth: 960, display: 'grid', gap: 12 }}>
+            <div ref={innerRef} style={{ width: '100%', maxWidth: 960, display: 'grid', gap: isMobile ? 8 : 12 }}>
                 {children}
             </div>
         </div>
@@ -85,11 +94,11 @@ function Card({ children, isMobile }) {
             style={{
                 background: 'white',
                 borderRadius: 20,
-                padding: isMobile ? '18px 16px' : '26px 30px 22px',
+                padding: isMobile ? '14px 14px' : '26px 30px 22px',
                 border: `1px solid ${PALETTE.line}`,
                 boxShadow: '0 12px 32px rgba(31,27,24,0.08)',
                 display: 'grid',
-                gap: 16,
+                gap: isMobile ? 'clamp(9px, 1.4vh, 11px)' : 16,
             }}
         >
             {children}
@@ -110,8 +119,10 @@ function Title({ children, isMobile }) {
         <h1
             style={{
                 fontFamily: 'Playfair Display',
-                fontSize: isMobile ? 24 : 28,
-                lineHeight: 1.18,
+                // Zie de toelichting bij OptionButton: op een korte telefoon
+                // krimpt ook de vraag mee, met 18 px als ondergrens.
+                fontSize: isMobile ? 'clamp(18px, 2.8vh, 21px)' : 28,
+                lineHeight: isMobile ? 1.22 : 1.18,
                 margin: 0,
                 color: PALETTE.ink,
                 fontWeight: 500,
@@ -131,7 +142,7 @@ function PrimaryBtn({ children, onClick, disabled, isMobile }) {
             style={{
                 background: disabled ? '#d8cec5' : PALETTE.ink,
                 color: 'white',
-                padding: '13px 22px',
+                padding: isMobile ? '11px 20px' : '13px 22px',
                 borderRadius: 12,
                 border: 'none',
                 cursor: disabled ? 'not-allowed' : 'pointer',
@@ -173,34 +184,42 @@ function OptionButton({ option, order, onClick, isMobile }) {
             type="button"
             onClick={onClick}
             style={{
-                padding: isMobile ? '10px 12px' : '12px 14px',
+                padding: isMobile ? '7px 11px' : '12px 14px',
                 borderRadius: 12,
                 border: active ? `2px solid ${PALETTE.accent}` : '1px solid #ddd',
                 background: active ? '#fcf1f1' : 'white',
                 textAlign: 'left',
                 cursor: 'pointer',
-                fontSize: isMobile ? 14 : 15,
-                lineHeight: 1.35,
+                fontSize: isMobile ? 'clamp(12.5px, 1.72vh, 13.5px)' : 15,
+                lineHeight: isMobile ? 1.3 : 1.35,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: 10,
-                minHeight: isMobile ? 48 : 50,
+                // Acht knoppen zijn het zwaarste blok op het scherm. Op de
+                // telefoon krimpen ze mee met de schermhoogte: op een ruime
+                // telefoon blijven ze 40 px, op een korte (iPhone SE) worden ze
+                // net zoveel lager als nodig om de hele vraag zonder scrollen
+                // te laten passen. De binnenmarge is de ondergrens.
+                minHeight: isMobile ? 'clamp(32px, 4.6vh, 40px)' : 50,
             }}
         >
             <span style={{ paddingRight: 6 }}>{option.text}</span>
             {order !== null && (
                 <span
                     style={{
-                        minWidth: 26,
-                        height: 26,
+                        // Op de telefoon kleiner dan de knop hoog is, anders
+                        // rekt een gekozen antwoord op en schuift de rest
+                        // zichtbaar naar beneden.
+                        minWidth: isMobile ? 20 : 26,
+                        height: isMobile ? 20 : 26,
                         borderRadius: 999,
                         background: PALETTE.accent,
                         color: 'white',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 12,
+                        fontSize: isMobile ? 11 : 12,
                         fontWeight: 700,
                         flexShrink: 0,
                     }}
@@ -232,7 +251,7 @@ function PlekGrid({ list, setList, isMobile, types }) {
                         type="button"
                         onClick={() => toggle(t.id)}
                         style={{
-                            padding: '10px 12px',
+                            padding: isMobile ? '7px 10px' : '10px 12px',
                             borderRadius: 12,
                             border: active ? `2px solid ${PALETTE.accent}` : '1px solid #ddd',
                             background: active ? '#fcf1f1' : 'white',
@@ -241,7 +260,9 @@ function PlekGrid({ list, setList, isMobile, types }) {
                             fontSize: 14,
                             lineHeight: 1.3,
                             textAlign: 'left',
-                            minHeight: 46,
+                            // Twee lijsten van acht onder elkaar: krimpen mee
+                            // met de schermhoogte, net als de antwoordknoppen.
+                            minHeight: isMobile ? 'clamp(34px, 5.3vh, 46px)' : 46,
                         }}
                     >
                         {t.label}
@@ -293,11 +314,11 @@ export default function QuizTest({ setPage }) {
         DRUK_VRAAG,
         WERKPLEK_TYPES,
         OPEN_VRAAG,
-        VERDIEPING_INTRO,
         DUEL_ESSENTIE,
         DUEL_INTRO,
     } = useMemo(() => getQuizData(lang), [lang]);
-    const [phase, setPhase] = useState('intake'); // intake | basis | profiel | verdieping | profielScherp
+    // intake | basis | keuze | verdieping | onthulling | profielScherp
+    const [phase, setPhase] = useState('intake');
     const [profile, setProfile] = useState(null);
     const [scores, setScores] = useState(emptyScores());
 
@@ -309,6 +330,8 @@ export default function QuizTest({ setPage }) {
 
     // verdieping
     const [verdiepStep, setVerdiepStep] = useState(0); // 0=duel1 1=duel2 2=druk 3=werkplek 4=open
+    // Of de verdieping gelopen is — bepaalt welke tekst er bij het profiel staat.
+    const [verdiept, setVerdiept] = useState(false);
     const [duelBumps, setDuelBumps] = useState({});
     const [drukShuffled, setDrukShuffled] = useState([]);
     const [drukChoice, setDrukChoice] = useState(null);
@@ -419,11 +442,6 @@ export default function QuizTest({ setPage }) {
         // Alleen fase en resultaat sturen het opslaan aan; `t` is puur fouttekst.
     }, [phase, scherpResult]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Iets zwaardere tik op het enige echte hoogtepunt: je profiel in beeld.
-    useEffect(() => {
-        if (phase === 'profiel' || phase === 'profielScherp') tap(true);
-    }, [phase]);
-
     const sortedBasis = useMemo(() => sortByScore(ARCHETYPES, scores), [ARCHETYPES, scores]);
     const duelPairs = useMemo(
         () => [
@@ -458,7 +476,7 @@ export default function QuizTest({ setPage }) {
         });
         setScores(next);
         if (basisStep + 1 < BASIS_VRAGEN.length) setBasisStep((s) => s + 1);
-        else setPhase('profiel');
+        else setPhase('keuze');
     };
 
     const kiesDuel = (archetypeId) => {
@@ -484,6 +502,14 @@ export default function QuizTest({ setPage }) {
     // ── BASIS ────────────────────────────────────────────────────────────────────
     if (phase === 'basis') {
         const progress = ((basisStep + 1) / BASIS_VRAGEN.length) * 100;
+        const hint = currentBasis.pick === 2 ? t.pickTwo : t.pickOne;
+        const hintTekst = (
+            <>
+                {hint.before}
+                <strong style={{ color: PALETTE.ink }}>{hint.strong}</strong>
+                {hint.after}
+            </>
+        );
         return (
             <Shell isMobile={isMobile} innerRef={topRef}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -496,25 +522,30 @@ export default function QuizTest({ setPage }) {
                 </div>
 
                 <Card isMobile={isMobile}>
+                    {/*
+                      Op de telefoon staat de instructie als kale regel ónder de
+                      vraag, zonder balk en zonder de "9 vragen · ± 5 minuten"
+                      erboven: die herhaalt alleen wat de voortgangsbalk al
+                      zegt, en samen kostten ze de ruimte waardoor de vraag
+                      buiten beeld zakte.
+                    */}
                     <div>
-                        <Eyebrow>{t.eyebrow(BASIS_VRAGEN.length)}</Eyebrow>
+                        {!isMobile && <Eyebrow>{t.eyebrow(BASIS_VRAGEN.length)}</Eyebrow>}
                         <Title isMobile={isMobile}>{currentBasis.q}</Title>
+                        {isMobile && (
+                            <p style={{ margin: '5px 0 0', fontSize: 12.5, lineHeight: 1.4, color: PALETTE.soft }}>
+                                {hintTekst}
+                            </p>
+                        )}
                     </div>
 
-                    <div style={{ background: PALETTE.bg, borderRadius: 10, padding: '9px 14px', fontSize: 13, color: PALETTE.soft, lineHeight: 1.4 }}>
-                        {(() => {
-                            const hint = currentBasis.pick === 2 ? t.pickTwo : t.pickOne;
-                            return (
-                                <>
-                                    {hint.before}
-                                    <strong style={{ color: PALETTE.ink }}>{hint.strong}</strong>
-                                    {hint.after}
-                                </>
-                            );
-                        })()}
-                    </div>
+                    {!isMobile && (
+                        <div style={{ background: PALETTE.bg, borderRadius: 10, padding: '9px 14px', fontSize: 13, color: PALETTE.soft, lineHeight: 1.4 }}>
+                            {hintTekst}
+                        </div>
+                    )}
 
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: isMobile ? 7 : 8 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: isMobile ? 6 : 8 }}>
                         {shuffled.map((option, index) => {
                             const idx = selected.findIndex((s) => s.text === option.text);
                             const order = idx === -1 ? null : currentBasis.pick === 1 ? '✓' : idx + 1;
@@ -542,20 +573,52 @@ export default function QuizTest({ setPage }) {
         );
     }
 
-    // ── PROFIEL (in beeld) — met optionele verdieping erboven ───────────────────
-    if (phase === 'profiel') {
+    // ── KEUZE — het profiel is berekend maar nog niet te zien ───────────────────
+    if (phase === 'keuze') {
+        // Liggen de nummers 1 en 2 binnen een enkele vraag van elkaar? Dan is
+        // de volgorde eigenlijk nog niet beslist en duwen we naar de verdieping.
+        const nek = (sortedBasis[0]?.score || 0) - (sortedBasis[1]?.score || 0) <= WEIGHTS[1];
+        const verdiepen = () => { setVerdiept(true); setVerdiepStep(0); setPhase('verdieping'); };
+        const onthullen = () => setPhase('onthulling');
         return (
-            <div>
-                <ProfielBanner isMobile={isMobile} eyebrow={t.profileReady.eyebrow} text={VERDIEPING_INTRO}>
-                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                        <PrimaryBtn isMobile={isMobile} onClick={() => { setVerdiepStep(0); setPhase('verdieping'); }}>
-                            {t.profileReady.refine}
-                        </PrimaryBtn>
-                        <GhostBtn onClick={() => setPhase('profielScherp')}>{t.profileReady.done}</GhostBtn>
+            <Shell isMobile={isMobile} innerRef={topRef}>
+                <Card isMobile={isMobile}>
+                    <div>
+                        <Eyebrow>{t.profileReady.eyebrow}</Eyebrow>
+                        <Title isMobile={isMobile}>{nek ? t.profileReady.closeTitle : t.profileReady.clearTitle}</Title>
+                        <p style={{ margin: '8px 0 0', color: PALETTE.soft, fontSize: 15, lineHeight: 1.55 }}>
+                            {nek ? t.profileReady.closeBody : t.profileReady.clearBody}
+                        </p>
                     </div>
-                </ProfielBanner>
-                <Results resultData={basisResult} setPage={setPage} />
-            </div>
+                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                        {nek ? (
+                            <>
+                                <PrimaryBtn isMobile={isMobile} onClick={verdiepen}>{t.profileReady.refine}</PrimaryBtn>
+                                <GhostBtn onClick={onthullen}>{t.profileReady.done}</GhostBtn>
+                            </>
+                        ) : (
+                            <>
+                                <PrimaryBtn isMobile={isMobile} onClick={onthullen}>{t.profileReady.done}</PrimaryBtn>
+                                <GhostBtn onClick={verdiepen}>{t.profileReady.refine}</GhostBtn>
+                            </>
+                        )}
+                    </div>
+                    <p style={{ margin: 0, color: '#a89e96', fontSize: 13 }}>{t.profileReady.saveHint}</p>
+                </Card>
+            </Shell>
+        );
+    }
+
+    // ── ONTHULLING ──────────────────────────────────────────────────────────────
+    if (phase === 'onthulling') {
+        return (
+            <Onthulling
+                archetypes={ARCHETYPES}
+                primaryId={scherpResult?.primary}
+                isMobile={isMobile}
+                eyebrow={t.reveal.eyebrow}
+                onDone={() => setPhase('profielScherp')}
+            />
         );
     }
 
@@ -673,22 +736,26 @@ export default function QuizTest({ setPage }) {
                     />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
                         <span style={{ fontSize: 12, color: '#a89e96' }}>{openText.length}/{OPEN_VRAAG.maxLength}</span>
-                        <PrimaryBtn isMobile={isMobile} onClick={() => setPhase('profielScherp')}>{t.deepDive.showSharper}</PrimaryBtn>
+                        <PrimaryBtn isMobile={isMobile} onClick={() => setPhase('onthulling')}>{t.deepDive.showSharper}</PrimaryBtn>
                     </div>
                 </Card>
             </Shell>
         );
     }
 
-    // ── VERSCHERPT PROFIEL ────────────────────────────────────────────────────────
+    // ── PROFIEL ──────────────────────────────────────────────────────────────────
     if (phase === 'profielScherp') {
         const veranderd = basisResult?.primary !== scherpResult?.primary;
         return (
             <div>
                 <ProfielBanner
                     isMobile={isMobile}
-                    eyebrow={t.sharpened.eyebrow}
-                    text={veranderd ? t.sharpened.changed : t.sharpened.confirmed}
+                    eyebrow={verdiept ? t.sharpened.eyebrow : t.sharpened.basisEyebrow}
+                    text={
+                        verdiept
+                            ? (veranderd ? t.sharpened.changed : t.sharpened.confirmed)
+                            : t.sharpened.basis
+                    }
                 >
                     {saveError && (
                         <p style={{ margin: 0, color: PALETTE.accent, fontSize: 14 }}>{saveError}</p>
