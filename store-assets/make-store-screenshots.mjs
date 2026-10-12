@@ -19,7 +19,11 @@
  *   node store-assets/make-store-screenshots.mjs nl
  *   node store-assets/make-store-screenshots.mjs en
  *
- * De bestanden komen in store-assets/screenshots/<taal>/.
+ * De bestanden komen in store-assets/screenshots/<taal>/: 1-start, 3-profiel en
+ * 4-personas, in die volgorde in de winkel. Er stonden er ooit zes; de drie
+ * andere (een quizvraag, het gespreksscherm, het privacyscherm) zijn er op
+ * 12 oktober 2026 uit gehaald. Alleen de eerste drie zijn zichtbaar in de
+ * zoekresultaten, en wat daarachter stond haalde niemand.
  */
 import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
@@ -39,15 +43,13 @@ const wacht = (ms) => new Promise((r) => setTimeout(r, ms));
 const T = {
     nl: {
         taalknop: 'Nederlands', begin: 'Begin bij jezelf', test: 'Doe de test',
-        verder: 'Verder naar de quiz', klaar: 'Nee, ik ben klaar',
-        privacy: 'Wat deze app over je bewaart',
-        tabGesprek: 'Gesprek', tabPersonas: "Persona's",
+        verder: 'Verder naar de quiz', klaar: 'Toon mijn profiel',
+        tabPersonas: "Persona's",
     },
     en: {
         taalknop: 'English', begin: 'Start with yourself', test: 'Take the test',
-        verder: 'On to the quiz', klaar: 'No, I am done',
-        privacy: 'What this app keeps about you',
-        tabGesprek: 'Conversation', tabPersonas: 'Personas',
+        verder: 'On to the quiz', klaar: 'Show my profile',
+        tabPersonas: 'Personas',
     },
 }[taal];
 
@@ -83,12 +85,6 @@ await klik(page, T.taalknop);
 await klik(page, T.begin);
 await schiet(page, '1-start');
 
-// Privacyscherm, voordat er een profiel staat
-await klik(page, T.privacy);
-await schiet(page, '6-privacy');
-await page.goBack({ waitUntil: 'networkidle0' }).catch(() => {});
-await wacht(800);
-
 await klik(page, T.test);
 await page.type('input', 'Judith');
 await klik(page, T.verder);
@@ -106,7 +102,6 @@ const kiesTwee = async () => {
     }
 };
 await kiesTwee();
-await schiet(page, '2-vraag');
 
 const volgende = async () => {
     await page.evaluate(() => {
@@ -121,16 +116,16 @@ for (let q = 1; q < 9; q++) {
     await volgende();
 }
 
+// Na de negende vraag komt eerst het keuzescherm. "Toon mijn profiel" start de
+// onthulling: twaalf flitsen van 280 ms plus 1250 ms dat de naam blijft staan,
+// bijna vijf seconden. Pas daarna staat het profiel er.
 await wacht(1500);
 await klik(page, T.klaar);
-await wacht(1200);
+await wacht(6000);
 await schiet(page, '3-profiel');
 
 await klik(page, T.tabPersonas);
 await schiet(page, '4-personas');
-
-await klik(page, T.tabGesprek);
-await schiet(page, '5-gesprek');
 
 await browser.close();
 console.log('klaar: ' + UIT);
