@@ -7,7 +7,7 @@ const teamIntro = {
     app: {
       eyebrow: 'Module 1 · For everyone',
       title: 'The Persona app',
-      hook: 'Start with yourself. Free, in a few minutes, without an account.',
+      hook: 'Start with yourself. Free, in five minutes, without an account.',
       bullets: [
         'Your own profile: what gives you energy and what drains you',
         'What that means for your workspace and your working agreements',

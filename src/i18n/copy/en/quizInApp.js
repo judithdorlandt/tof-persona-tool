@@ -17,7 +17,7 @@ const quizInApp = {
     title: 'How it works',
     items: [
       'Download TOF Persona from the App Store.',
-      'Take the test — a few minutes, no account.',
+      'Take the test — five minutes, no account.',
       'Got a team code? Add your profile to your team afterwards.',
     ],
   },

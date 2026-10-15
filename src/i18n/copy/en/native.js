@@ -11,7 +11,7 @@ const native = {
       'This is the profile you are looking at. It lives on your device and goes nowhere else.',
     emptyTitle: 'Find out how you work.',
     emptyIntro:
-      'Nine questions, a few minutes. After that you will know which workplace brings out your best — and it stays right here, for your eyes only.',
+      'Nine questions, five minutes. After that you will know which workplace brings out your best — and it stays right here, for your eyes only.',
     profileEyebrow: 'Your profile',
     openProfile: 'View your profile',
     startTest: 'Take the test',

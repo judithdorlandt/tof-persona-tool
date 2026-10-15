@@ -1,5 +1,10 @@
 # Winkelteksten — App Store en Google Play
 
+> **VEROUDERD — niet meer als bron gebruiken.** Dit document is vervangen door
+> `content/storeteksten-persona-app.md` in het marketingproject. De teksten
+> hieronder noemen onder meer nog "een paar minuten" (§3 en §4); de app stelt
+> negen vragen en vraagt ongeveer vijf minuten. Houd de genoemde versie aan.
+
 Kant-en-klaar om over te nemen in App Store Connect en de Play Console, in beide
 talen. De toon volgt de app zelf: "Ontdek hoe jij werkt", "Negen vragen, een paar
 minuten". Tussen haakjes staat telkens de limiet van het veld.

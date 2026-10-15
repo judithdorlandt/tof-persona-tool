@@ -17,7 +17,7 @@ const quizInApp = {
     title: 'Zo werkt het',
     items: [
       'Download TOF Persona in de App Store.',
-      'Doe de test — een paar minuten, zonder account.',
+      'Doe de test — vijf minuten, zonder account.',
       'Heb je een teamcode? Breng je profiel daarna in bij je team.',
     ],
   },

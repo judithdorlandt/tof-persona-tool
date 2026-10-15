@@ -105,10 +105,10 @@ ${code}
 
 Deze code zit al verwerkt in de link hieronder, zodat de tool de antwoorden automatisch aan jullie team koppelt.
 
-WAT JE TEAMLEDEN DOEN (15 minuten per persoon)
+WAT JE TEAMLEDEN DOEN (5 minuten per persoon)
 1. Open de persoonlijke teamlink: ${quizUrl}
 2. Organisatie, afdeling en teamcode staan al ingevuld — alleen voornaam toevoegen
-3. Vul de quiz in — ze beantwoorden ~30 stellingen
+3. Vul de vragenlijst in — negen vragen
 4. Ze krijgen direct hun persoonlijke persona als resultaat
 
 WAT JIJ ALS LEIDINGGEVENDE STRAKS DOET
@@ -148,7 +148,7 @@ The Office Factory
     mailFallbackEmail: 'je eigen adres',
     mailBody: ({ recipient, email, loginUrl }) => `Beste ${recipient},
 
-Ik laat je graag zelf ervaren waar onze persona-tool over gaat. Je bent er een kwartiertje mee bezig.
+Ik laat je graag zelf ervaren waar onze persona-tool over gaat. Je bent er vijf minuten mee bezig.
 
 ZO WERKT HET
 1. Open deze link: ${loginUrl}

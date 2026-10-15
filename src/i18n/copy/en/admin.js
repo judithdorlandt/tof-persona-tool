@@ -93,10 +93,10 @@ ${code}
 
 This code is already built into the link below, so the tool automatically links the answers to your team.
 
-WHAT YOUR TEAM MEMBERS DO (15 minutes each)
+WHAT YOUR TEAM MEMBERS DO (5 minutes each)
 1. Open your team's personal link: ${quizUrl}
 2. Organisation, department and team code are already filled in — they only add their first name
-3. Complete the questionnaire — around 30 statements
+3. Complete the questionnaire — nine questions
 4. They see their own personal persona straight away
 
 WHAT YOU WILL DO AS THEIR LEADER
@@ -135,7 +135,7 @@ The Office Factory
     mailFallbackEmail: 'your own address',
     mailBody: ({ recipient, email, loginUrl }) => `Dear ${recipient},
 
-I'd love you to experience our persona tool for yourself. It takes about fifteen minutes.
+I'd love you to experience our persona tool for yourself. It takes about five minutes.
 
 HOW IT WORKS
 1. Open this link: ${loginUrl}

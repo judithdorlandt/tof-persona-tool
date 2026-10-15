@@ -11,7 +11,7 @@ const native = {
       'Dit is het profiel dat je nu bekijkt. Het staat op je toestel en gaat nergens anders heen.',
     emptyTitle: 'Ontdek hoe jij werkt.',
     emptyIntro:
-      'Negen vragen, een paar minuten. Daarna weet je in welke werkomgeving jij tot je recht komt — en blijft dat hier staan, alleen voor jou.',
+      'Negen vragen, vijf minuten. Daarna weet je in welke werkomgeving jij tot je recht komt — en blijft dat hier staan, alleen voor jou.',
     profileEyebrow: 'Jouw profiel',
     openProfile: 'Bekijk je profiel',
     startTest: 'Doe de test',

@@ -15,7 +15,7 @@ const teamIntro = {
     app: {
       eyebrow: 'Module 1 · Voor iedereen',
       title: 'De Persona-app',
-      hook: 'Begin bij jezelf. Gratis, in een paar minuten, zonder account.',
+      hook: 'Begin bij jezelf. Gratis, in vijf minuten, zonder account.',
       bullets: [
         'Je eigen profiel: waar je energie van krijgt en waar je leegloopt',
         'Wat dat betekent voor je werkplek en je afspraken',

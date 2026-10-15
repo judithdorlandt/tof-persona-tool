@@ -8,7 +8,7 @@ const home = {
   ctaStartTest: 'Start the Persona test',
   ctaForTeams: 'For teams & organisations',
   ctaTeamEnvironment: 'Team space',
-  durationNote: 'Takes about 15 minutes',
+  durationNote: 'Nine questions · about 5 minutes',
 
   offerCard: {
     eyebrow: 'Your working style',
