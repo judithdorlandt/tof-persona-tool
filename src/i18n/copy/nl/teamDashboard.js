@@ -33,6 +33,15 @@ const teamDashboard = {
     high: 'Sterk beeld',
   },
 
+  // Wat er in plaats van het dashboard staat als het team nog te klein is
+  // (drempel in utils/access.js, blok in components/TeamGate.jsx).
+  gate: {
+    title: 'Nog geen teambeeld',
+    body: 'Het teambeeld verschijnt vanaf vijf ingevulde profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, ook als er geen namen bij staan.',
+    count: (n) => `${n} van de vijf ingevuld`,
+    hint: 'Deel de teamcode met je collega’s. Zodra het vijfde profiel binnen is, staat het beeld er.',
+  },
+
   close: 'Sluiten ✕',
 
   // Als een waarde ontbreekt.
@@ -83,8 +92,7 @@ const teamDashboard = {
       titleBefore: 'Teamdynamiek laat zien',
       titleEmphasis: 'waarom',
       titleAfter: 'deze patronen ontstaan.',
-      lead: 'Spanningsvelden tussen werkstijlen, leiderschapsimplicaties en de keuze tussen tempo en reflectie — in één verdiept dashboard, toegelicht in een sessie.',
-      unlock: 'Dynamiek ontgrendelen',
+      lead: 'Spanningsvelden tussen werkstijlen, leiderschapsimplicaties en de keuze tussen tempo en reflectie — in één verdiept dashboard voor wie het team leidt, toegelicht in een sessie.',
       plan: 'Plan een gesprek',
     },
   },

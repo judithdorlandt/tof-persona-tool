@@ -15,6 +15,7 @@
 const TEAM_ACCESS_KEY_V2 = 'tof_team_access_v2';
 const TEAM_ACCESS_KEY_V1 = 'tof_team_access';           // legacy: één team
 const MAKER_ACCESS_KEY = 'tof_maker_access';
+const MANAGER_TEAMS_KEY = 'tof_manager_teams';          // teams waar jij manager van bent
 const MODULE2_LEGACY_KEY = 'tof_module2_access';        // legacy: algemeen Module 2 vlag
 const ADMIN_ACCESS_KEY = 'tof_admin_access';            // beheerders-toegang
 
@@ -30,6 +31,84 @@ const LEVEL_ORDER = [LEVEL_INSIGHT, LEVEL_DYNAMICS, LEVEL_STRATEGIC];
 function levelPower(level) {
     const idx = LEVEL_ORDER.indexOf(level);
     return idx === -1 ? -1 : idx;
+}
+
+// =========================
+// DREMPEL VOOR HET TEAMBEELD
+// =========================
+// Onder dit aantal tonen we geen teambeeld: in een kleiner team is een
+// uitslag herleidbaar tot een persoon, ook zonder naam erbij. Dit is een
+// regel over wie wat mag zien, daarom staat hij hier en niet bij de
+// aggregatie.
+export const MIN_TEAM_RESPONSES = 5;
+
+// Rijen zonder werkstijl leveren geen teambeeld op en tellen dus niet mee.
+// Dubbele invullingen kunnen we NIET zien: private.responses heeft geen
+// persoonssleutel, alleen een optionele voornaam. Dedupliceren op het
+// profiel zelf (zoals Bijdragen.jsx lokaal doet) zou een echt team van vijf
+// kunnen tegenhouden zodra twee mensen dezelfde uitslag hebben — onterecht
+// blokkeren is hier het slechtere falen. Zie docs: opdracht teamdrempel.
+export function countCompleteProfiles(responses = []) {
+    if (!Array.isArray(responses)) return 0;
+    return responses.filter((r) => r?.primary_archetype || r?.primary).length;
+}
+
+// =========================
+// NAMEN IN HET TEAMBEELD
+// =========================
+// Standaard laat het teambeeld niet zien wie wat heeft geantwoord — ook niet
+// aan de manager, en ook niet in de PDF. Daarom verzamelt buildTeamAggregate
+// geen namen: er is geen component die er nog bij kan.
+//
+// Dit is een standaard, geen absoluut verbod. Namen mogen aan zodra een team
+// daar zelf goedkeuring voor geeft, en dan geldt dat voor iedereen gelijk:
+// wat de manager ziet, zien de teamleden ook. Een stand waarin alleen de
+// manager namen ziet bestaat bewust niet.
+//
+// Als dat ooit gebouwd wordt, hoort de schakelaar in de database en niet hier:
+// de RPC responses_for_code (supabase/006) doet `select r.*` en geeft `name`
+// dus mee aan iedereen met een geldige teamcode. Een vlag in localStorage zou
+// de weergave dichtzetten maar de netwerkrespons niet.
+
+// =========================
+// DE ROL BEPAALT HET NIVEAU
+// =========================
+// Een teamcode geeft het teambeeld (Insight). Teamdynamiek hangt niet aan
+// een code maar aan een persoon: wie in `team_managers` staat en is ingelogd.
+// Zo kan de code rondgaan in het team zonder dat de managerkant meelekt.
+//
+// De rol komt uit de database, maar de toegangsvragen worden synchroon
+// gesteld midden in een render. Daarom haalt App.js de teams één keer per
+// sessie op en legt ze hier neer; de rest van de app leest ze synchroon.
+
+/** Teams waar de ingelogde gebruiker manager van is. */
+export function rememberManagedTeams(teams = []) {
+    const keys = (teams || []).map((t) => teamKey(t.team, t.organization));
+    localStorage.setItem(MANAGER_TEAMS_KEY, JSON.stringify(keys));
+}
+
+export function forgetManagedTeams() {
+    localStorage.removeItem(MANAGER_TEAMS_KEY);
+}
+
+export function isManagerOf(team, organization) {
+    const raw = localStorage.getItem(MANAGER_TEAMS_KEY);
+    if (!raw) return false;
+    try {
+        const keys = JSON.parse(raw);
+        return Array.isArray(keys) && keys.includes(teamKey(team, organization));
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Wat een ingewisselde code oplevert. Dynamics-codes geven sinds dit model
+ * alleen nog het teambeeld — de dynamiek hoort bij de rol. Strategic blijft
+ * ongemoeid: Module 3 is een los traject met een eigen afspraak.
+ */
+export function levelFromCode(codeLevel) {
+    return codeLevel === LEVEL_STRATEGIC ? LEVEL_STRATEGIC : LEVEL_INSIGHT;
 }
 
 // =========================
@@ -133,7 +212,14 @@ export function getTeamLevel(team, organization) {
     const list = readAccessList();
     const key = teamKey(team, organization);
     const entry = list.find((e) => teamKey(e.team, e.organization) === key);
-    return entry?.level || null;
+    const stored = entry?.level || null;
+
+    // Manager van dit team? Dan minstens Dynamics, ook zonder code.
+    if (isManagerOf(team, organization)) {
+        return levelPower(stored) > levelPower(LEVEL_DYNAMICS) ? stored : LEVEL_DYNAMICS;
+    }
+
+    return stored;
 }
 
 /**

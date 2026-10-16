@@ -112,7 +112,7 @@ function Header({ isMobile }) {
 }
 
 // =========================
-// DOMINANT HERO — ankerzin + impact + namen
+// DOMINANT HERO — ankerzin + impact
 // =========================
 
 function DominantHero({ personas, isMobile }) {
@@ -133,14 +133,6 @@ function DominantHero({ personas, isMobile }) {
 
     const resultLine = t.impactResult(isOne);
     const energyLine = t.impactEnergy(isOne);
-
-    // Verzamel alle namen van de dominante personae
-    const allNames = [];
-    personas.forEach((p) => {
-        p.names.forEach((n) => {
-            if (!allNames.includes(n)) allNames.push(n);
-        });
-    });
 
     return (
         <div
@@ -223,24 +215,6 @@ function DominantHero({ personas, isMobile }) {
                     {energyLine.after}
                 </p>
             </div>
-
-            {/* Namen */}
-            {allNames.length > 0 ? (
-                <div
-                    style={{
-                        fontFamily: 'var(--tof-font-body)',
-                        fontSize: 13,
-                        lineHeight: 1.55,
-                        color: 'var(--tof-text-soft)',
-                        paddingTop: 4,
-                    }}
-                >
-                    {t.carriedBy}
-                    <span style={{ color: 'var(--tof-text)', fontWeight: 500 }}>
-                        {teamPanels.names.join(allNames)}
-                    </span>
-                </div>
-            ) : null}
         </div>
     );
 }
@@ -349,20 +323,6 @@ function PersonaCard({ persona }) {
             >
                 {persona.tensionMessage}
             </p>
-
-            {persona.names.length > 0 ? (
-                <p
-                    style={{
-                        margin: 0,
-                        fontFamily: 'var(--tof-font-body)',
-                        fontSize: 12,
-                        lineHeight: 1.5,
-                        color: 'var(--tof-text-muted)',
-                    }}
-                >
-                    {teamPanels.names.join(persona.names)}
-                </p>
-            ) : null}
         </div>
     );
 }

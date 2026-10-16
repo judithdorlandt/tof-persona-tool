@@ -15,15 +15,6 @@
  * copy/<taal>/archetypes.js via `getArchetypes(lang)`.
  */
 
-/** Losse delen natuurlijk aan elkaar plakken: "A, B en C". */
-function joinParts(parts = []) {
-  const list = parts.filter(Boolean);
-  if (list.length === 0) return '';
-  if (list.length === 1) return list[0];
-  if (list.length === 2) return `${list[0]} en ${list[1]}`;
-  return `${list.slice(0, -1).join(', ')} en ${list[list.length - 1]}`;
-}
-
 const teamDynamics = {
   hero: {
     eyebrow: '02 — Teamdynamiek',
@@ -35,10 +26,10 @@ const teamDynamics = {
   },
 
   noAccess: {
-    title: 'Geen toegang tot',
-    titleAccent: 'Teamdynamiek',
-    lead: 'Voer je toegangscode voor Teamdynamiek in via de teamomgeving. Deze code geeft ook toegang tot Teaminzicht.',
-    cta: 'Naar teamomgeving',
+    title: 'Dit deel is voor de',
+    titleAccent: 'teammanager',
+    lead: 'Teaminzicht is er voor het hele team. Teamdynamiek gaat een laag dieper — over wat leiderschap van deze samenstelling vraagt — en is daarom voor wie het team leidt. Je manager logt daarvoor in met het mailadres dat aan dit team gekoppeld is.',
+    cta: 'Naar Teaminzicht',
   },
 
   noData: {
@@ -46,6 +37,15 @@ const teamDynamics = {
     lead: 'Laad eerst een team via Teaminzicht.',
     cta: '← Naar Teaminzicht',
     embedded: 'Geen responses om de dynamiek op te baseren.',
+  },
+
+  // Wat er in plaats van de dynamiek staat als het team nog te klein is
+  // (drempel in utils/access.js, blok in components/TeamGate.jsx).
+  gate: {
+    title: 'Nog geen teambeeld',
+    body: 'Het teambeeld verschijnt vanaf vijf ingevulde profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, ook als er geen namen bij staan.',
+    count: (n) => `${n} van de vijf ingevuld`,
+    hint: 'Deel de teamcode met je collega’s. Zodra het vijfde profiel binnen is, staat het beeld er.',
   },
 
   // Als er geen teamnaam bekend is.
@@ -66,14 +66,6 @@ const teamDynamics = {
     emerging: 'Opkomend patroon',
     reliable: 'Betrouwbaar beeld',
     strong: 'Sterk patroon',
-  },
-
-  // Namen van teamleden samenvoegen, inclusief anonieme respondenten.
-  names: {
-    join: joinParts,
-    anonymousOne: 'anoniem',
-    anonymousMany: (n) => `${n} anoniem`,
-    anonymousAlone: 'Anoniem',
   },
 
   tiles: {
@@ -127,7 +119,6 @@ const teamDynamics = {
   collaboration: {
     empty: 'Nog geen samenwerkingspatronen zichtbaar — wacht tot meer teamleden hebben ingevuld.',
     dominantEyebrow: (pct) => `Dominante werkstijl · ${pct}% van het team`,
-    carriedBy: 'Gedragen door',
     worksWell: 'Wat werkt goed',
     attentionFor: 'Aandacht voor',
     strongWith: (name) => `Sterk met ${name}`,

@@ -73,14 +73,10 @@ const INSIGHT_COPY = {
             `${isOrg ? 'De organisatie' : 'Het team'} werkt vanuit ${persona.toLowerCase()}.`,
         responses: (n) => `${n} respons${n === 1 ? '' : 'en'}`,
         reliability: { low: 'Indicatief', mid: 'Groeiend', high: 'Sterk beeld' },
-        listAnd: 'en',
         distributionEyebrow: 'VERDELING',
         mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATIE-MIX' : 'JOUW TEAM-MIX'),
         roundingNote: 'Percentages zijn afgerond; de som ligt tussen 99 en 101%.',
-        anonymousOne: 'Anoniem',
-        anonymousMany: (n) => `${n} anoniem`,
-        unknownName: 'Onbekend',
-        nameJoiner: 'en',
+        personCount: (n) => `${n} ${n === 1 ? 'persoon' : 'mensen'}`,
         signatureEyebrow: (isOrg) => (isOrg
             ? 'WAT DEZE ORGANISATIE IN BEWEGING BRENGT'
             : 'WAT DIT TEAM IN BEWEGING BRENGT'),
@@ -147,14 +143,10 @@ const INSIGHT_COPY = {
             `${isOrg ? 'The organisation' : 'The team'} works from ${persona.toLowerCase()}.`,
         responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
         reliability: { low: 'Indicative', mid: 'Growing', high: 'Strong picture' },
-        listAnd: 'and',
         distributionEyebrow: 'BREAKDOWN',
         mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATION MIX' : 'YOUR TEAM MIX'),
         roundingNote: 'Percentages are rounded; the total sits between 99 and 101%.',
-        anonymousOne: 'Anonymous',
-        anonymousMany: (n) => `${n} anonymous`,
-        unknownName: 'Unknown',
-        nameJoiner: 'and',
+        personCount: (n) => `${n} ${n === 1 ? 'person' : 'people'}`,
         signatureEyebrow: (isOrg) => (isOrg
             ? 'WHAT GETS THIS ORGANISATION MOVING'
             : 'WHAT GETS THIS TEAM MOVING'),
@@ -216,10 +208,6 @@ const INSIGHT_COPY = {
 function getInsightCopy(lang) {
     return INSIGHT_COPY[lang] || INSIGHT_COPY.nl;
 }
-
-// Datawaarde, geen UI-tekst: de aggregatie zet 'Onbekend' als naam ontbreekt.
-// Niet vertalen — dit is een sentinel die we uitfilteren.
-const UNKNOWN_NAME_SENTINEL = 'Onbekend';
 
 // =========================
 // PUBLIC API
@@ -470,7 +458,7 @@ function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCo
 
 function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsightCopy('nl'), lang = 'nl' }) {
     const isOrg = mode === 'organization';
-    // Org-mode heeft veel meer namen → kleinere tekst zodat het past.
+    // Org-mode heeft veel meer regels → kleinere tekst zodat het past.
     const nameFontSize = isOrg ? 4 : 5.2;
     const nameLineH = isOrg ? 5 : 7;
     const totalWidth = PAGE_W - MARGIN * 2;
@@ -568,13 +556,6 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsig
     // (energie) gebruikt — daardoor stond bv. Denker met 1 persoon
     // boven Groeier met 4 als hun energie hoger lag. Verwarrend.
     const topPresent = aggregate?.personasByPrimary || [];
-    const members = aggregate?.members || [];
-
-    // Zelfde voornaam in twee werkstijlen = twee verschillende personen
-    // (elke respondent heeft precies één primaire werkstijl). Maak ze
-    // onderscheidbaar met een achternaam-initiaal, zodat de lezer niet
-    // denkt dat iemand twee werkstijlen heeft.
-    const displayName = buildDisplayNameResolver(members, c);
 
     // Bij >4 archetypes splitsen we de rechter kolom in twee sub-kolommen,
     // anders loopt de mix-kolom veel verder naar beneden dan de verdeling
@@ -606,41 +587,20 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsig
             color: color,
         }));
 
-        // Echte namen apart van anoniemen tellen. Anders zou dedup
-        // meerdere "Anoniem"-respondenten samenvouwen tot één label.
-        const membersForArchetype = members.filter((m) => m.primary === p.id);
-        const realNames = membersForArchetype
-            .filter((m) => !m.isAnonymous)
-            .map((m) => displayName(m.name))
-            .filter((n) => n && n !== UNKNOWN_NAME_SENTINEL)
-            .filter((n, i, arr) => arr.indexOf(n) === i);
-        const anonymousCount = membersForArchetype.filter((m) => m.isAnonymous).length;
+        // Geen namen: alleen de werkstijl en het aantal mensen erachter.
+        // Zie utils/access.js onder "NAMEN IN HET TEAMBEELD".
+        const countText = c.personCount(p.count);
+        svg.appendChild(createText({
+            x: xPos,
+            y: curY + 8,
+            text: countText,
+            font: 'Inter',
+            weight: 400,
+            size: nameFontSize,
+            color: COLOR.textSoft,
+        }));
 
-        const nameParts = [...realNames];
-        if (anonymousCount === 1) nameParts.push(c.anonymousOne);
-        else if (anonymousCount > 1) nameParts.push(c.anonymousMany(anonymousCount));
-
-        const namesText = formatNamesNatural(nameParts, c);
-
-        let advance;
-        if (namesText) {
-            const namesLines = wrapText(namesText, subColWidth, nameFontSize, 'Inter');
-            namesLines.forEach((line, i) => {
-                svg.appendChild(createText({
-                    x: xPos,
-                    y: curY + 8 + i * nameLineH,
-                    text: line,
-                    font: 'Inter',
-                    weight: 400,
-                    size: nameFontSize,
-                    color: COLOR.textSoft,
-                }));
-            });
-            advance = 8 + namesLines.length * nameLineH + 6;
-        } else {
-            advance = 16;
-        }
-
+        const advance = 8 + nameLineH + 6;
         if (inLeftSubCol) mixY1 += advance;
         else mixY2 += advance;
     });
@@ -1174,42 +1134,6 @@ function wrapText(text, maxWidth, fontSize, font) {
 // HELPERS
 // =========================
 
-function firstName(fullName) {
-    if (!fullName) return '';
-    return String(fullName).trim().split(/\s+/)[0];
-}
-
-// Geeft een resolver die per volledige naam de weergavenaam teruggeeft.
-// Komt een voornaam bij meerdere verschillende personen voor, dan voegt
-// hij een achternaam-initiaal toe ("Claudia B.") zodat ze onderscheidbaar
-// zijn. Bij identieke volledige namen onder twee werkstijlen kan dat niet
-// — dat duidt op een echte dubbele invoer en moet bij de bron worden
-// gecontroleerd; de telling wordt hier bewust niet aangepast.
-function buildDisplayNameResolver(members, _c) {
-    const fullByFirst = {};
-    (members || []).forEach((m) => {
-        if (m.isAnonymous) return;
-        const fn = firstName(m.name);
-        if (!fn || fn === UNKNOWN_NAME_SENTINEL) return;
-        (fullByFirst[fn] = fullByFirst[fn] || new Set()).add(String(m.name).trim());
-    });
-    return (fullName) => {
-        const fn = firstName(fullName);
-        const fulls = fullByFirst[fn];
-        if (!fulls || fulls.size <= 1) return fn;
-        const parts = String(fullName).trim().split(/\s+/);
-        const surname = parts.length > 1 ? parts[parts.length - 1] : '';
-        return surname ? `${fn} ${surname[0].toUpperCase()}.` : fn;
-    };
-}
-
-function formatNamesNatural(names, c = INSIGHT_COPY.nl) {
-    if (names.length === 0) return '';
-    if (names.length === 1) return names[0];
-    if (names.length === 2) return `${names[0]} ${c.listAnd} ${names[1]}`;
-    return `${names.slice(0, -1).join(', ')} ${c.listAnd} ${names[names.length - 1]}`;
-}
-
 function buildReliabilityLabel(count, c = INSIGHT_COPY.nl) {
     if (count === null || count === undefined) return '';
     if (count < 3) return c.reliability.low;
@@ -1233,8 +1157,6 @@ export {
     drawTOFMark,
     drawWrappedText,
     wrapText,
-    firstName,
-    formatNamesNatural,
     buildReliabilityLabel,
     drawDivider,
     drawAchterkantHeader,

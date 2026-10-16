@@ -44,18 +44,6 @@ function personaName(id, lang) {
     return getArchetypes(lang).find((a) => a.id === id)?.name || id;
 }
 
-// Datawaarden, geen UI-tekst: de aggregatie zet deze namen als een
-// respondent geen naam heeft achtergelaten. Niet vertalen — ze worden
-// hier alleen weggefilterd, nooit getoond.
-const UNKNOWN_NAME_SENTINEL = 'Onbekend';
-const ANONYMOUS_NAME_SENTINEL = 'Anoniem';
-
-function isRealName(name) {
-    return Boolean(name)
-        && name !== UNKNOWN_NAME_SENTINEL
-        && name !== ANONYMOUS_NAME_SENTINEL;
-}
-
 // =========================
 // PUBLIC API
 // =========================
@@ -145,7 +133,6 @@ function buildHeadline(aggregate, lang = 'nl') {
 // =========================
 function buildWorkplaceTension(aggregate, lang = 'nl') {
     const needs = aggregate?.sortedWorkplaceNeeds || [];
-    const members = aggregate?.members || [];
     const presentPersonaIds = new Set(
         (aggregate?.sortedPersonas || [])
             .filter((p) => p.count > 0)
@@ -164,7 +151,6 @@ function buildWorkplaceTension(aggregate, lang = 'nl') {
 
     needs.forEach((need) => {
         const impacted = impactedPersonas(need.key, presentPersonaIds, lang);
-        const names = impactedNames(need.key, members, lang);
 
         // Onderbediend: bovengemiddelde behoefte
         if (need.percentage >= averagePct && impacted.length > 0) {
@@ -173,7 +159,6 @@ function buildWorkplaceTension(aggregate, lang = 'nl') {
                 label: workplaceLabel(need, lang),
                 percentage: need.percentage,
                 impactedPersonas: impacted,
-                impactedNames: names,
                 message: buildUnderservedMessage(need, lang),
             });
         }
@@ -195,7 +180,6 @@ function buildWorkplaceTension(aggregate, lang = 'nl') {
     const impactSummary = buildImpactSummary({
         underserved,
         oversupplied,
-        members,
         presentPersonaIds,
         needs,
         averagePct,
@@ -207,7 +191,7 @@ function buildWorkplaceTension(aggregate, lang = 'nl') {
 }
 
 // Bouw drie groepen: Dominant / Gemiddeld / Minderheid
-function buildImpactSummary({ underserved, oversupplied, members, presentPersonaIds, needs, averagePct, aggregate, lang = 'nl' }) {
+function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, needs, averagePct, aggregate, lang = 'nl' }) {
     if (presentPersonaIds.size === 0) {
         return null;
     }
@@ -224,15 +208,6 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
 
     if (present.length === 0) return null;
 
-    const namesByPersona = {};
-    present.forEach((p) => {
-        namesByPersona[p.id] = members
-            .filter((m) => m.primary === p.id)
-            .map((m) => firstName(m.name))
-            .filter(isRealName)
-            .filter((n, i, arr) => arr.indexOf(n) === i);
-    });
-
     const personaTension = text(lang).personaTension;
 
     const enrichPersona = (p, group) => {
@@ -243,7 +218,6 @@ function buildImpactSummary({ underserved, oversupplied, members, presentPersona
             name,
             teamPct: p.teamPct,
             tensionMessage: message(name),
-            names: namesByPersona[p.id] || [],
             group,
         };
     };
@@ -322,31 +296,6 @@ function impactedPersonas(workplaceKey, presentPersonaIds, lang = 'nl') {
             name: arch.name,
             score: arch.bricksProfile[workplaceKey],
         }));
-}
-
-function impactedNames(workplaceKey, members, lang = 'nl') {
-    const highScoringIds = getArchetypes(lang)
-        .filter((arch) => (arch?.bricksProfile?.[workplaceKey] || 0) >= PERSONA_NEED_THRESHOLD)
-        .map((arch) => arch.id);
-
-    const seen = new Set();
-    const result = [];
-
-    members.forEach((m) => {
-        if (!highScoringIds.includes(m.primary)) return;
-        const fname = firstName(m.name);
-        if (!isRealName(fname)) return;
-        if (seen.has(fname)) return;
-        seen.add(fname);
-        result.push({ name: fname, personaId: m.primary });
-    });
-
-    return result;
-}
-
-function firstName(fullName) {
-    if (!fullName) return '';
-    return String(fullName).trim().split(/\s+/)[0];
 }
 
 function formatNamesNatural(names, lang = 'nl') {

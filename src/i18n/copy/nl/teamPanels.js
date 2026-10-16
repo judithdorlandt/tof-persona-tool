@@ -6,7 +6,7 @@
  * alleen de waarden zijn taalafhankelijk.
  */
 
-/** Namen natuurlijk aan elkaar plakken: "A, B en C". */
+/** Labels natuurlijk aan elkaar plakken: "A, B en C". */
 function joinNames(parts = []) {
   const list = parts.filter(Boolean);
   if (list.length === 0) return '';
@@ -16,9 +16,9 @@ function joinNames(parts = []) {
 }
 
 const teamPanels = {
+  // Alleen voor werkstijl- en werkplek-labels; nooit voor namen van mensen.
   names: {
     join: joinNames,
-    anonymous: (n) => `${n} anoniem`,
   },
 
   header: {
@@ -66,7 +66,6 @@ const teamPanels = {
     empty: 'Nog geen werkstijlen beschikbaar.',
     dominantEyebrow: 'Dominante werkstijl',
     shareOfTeam: (pct) => `${pct}% van het team`,
-    carriedBy: 'Gedragen door ',
     furtherRepresented: 'Verder vertegenwoordigd',
     energy: {
       eyebrow: 'Energie van dit team',
@@ -144,7 +143,6 @@ const teamPanels = {
         ? ' om te komen werken als het kantoor vol staat met wat hij of zij niet gebruikt.'
         : ' om te komen werken als het kantoor vol staat met wat ze niet gebruiken.',
     }),
-    carriedBy: 'Gedragen door ',
     restOfTeam: 'Verder in het team',
     isolationRisk: 'Risico op isolatie',
     office: {

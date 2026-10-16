@@ -1,12 +1,3 @@
-/** Join parts naturally: "A, B and C". */
-function joinParts(parts = []) {
-  const list = parts.filter(Boolean);
-  if (list.length === 0) return '';
-  if (list.length === 1) return list[0];
-  if (list.length === 2) return `${list[0]} and ${list[1]}`;
-  return `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`;
-}
-
 const teamDynamics = {
   hero: {
     eyebrow: '02 — Team Dynamics',
@@ -18,10 +9,10 @@ const teamDynamics = {
   },
 
   noAccess: {
-    title: 'No access to',
-    titleAccent: 'Team Dynamics',
-    lead: 'Enter your Team Dynamics access code in the team area. That code unlocks Team Insight as well.',
-    cta: 'Go to the team area',
+    title: 'This part is for the',
+    titleAccent: 'team manager',
+    lead: 'Team Insight is there for the whole team. Team Dynamics goes a layer deeper — into what this make-up asks of leadership — and is therefore for whoever leads the team. Your manager signs in with the email address linked to this team.',
+    cta: 'Go to Team Insight',
   },
 
   noData: {
@@ -29,6 +20,13 @@ const teamDynamics = {
     lead: 'Load a team through Team Insight first.',
     cta: '← Back to Team Insight',
     embedded: 'No responses to base Dynamics on.',
+  },
+
+  gate: {
+    title: 'No team picture yet',
+    body: 'The team picture appears from five completed profiles onwards. Below that it is too easy to work out who answered what, even without names.',
+    count: (n) => `${n} of five completed`,
+    hint: 'Share the team code with your colleagues. The picture appears as soon as the fifth profile comes in.',
   },
 
   fallbackTeamName: 'your team',
@@ -48,13 +46,6 @@ const teamDynamics = {
     emerging: 'Emerging pattern',
     reliable: 'Reliable picture',
     strong: 'Strong pattern',
-  },
-
-  names: {
-    join: joinParts,
-    anonymousOne: 'anonymous',
-    anonymousMany: (n) => `${n} anonymous`,
-    anonymousAlone: 'Anonymous',
   },
 
   tiles: {
@@ -107,7 +98,6 @@ const teamDynamics = {
   collaboration: {
     empty: 'No collaboration patterns visible yet — wait until more team members have taken part.',
     dominantEyebrow: (pct) => `Dominant working style · ${pct}% of the team`,
-    carriedBy: 'Carried by',
     worksWell: 'What works well',
     attentionFor: 'Watch out for',
     strongWith: (name) => `Strong with the ${name}`,

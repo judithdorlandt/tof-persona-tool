@@ -47,8 +47,6 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
     const safeResponses = Array.isArray(teamResponses) ? teamResponses : [];
 
     const personaCounts = {};        // Aantal mensen met deze persona als primair
-    const personaPrimaryNames = {};  // Voornamen per persona (op basis van primair)
-    const personaPrimaryAnonymous = {}; // Aantal anonieme primary-respondenten per persona
     const totalScores = {};          // Opgetelde werkstijl-energie
     const workplaceTotals = {};
     const members = [];
@@ -56,8 +54,6 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
     ARCHETYPES.forEach((archetype) => {
         personaCounts[archetype.id] = 0;
         totalScores[archetype.id] = 0;
-        personaPrimaryNames[archetype.id] = [];
-        personaPrimaryAnonymous[archetype.id] = 0;
     });
 
     WORKPLACE_KEYS.forEach((key) => {
@@ -83,20 +79,9 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
         const fullScores = response?.full_scores || response?.scores || {};
         const hasFullScores = Object.keys(fullScores).length > 0;
 
-        // ── Naam met anonimiteit ───────────────────────────────
-        const rawName = String(response?.name || '').trim();
-        const hasName = rawName && rawName !== 'Onbekend';
-        const firstName = hasName ? rawName.split(/\s+/)[0] : null;
-
-        // ── personaCounts + namen op primair ───────────────────
+        // ── personaCounts op primair ───────────────────────────
         if (primary && personaCounts[primary] !== undefined) {
             personaCounts[primary] += 1;
-
-            if (firstName && !personaPrimaryNames[primary].includes(firstName)) {
-                personaPrimaryNames[primary].push(firstName);
-            } else if (!firstName) {
-                personaPrimaryAnonymous[primary] += 1;
-            }
         }
 
         // ── totalScores = werkstijl-energie ────────────────────
@@ -139,9 +124,11 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
             });
         }
 
+        // Bewust zonder naam: standaard laat het teambeeld niet zien wie wat
+        // heeft geantwoord, ook niet aan de manager en ook niet in de PDF.
+        // De regel en de route om dat met goedkeuring om te zetten staan in
+        // utils/access.js onder "NAMEN IN HET TEAMBEELD".
         members.push({
-            name: hasName ? rawName : 'Anoniem',
-            isAnonymous: !hasName,
             role: response?.role || '',
             organization: response?.organization || response?.org || '',
             department: response?.department || response?.dept || '',
@@ -161,7 +148,7 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
 
     // ── personasByPrimary: gerangschikt op aantal mensen primair ──
     // Voor de Insight-vraag: "wie zit er in dit team".
-    // Heeft countPercentage (= count / teamCount), namen, anoniem.
+    // Heeft countPercentage (= count / teamCount).
     const personasByPrimary = ARCHETYPES
         .map((archetype) => {
             const id = archetype.id;
@@ -172,8 +159,6 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
                 name: archetype.name || id,
                 count,
                 score,
-                names: [...(personaPrimaryNames[id] || [])],
-                anonymousCount: personaPrimaryAnonymous[id] || 0,
                 countPercentage: teamCount > 0
                     ? Math.round((count / teamCount) * 100)
                     : 0,
@@ -197,8 +182,6 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
                 name: archetype.name || id,
                 count,
                 score,
-                names: [...(personaPrimaryNames[id] || [])],
-                anonymousCount: personaPrimaryAnonymous[id] || 0,
                 countPercentage: teamCount > 0
                     ? Math.round((count / teamCount) * 100)
                     : 0,

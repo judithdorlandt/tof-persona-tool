@@ -6,7 +6,7 @@
  * database keys and therefore stay untranslated — only the values differ.
  */
 
-/** Join names naturally: "A, B and C". */
+/** Join labels naturally: "A, B and C". */
 function joinNames(parts = []) {
   const list = parts.filter(Boolean);
   if (list.length === 0) return '';
@@ -16,9 +16,9 @@ function joinNames(parts = []) {
 }
 
 const teamPanels = {
+  // Only for working-style and workplace labels; never for people's names.
   names: {
     join: joinNames,
-    anonymous: (n) => (n === 1 ? '1 anonymous' : `${n} anonymous`),
   },
 
   header: {
@@ -66,7 +66,6 @@ const teamPanels = {
     empty: 'No working styles available yet.',
     dominantEyebrow: 'Dominant working style',
     shareOfTeam: (pct) => `${pct}% of the team`,
-    carriedBy: 'Carried by ',
     furtherRepresented: 'Also represented',
     energy: {
       eyebrow: 'The energy in this team',
@@ -143,7 +142,6 @@ const teamPanels = {
         ? ' coming into the office if it is full of things he or she does not use.'
         : ' coming into the office if it is full of things they do not use.',
     }),
-    carriedBy: 'Carried by ',
     restOfTeam: 'Also in the team',
     isolationRisk: 'Risk of isolation',
     office: {

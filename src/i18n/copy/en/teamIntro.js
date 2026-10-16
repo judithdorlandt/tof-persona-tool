@@ -135,7 +135,7 @@ const teamIntro = {
   errors: {
     empty: 'Please enter an access code first.',
     unknownCode: 'Incorrect or unknown code.',
-    insightOnly: 'This code only gives access to Team Insight, not to Team Dynamics.',
+    managerOnly: 'Team Dynamics is for the team manager. Sign in with the email address linked to this team — a code will not open it.',
     generic: 'Something went wrong. Please try again.',
   },
 

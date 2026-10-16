@@ -7,6 +7,7 @@ import { IS_NATIVE, isPageAllowed } from './config/platform';
 import { useLang } from './i18n/LanguageContext';
 import { pagePath, resolvePath } from './i18n/routes';
 import { signOut, getMyManagedTeams } from './supabase';
+import { rememberManagedTeams, forgetManagedTeams } from './utils/access';
 
 import Bijdragen from './components/Bijdragen.jsx';
 import Landing from './components/Landing.jsx';
@@ -77,15 +78,18 @@ export default function App() {
   // Manager-vlag: is de ingelogde user een team-manager (rij in
   // team_managers)? Wordt eenmalig opgehaald per sessie en gebruikt
   // door Nav om irrelevante items (Home/Intro/Quiz/Resultaat) te
-  // verbergen.
+  // verbergen. Dezelfde lijst bepaalt wie Teamdynamiek mag zien, daarom
+  // gaat hij ook naar utils/access (die wordt synchroon bevraagd).
   const [isManager, setIsManager] = useState(false);
   useEffect(() => {
     let cancelled = false;
-    if (!user) { setIsManager(false); return; }
+    if (!user) { setIsManager(false); forgetManagedTeams(); return; }
     (async () => {
       try {
         const managed = await getMyManagedTeams();
-        if (!cancelled) setIsManager(managed.length > 0);
+        if (cancelled) return;
+        setIsManager(managed.length > 0);
+        rememberManagedTeams(managed);
       } catch (_e) {
         if (!cancelled) setIsManager(false);
       }

@@ -22,6 +22,13 @@ const teamDashboard = {
     high: 'Strong picture',
   },
 
+  gate: {
+    title: 'No team picture yet',
+    body: 'The team picture appears from five completed profiles onwards. Below that it is too easy to work out who answered what, even without names.',
+    count: (n) => `${n} of five completed`,
+    hint: 'Share the team code with your colleagues. The picture appears as soon as the fifth profile comes in.',
+  },
+
   close: 'Close ✕',
 
   empty: '—',
@@ -70,8 +77,7 @@ const teamDashboard = {
       titleBefore: 'Team Dynamics shows you',
       titleEmphasis: 'why',
       titleAfter: 'these patterns appear.',
-      lead: 'Tensions between working styles, what they mean for leadership, and the choice between pace and reflection — in one deeper dashboard, talked through in a session.',
-      unlock: 'Unlock Dynamics',
+      lead: 'Tensions between working styles, what they mean for leadership, and the choice between pace and reflection — in one deeper dashboard for whoever leads the team, talked through in a session.',
       plan: 'Book a conversation',
     },
   },

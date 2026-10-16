@@ -14,9 +14,6 @@ import { MODULE } from '../ui/tokens';
 
 const ACCENT = MODULE.dynamics.accent;
 
-/** Datawaarde, geen UI-tekst: de aggregatie zet 'Onbekend' als naam ontbreekt. */
-const UNKNOWN_NAME_SENTINEL = 'Onbekend';
-
 function t(lang) {
     return getCopy(lang).teamDynamics;
 }
@@ -143,26 +140,6 @@ export function getReliability(count, lang = 'nl') {
     return r.strong;
 }
 
-export function collectPersonaPeople(teamResponses, personaId) {
-    const names = [];
-    let anonymousCount = 0;
-    teamResponses.forEach((r) => {
-        if (r?.primary_archetype !== personaId) return;
-        const fname = String(r?.name || '').trim().split(/\s+/)[0];
-        if (!fname || fname === UNKNOWN_NAME_SENTINEL) {
-            anonymousCount += 1;
-            return;
-        }
-        if (!names.includes(fname)) names.push(fname);
-    });
-    return { names, anonymousCount };
-}
-
-// Backwards-compat helper: returns just the names array
-export function collectFirstNames(teamResponses, personaId) {
-    return collectPersonaPeople(teamResponses, personaId).names;
-}
-
 export function findMentionedPersona(text, presentMap, lang = 'nl') {
     const lowered = String(text).toLowerCase();
     for (const arch of getArchetypes(lang)) {
@@ -171,39 +148,11 @@ export function findMentionedPersona(text, presentMap, lang = 'nl') {
             return {
                 id: arch.id,
                 name: arch.name,
-                names: presentMap[arch.id].names,
-                anonymousCount: presentMap[arch.id].anonymousCount || 0,
                 color: PERSONA_COLORS[arch.id] || ACCENT,
             };
         }
     }
     return null;
-}
-
-export function formatNames(names, lang = 'nl') {
-    return t(lang).names.join(names || []);
-}
-
-/**
- * Formatteer namen + eventuele anonieme respondenten.
- *   - 0 namen, 1 anoniem  → "Anoniem"
- *   - 0 namen, 3 anoniem  → "3 anoniem"
- *   - 2 namen, 0 anoniem  → "Maria en Doris"
- *   - 2 namen, 1 anoniem  → "Maria, Doris en 1 anoniem"
- *   - 1 naam, 2 anoniem   → "Maria en 2 anoniem"
- */
-export function formatPeople(names, anonymousCount = 0, lang = 'nl') {
-    const copy = t(lang).names;
-    const parts = [...(names || [])];
-    if (anonymousCount > 0) {
-        parts.push(anonymousCount === 1 ? copy.anonymousOne : copy.anonymousMany(anonymousCount));
-    }
-    if (parts.length === 0) return '';
-    if (parts.length === 1) {
-        // Speciaal geval: alleen "anoniem" → hoofdletter
-        return parts[0] === copy.anonymousOne ? copy.anonymousAlone : parts[0];
-    }
-    return copy.join(parts);
 }
 
 // =========================

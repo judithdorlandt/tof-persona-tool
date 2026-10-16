@@ -25,6 +25,8 @@ import {
     revokeAdminAccess,
     revokeTeamAccess,
     listTeamAccesses,
+    isManagerOf,
+    levelFromCode,
     LEVEL_INSIGHT,
     LEVEL_DYNAMICS,
     LEVEL_STRATEGIC,
@@ -181,6 +183,15 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                 });
             });
 
+            // De rol wint van het codeniveau: ben je manager van dit team,
+            // dan staat het op Dynamiek — ongeacht met welke code je binnenkwam.
+            merged.forEach((a) => {
+                if (a.fromManager || isManagerOf(a.team, a.organization)) {
+                    a.fromManager = true;
+                    a.level = LEVEL_DYNAMICS;
+                }
+            });
+
             setTeamAccesses(merged);
         }
 
@@ -326,19 +337,21 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
 
             const codeLevel = accessResult.level || LEVEL_INSIGHT;
 
-            // Als Module 2 vraagt maar code is alleen insight → blokkeren
-            if (accessModal.requiredLevel === LEVEL_DYNAMICS && codeLevel !== LEVEL_DYNAMICS) {
-                setAccessError(t.errors.insightOnly);
+            // De code geeft het teambeeld; Teamdynamiek hangt aan de rol.
+            // Vraagt iemand om Module 2 zonder manager te zijn van dít team,
+            // dan is een code niet het antwoord.
+            const isManager = isManagerOf(accessResult.team, accessResult.organization);
+            if (accessModal.requiredLevel === LEVEL_DYNAMICS && !isManager) {
+                setAccessError(t.errors.managerOnly);
                 setAccessLoading(false);
                 return;
             }
 
             // Code geldig — niveau opslaan via het nieuwe access-model.
-            // Dynamics-codes geven óók Insight (access.js doet de juiste priority).
             grantTeamLevel({
                 team: accessResult.team,
                 organization: accessResult.organization,
-                level: codeLevel,
+                level: levelFromCode(codeLevel),
                 code: accessResult.code,
             });
 
@@ -387,7 +400,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                 destination = 'teamstrategic';
             } else {
                 destination = accessModal.destination
-                    || (codeLevel === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard');
+                    || (isManager ? 'teamdynamics' : 'teamdashboard');
             }
             setPage(destination);
         } catch (err) {

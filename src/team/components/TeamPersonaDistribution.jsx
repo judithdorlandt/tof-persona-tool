@@ -102,10 +102,8 @@ export default function TeamPersonaDistribution({ aggregate }) {
 // SIGNATURE — dominante primaire persona als hero
 // =========================
 function SignatureStatement({ persona, isMobile }) {
-    const { teamPanels } = useCopy();
-    const t = teamPanels.personaDistribution;
+    const t = useCopy().teamPanels.personaDistribution;
     const color = colorFor(persona.id);
-    const namesText = formatPeople(persona.names, persona.anonymousCount, teamPanels.names);
 
     return (
         <div
@@ -157,22 +155,6 @@ function SignatureStatement({ persona, isMobile }) {
             >
                 {persona.name}
             </h3>
-
-            {namesText ? (
-                <div
-                    style={{
-                        fontFamily: 'var(--tof-font-body)',
-                        fontSize: 14,
-                        lineHeight: 1.55,
-                        color: 'var(--tof-text-soft)',
-                    }}
-                >
-                    {t.carriedBy}
-                    <span style={{ color: 'var(--tof-text)', fontWeight: 500 }}>
-                        {namesText}
-                    </span>
-                </div>
-            ) : null}
         </div>
     );
 }
@@ -208,9 +190,7 @@ function SecondaryList({ items, isMobile }) {
 }
 
 function SecondaryItem({ persona }) {
-    const { teamPanels } = useCopy();
     const color = colorFor(persona.id);
-    const namesText = formatPeople(persona.names, persona.anonymousCount, teamPanels.names);
 
     return (
         <div
@@ -290,18 +270,6 @@ function SecondaryItem({ persona }) {
                 />
             </div>
 
-            {namesText ? (
-                <div
-                    style={{
-                        fontFamily: 'var(--tof-font-body)',
-                        fontSize: 13,
-                        lineHeight: 1.5,
-                        color: 'var(--tof-text-soft)',
-                    }}
-                >
-                    {namesText}
-                </div>
-            ) : null}
         </div>
     );
 }
@@ -501,20 +469,3 @@ function MissingNote({ missing, isMobile }) {
     );
 }
 
-// =========================
-// HELPERS
-// =========================
-
-// Combineer namen met aantal anonieme respondenten. De opsomming en het
-// woord "anoniem" komen uit copy/<taal>/teamPanels.js (namespace `names`).
-// Voorbeelden (NL):
-//   ["Maria","Doris","Thomas"], 0 → "Maria, Doris en Thomas"
-//   ["Karel","Henk"], 1         → "Karel, Henk en 1 anoniem"
-//   [], 1                       → "1 anoniem"
-function formatPeople(names = [], anonymousCount = 0, copy) {
-    const parts = [...names];
-    if (anonymousCount > 0) {
-        parts.push(copy.anonymous(anonymousCount));
-    }
-    return copy.join(parts);
-}

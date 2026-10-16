@@ -35,8 +35,15 @@ import TeamQuickWins from '../team/components/TeamQuickWins';
 import { buildTeamAggregate } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
 import { useLang, useCopy } from '../i18n/LanguageContext';
-import { hasTeamLevel, LEVEL_DYNAMICS, isAdminAccess } from '../utils/access';
+import {
+    hasTeamLevel,
+    LEVEL_DYNAMICS,
+    isAdminAccess,
+    MIN_TEAM_RESPONSES,
+    countCompleteProfiles,
+} from '../utils/access';
 import { logPdfDownload } from '../supabase';
+import TeamGate from './TeamGate';
 
 // EXPERIMENTEEL — link naar het werkplekbehoefteprofiel, alleen als de flag aanstaat.
 import { WERKPLEKPROFIEL_ENABLED } from '../experimental/featureFlag';
@@ -170,6 +177,22 @@ export default function TeamDashboard({
 
     function handleTileClick(id) {
         setActiveId((prev) => (prev === id ? null : id));
+    }
+
+    // ── DREMPEL ──
+    // Onder vijf ingevulde werkstijlen geen teambeeld: in een kleiner team is
+    // een uitslag herleidbaar tot een persoon. Beheerders mogen wel door, zij
+    // zien de teams om de tool te kunnen bedienen.
+    const completeProfiles = countCompleteProfiles(teamResponses);
+    if (completeProfiles < MIN_TEAM_RESPONSES && !isAdminAccess()) {
+        return (
+            <TeamGate
+                copy={t.gate}
+                count={completeProfiles}
+                accent={ACCENT}
+                eyebrow={t.hero.eyebrow}
+            />
+        );
     }
 
     return (
@@ -449,13 +472,9 @@ function DynamicsBridge({ hasDynamicsAccess, setPage, t }) {
                 {t.locked.lead}
             </p>
 
+            {/* Geen ontgrendelknop meer: Teamdynamiek komt niet uit een code
+                maar uit de rol. Wie dit wil, voert een gesprek. */}
             <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
-                <PrimaryButton
-                    onClick={() => setPage('team')}
-                    style={{ background: 'var(--tof-accent-rose)' }}
-                >
-                    {t.locked.unlock}
-                </PrimaryButton>
                 <SecondaryButton
                     onClick={() =>
                         window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')

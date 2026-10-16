@@ -30,14 +30,21 @@ import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 import { useArchetypes } from '../i18n/archetypes';
 import { useCopy, useLang } from '../i18n/LanguageContext';
 import { getCopy } from '../i18n/copy';
-import { hasTeamLevel, LEVEL_DYNAMICS, isAdminAccess } from '../utils/access';
+import {
+    hasTeamLevel,
+    LEVEL_DYNAMICS,
+    isAdminAccess,
+    MIN_TEAM_RESPONSES,
+    countCompleteProfiles,
+} from '../utils/access';
+import TeamGate from './TeamGate';
 import {
     getDynamics,
     getMaturity,
     getSignatureLine,
 } from '../insights';
 import { logPdfDownload } from '../supabase';
-import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, getReliability, collectPersonaPeople, findMentionedPersona, formatPeople, describeAxis } from './teamDynamicsLogic';
+import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, getReliability, findMentionedPersona, describeAxis } from './teamDynamicsLogic';
 
 const ACCENT = MODULE.dynamics.accent;
 // =========================
@@ -141,7 +148,10 @@ export default function TeamDynamics({
                     titleAccentColor={ACCENT}
                     lead={t.noAccess.lead}
                     actions={
-                        <PrimaryButton onClick={() => setPage('team')}>
+                        <PrimaryButton
+                            onClick={() => setPage('teamdashboard')}
+                            style={{ background: 'var(--tof-accent-sage)' }}
+                        >
                             {t.noAccess.cta}
                         </PrimaryButton>
                     }
@@ -187,6 +197,28 @@ export default function TeamDynamics({
         );
     }
 
+    // ── DREMPEL ──────────────────────────────────────────────
+    // Onder vijf ingevulde werkstijlen geen teambeeld: in een kleiner team is
+    // een uitslag herleidbaar tot een persoon. Beheerders en het organisatie-
+    // overzicht (embedded/forceAccess) mogen door — dat laatste aggregeert
+    // over alle teams en is dus geen venster op één klein team.
+    const completeProfiles = countCompleteProfiles(teamResponses);
+    if (
+        completeProfiles < MIN_TEAM_RESPONSES
+        && !isAdminAccess()
+        && !forceAccess
+        && !embedded
+    ) {
+        return (
+            <TeamGate
+                copy={t.gate}
+                count={completeProfiles}
+                accent={ACCENT}
+                eyebrow={t.hero.eyebrow}
+            />
+        );
+    }
+
     // ── TEGELS ───────────────────────────────────────────────
     const TILES = [
         {
@@ -214,7 +246,6 @@ export default function TeamDynamics({
                 <CollaborationPanel
                     sorted={sorted}
                     totalScore={totalScore}
-                    teamResponses={teamResponses}
                 />
             ),
         },
@@ -699,17 +730,14 @@ function MissingPersonaRow({ name, description, color }) {
 // PANEL 2: SAMENWERKING
 // =========================
 
-function CollaborationPanel({ sorted, totalScore, teamResponses }) {
+function CollaborationPanel({ sorted, totalScore }) {
     const ARCHETYPES = useArchetypes();
     const { teamDynamics: t } = useCopy();
     const presentMap = {};
     sorted.forEach(([id, value]) => {
         if (value > 0) {
-            const people = collectPersonaPeople(teamResponses, id);
             presentMap[id] = {
                 percentage: totalScore > 0 ? Math.round((value / totalScore) * 100) : 0,
-                names: people.names,
-                anonymousCount: people.anonymousCount,
             };
         }
     });
@@ -825,15 +853,6 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
                 {archetype.name}
             </h3>
 
-            {(data.names.length > 0 || data.anonymousCount > 0) ? (
-                <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
-                    {t.collaboration.carriedBy}{' '}
-                    <strong style={{ color: 'var(--tof-text)' }}>
-                        {formatPeople(data.names, data.anonymousCount, lang)}
-                    </strong>
-                </p>
-            ) : null}
-
             {generalText ? (
                 <p style={{ ...TYPE.body, fontSize: 15, maxWidth: 720, margin: 0 }}>
                     {generalText}
@@ -855,11 +874,6 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
                         <div style={{ display: 'grid', gap: SPACING.xs }}>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
                                 {positiveText}
-                                {(positiveMatch.names.length > 0 || positiveMatch.anonymousCount > 0) ? (
-                                    <span style={{ color: 'var(--tof-text-muted)' }}>
-                                        {' '}— {formatPeople(positiveMatch.names, positiveMatch.anonymousCount, lang)}
-                                    </span>
-                                ) : null}
                             </p>
                             <p style={{ ...TYPE.body, fontSize: 13, margin: 0, color: 'var(--tof-text-soft)' }}>
                                 {capitalize(buildSynergyReason(archetype.id, positiveMatch.id, lang))}.
@@ -874,11 +888,6 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
                         <div style={{ display: 'grid', gap: SPACING.xs }}>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
                                 {tensionText}
-                                {(tensionMatch.names.length > 0 || tensionMatch.anonymousCount > 0) ? (
-                                    <span style={{ color: 'var(--tof-text-muted)' }}>
-                                        {' '}— {formatPeople(tensionMatch.names, tensionMatch.anonymousCount, lang)}
-                                    </span>
-                                ) : null}
                             </p>
                             <p style={{ ...TYPE.body, fontSize: 13, margin: 0, color: 'var(--tof-text-soft)' }}>
                                 {capitalize(buildAttentionReason(archetype.id, tensionMatch.id, lang))}.
@@ -928,11 +937,6 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                         {data.percentage}%
                     </span>
                 </div>
-                {(data.names.length > 0 || data.anonymousCount > 0) ? (
-                    <span style={{ fontSize: 13, color: 'var(--tof-text-soft)' }}>
-                        {formatPeople(data.names, data.anonymousCount, lang)}
-                    </span>
-                ) : null}
             </div>
 
             {/* STERK MET — label boven, uitleg eronder */}
@@ -946,11 +950,6 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                         }}
                     >
                         {t.collaboration.strongWith(positiveMatch.name.toLowerCase())}
-                        {(positiveMatch.names.length > 0 || positiveMatch.anonymousCount > 0) ? (
-                            <span style={{ color: 'var(--tof-text-muted)', fontWeight: 500, letterSpacing: 0 }}>
-                                {' · '}{formatPeople(positiveMatch.names, positiveMatch.anonymousCount, lang)}
-                            </span>
-                        ) : null}
                     </div>
                     <p style={{ ...TYPE.body, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
                         {capitalize(buildSynergyReason(archetype.id, positiveMatch.id, lang))}.
