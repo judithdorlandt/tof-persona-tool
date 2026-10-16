@@ -65,10 +65,15 @@ export function countCompleteProfiles(responses = []) {
 // wat de manager ziet, zien de teamleden ook. Een stand waarin alleen de
 // manager namen ziet bestaat bewust niet.
 //
-// Als dat ooit gebouwd wordt, hoort de schakelaar in de database en niet hier:
-// de RPC responses_for_code (supabase/006) doet `select r.*` en geeft `name`
-// dus mee aan iedereen met een geldige teamcode. Een vlag in localStorage zou
-// de weergave dichtzetten maar de netwerkrespons niet.
+// De schakelaar staat in de database en niet hier: `show_names` op
+// public.team_access_codes, standaard false (supabase/007). De RPC
+// responses_for_code geeft `name` alleen mee als die vlag aan staat, dus de
+// naam verlaat de server niet zolang er geen goedkeuring is. Een vlag in
+// localStorage zou de weergave dichtzetten maar de netwerkrespons niet.
+//
+// Wat nog NIET bestaat is de weergavekant: ook met show_names = true toont de
+// app geen namen, want buildTeamAggregate verzamelt ze niet. Dat is bewust —
+// de data is er dan wel, het beeld volgt pas als daar opdracht voor is.
 
 // =========================
 // DE ROL BEPAALT HET NIVEAU
