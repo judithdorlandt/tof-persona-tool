@@ -43,7 +43,7 @@ const teamIntro = {
     },
     bedrijf: {
       eyebrow: 'Module 3 · Voor directie & huisvesting',
-      title: 'Het Organisatie-landschap',
+      title: 'Het Organisatielandschap',
       hook: 'Eén team is een momentopname. Pas meerdere teams laten het patroon zien.',
       bullets: [
         'Alle teams naast elkaar: waar zit de dominante werkstijl, waar de uitzondering',
@@ -112,7 +112,7 @@ const teamIntro = {
     // Inzicht en Dynamiek zijn samen Module 2 geworden, dus "upgrade naar
     // Dynamiek" bestaat niet meer als los product. De volgende stap is Module 3.
     upgradeLead: 'Meerdere teams in beeld brengen?',
-    upgradeLink: 'Vraag naar het Organisatie-landschap →',
+    upgradeLink: 'Vraag naar het Organisatielandschap →',
     teamFallback: 'Team',
     levelDynamics: 'Teaminzicht + Dynamiek',
     levelInsight: 'Teaminzicht',

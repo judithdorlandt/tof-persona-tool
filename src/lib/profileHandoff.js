@@ -4,7 +4,7 @@
  * De app bewaart alles op het toestel en stuurt zelf niets (zie
  * native/localStore.js en het privacyscherm). Toch wil iemand met een teamcode
  * zijn beeld kunnen inbrengen, want zonder de individuele profielen bestaat er
- * geen teaminzicht en daarboven geen organisatie-landschap.
+ * geen teaminzicht en daarboven geen organisatielandschap.
  *
  * De app verstuurt daarom niet, maar overhandigt: ze bouwt een adres met het
  * profiel erin en opent dat in de systeembrowser. Op de website (Bijdragen.jsx)

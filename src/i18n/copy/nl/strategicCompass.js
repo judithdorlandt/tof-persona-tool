@@ -31,7 +31,7 @@ const strategicCompass = {
       },
       {
         label: 'Output',
-        cells: ['Teamdashboard', 'Organisatie-landschap', 'Strategisch richtingsdocument'],
+        cells: ['Teamdashboard', 'Organisatielandschap', 'Strategisch richtingsdocument'],
       },
       {
         label: 'Doelgroep',
@@ -177,7 +177,7 @@ const strategicCompass = {
       body: 'Teamdashboard. Persona-mix, spanningen, werkplek­behoefte en quick wins.',
     },
     {
-      num: 'Module 03 · Organisatie-landschap',
+      num: 'Module 03 · Organisatielandschap',
       title: 'Wat zie je over teams heen?',
       body: 'Alle teams naast elkaar, met duiding voor directie, HR en huisvesting.',
     },

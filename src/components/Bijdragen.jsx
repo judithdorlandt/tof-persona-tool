@@ -13,7 +13,7 @@
  *      saveResponse — dezelfde weg als een respondent op het web.
  *
  * Daarmee rolt een app-gebruiker automatisch mee in het teaminzicht en in het
- * organisatie-landschap, want die rekenen allebei op `invite_code` +
+ * organisatielandschap, want die rekenen allebei op `invite_code` +
  * `organization`. Er is dus niets nieuws nodig boven teamniveau.
  *
  * De code-controle loopt bewust via `validateTeamAccessCode` (team_access_codes)
