@@ -201,6 +201,7 @@ const native = {
         'This is who I am, but I am really curious about how we work as a team. Would it be an idea to do this together with the team?',
         '',
         'You can download the app as TOF Persona in the App Store.',
+        'How it works for a team is explained at www.persona-tool.nl/voor-je-team.',
         '',
         'Best,',
       ],
