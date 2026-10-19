@@ -43,7 +43,7 @@ export async function generateOrganisatieLandschapPDF({
     // en Duiding kunnen uitlopen naar vervolgpagina's wanneer de inhoud niet op
     // één pagina past). We platten ze hier en nummeren de footers dynamisch.
     const groups = [
-        buildCoverSVG({ data, copy, lang }),          // 1 — TOF cover voor Module 1
+        buildCoverSVG({ data, copy, lang }),          // 1 — TOF cover voor Module 3
         buildHeroSVG({ data, copy, lang }),           // kerncijfers
         buildHeatmapSVG({ data, copy, lang }),        // werkstijl per team
         buildPatronenSVG({ data, copy, lang }),       // patronen (1+ pagina's)

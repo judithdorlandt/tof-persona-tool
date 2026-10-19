@@ -17,7 +17,7 @@ export const COPY_EN = {
     dateLocale: 'en-GB',
 
     // Module label in the page header (pages 2–5) and on the cover.
-    moduleLabel: 'MODULE 1 · INSIGHTS',
+    moduleLabel: 'MODULE 3 · ORGANISATION LANDSCAPE',
 
     // File-name suffix
     fileSuffix: 'organisation landscape TOF',
@@ -26,7 +26,7 @@ export const COPY_EN = {
     brandCover: {
         title: 'The Office Factory',
         tagline: 'Insight into working style, team dynamics and workplace.',
-        eyebrow: 'MODULE 1 · INSIGHTS',
+        eyebrow: 'MODULE 3 · ORGANISATION LANDSCAPE',
         kicker: 'Organisation landscape',
         meta: (date, respondents, activeTeams, totalTeams) =>
             `${date}  ·  ${respondents} ${respondents === 1 ? 'respondent' : 'respondents'}  ·  ${activeTeams}/${totalTeams} teams with data`,

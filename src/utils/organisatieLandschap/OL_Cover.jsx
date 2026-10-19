@@ -1,12 +1,12 @@
 /**
- * OL_Cover.jsx — Pagina 1: TOF cover voor Module 1 · Insights.
+ * OL_Cover.jsx — Pagina 1: TOF cover voor Module 3 · Organisatielandschap.
  *
  * Verticale opbouw (optisch gecentreerd op de pagina):
  *   1. Logo (echt PNG via drawTOFMark, ~30mm)
  *   2. ~60pt witruimte
- *   3. MODULE 1 · INSIGHTS    — klein, uppercase, textMuted
+ *   3. MODULE 3 · ORGANISATIELANDSCHAP — klein, uppercase, textMuted
  *   4. 12pt
- *   5. Organisatie-landschap  — Playfair italic, secundair
+ *   5. Organisatielandschap   — Playfair italic, secundair
  *   6. 16pt
  *   7. Organisatienaam        — Playfair primair, groot
  *   8. 20pt
@@ -38,7 +38,7 @@ const SP = {
 // Type-groottes voor cover — v14: Playfair (heading) + Inter (label/meta).
 const SZ = {
     label: 2.82,         // 8pt — eyebrow (Inter SemiBold uppercase tracked)
-    sub: 6.35,           // 18pt — Organisatie-landschap (Playfair Italic)
+    sub: 6.35,           // 18pt — Organisatielandschap (Playfair Italic)
     title: 15.50,        // 44pt — organisatienaam (Playfair Regular)
     meta: 3.18,          // 9pt — datum-regel
     tagline: 3.18,       // 9pt — slot-signatuur (Inter Italic)
@@ -70,7 +70,7 @@ export function buildCoverSVG({ data, copy }) {
     // ── 1. Logo
     drawTOFMark(svg, cx - logoSize / 2, blockTop, logoSize);
 
-    // ── 3. MODULE 1 · INSIGHTS — Inter SemiBold tracked
+    // ── 3. MODULE 3 · ORGANISATIELANDSCHAP — Inter SemiBold tracked
     let baseline = blockTop + logoSize + SP.pt60 + SZ.label;
     svg.appendChild(text({
         x: cx, y: baseline,
@@ -79,7 +79,7 @@ export function buildCoverSVG({ data, copy }) {
         color: C.textMuted, letterSpacing: 0.45, anchor: 'middle',
     }));
 
-    // ── 5. Organisatie-landschap — Playfair Italic 18pt
+    // ── 5. Organisatielandschap — Playfair Italic 18pt
     baseline += SP.pt12 + SZ.sub;
     svg.appendChild(text({
         x: cx, y: baseline,

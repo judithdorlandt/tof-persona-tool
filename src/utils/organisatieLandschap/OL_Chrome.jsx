@@ -3,7 +3,7 @@
  *
  * Pagina 1 (cover) heeft eigen layout en gebruikt deze chrome niet.
  *
- * Header: "MODULE 1 · INSIGHTS" links, datum rechts, daaronder paginatitel.
+ * Header: "MODULE 3 · ORGANISATIELANDSCHAP" (EN: ORGANISATION LANDSCAPE) links, datum rechts, daaronder paginatitel.
  * Footer: TOF-logo (PNG via drawTOFMark) + brand-tekst links, paginanummer rechts.
  *
  * Lost op: visueel rust en herhaalbare structuur — bestuurder herkent

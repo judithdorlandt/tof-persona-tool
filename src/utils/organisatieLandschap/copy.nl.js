@@ -15,11 +15,11 @@
 export const COPY_NL = {
     // ── Gedeeld
     brand: 'TOF · The Office Factory',
-    pillLabel: 'ORGANISATIE-LANDSCHAP',
+    pillLabel: 'ORGANISATIELANDSCHAP',
     dateLocale: 'nl-NL',
 
     // Module-label in de paginakop (pagina 2–5) en op de cover.
-    moduleLabel: 'MODULE 1 · INSIGHTS',
+    moduleLabel: 'MODULE 3 · ORGANISATIELANDSCHAP',
 
     // Bestand-suffix
     fileSuffix: 'organisatie-landschap TOF',
@@ -28,8 +28,8 @@ export const COPY_NL = {
     brandCover: {
         title: 'The Office Factory',
         tagline: 'Inzicht in werkstijl, teamdynamiek en werkplek.',
-        eyebrow: 'MODULE 1 · INSIGHTS',
-        kicker: 'Organisatie-landschap',
+        eyebrow: 'MODULE 3 · ORGANISATIELANDSCHAP',
+        kicker: 'Organisatielandschap',
         meta: (date, respondents, activeTeams, totalTeams) =>
             `${date}  ·  ${respondents} ${respondents === 1 ? 'respondent' : 'respondenten'}  ·  ${activeTeams}/${totalTeams} teams met data`,
     },
@@ -40,9 +40,9 @@ export const COPY_NL = {
         leadEyebrow: 'WAT ZIE JE',
     },
 
-    // ── Pagina 2 — Organisatie-landschap cover & samenvatting
+    // ── Pagina 2 — Organisatielandschap cover & samenvatting
     cover: {
-        eyebrow: 'ORGANISATIE-LANDSCHAP',
+        eyebrow: 'ORGANISATIELANDSCHAP',
         kicker: 'Rapport',
         titlePrefix: '',
         subtitle: 'Werkstijlen, patronen en richting',
