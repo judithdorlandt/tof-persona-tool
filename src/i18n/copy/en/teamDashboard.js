@@ -77,7 +77,7 @@ const teamDashboard = {
       titleBefore: 'Team Dynamics shows you',
       titleEmphasis: 'why',
       titleAfter: 'these patterns appear.',
-      lead: 'Tensions between working styles, what they mean for leadership, and the choice between pace and reflection — in one deeper dashboard for whoever leads the team, talked through in a session.',
+      lead: 'Tensions between working styles, what they mean for leadership, and the choice between pace and reflection — in one deeper dashboard for whoever leads the team.',
       plan: 'Book a conversation',
     },
   },

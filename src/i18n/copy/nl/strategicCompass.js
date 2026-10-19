@@ -31,7 +31,7 @@ const strategicCompass = {
       },
       {
         label: 'Output',
-        cells: ['Teamdashboard + sessie', 'Organisatie-landschap', 'Strategisch richtingsdocument'],
+        cells: ['Teamdashboard', 'Organisatie-landschap', 'Strategisch richtingsdocument'],
       },
       {
         label: 'Doelgroep',
@@ -174,7 +174,7 @@ const strategicCompass = {
     {
       num: 'Module 02 · Teaminzicht & Dynamiek',
       title: 'Hoe werken jullie samen?',
-      body: 'Teamdashboard plus de sessie. Persona-mix, spanningen, werkplek­behoefte en quick wins.',
+      body: 'Teamdashboard. Persona-mix, spanningen, werkplek­behoefte en quick wins.',
     },
     {
       num: 'Module 03 · Organisatie-landschap',

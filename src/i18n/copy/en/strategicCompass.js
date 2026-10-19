@@ -31,7 +31,7 @@ const strategicCompass = {
       },
       {
         label: 'Output',
-        cells: ['Team dashboard + session', 'Organisation landscape', 'Strategic direction document'],
+        cells: ['Team dashboard', 'Organisation landscape', 'Strategic direction document'],
       },
       {
         label: 'Audience',
@@ -174,7 +174,7 @@ const strategicCompass = {
     {
       num: 'Module 02 · Team Insight & Dynamics',
       title: 'How do you work together?',
-      body: 'Team dashboard plus the session. Persona mix, tensions, workplace needs and quick wins.',
+      body: 'Team dashboard. Persona mix, tensions, workplace needs and quick wins.',
     },
     {
       num: 'Module 03 · Organisation landscape',

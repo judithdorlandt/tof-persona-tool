@@ -92,7 +92,7 @@ const teamDashboard = {
       titleBefore: 'Teamdynamiek laat zien',
       titleEmphasis: 'waarom',
       titleAfter: 'deze patronen ontstaan.',
-      lead: 'Spanningsvelden tussen werkstijlen, leiderschapsimplicaties en de keuze tussen tempo en reflectie — in één verdiept dashboard voor wie het team leidt, toegelicht in een sessie.',
+      lead: 'Spanningsvelden tussen werkstijlen, leiderschapsimplicaties en de keuze tussen tempo en reflectie — in één verdiept dashboard voor wie het team leidt.',
       plan: 'Plan een gesprek',
     },
   },
