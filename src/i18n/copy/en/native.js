@@ -216,7 +216,7 @@ const native = {
     // itself, with /contribute, the team space and the questionnaire. Adding a
     // profile has to go to `appUrl`; the story site has no /contribute and
     // would drop you on its front page.
-    appUrl: 'https://tof-persona-tool.netlify.app',
+    appUrl: 'https://team.persona-tool.nl',
   },
   history: {
     eyebrow: 'On this device',

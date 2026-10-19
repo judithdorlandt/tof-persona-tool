@@ -220,7 +220,7 @@ const native = {
     // webapp zelf, met /bijdragen, de teamomgeving en de vragenlijst. Het
     // profiel inbrengen moet naar `appUrl`; op de verhaalsite bestaat
     // /bijdragen niet en land je op de voorpagina.
-    appUrl: 'https://tof-persona-tool.netlify.app',
+    appUrl: 'https://team.persona-tool.nl',
   },
   history: {
     eyebrow: 'Op dit toestel',

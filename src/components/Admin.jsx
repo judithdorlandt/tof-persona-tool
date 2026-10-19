@@ -733,7 +733,7 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
     // zodat de quiz die automatisch herkent en voorvult. Teamleden hoeven
     // niets meer over te typen.
     const quizUrl =
-        `https://tof-persona-tool.netlify.app/quiz` +
+        `https://team.persona-tool.nl/quiz` +
         `?org=${encodeURIComponent(info.organization || '')}` +
         `&code=${encodeURIComponent(info.code || '')}`;
 
@@ -863,7 +863,7 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
 // user_metadata.invite_kind = 'individual', waardoor AuthCallback hem na het
 // inloggen direct de quiz in stuurt.
 
-const TESTER_LOGIN_URL = 'https://tof-persona-tool.netlify.app/start';
+const TESTER_LOGIN_URL = 'https://team.persona-tool.nl/start';
 const INVITE_COOLDOWN_SECONDS = 60;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
