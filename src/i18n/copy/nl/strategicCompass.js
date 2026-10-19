@@ -8,7 +8,7 @@ const strategicCompass = {
     titleTail: '.',
     sub: "Voor MT, bestuur en huisvesting. Externe trends gekoppeld aan jouw team-persona's — een kompas voor de komende drie tot vijf jaar.",
     cta: 'Ontdek de aanpak',
-    meta: '3–5 JAAR · TRAJECT VAN 4 MAANDEN · €20.000',
+    meta: '3–5 JAAR · TRAJECT VAN 4 MAANDEN',
   },
 
   why: {

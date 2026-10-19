@@ -8,7 +8,7 @@ const strategicCompass = {
     titleTail: '.',
     sub: 'For management teams, boards and workplace leads. External trends connected to your team personas — a compass for the next three to five years.',
     cta: 'Explore the approach',
-    meta: '3–5 YEARS · FOUR-MONTH PROGRAMME · €20.000',
+    meta: '3–5 YEARS · FOUR-MONTH PROGRAMME',
   },
 
   why: {
