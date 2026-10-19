@@ -62,6 +62,15 @@ export function setupTofFonts(pdf) {
   pdf.addFont('PlayfairDisplay-Regular.ttf', FONT_HEAD, 'normal');
   pdf.addFileToVFS('PlayfairDisplay-Italic.ttf', PLAYFAIR_ITALIC);
   pdf.addFont('PlayfairDisplay-Italic.ttf', FONT_HEAD, 'italic');
+
+  // svg2pdf vraagt bij font-weight 500/600 om de stijl '500normal' /
+  // '600normal'. Zonder die registratie valt de tekst stil terug op Times.
+  // Toewijzing zoals CSS doet bij een ontbrekend gewicht: 500 → Regular,
+  // 600 → SemiBold.
+  pdf.addFont('Inter-Regular.ttf', FONT_BODY, '500normal');
+  pdf.addFont('Inter-SemiBold.ttf', FONT_BODY, '600normal');
+  pdf.addFont('PlayfairDisplay-Regular.ttf', FONT_HEAD, '500normal');
+  pdf.addFont('PlayfairDisplay-Italic.ttf', FONT_HEAD, '500italic');
 }
 
 /**

@@ -289,22 +289,23 @@ function drawMeasurementBlock(svg, y, data, copy, lang) {
 
         // Persona-kleur als kleine identifier-stip.
         svg.appendChild(circle(rowX + 1.3, rowY - 1.1, 1.3, PERSONA_COLORS[id] || SAGE));
-        // Naam (bold) + omschrijving op één regel.
+        // Naam (bold) + omschrijving op één regel. Eén <text> met een
+        // <tspan>, zodat svg2pdf de omschrijving direct achter de naam zet
+        // op basis van de echte fontmaten — een geschatte naambreedte klopte
+        // nooit voor alle namen.
         const personaName = getArchetypeName(id, lang);
-        svg.appendChild(text({
+        const row = text({
             x: rowX + 4.5, y: rowY,
             content: personaName,
             font: 'Inter', weight: 600, size: 3.3, color: C.text,
-        }));
-        svg.appendChild(text({
-            x: rowX + 4.5 + nameWidth(personaName, 3.3) + 1.5, y: rowY,
-            content: '— ' + m.legend[id],
-            font: 'Inter', weight: 400, size: 3.2, color: C.textSoft,
-        }));
+        });
+        const desc = document.createElementNS(row.namespaceURI, 'tspan');
+        desc.setAttribute('dx', 1.5);
+        desc.setAttribute('font-weight', 400);
+        desc.setAttribute('font-size', 3.2);
+        desc.setAttribute('fill', C.textSoft);
+        desc.textContent = '— ' + m.legend[id];
+        row.appendChild(desc);
+        svg.appendChild(row);
     });
-}
-
-// Ruwe breedte-schatting voor inline plaatsing van de omschrijving na de naam.
-function nameWidth(str, size) {
-    return String(str).length * size * 0.52;
 }
