@@ -11,7 +11,6 @@ import landing from './landing';
 import library from './library';
 import nativeCopy from './native';
 import nav from './nav';
-import pricing from './pricing';
 import quiz from './quiz';
 import quizData from './quizData';
 import resultsCard from './resultsCard';
@@ -41,7 +40,6 @@ const nl = {
   library,
   native: nativeCopy,
   nav,
-  pricing,
   quiz,
   quizData,
   resultsCard,

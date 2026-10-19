@@ -47,15 +47,14 @@ export default function Landing() {
 2. `Intro.jsx` — kort, simpele structuur
 3. `Login.jsx` — geïsoleerd
 4. `Nav.jsx` — wordt op elke pagina geladen, snelle winst
-5. `Pricing.jsx`
-6. `Quiz.jsx`
-7. `Home.jsx`
-8. `TeamSelector.jsx`
-9. `TeamIntro.jsx`
-10. `TeamDashboard.jsx`
-11. `Library.jsx`
-12. `Results.jsx`        ⚠️ groot — opsplitsen in sub-componenten eerst
-13. `TeamDynamics.jsx`   ⚠️ groot — opsplitsen in sub-componenten eerst
+5. `Quiz.jsx`
+6. `Home.jsx`
+7. `TeamSelector.jsx`
+8. `TeamIntro.jsx`
+9. `TeamDashboard.jsx`
+10. `Library.jsx`
+11. `Results.jsx`        ⚠️ groot — opsplitsen in sub-componenten eerst
+12. `TeamDynamics.jsx`   ⚠️ groot — opsplitsen in sub-componenten eerst
 
 ## Naming convention
 
