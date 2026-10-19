@@ -28,9 +28,9 @@ const teamIntro = {
         'Discover where the energy sits — and where friction appears',
         'Understand why pace, structure and decision-making collide',
         'Workplace needs and concrete quick wins for every team',
-        'A live session where we read it together — online or on site',
+        'Optionally, a guided session where we read it together — online or on site',
       ],
-      what: 'One team dashboard plus the session where the conversation happens. Insight and interpretation belong together, so you no longer buy them separately.',
+      what: 'Team Insight for the whole team, and Team Dynamics for whoever leads it. If you want to read it together, a guided session is available. You book it separately.',
       cta: 'Go to the Team space',
     },
     bedrijf: {

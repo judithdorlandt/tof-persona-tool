@@ -36,9 +36,9 @@ const teamIntro = {
         'Ontdek waar energie zit — en waar wrijving ontstaat',
         'Begrijp waarom tempo, structuur en besluitvorming botsen',
         'Werkplekbehoefte en concrete quick wins per team',
-        'Live sessie waarin we het samen lezen — online of op locatie',
+        'Desgewenst een begeleide sessie waarin we het samen lezen — online of op locatie',
       ],
-      what: 'Eén teamdashboard plus de sessie waarin het gesprek ontstaat. Inzicht en duiding horen bij elkaar, dus je koopt ze niet meer apart.',
+      what: 'Teaminzicht voor het hele team, en Teamdynamiek voor wie het team leidt. Wil je het samen lezen, dan kan dat in een begeleide sessie. Die boek je los.',
       cta: 'Naar de teamomgeving',
     },
     bedrijf: {
