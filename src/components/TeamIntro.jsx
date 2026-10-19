@@ -74,9 +74,6 @@ const MODULE_STRUCTURE = [
         soft: '#EDE5D8',
         ctaType: 'page',
         ctaPage: 'strategischkompas',
-        // Live demo — beschikbaar als secundaire link voor wie eerst wil zien.
-        // (Render als 'of bekijk de demo →' onder de primaire CTA wanneer gewenst.)
-        demoHref: 'https://tof-persona-demo.netlify.app/#kompas',
     },
 ];
 
