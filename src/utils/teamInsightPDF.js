@@ -26,13 +26,23 @@ import { WERKPLEKPROFIEL_ENABLED } from '../experimental/featureFlag';
 import { getArchetypeName } from './organisatieLandschap/constants';
 import { WORKPLACE_LABELS_EN } from './organisatieLandschap/copy.en';
 
-// De PDF-werkplekbehoefte gebruikt labels die exact matchen met WERKPLEKTYPEN
-// (Concentratieplekken, Standaard werkplekken, ...). Zo koppelen we per label
-// de bijbehorende voorbeeldplekken.
-const VOORBEELDPLEKKEN_BY_LABEL = WERKPLEKTYPEN.reduce((acc, t) => {
-    acc[t.label] = t.voorbeeldplekken;
+import { getCopy } from '../i18n/copy';
+
+// De aggregatie levert vaste Nederlandse labels die exact matchen met
+// WERKPLEKTYPEN (Concentratieplekken, Standaard werkplekken, ...). Via dat
+// label vinden we het type-id, en daarmee de voorbeeldplekken in de juiste taal.
+const WERKPLEKTYPE_ID_BY_LABEL = WERKPLEKTYPEN.reduce((acc, t) => {
+    acc[t.label] = t.id;
     return acc;
 }, {});
+
+function voorbeeldplekkenFor(label, lang) {
+    const id = WERKPLEKTYPE_ID_BY_LABEL[label];
+    if (!id) return null;
+    return getCopy(lang).workplaceProfile?.types?.[id]?.voorbeeldplekken
+        || WERKPLEKTYPEN.find((t) => t.id === id)?.voorbeeldplekken
+        || null;
+}
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -309,7 +319,7 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
     y += 10;
     y = drawAchterkantTitle({ svg, y, mode, c });
     y += 8;
-    y = drawWorkplaceCompact({ svg, y, aggregate, c });
+    y = drawWorkplaceCompact({ svg, y, aggregate, c, lang });
     y += 8;
     y = drawDivider({ svg, y });
     y += 8;
@@ -707,7 +717,7 @@ function drawFooterHint({ svg, c = getInsightCopy('nl') }) {
 // SECTIES — ACHTERKANT
 // =========================
 
-function drawAchterkantHeader({ svg, y }) {
+function drawAchterkantHeader({ svg, y, c = INSIGHT_COPY.nl }) {
     const pillW = 120;
     const pillH = 12;
 
@@ -721,7 +731,7 @@ function drawAchterkantHeader({ svg, y }) {
     svg.appendChild(createText({
         x: MARGIN + 11,
         y: y + pillH / 2 + 2,
-        text: 'JOUW IDEALE WERKPLEKMIX',
+        text: c.workplacePill,
         font: 'Inter',
         weight: 700,
         size: 5.2,
@@ -748,7 +758,7 @@ function drawAchterkantTitle({ svg, y, mode = 'team', c = INSIGHT_COPY.nl }) {
     return titleY;
 }
 
-function drawWorkplaceCompact({ svg, y, aggregate }) {
+function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = 'nl' }) {
     const items = (aggregate?.sortedWorkplaceNeeds || []).slice();
     if (items.length === 0) return y;
 
@@ -764,7 +774,7 @@ function drawWorkplaceCompact({ svg, y, aggregate }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 8,
-        text: 'WERKPLEKBEHOEFTE',
+        text: c.workplaceEyebrow,
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -794,7 +804,7 @@ function drawWorkplaceCompact({ svg, y, aggregate }) {
             svg.appendChild(createText({
                 x: x,
                 y: lineY,
-                text: item.label,
+                text: c.workplaceLabel(item.label),
                 font: 'Inter',
                 weight: 500,
                 size: 5.6,
@@ -826,7 +836,7 @@ function drawWorkplaceCompact({ svg, y, aggregate }) {
             // flag. Volledig uitgeschreven; past het niet op één regel, dan zakt
             // het netjes naar de volgende regel (geen afkapping).
             const plekken = WERKPLEKPROFIEL_ENABLED
-                ? VOORBEELDPLEKKEN_BY_LABEL[item.label]
+                ? voorbeeldplekkenFor(item.label, lang)
                 : null;
             if (plekken && plekken.length > 0) {
                 const txt = plekken.slice(0, 3).join(' · ');
@@ -859,29 +869,20 @@ function drawWorkplaceCompact({ svg, y, aggregate }) {
     return Math.max(leftEnd, rightEnd);
 }
 
-function drawQuickWinsCompact({ svg, y, insights }) {
+function drawQuickWinsCompact({ svg, y, insights, c = INSIGHT_COPY.nl }) {
     const wins = insights?.quickWins || [];
     if (wins.length === 0) return y;
 
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 8,
-        text: `${wins.length === 1 ? 'EÉN ACTIE' : wins.length + ' ACTIES'} VOOR MORGEN`,
+        text: c.actionsEyebrow(wins.length),
         font: 'Inter',
         weight: 700,
         size: 4.8,
         color: COLOR.textMuted,
         letterSpacing: 0.8,
     }));
-
-    const SOURCE_LABELS = {
-        werkstijlen: 'WAT DE WERKSTIJLEN VRAGEN',
-        werkplek: 'WAT DE WERKPLEK VRAAGT',
-        spanning: 'WAAR VRAAG EN AANBOD SCHUREN',
-        minderheid: 'VOOR DE KLEINE GROEPEN',
-        ontbrekend: 'WELKE WERKSTIJL ONTBREEKT',
-        reflectie: 'ZELF AAN DE SLAG',
-    };
 
     let lineY = y + 16;
     const numberColW = 16;
@@ -891,7 +892,7 @@ function drawQuickWinsCompact({ svg, y, insights }) {
         const item = typeof win === 'string'
             ? { source: 'reflectie', action: win }
             : win;
-        const label = SOURCE_LABELS[item.source] || 'REFLECTIE';
+        const label = c.sourceLabels[item.source] || c.sourceFallback;
 
         svg.appendChild(createText({
             x: MARGIN,
