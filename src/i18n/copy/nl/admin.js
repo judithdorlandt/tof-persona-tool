@@ -70,7 +70,7 @@ const admin = {
       dynamics: 'Teaminzicht + Dynamiek',
     },
     leaderEmailLabel: 'Leider e-mail (optioneel)',
-    leaderEmailPlaceholder: 'l.janssen@nijkerk.nl',
+    leaderEmailPlaceholder: 'naam@organisatie.nl',
     submit: 'Team aanmaken',
     submitting: 'Aanmaken…',
     hint: 'Code wordt automatisch gegenereerd.',
@@ -94,32 +94,73 @@ const admin = {
     toggleMail: 'Kant-en-klare welkomstmail tonen ↓',
     copyMail: 'Kopieer mail-tekst',
     copied: '✓ Gekopieerd',
-    /** Voorbeeldnaam als er geen leider-e-mailadres is ingevuld. */
-    fallbackRecipient: 'Livia',
-    mailBody: ({ recipient, code, quizUrl }) => `Beste ${recipient},
+    /** Plaatshouder als er geen leider-e-mailadres is ingevuld. */
+    fallbackRecipient: '[voornaam]',
+    /**
+     * De leveringsmail (marketingrepo, content/klantreis-teamcode.md §3c).
+     * Code, teamlink, teamnaam en e-mailadres van de manager vult de app in;
+     * inkoopordernummer en sessie vult Judith zelf in vóór verzending.
+     */
+    mailBody: ({ recipient, code, quizUrl, team, managerEmail }) => `Beste ${recipient},
 
-Fijn dat we deze stap samen zetten. Hieronder alles wat je nodig hebt om jouw team aan de slag te laten gaan.
+Hierbij de teamcode voor ${team}. Je team kan vandaag beginnen.
 
-JULLIE TEAMCODE
-${code}
+Teamcode: ${code}
 
-Deze code zit al verwerkt in de link hieronder, zodat de tool de antwoorden automatisch aan jullie team koppelt.
 
-WAT JE TEAMLEDEN DOEN (5 minuten per persoon)
-1. Open de persoonlijke teamlink: ${quizUrl}
-2. Organisatie, afdeling en teamcode staan al ingevuld — alleen voornaam toevoegen
-3. Vul de vragenlijst in — negen vragen
-4. Ze krijgen direct hun persoonlijke persona als resultaat
+VOOR JE TEAM
 
-WAT JIJ ALS LEIDINGGEVENDE STRAKS DOET
-Zodra iedereen heeft ingevuld krijg je van mij een persoonlijke link om het team-resultaat in te zien.
+Stuur je team deze link:
+${quizUrl}
 
-Vragen? Bel of mail gerust.
+De organisatie en de teamcode staan daar al in. Stuur de link door, niet
+alleen de code: zonder de link kan het team zijn team niet kiezen.
+
+Iedereen beantwoordt negen vragen, ongeveer vijf minuten, en ziet daarna
+meteen het eigen profiel. Daarna is er een verdieping van drie minuten; die
+is niet verplicht. Een voornaam invullen mag, maar hoeft niet: zonder naam
+telt iemand gewoon mee in het teambeeld.
+
+Het teambeeld bekijk je op team.persona-tool.nl/team, met de teamcode.
+
+
+VOOR JOU ALS LEIDINGGEVENDE
+
+Je hebt een eigen inlog voor Teamdynamiek: wat deze samenstelling van
+leiderschap vraagt. Die zit niet in de teamcode, zodat de code door het team
+kan gaan zonder dat dit deel meegaat.
+
+1. Ga naar team.persona-tool.nl/login
+2. Vul ${managerEmail || '[e-mailadres leidinggevende]'} in
+3. Je krijgt een inloglink per mail; die is een uur geldig
+
+Vul de vragenlijst zelf ook in, via de teamlink. Dan tel je mee in het beeld.
+
+
+WANNEER JE IETS ZIET
+
+Het teambeeld en Teamdynamiek verschijnen zodra vijf profielen zijn
+ingevuld. Daaronder blijft het scherm leeg: in een kleinere groep is te
+makkelijk te herleiden wie wat heeft geantwoord. Dat geldt ook voor jou als
+leidinggevende.
+
+
+DE FACTUUR
+
+De factuur krijg je apart per mail[, met inkoopordernummer …].
+
+[Bij een begeleide sessie: "Je gaf aan dat je een begeleide sessie wilt.
+Ik neem contact met je op om een datum te kiezen; die sessie factureer ik
+apart."]
+[Bij "weet ik nog niet": "Wil je het teambeeld samen met je team lezen,
+in een begeleide sessie? Antwoord dan op deze mail."]
+
+Vragen? Antwoord gerust op deze mail.
 
 Hartelijke groet,
-Judith
+Judith Dorlandt
 The Office Factory
-+31 6 8389 4556 · judith@tof.services`,
++31 6 8389 4556`,
   },
 
   /** Individuele tester uitnodigen — los van teams en codes. */

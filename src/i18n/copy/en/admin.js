@@ -59,7 +59,7 @@ const admin = {
       dynamics: 'Team Insight + Dynamics',
     },
     leaderEmailLabel: 'Team leader email (optional)',
-    leaderEmailPlaceholder: 'l.janssen@nijkerk.nl',
+    leaderEmailPlaceholder: 'name@organisation.com',
     submit: 'Create team',
     submitting: 'Creating…',
     hint: 'The code is generated automatically.',
@@ -82,32 +82,74 @@ const admin = {
     toggleMail: 'Show the ready-to-send welcome email ↓',
     copyMail: 'Copy email text',
     copied: '✓ Copied',
-    /** Example name shown when no team leader email was entered. */
-    fallbackRecipient: 'Livia',
-    mailBody: ({ recipient, code, quizUrl }) => `Dear ${recipient},
+    /** Placeholder shown when no team leader email was entered. */
+    fallbackRecipient: '[first name]',
+    /**
+     * The delivery email (marketing repo, content/klantreis-teamcode.md §3c).
+     * The app fills in code, team link, team name and the manager's email;
+     * Judith fills in the purchase order number and session before sending.
+     */
+    mailBody: ({ recipient, code, quizUrl, team, managerEmail }) => `Dear ${recipient},
 
-I'm glad we're taking this step together. Below is everything you need to get your team started.
+Here is the team code for ${team}. Your team can start today.
 
-YOUR TEAM CODE
-${code}
+Team code: ${code}
 
-This code is already built into the link below, so the tool automatically links the answers to your team.
 
-WHAT YOUR TEAM MEMBERS DO (5 minutes each)
-1. Open your team's personal link: ${quizUrl}
-2. Organisation, department and team code are already filled in — they only add their first name
-3. Complete the questionnaire — nine questions
-4. They see their own personal persona straight away
+FOR YOUR TEAM
 
-WHAT YOU WILL DO AS THEIR LEADER
-Once everyone has taken part, I'll send you a personal link to view the team result.
+Send your team this link:
+${quizUrl}
 
-Any questions? Call or email me any time.
+The organisation and team code are already in it. Pass on the link, not just
+the code: without the link, people can't select their team.
 
-Warm regards,
-Judith
+Everyone answers nine questions, about five minutes, and sees their own
+profile straight away. After that there's an optional deeper section of
+three minutes. Entering a first name is optional: without one, people still
+count in the team picture.
+
+You can view the team picture at team.persona-tool.nl/team, with the team
+code.
+
+
+FOR YOU AS TEAM LEAD
+
+You have your own login for Team dynamics: what this mix of people asks of
+leadership. It isn't part of the team code, so the code can go round the
+team without that part going with it.
+
+1. Go to team.persona-tool.nl/login
+2. Enter ${managerEmail || '[team lead email]'}
+3. You'll receive a login link by email; it is valid for one hour
+
+Fill in the questionnaire yourself as well, via the team link. Then you count
+in the picture too.
+
+
+WHEN YOU'LL SEE SOMETHING
+
+The team picture and Team dynamics appear once five profiles are complete.
+Below that the screen stays empty: in a smaller group it's too easy to trace
+who answered what. That applies to you as team lead as well.
+
+
+THE INVOICE
+
+You'll receive the invoice separately by email[, with purchase order number
+…].
+
+[With a guided session: "You indicated you'd like a guided session. I'll be
+in touch to agree a date; I'll invoice that session separately."]
+[With "not sure yet": "Would you like to read the team picture together with
+your team, in a guided session? Just reply to this email."]
+
+Any questions? Just reply to this email.
+
+Kind regards,
+Judith Dorlandt
 The Office Factory
-+31 6 8389 4556 · judith@tof.services`,
++31 6 8389 4556`,
   },
 
   inviteTester: {

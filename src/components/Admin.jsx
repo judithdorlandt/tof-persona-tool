@@ -741,6 +741,8 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
         recipient: capitalize(recipientName),
         code: info.code,
         quizUrl,
+        team: info.team,
+        managerEmail: info.leaderEmail,
     });
 
     function handleCopy() {
