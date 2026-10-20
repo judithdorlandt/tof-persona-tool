@@ -58,7 +58,7 @@ const admin = {
   createTeam: {
     eyebrow: 'Nieuwe klant aanmaken',
     organizationLabel: 'Organisatie',
-    organizationPlaceholder: 'Bv. Gemeente Nijkerk',
+    organizationPlaceholder: 'Bv. Gemeente Voorbeeldstad',
     teamLabel: 'Team / Afdeling',
     teamPlaceholder: 'Bv. Bestuurszaken',
     // Inzicht en Dynamiek zijn samen Module 2 geworden. Ze blijven twee
@@ -269,7 +269,7 @@ The Office Factory
     eyebrow: 'Managers — directe team-toegang via email',
     lead: 'Koppel een manager-email aan een team-code. Bij hun eerste magic-link login zien ze het team(s) automatisch in hun toegangs-overzicht — zonder code in te voeren.',
     emailLabel: 'Email manager',
-    emailPlaceholder: 'a.kempeneers@nijkerk.eu',
+    emailPlaceholder: 'naam@organisatie.nl',
     codeLabel: 'Team-code',
     codePlaceholder: '— kies een team —',
     teamWithoutName: '(zonder naam)',

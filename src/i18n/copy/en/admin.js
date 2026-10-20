@@ -50,7 +50,7 @@ const admin = {
   createTeam: {
     eyebrow: 'Add a new client',
     organizationLabel: 'Organisation',
-    organizationPlaceholder: 'E.g. Nijkerk Council',
+    organizationPlaceholder: 'E.g. Sample Council',
     teamLabel: 'Team / Department',
     teamPlaceholder: 'E.g. Corporate Affairs',
     moduleLabel: 'Access level',
@@ -252,7 +252,7 @@ The Office Factory
     eyebrow: 'Managers — direct team access by email',
     lead: 'Link a manager email to a team code. From their first magic-link sign-in they see their team or teams in their access overview automatically — no code to type in.',
     emailLabel: 'Manager email',
-    emailPlaceholder: 'a.kempeneers@nijkerk.eu',
+    emailPlaceholder: 'name@organisation.com',
     codeLabel: 'Team code',
     codePlaceholder: '— choose a team —',
     teamWithoutName: '(no name)',
