@@ -132,7 +132,7 @@ kan gaan zonder dat dit deel meegaat.
 
 1. Ga naar team.persona-tool.nl/login
 2. Vul ${managerEmail || '[e-mailadres leidinggevende]'} in
-3. Je krijgt een inloglink per mail; die is een uur geldig
+3. Je krijgt een inloglink per mail
 
 Vul de vragenlijst zelf ook in, via de teamlink. Dan tel je mee in het beeld.
 

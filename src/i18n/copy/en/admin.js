@@ -121,7 +121,7 @@ team without that part going with it.
 
 1. Go to team.persona-tool.nl/login
 2. Enter ${managerEmail || '[team lead email]'}
-3. You'll receive a login link by email; it is valid for one hour
+3. You'll receive a login link by email
 
 Fill in the questionnaire yourself as well, via the team link. Then you count
 in the picture too.
