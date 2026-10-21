@@ -1,9 +1,9 @@
 const home = {
   eyebrow: 'TOF Persona Team',
   heroTitle: 'Je profiel maak je in de app.',
-  heroTitleAccent: 'Je team zie je hier.',
+  heroTitleAccent: 'Hier komt je team samen.',
   heroLead:
-    'Ieder teamlid doet de test in de app TOF Persona. Hier lees je wat die profielen samen zeggen: welke werkstijlen je team heeft, waar energie zit en waar het schuurt. Zonder namen, en pas vanaf vijf profielen.',
+    'Ieder teamlid doet de test in de app TOF Persona. Hier lees je wat die profielen samen zeggen: welke werkstijlen je team heeft, waar energie zit en waar het schuurt.',
 
   // Opent het codevenster.
   ctaTeamEnvironment: 'Ik heb een toegangscode',
