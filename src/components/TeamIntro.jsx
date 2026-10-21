@@ -1,11 +1,10 @@
 /**
- * TeamIntro.jsx — Verkoopintro voor de drie modules
+ * TeamIntro.jsx — de toegang tot de teamomgeving (/team)
  *
- * UX-patroon: identiek aan Library/persona-kaarten.
- * - Één kaart open tegelijk
- * - Andere kaarten dimmen
- * - Korte, scherpe verkooptekst — geen lange lappen
- * - Elke kaart heeft een eigen accent en eigen CTA
+ * Sinds 21 okt 2026 alleen nog toegang: teamcode invoeren, inloggen als
+ * leidinggevende, en de welkom voor wie al teams heeft. De verkoopintro met
+ * de module-kaarten is weg — uitleg en aanvraag staan op
+ * www.persona-tool.nl/voor-je-team (advies TOF-marketingteam).
  *
  * ACCESS MODEL (stap 3):
  * - Code-validatie loopt voor beide modules via validateTeamAccessCode.
@@ -16,7 +15,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { APP_IN_STORE } from '../config/appStore';
 import {
     isMakerAccess,
     isAdminAccess,
@@ -47,44 +45,15 @@ import {
 } from '../ui/AppShell';
 import { useCopy } from '../i18n/LanguageContext';
 
-// ─── MODULE-STRUCTUUR ──────────────────────────────────────────────────────────
-// Alleen structuur (ids, kleuren, CTA-gedrag). De teksten komen uit
-// copy/<taal>/teamIntro.js, gekoppeld op `id`.
-
-const MODULE_STRUCTURE = [
-    {
-        id: 'teams',
-        accent: 'var(--tof-accent-sage)',
-        soft: '#EAF0EB',
-        // 'any': de modal accepteert elk codeniveau en stuurt zelf door naar het
-        // juiste dashboard. Insight en Dynamics zijn één aankoop geworden, dus
-        // de bezoeker hoeft niet meer te weten welk niveau zijn code heeft.
-        ctaType: 'access-any',
-    },
-    {
-        id: 'bedrijf',
-        accent: 'var(--tof-accent-rose)',
-        soft: '#F4DFDF',
-        ctaType: 'link',
-        ctaHref: 'https://www.tof.services/contact',
-    },
-    {
-        id: 'strategic',
-        accent: 'var(--tof-text)',
-        soft: '#EDE5D8',
-        ctaType: 'page',
-        ctaPage: 'strategischkompas',
-    },
-];
+// Uitleg en aanvraag van TOF Persona Team staan op de verhaalsite.
+const REQUEST_URL = 'https://www.persona-tool.nl/voor-je-team';
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 
-export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, initialOpen = null }) {
+export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }) {
     const t = useCopy().teamIntro;
-    const modules = MODULE_STRUCTURE.map((mod) => ({ ...mod, ...t.modules[mod.id] }));
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
-    const [openId, setOpenId] = useState(initialOpen);
 
     // Eén gezamenlijke modal-state — het "requiredLevel" bepaalt wat geaccepteerd wordt
     const [accessModal, setAccessModal] = useState(null);
@@ -196,7 +165,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
         return () => { cancelled = true; };
     }, [accessModal]);
 
-    const cardRefs = useRef({});
     const makerMode = isMakerAccess();
 
     // Auto-open: als de ingelogde manager precies ÉÉN gekoppeld team heeft,
@@ -210,16 +178,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
         return () => window.removeEventListener('resize', onResize);
     }, []);
 
-    // Scroll naar opengestelde kaart
-    useEffect(() => {
-        if (!openId) return;
-        const el = cardRefs.current[openId];
-        if (!el) return;
-        requestAnimationFrame(() => {
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-    }, [openId]);
-
     // Auto-open dashboard voor single-team manager (zie ref hierboven).
     useEffect(() => {
         if (autoOpenedRef.current) return;
@@ -229,10 +187,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
             openExistingTeam(managerTeams[0]);
         }
     }, [teamAccesses]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    function handleToggle(id) {
-        setOpenId((prev) => (prev === id ? null : id));
-    }
 
     function openAccessModal(mode) {
         // mode: 'insight' | 'dynamics' | 'any'
@@ -460,7 +414,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     </div>
                 )}
 
-                {/* ── HERO + MODULE KAARTEN (verborgen in manager-mode) ── */}
+                {/* ── HERO + TOEGANG (verborgen in manager-mode) ── */}
                 {!isManagerMode && (
                 <>
                 <div style={{
@@ -512,47 +466,13 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam, 
                     </div>
                 </div>
 
-                {/* ── MODULE 1 · DE GRATIS INGANG ─────────────────────── */}
-                {/* Bewust geen vierde prijskaart: "gratis" naast betaalde      */}
-                {/* kaarten leest als proefversie. Als strook is hij de ingang. */}
-                <AppStrip
-                    mod={t.modules.app}
+                {/* ── TOEGANG ─────────────────────────────────────────── */}
+                <AccessStrip
+                    copy={t.entry}
                     isMobile={isMobile}
                     onCode={() => openAccessModal('any')}
-                    onTest={() => setPage('quiz')}
+                    onApp={() => setPage('quiz')}
                 />
-
-                {/* ── MODULE KAARTEN ──────────────────────────────────── */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, minmax(0, 1fr))',
-                    gap: isMobile ? 12 : 16,
-                    // Dicht: alle drie even hoog, anders leest de ene module als
-                    // minder dan de andere. Open: terug naar 'start', zodat de
-                    // open kaart de dichte kaarten niet meetrekt.
-                    alignItems: openId ? 'start' : 'stretch',
-                }}>
-                    {modules.map((mod) => {
-                        const isOpen = openId === mod.id;
-                        const isDimmed = openId !== null && !isOpen;
-                        return (
-                            <ModuleCard
-                                key={mod.id}
-                                mod={mod}
-                                isOpen={isOpen}
-                                isDimmed={isDimmed}
-                                isMobile={isMobile}
-                                onToggle={() => handleToggle(mod.id)}
-                                onCta={() => {
-                                    if (mod.ctaType === 'access-any') openAccessModal('any');
-                                    else if (mod.ctaType === 'page' && mod.ctaPage) setPage(mod.ctaPage);
-                                    else if (mod.ctaType === 'link') window.open(mod.ctaHref, '_blank', 'noopener,noreferrer');
-                                }}
-                                cardRef={(el) => { cardRefs.current[mod.id] = el; }}
-                            />
-                        );
-                    })}
-                </div>
                 </>
                 )}
 
@@ -1059,7 +979,7 @@ function AccessModal({
 // codeveld is hier het werkpaard: wie de app al heeft, hoeft niets uit te
 // rollen om met een team te beginnen.
 
-function AppStrip({ mod, isMobile, onCode, onTest }) {
+function AccessStrip({ copy, isMobile, onCode, onApp }) {
     const accent = 'var(--tof-accent-sage)';
 
     return (
@@ -1077,25 +997,28 @@ function AppStrip({ mod, isMobile, onCode, onTest }) {
         }}>
             <div style={{ display: 'grid', gap: 10 }}>
                 <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accent }}>
-                    {mod.eyebrow}
+                    {copy.eyebrow}
                 </div>
                 <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 24 : 27, lineHeight: 1.1, color: 'var(--tof-text)' }}>
-                    {mod.title}
+                    {copy.title}
                 </h2>
                 <p style={{ margin: 0, fontSize: isMobile ? 14 : 15, lineHeight: 1.6, color: 'var(--tof-text-soft)' }}>
-                    {mod.hook}
+                    {copy.hook}
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginTop: 4 }}>
-                    <PrimaryButton onClick={onCode}>{mod.cta}</PrimaryButton>
-                    <SecondaryButton onClick={onTest}>{mod.webCta}</SecondaryButton>
+                    <PrimaryButton onClick={onCode}>{copy.cta}</PrimaryButton>
+                    <SecondaryButton onClick={onApp}>{copy.appCta}</SecondaryButton>
                 </div>
                 <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: 'var(--tof-text-muted)' }}>
-                    {APP_IN_STORE ? mod.store : mod.storeSoon}
+                    {copy.requestLead}{' '}
+                    <a href={REQUEST_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--tof-accent-rose)', fontWeight: 600 }}>
+                        {copy.requestLink}
+                    </a>
                 </p>
             </div>
 
             <div style={{ display: 'grid', gap: 8 }}>
-                {mod.bullets.map((b, i) => (
+                {copy.bullets.map((b, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                         <div style={{
                             width: 20, height: 20, borderRadius: 999,
@@ -1109,139 +1032,6 @@ function AppStrip({ mod, isMobile, onCode, onTest }) {
                     </div>
                 ))}
             </div>
-        </div>
-    );
-}
-
-function ModuleCard({ mod, isOpen, isDimmed, isMobile, onToggle, onCta, cardRef }) {
-    const t = useCopy().teamIntro.card;
-
-    return (
-        <div
-            ref={cardRef}
-            style={{
-                scrollMarginTop: 24,
-                transition: 'opacity 0.25s ease, transform 0.25s ease',
-                opacity: isDimmed ? 0.55 : 1,
-                transform: isOpen ? 'translateY(-2px)' : 'translateY(0)',
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-            }}
-        >
-            <button
-                type="button"
-                onClick={onToggle}
-                onMouseLeave={(e) => e.currentTarget.blur()}
-                style={{
-                    width: '100%',
-                    textAlign: 'left',
-                    background: isOpen
-                        ? `linear-gradient(145deg, ${mod.soft} 0%, #F7F3EE 100%)`
-                        : 'var(--tof-surface)',
-                    border: isOpen ? `1px solid ${mod.accent}` : '1px solid var(--tof-border)',
-                    borderTop: `4px solid ${mod.accent}`,
-                    borderRadius: 18,
-                    padding: 0,
-                    cursor: 'pointer',
-                    boxShadow: isOpen
-                        ? '0 16px 36px rgba(40,25,20,0.10)'
-                        : 'var(--tof-shadow)',
-                    overflow: 'hidden',
-                    transition: 'all 0.25s ease',
-                    outline: 'none',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: isOpen ? undefined : 220,
-                    flex: 1,
-                }}
-            >
-                <div style={{ padding: isMobile ? '18px 16px 16px' : '20px 22px 18px', display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-                        <div style={{ display: 'grid', gap: 10 }}>
-                            {/* Vaste hoogtes voor eyebrow en titel: de ene module
-                                heeft een langere doelgroep of naam dan de andere,
-                                en zonder dit beginnen de koppen op verschillende
-                                hoogtes. Twee regels is de langste die voorkomt. */}
-                            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, lineHeight: 1.4, minHeight: isMobile ? undefined : 31, color: mod.accent === 'var(--tof-text)' ? 'var(--tof-text-muted)' : mod.accent }}>
-                                {mod.eyebrow}
-                            </div>
-
-                            <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 22 : 23, lineHeight: 1.1, minHeight: isMobile ? undefined : 51, color: 'var(--tof-text)' }}>
-                                {mod.title}
-                            </h2>
-
-                            <p style={{ margin: 0, fontSize: isMobile ? 14 : 15, lineHeight: 1.6, color: 'var(--tof-text-soft)', maxWidth: 340 }}>
-                                {mod.hook}
-                            </p>
-                        </div>
-
-                        <div style={{
-                            minWidth: 34, height: 34,
-                            borderRadius: 999,
-                            background: isOpen ? mod.accent : mod.soft,
-                            color: isOpen ? '#fff' : mod.accent === 'var(--tof-text)' ? 'var(--tof-text)' : mod.accent,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 20, lineHeight: 1, fontWeight: 500,
-                            flexShrink: 0,
-                            transition: 'all 0.2s ease',
-                        }}>
-                            {isOpen ? '–' : '+'}
-                        </div>
-                    </div>
-
-                    {isOpen && (
-                        <div style={{ marginTop: 18, display: 'grid', gap: 12 }}>
-                            <div style={{ display: 'grid', gap: 8 }}>
-                                {mod.bullets.map((b, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                                        <div style={{
-                                            width: 20, height: 20, borderRadius: 999,
-                                            background: mod.soft,
-                                            border: `1.5px solid ${mod.accent === 'var(--tof-text)' ? 'var(--tof-border)' : mod.accent}`,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: 10, fontWeight: 700,
-                                            color: mod.accent === 'var(--tof-text)' ? 'var(--tof-text-muted)' : mod.accent,
-                                            flexShrink: 0, marginTop: 1,
-                                        }}>✓</div>
-                                        <span style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--tof-text-soft)' }}>{b}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div style={{
-                                background: mod.soft,
-                                borderRadius: 12,
-                                padding: '12px 14px',
-                                fontSize: 13,
-                                color: 'var(--tof-text)',
-                                lineHeight: 1.65,
-                                border: `1px solid ${mod.accent === 'var(--tof-text)' ? 'var(--tof-border)' : `${mod.accent}30`}`,
-                            }}>
-                                <strong style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.4, color: mod.accent === 'var(--tof-text)' ? 'var(--tof-text-muted)' : mod.accent, display: 'block', marginBottom: 5 }}>
-                                    {t.whatYouGet}
-                                </strong>
-                                {mod.what}
-                            </div>
-                        </div>
-                    )}
-
-                    <div style={{ fontSize: 12, color: 'var(--tof-text-muted)', fontWeight: 500, marginTop: 'auto', paddingTop: 12 }}>
-                        {isOpen ? t.showLess : t.showMore}
-                    </div>
-                </div>
-            </button>
-
-            {isOpen && (
-                <div style={{ padding: '12px 4px 0' }}>
-                    <PrimaryButton
-                        onClick={(e) => { e.stopPropagation(); onCta(); }}
-                        style={{ background: mod.accent, borderColor: mod.accent }}
-                    >
-                        {mod.cta}
-                    </PrimaryButton>
-                </div>
-            )}
         </div>
     );
 }

@@ -141,7 +141,7 @@ export default function Nav({
                                 <span className={styles.brandWord}>The Office</span>
                                 <span className={styles.brandAccent}>Factory</span>
                             </span>
-                            <span className={styles.brandSub}>{t.brandSub}</span>
+                            <span className={styles.brandSub}>{IS_NATIVE ? t.brandSubApp : t.brandSub}</span>
                         </div>
                     </button>
 

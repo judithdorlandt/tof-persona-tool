@@ -1,78 +1,26 @@
 /**
- * teamIntro — alle teksten van TeamIntro.jsx (de verkoopintro voor de modules,
- * de manager-welkom, het toegangspaneel en de toegangsmodal).
+ * teamIntro — alle teksten van TeamIntro.jsx: de toegang tot /team (hero en
+ * toegangsstrook), de manager-welkom, het toegangspaneel en de toegangsmodal.
  *
- * De module-ids hier zijn presentatie-sleutels. Ze staan los van de
- * niveau-sleutels in utils/access.js (insight/dynamics/strategic): die blijven
- * ongewijzigd, zodat alle bestaande toegangscodes gewoon blijven werken.
- *
- * De ladder loopt per publiek, niet per product: ik → wij → het geheel → de
- * koers. Module 1 is de gratis ingang en staat daarom apart boven de drie
- * betaalde kaarten; als vierde prijskaart zou "gratis" lezen als proefversie.
+ * Sinds 21 okt 2026 geen verkoopintro met module-kaarten meer; die uitleg
+ * staat op www.persona-tool.nl/voor-je-team.
  */
 const teamIntro = {
-  modules: {
-    app: {
-      eyebrow: 'Module 1 · Voor iedereen',
-      title: 'De app TOF Persona',
-      hook: 'Ieder begint bij zichzelf, met een eigen profiel in de app. Zonder account.',
-      bullets: [
-        'Je eigen profiel: waar je energie van krijgt en waar je leegloopt',
-        'Wat dat betekent voor je werkplek en je afspraken',
-        'Je profiel gaat alleen naar een team als jij het inbrengt — en je ziet eerst welk team',
-        'Heb je een teamcode? Dan voeg je je profiel toe aan je team',
-      ],
-      cta: 'Ik heb een teamcode',
-      store: 'Te downloaden als TOF Persona in de App Store en Google Play.',
-      storeSoon: 'Binnenkort in de App Store.',
-      webCta: 'Download de app →',
-    },
-    teams: {
-      eyebrow: 'Module 2 · Voor teams',
-      title: 'Teaminzicht & Dynamiek',
-      hook: 'Je weet wie er in je team zit. Maar weet je ook hoe het team écht werkt?',
-      bullets: [
-        'Zie in één oogopslag welke werkstijlen domineren',
-        'Ontdek waar energie zit — en waar wrijving ontstaat',
-        'Begrijp waarom tempo, structuur en besluitvorming botsen',
-        'Werkplekbehoefte en concrete quick wins per team',
-        'Desgewenst een begeleide sessie waarin we het samen lezen — online of op locatie',
-      ],
-      what: 'Teaminzicht voor het hele team, en Teamdynamiek voor wie het team leidt. Wil je het samen lezen, dan kan dat in een begeleide sessie. Die boek je los.',
-      cta: 'Naar de teamomgeving',
-    },
-    bedrijf: {
-      eyebrow: 'Module 3 · Voor directie & huisvesting',
-      title: 'Het Organisatielandschap',
-      hook: 'Eén team is een momentopname. Pas meerdere teams laten het patroon zien.',
-      bullets: [
-        'Alle teams naast elkaar: waar zit de dominante werkstijl, waar de uitzondering',
-        'Werkstijl per afdeling, en wat dat vraagt van de huisvesting',
-        'Patronen die je op teamniveau niet kunt zien',
-        'Duiding voor directie, HR en huisvesting in één taal',
-      ],
-      what: 'Een rapport over je hele organisatie plus een directiesessie. Het landschap ontstaat vanaf drie teams.',
-      cta: 'Plan een gesprek',
-    },
-    strategic: {
-      eyebrow: 'Module 4 · Voor MT & bestuur',
-      title: 'Het Strategisch Kompas',
-      hook: 'Wat de wereld vraagt, vertaald naar wie je team is.',
-      bullets: [
-        'Trend-radar: 8 gecureerde trends over werk, leiderschap en AI',
-        'Persona-overlay: welke trends raken juist jullie organisatie het hardst',
-        'Strategische keuzes voor leiderschap, werkomgeving en cultuur',
-        'Levend richtingsdocument — jaarlijks bijgewerkt, geen plan in een la',
-      ],
-      what: 'Een traject van vier maanden: intake, Strategisch Kompas-document (~20 pagina\'s), MT-sessie en review. Volledig op maat.',
-      cta: 'Ontdek het Strategisch Kompas',
-    },
-  },
-
-  card: {
-    whatYouGet: 'Wat je krijgt',
-    showLess: 'Minder tonen',
-    showMore: 'Ontdek wat dit inhoudt →',
+  // De toegangsstrook op /team. Uitleg en aanvraag staan op de verhaalsite;
+  // hier alleen: wie ben je en hoe kom je bij je teambeeld.
+  entry: {
+    eyebrow: 'Toegang',
+    title: 'Naar je teambeeld',
+    hook: 'Met de teamcode van je team open je het teambeeld. Leid je het team, log dan hieronder in met je mailadres.',
+    bullets: [
+      'Teamlid: met de teamcode zie je het teambeeld — zonder namen, vanaf vijf profielen',
+      'Leidinggevende: log in met het mailadres dat aan je team gekoppeld is, ook voor Teamdynamiek',
+      'Nog geen profiel? Doe de test in de app en breng je profiel daarna in bij je team',
+    ],
+    cta: 'Ik heb een teamcode',
+    appCta: 'Doe de test in de app →',
+    requestLead: 'Nog geen team?',
+    requestLink: 'Vraag TOF Persona Team aan →',
   },
 
   managerWelcome: {
@@ -85,19 +33,19 @@ const teamIntro = {
   },
 
   hero: {
-    eyebrow: 'Voor teams & organisaties',
+    eyebrow: 'TOF Persona Team',
     titleLead: 'Jouw team heeft een patroon.',
-    titleHighlight: 'Tijd om het te zien.',
+    titleHighlight: 'Hier zie je het.',
     leadDesktop:
-      'Elk team werkt anders — en dat patroon is zichtbaar te maken. Kies het niveau dat bij jouw vraag past.',
-    leadMobile: 'Elk team werkt anders. Kies het niveau dat bij jouw vraag past.',
+      'Open het teambeeld met je teamcode, of log in als leidinggevende.',
+    leadMobile: 'Open het teambeeld met je teamcode, of log in als leidinggevende.',
     makerMode: 'Maker mode actief',
   },
 
   magicLink: {
     eyebrow: 'Leid je een team? Log in met je mailadres',
     body:
-      'Inloggen kan met het mailadres dat aan je team gekoppeld is. Nog geen team? Vraag een teamcode aan op persona-tool.nl.',
+      'Inloggen kan met het mailadres dat aan je team gekoppeld is. Nog geen team? Vraag een teamcode aan op www.persona-tool.nl.',
     cta: 'Naar inloggen →',
   },
 

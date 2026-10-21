@@ -1,5 +1,8 @@
 const nav = {
-  brandSub: 'Persona Tool',
+  // Onder 'The Office Factory' naast het logo. Web = de teamomgeving, app =
+  // het eigen profiel; samen met het logo lees je "TOF Persona".
+  brandSub: 'Persona Team',
+  brandSubApp: 'Persona',
   // Het logo is een knop; dit is wat hij doet. Het plaatje zelf is daarmee
   // decoratief (alt=""), anders hoort een schermlezer het dubbel.
   logoToHome: 'Terug naar je overzicht',

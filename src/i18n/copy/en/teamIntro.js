@@ -3,68 +3,21 @@
  * Mirrors the key structure and array lengths of copy/nl/teamIntro.js.
  */
 const teamIntro = {
-  modules: {
-    app: {
-      eyebrow: 'Module 1 · For everyone',
-      title: 'The TOF Persona app',
-      hook: 'Everyone starts with their own profile in the app. No account needed.',
-      bullets: [
-        'Your own profile: what gives you energy and what drains you',
-        'What that means for your workspace and your working agreements',
-        'Your profile only goes to a team if you add it — and you see which team first',
-        'Got a team code? Then you add your profile to your team',
-      ],
-      cta: 'I have a team code',
-      store: 'Available as TOF Persona on the App Store and Google Play.',
-      storeSoon: 'Coming soon to the App Store.',
-      webCta: 'Download the app →',
-    },
-    teams: {
-      eyebrow: 'Module 2 · For teams',
-      title: 'Team Insight & Dynamics',
-      hook: 'You know who is in your team. But do you know how the team really works?',
-      bullets: [
-        'See at a glance which working styles dominate',
-        'Discover where the energy sits — and where friction appears',
-        'Understand why pace, structure and decision-making collide',
-        'Workplace needs and concrete quick wins for every team',
-        'Optionally, a guided session where we read it together — online or on site',
-      ],
-      what: 'Team Insight for the whole team, and Team Dynamics for whoever leads it. If you want to read it together, a guided session is available. You book it separately.',
-      cta: 'Go to the Team space',
-    },
-    bedrijf: {
-      eyebrow: 'Module 3 · For leadership and property',
-      title: 'The Organisational Landscape',
-      hook: 'One team is a snapshot. Only several teams reveal the pattern.',
-      bullets: [
-        'All teams side by side: where the dominant style sits, and where the exception is',
-        'Working style per department, and what that asks of your buildings',
-        'Patterns you simply cannot see at team level',
-        'One shared language for leadership, HR and property',
-      ],
-      what: 'A report covering your whole organisation plus a leadership session. The landscape emerges from three teams onwards.',
-      cta: 'Book a conversation',
-    },
-    strategic: {
-      eyebrow: 'Module 4 · For leadership teams and boards',
-      title: 'The Strategic Compass',
-      hook: 'What the world asks of you, translated into who your team is.',
-      bullets: [
-        'Trend radar: 8 curated trends on work, leadership and AI',
-        'Persona overlay: which trends hit your organisation hardest',
-        'Strategic choices for leadership, the working environment and culture',
-        'A living direction document — updated every year, not a plan in a drawer',
-      ],
-      what: 'A four-month journey: intake, a Strategic Compass document (around 20 pages), a leadership session and a review. Fully tailored.',
-      cta: 'Discover the Strategic Compass',
-    },
-  },
-
-  card: {
-    whatYouGet: 'What you get',
-    showLess: 'Show less',
-    showMore: 'See what this involves →',
+  // The access strip on /team. Explanation and requests live on the story
+  // site; here only: who are you and how do you reach your team picture.
+  entry: {
+    eyebrow: 'Access',
+    title: 'To your team picture',
+    hook: 'Open the team picture with your team code. Leading the team? Then log in below with your email.',
+    bullets: [
+      'Team member: the team code shows you the team picture — no names, from five profiles',
+      'Team lead: log in with the email address linked to your team, including Team Dynamics',
+      'No profile yet? Take the test in the app and add your profile to your team afterwards',
+    ],
+    cta: 'I have a team code',
+    appCta: 'Take the test in the app →',
+    requestLead: 'No team yet?',
+    requestLink: 'Request TOF Persona Team →',
   },
 
   managerWelcome: {
@@ -77,19 +30,19 @@ const teamIntro = {
   },
 
   hero: {
-    eyebrow: 'For teams & organisations',
+    eyebrow: 'TOF Persona Team',
     titleLead: 'Your team has a pattern.',
-    titleHighlight: 'Time to see it.',
+    titleHighlight: 'This is where you see it.',
     leadDesktop:
-      'Every team works differently — and that pattern can be made visible. Choose the level that fits your question.',
-    leadMobile: 'Every team works differently. Choose the level that fits your question.',
+      'Open the team picture with your team code, or log in as team lead.',
+    leadMobile: 'Open the team picture with your team code, or log in as team lead.',
     makerMode: 'Maker mode active',
   },
 
   magicLink: {
     eyebrow: 'Leading a team? Log in with your email',
     body:
-      'Log in with the email address linked to your team. No team yet? Request a team code at persona-tool.nl.',
+      'Log in with the email address linked to your team. No team yet? Request a team code at www.persona-tool.nl.',
     cta: 'Go to sign in →',
   },
 
