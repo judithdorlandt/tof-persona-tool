@@ -112,8 +112,11 @@ VOOR JE TEAM
 Iedereen doet de test in de app TOF Persona, op de eigen telefoon en
 zonder account:
 
-App Store (iPhone): ${appStoreUrl}
-Google Play (Android): ${googlePlayUrl}
+App Store (iPhone):
+${appStoreUrl}
+
+Google Play (Android):
+${googlePlayUrl}
 
 1. Download de app en doe de test: negen vragen, ongeveer vijf minuten.
    Daarna is er een verdieping van drie minuten; die is niet verplicht.
@@ -166,49 +169,6 @@ The Office Factory
 +31 6 8389 4556`,
   },
 
-  /** Individuele tester uitnodigen — los van teams en codes. */
-  inviteTester: {
-    eyebrow: 'Individuele tester uitnodigen',
-    lead: 'Geen team, geen code — alleen een persoonlijke inlog. Na het klikken op de link in de mail komt de ontvanger direct in de vragenlijst en ziet daarna zijn eigen persona.',
-    nameLabel: 'Voornaam (optioneel)',
-    namePlaceholder: 'Bv. Maarten',
-    emailLabel: 'E-mail',
-    emailPlaceholder: 'naam@organisatie.nl',
-    send: 'Stuur inlogmail',
-    sending: 'Bezig…',
-    cooldown: (seconds) => `Opnieuw over ${seconds}s`,
-    hint: 'Lukt versturen niet? Mail de tekst hieronder zelf.',
-    sent: (email) => `Inlogmail verstuurd naar ${email}. De link is één uur geldig.`,
-    errors: {
-      invalidEmail: 'Vul een geldig e-mailadres in.',
-      sendFailed: 'Versturen mislukt. Gebruik de mailtekst hieronder.',
-    },
-    toggleMail: 'Mailtekst en link zelf versturen ↓',
-    copyMail: 'Kopieer mailtekst',
-    copied: '✓ Gekopieerd',
-    copyLink: 'Kopieer alleen de link',
-    /** Terugval als naam of e-mailadres nog leeg is. */
-    mailFallbackName: 'jij',
-    mailFallbackEmail: 'je eigen adres',
-    mailBody: ({ recipient, email, loginUrl }) => `Beste ${recipient},
-
-Ik laat je graag zelf ervaren waar onze persona-tool over gaat. Je bent er vijf minuten mee bezig.
-
-ZO WERKT HET
-1. Open deze link: ${loginUrl}
-2. Vul je e-mailadres in (${email}) — je krijgt meteen een inloglink in je mailbox
-3. Klik die link aan en je staat direct in de vragenlijst
-4. Na negen vragen zie je je eigen persona
-
-Geen wachtwoord nodig. Je antwoorden blijven van jou.
-
-Benieuwd naar wat dit voor een heel team laat zien? Bel of mail gerust.
-
-Hartelijke groet,
-Judith
-The Office Factory
-+31 6 8389 4556 · judith@tof.services`,
-  },
 
   /** Klikbare lijst met alle organisaties. */
   organizations: {

@@ -101,8 +101,11 @@ FOR YOUR TEAM
 Everyone takes the test in the TOF Persona app, on their own phone and
 without an account:
 
-App Store (iPhone): ${appStoreUrl}
-Google Play (Android): ${googlePlayUrl}
+App Store (iPhone):
+${appStoreUrl}
+
+Google Play (Android):
+${googlePlayUrl}
 
 1. Download the app and take the test: nine questions, about five minutes.
    After that there's an optional deeper section of three minutes.
@@ -155,48 +158,6 @@ The Office Factory
 +31 6 8389 4556`,
   },
 
-  inviteTester: {
-    eyebrow: 'Invite an individual tester',
-    lead: 'No team, no code — just a personal sign-in. After clicking the link in the email, they go straight into the questionnaire and see their own persona afterwards.',
-    nameLabel: 'First name (optional)',
-    namePlaceholder: 'E.g. Maarten',
-    emailLabel: 'Email',
-    emailPlaceholder: 'name@organisation.com',
-    send: 'Send sign-in email',
-    sending: 'Working…',
-    cooldown: (seconds) => `Try again in ${seconds}s`,
-    hint: "Can't get it sent? Email the text below yourself.",
-    sent: (email) => `Sign-in email sent to ${email}. The link is valid for one hour.`,
-    errors: {
-      invalidEmail: 'Enter a valid email address.',
-      sendFailed: 'Sending failed. Use the email text below instead.',
-    },
-    toggleMail: 'Send the email text and link yourself ↓',
-    copyMail: 'Copy email text',
-    copied: '✓ Copied',
-    copyLink: 'Copy the link only',
-    /** Fallbacks while the name or email field is still empty. */
-    mailFallbackName: 'there',
-    mailFallbackEmail: 'your own address',
-    mailBody: ({ recipient, email, loginUrl }) => `Dear ${recipient},
-
-I'd love you to experience our persona tool for yourself. It takes about five minutes.
-
-HOW IT WORKS
-1. Open this link: ${loginUrl}
-2. Enter your email address (${email}) — a sign-in link lands in your inbox right away
-3. Click that link and you're straight into the questionnaire
-4. After nine questions you'll see your own persona
-
-No password needed. Your answers stay yours.
-
-Curious what this reveals for a whole team? Call or email me any time.
-
-Warm regards,
-Judith
-The Office Factory
-+31 6 8389 4556 · judith@tof.services`,
-  },
 
   organizations: {
     heading: (n) => `Organisations (${n})`,
