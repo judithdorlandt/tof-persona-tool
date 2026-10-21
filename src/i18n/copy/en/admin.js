@@ -53,6 +53,8 @@ const admin = {
     organizationPlaceholder: 'E.g. Sample Council',
     teamLabel: 'Team / Department',
     teamPlaceholder: 'E.g. Corporate Affairs',
+    leaderNameLabel: 'Team leader first name (optional)',
+    leaderNamePlaceholder: 'E.g. Sam',
     leaderEmailLabel: 'Team leader email (optional)',
     leaderEmailPlaceholder: 'name@organisation.com',
     leaderEmailHint:

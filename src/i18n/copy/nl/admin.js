@@ -63,6 +63,8 @@ const admin = {
     teamPlaceholder: 'Bv. Bestuurszaken',
     // Geen keuze voor een toegangsniveau meer: elke teamcode geeft
     // Teaminzicht. Teamdynamiek hangt aan de leidinggevende (managerkoppeling).
+    leaderNameLabel: 'Voornaam leidinggevende (optioneel)',
+    leaderNamePlaceholder: 'Bv. Sanne',
     leaderEmailLabel: 'E-mail leidinggevende (optioneel)',
     leaderEmailPlaceholder: 'naam@organisatie.nl',
     leaderEmailHint:

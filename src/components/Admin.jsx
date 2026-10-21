@@ -95,10 +95,11 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     const [orgInput, setOrgInput] = useState('');
     const [teamInput, setTeamInput] = useState('');
     const [leaderEmail, setLeaderEmail] = useState('');
+    const [leaderName, setLeaderName] = useState('');
     const [createLoading, setCreateLoading] = useState(false);
     const [createError, setCreateError] = useState('');
     const [justCreated, setJustCreated] = useState(null);
-    // justCreated: { code, organization, team, level, leaderEmail }
+    // justCreated: { code, organization, team, leaderEmail, leaderName, leaderLinked }
 
     // Managers state
     const [managers, setManagers] = useState([]);
@@ -247,12 +248,14 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                 organization: orgInput.trim(),
                 team: teamInput.trim(),
                 leaderEmail: leader || null,
+                leaderName: leaderName.trim() || null,
                 leaderLinked,
             });
             // Form leegmaken
             setOrgInput('');
             setTeamInput('');
             setLeaderEmail('');
+            setLeaderName('');
             // Lijsten verversen
             const [refreshed, mgrs] = await Promise.all([
                 getAllTeamAccessCodes(),
@@ -459,6 +462,8 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                     setTeamInput={setTeamInput}
                     leaderEmail={leaderEmail}
                     setLeaderEmail={setLeaderEmail}
+                    leaderName={leaderName}
+                    setLeaderName={setLeaderName}
                     createLoading={createLoading}
                     createError={createError}
                     onSubmit={handleCreate}
@@ -612,7 +617,7 @@ function AdminLogin() {
 
 function CreateTeamCard({
     isMobile, orgInput, setOrgInput, teamInput, setTeamInput,
-    leaderEmail, setLeaderEmail,
+    leaderEmail, setLeaderEmail, leaderName, setLeaderName,
     createLoading, createError, onSubmit,
 }) {
     const { admin: { createTeam: t } } = useCopy();
@@ -684,19 +689,35 @@ function CreateTeamCard({
                 </div>
             </div>
 
-            <div>
-                <label style={labelStyle}>{t.leaderEmailLabel}</label>
-                <input
-                    type="email"
-                    value={leaderEmail}
-                    onChange={(e) => setLeaderEmail(e.target.value)}
-                    placeholder={t.leaderEmailPlaceholder}
-                    style={inputStyle}
-                />
-                <p style={{ margin: '6px 0 0', fontSize: 12.5, lineHeight: 1.5, color: 'var(--tof-text-muted)' }}>
-                    {t.leaderEmailHint}
-                </p>
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                gap: 14,
+            }}>
+                <div>
+                    <label style={labelStyle}>{t.leaderNameLabel}</label>
+                    <input
+                        type="text"
+                        value={leaderName}
+                        onChange={(e) => setLeaderName(e.target.value)}
+                        placeholder={t.leaderNamePlaceholder}
+                        style={inputStyle}
+                    />
+                </div>
+                <div>
+                    <label style={labelStyle}>{t.leaderEmailLabel}</label>
+                    <input
+                        type="email"
+                        value={leaderEmail}
+                        onChange={(e) => setLeaderEmail(e.target.value)}
+                        placeholder={t.leaderEmailPlaceholder}
+                        style={inputStyle}
+                    />
+                </div>
             </div>
+            <p style={{ margin: '-6px 0 0', fontSize: 12.5, lineHeight: 1.5, color: 'var(--tof-text-muted)' }}>
+                {t.leaderEmailHint}
+            </p>
 
             {createError && (
                 <div style={{
@@ -732,8 +753,11 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
     const leaderLine = info.leaderLinked
         ? t.leaderLinked(info.leaderEmail)
         : t.noLeader;
-    const recipientName = info.leaderEmail
-        ? info.leaderEmail.split('@')[0].split('.')[0]
+    // De voornaam komt uit het formulier. Raden uit het mailadres ging mis
+    // (judithdorlandt@ → "Judithdorlandt", a.kempeneers@ → "A"); leeg = de
+    // plaatshouder, die je zelf invult.
+    const recipientName = info.leaderName
+        ? info.leaderName
         : t.fallbackRecipient; // voorbeeldnaam
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
