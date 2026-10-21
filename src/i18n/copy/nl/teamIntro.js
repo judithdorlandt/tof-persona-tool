@@ -14,12 +14,12 @@ const teamIntro = {
   modules: {
     app: {
       eyebrow: 'Module 1 · Voor iedereen',
-      title: 'De Persona-app',
-      hook: 'Begin bij jezelf. Gratis, in vijf minuten, zonder account.',
+      title: 'De app TOF Persona',
+      hook: 'Ieder begint bij zichzelf, met een eigen profiel in de app. Zonder account.',
       bullets: [
         'Je eigen profiel: waar je energie van krijgt en waar je leegloopt',
         'Wat dat betekent voor je werkplek en je afspraken',
-        'Alles blijft op je telefoon — er gaat niets naar een server',
+        'Je profiel gaat alleen naar een team als jij het inbrengt — en je ziet eerst welk team',
         'Heb je een teamcode? Dan voeg je je profiel toe aan je team',
       ],
       cta: 'Ik heb een teamcode',
@@ -95,9 +95,9 @@ const teamIntro = {
   },
 
   magicLink: {
-    eyebrow: 'Al een samenwerking met TOF? Log in met magic-link',
+    eyebrow: 'Leid je een team? Log in met je mailadres',
     body:
-      'Magic-link toegang is alleen beschikbaar voor teams waarmee we een traject zijn gestart. Nog geen samenwerking? Plan eerst een gesprek hieronder.',
+      'Inloggen kan met het mailadres dat aan je team gekoppeld is. Nog geen team? Vraag een teamcode aan op persona-tool.nl.',
     cta: 'Naar inloggen →',
   },
 
@@ -127,12 +127,12 @@ const teamIntro = {
       lead: 'We herkennen zelf of je toegang hebt tot Teaminzicht of Teamdynamiek — je komt automatisch op het juiste dashboard.',
     },
     dynamics: {
-      eyebrow: 'Module 2',
+      eyebrow: 'TOF Persona Team',
       title: 'Toegangscode Teamdynamiek',
       lead: 'Voer je toegangscode voor Teamdynamiek in. Deze code geeft ook toegang tot Teaminzicht.',
     },
     insight: {
-      eyebrow: 'Module 1',
+      eyebrow: 'TOF Persona Team',
       title: 'Toegangscode Teaminzicht',
       lead: 'Voer je toegangscode voor Teaminzicht in.',
     },

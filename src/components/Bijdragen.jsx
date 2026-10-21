@@ -226,7 +226,7 @@ export default function Bijdragen({ setPage }) {
                         <PrimaryButton onClick={() => setPage && setPage('quiz')}>
                             {t.empty.startTest}
                         </PrimaryButton>
-                        <SecondaryButton onClick={() => setPage && setPage('intro')}>
+                        <SecondaryButton onClick={() => setPage && setPage('home')}>
                             {t.empty.backHome}
                         </SecondaryButton>
                     </div>

@@ -68,7 +68,7 @@ const contribute = {
     body:
       'Deze pagina verwacht een profiel uit de app. Kom je hier via de knop "Profiel inbrengen" in de app, dan zit het erin — is de link onderweg afgekapt of met de hand ingetypt, dan niet. Nog geen profiel? Doe de test in de app.',
     startTest: 'Naar de app',
-    backHome: 'Naar de uitleg',
+    backHome: 'Terug naar home',
   },
 
   errors: {

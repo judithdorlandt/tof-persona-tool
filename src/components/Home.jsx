@@ -181,43 +181,17 @@ export default function Home({ setPage }) {
             </p>
           </div>
 
+          {/* Twee routes: met een team naar de teamomgeving, zonder team naar
+              de app. De test zelf zit niet meer op deze site (behalve voor
+              wie via een uitnodigingslink komt — die slaat Home over). */}
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <PrimaryButton onClick={() => setPage('intro')}>
-              {t.ctaStartTest}
+            <PrimaryButton onClick={openTeamLock}>
+              {t.ctaTeamEnvironment}
             </PrimaryButton>
 
-            {!IS_NATIVE && (
-              <>
-                <PrimaryButton
-                  onClick={() => setPage('team')}
-                  style={{ background: 'var(--tof-accent-sage)' }}
-                >
-                  {t.ctaForTeams}
-                </PrimaryButton>
-
-                <SecondaryButton onClick={openTeamLock}>
-                  {t.ctaTeamEnvironment}
-                </SecondaryButton>
-              </>
-            )}
-          </div>
-
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'var(--tof-rose-soft)',
-              border: '1px solid rgba(176, 82, 82, 0.12)',
-              borderRadius: 999,
-              padding: '8px 14px',
-              fontSize: 12,
-              color: 'var(--tof-text-muted)',
-              width: 'fit-content',
-            }}
-          >
-            <span>⏱</span>
-            <span>{t.durationNote}</span>
+            <SecondaryButton onClick={() => setPage('quiz')}>
+              {t.ctaApp}
+            </SecondaryButton>
           </div>
         </div>
 
@@ -230,18 +204,18 @@ export default function Home({ setPage }) {
             alignItems: 'stretch',
           }}
         >
+          {!IS_NATIVE && (
+            <GreenTeamCard copy={t.teamCard} onClick={() => setPage('team')} />
+          )}
+
           <OfferCard
             eyebrow={t.offerCard.eyebrow}
             title={t.offerCard.title}
             text={t.offerCard.text}
             accent="var(--tof-accent-sage)"
-            onClick={() => setPage('intro')}
+            onClick={() => setPage('quiz')}
             clickable
           />
-
-          {!IS_NATIVE && (
-            <GreenTeamCard copy={t.teamCard} onClick={() => setPage('team')} />
-          )}
         </div>
 
         <div

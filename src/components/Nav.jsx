@@ -50,9 +50,10 @@ export default function Nav({
                 { key: 'team', label: t.myTeam },
             ]
             : [
+                // Web: de test zit in de app, dus geen "Eerst even uitleg"
+                // en "Test jezelf" meer — /quiz toont hier het storescherm.
                 { key: 'home', label: t.home },
-                { key: 'intro', label: t.intro },
-                { key: 'quiz', label: t.quiz },
+                { key: 'quiz', label: t.app },
                 { key: 'team', label: t.teamEnvironment },
             ];
     const resultItems = (hasResult && (IS_NATIVE || !isManager))

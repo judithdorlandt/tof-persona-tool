@@ -11,10 +11,10 @@
  * vanzelf meegaat (App.js, case 'quiz').
  */
 const quizInApp = {
-  eyebrow: 'Test jezelf',
+  eyebrow: 'De app',
   title: 'De test zit in de app',
   lead:
-    'Doe de test in de Persona-app. Daar blijven je antwoorden op je eigen telefoon staan — er gaat niets naar een server.',
+    'De test staat in de app TOF Persona: op je telefoon en zonder account. Daarna kies je zelf of je profiel bij een team terechtkomt.',
 
   appStore: 'Download in de App Store',
   googlePlay: 'Download in Google Play',
@@ -23,7 +23,7 @@ const quizInApp = {
     title: 'Zo werkt het',
     items: [
       'Download TOF Persona in de App Store of Google Play.',
-      'Doe de test — vijf minuten, zonder account.',
+      'Doe de test: negen vragen, ongeveer vijf minuten. Daarna kun je verdiepen, ongeveer drie minuten.',
       'Heb je een teamcode? Breng je profiel daarna in bij je team.',
     ],
   },

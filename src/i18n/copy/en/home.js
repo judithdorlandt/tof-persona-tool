@@ -1,32 +1,32 @@
 const home = {
-  eyebrow: '01 — TOF Persona Tool',
-  heroTitle: 'Discover how you work —',
-  heroTitleAccent: 'and why that can cause friction in teams.',
+  eyebrow: 'TOF Persona Team',
+  heroTitle: 'Your profile starts in the app.',
+  heroTitleAccent: 'This is where you see your team.',
   heroLead:
-    'Start with yourself. Gain insight into your working style, what gives you energy and what you need to be at your best.',
+    'Everyone on the team takes the test in the TOF Persona app. This is where you see what those profiles say together: the working styles in your team, where the energy is and where things rub. No names, and only once five profiles are in.',
 
-  ctaStartTest: 'Start the Persona test',
-  ctaForTeams: 'For teams & organisations',
-  ctaTeamEnvironment: 'Team space',
-  durationNote: 'Nine questions · about 5 minutes',
+  // Opens the code window.
+  ctaTeamEnvironment: 'I have an access code',
+  // To /quiz, which is the store screen on the web.
+  ctaApp: 'Take the test in the app',
 
   offerCard: {
-    eyebrow: 'Your working style',
-    title: 'Persona Insight',
-    text: 'For personal insight into how you work, where your energy comes from and what you need to be at your best.',
+    eyebrow: 'For yourself',
+    title: 'The TOF Persona app',
+    text: 'Your own profile: how you work, what gives you energy and what you need. Got a team code? Then add it to your team afterwards.',
   },
 
   teamCard: {
-    eyebrow: 'For organisations only',
+    eyebrow: 'For your team',
     titleLine1: 'Your team works.',
     titleLine2: 'But does it work together?',
-    text: 'See what Team Insight, Team Dynamics and strategic workplace insight could mean for your organisation.',
+    text: 'See what Team Insight and Team Dynamics reveal about your team — and, if you want to look further, the Organisational Landscape and the Strategic Compass.',
   },
 
   footer: {
     logoAlt: 'TOF logo',
-    body: 'We help organisations bring workplace, behaviour and collaboration into better alignment. From insight to real movement.',
-    website: 'Visit our website →',
+    body: 'TOF Persona was developed by The Office Factory, which looks at workplace, digital tools and behaviour as one whole.',
+    website: 'Visit tof.services →',
     contact: 'Contact',
     privacy:
       '🔒 Data is used anonymously for analysis and is never shared with third parties. Your name is optional.',

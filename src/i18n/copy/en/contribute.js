@@ -68,7 +68,7 @@ const contribute = {
     body:
       'This page expects a profile from the app. If you got here through the "Add my profile" button in the app, it is in there — if the link was cut short along the way or typed by hand, it is not. No profile yet? Take the test in the app.',
     startTest: 'Get the app',
-    backHome: 'Read the introduction',
+    backHome: 'Back to home',
   },
 
   errors: {

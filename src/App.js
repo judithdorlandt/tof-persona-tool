@@ -142,7 +142,11 @@ export default function App() {
         return startScherm;
 
       case 'intro':
-        return <Intro setPage={navigate} />;
+        // De uitleg hoort bij de test, en die zit op het web niet meer: oude
+        // links landen op het storescherm. In de app blijft hij gewoon staan.
+        return IS_NATIVE
+          ? <Intro setPage={navigate} />
+          : <QuizInApp setPage={navigate} />;
 
       case 'library':
         return <Library />;

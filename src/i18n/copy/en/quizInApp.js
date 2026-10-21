@@ -11,10 +11,10 @@
  * code comes along automatically (App.js, case 'quiz').
  */
 const quizInApp = {
-  eyebrow: 'Test yourself',
+  eyebrow: 'The app',
   title: 'The test lives in the app',
   lead:
-    'Take the test in the Persona app. Your answers stay on your own phone there — nothing goes to a server.',
+    'The test lives in the TOF Persona app — on your phone, no account needed. Afterwards, you decide whether your profile goes to a team.',
 
   appStore: 'Download on the App Store',
   googlePlay: 'Get it on Google Play',
@@ -23,7 +23,7 @@ const quizInApp = {
     title: 'How it works',
     items: [
       'Download TOF Persona from the App Store or Google Play.',
-      'Take the test — five minutes, no account.',
+      'Take the test: nine questions, about five minutes. Then an optional deep dive of about three more.',
       'Got a team code? Add your profile to your team afterwards.',
     ],
   },

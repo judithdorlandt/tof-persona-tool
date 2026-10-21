@@ -6,12 +6,12 @@ const teamIntro = {
   modules: {
     app: {
       eyebrow: 'Module 1 · For everyone',
-      title: 'The Persona app',
-      hook: 'Start with yourself. Free, in five minutes, without an account.',
+      title: 'The TOF Persona app',
+      hook: 'Everyone starts with their own profile in the app. No account needed.',
       bullets: [
         'Your own profile: what gives you energy and what drains you',
         'What that means for your workspace and your working agreements',
-        'Everything stays on your phone — nothing goes to a server',
+        'Your profile only goes to a team if you add it — and you see which team first',
         'Got a team code? Then you add your profile to your team',
       ],
       cta: 'I have a team code',
@@ -87,9 +87,9 @@ const teamIntro = {
   },
 
   magicLink: {
-    eyebrow: 'Already working with TOF? Sign in with a magic link',
+    eyebrow: 'Leading a team? Log in with your email',
     body:
-      'Magic-link access is only available for teams we have already started a programme with. Not working with us yet? Book a conversation below first.',
+      'Log in with the email address linked to your team. No team yet? Request a team code at persona-tool.nl.',
     cta: 'Go to sign in →',
   },
 
@@ -117,12 +117,12 @@ const teamIntro = {
       lead: 'We recognise whether you have access to Team Insight or Team Dynamics — you will land on the right dashboard automatically.',
     },
     dynamics: {
-      eyebrow: 'Module 2',
+      eyebrow: 'TOF Persona Team',
       title: 'Team Dynamics access code',
       lead: 'Enter your access code for Team Dynamics. This code also gives you access to Team Insight.',
     },
     insight: {
-      eyebrow: 'Module 1',
+      eyebrow: 'TOF Persona Team',
       title: 'Team Insight access code',
       lead: 'Enter your access code for Team Insight.',
     },

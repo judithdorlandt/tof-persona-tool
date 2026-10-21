@@ -8,6 +8,8 @@ const nav = {
   home: 'Home',
   intro: 'Eerst even uitleg',
   quiz: 'Test jezelf',
+  // Web: de test zit in de app; dit label wijst naar het storescherm.
+  app: 'De app',
   teamEnvironment: 'Teamomgeving',
   results: 'Resultaat',
   library: "Persona's",

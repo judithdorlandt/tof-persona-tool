@@ -1,31 +1,31 @@
 const home = {
-  eyebrow: '01 — TOF Persona Tool',
-  heroTitle: 'Ontdek hoe jij werkt —',
-  heroTitleAccent: 'en waarom dat in teams soms schuurt.',
+  eyebrow: 'TOF Persona Team',
+  heroTitle: 'Je profiel maak je in de app.',
+  heroTitleAccent: 'Je team zie je hier.',
   heroLead:
-    'Start bij jezelf. Krijg inzicht in jouw werkstijl, waar jij energie van krijgt en wat jij nodig hebt om goed tot je recht te komen.',
+    'Ieder teamlid doet de test in de app TOF Persona. Hier lees je wat die profielen samen zeggen: welke werkstijlen je team heeft, waar energie zit en waar het schuurt. Zonder namen, en pas vanaf vijf profielen.',
 
-  ctaStartTest: 'Start de Persona test',
-  ctaForTeams: 'Voor teams & organisaties',
-  ctaTeamEnvironment: 'Teamomgeving',
-  durationNote: 'Negen vragen · ongeveer 5 minuten',
+  // Opent het codevenster.
+  ctaTeamEnvironment: 'Ik heb een toegangscode',
+  // Naar /quiz, dat op het web het storescherm is.
+  ctaApp: 'Doe de test in de app',
 
   offerCard: {
-    eyebrow: 'Jouw werkstijl',
-    title: 'Persona Insight',
-    text: 'Voor individueel inzicht in hoe jij werkt, waar jouw energie zit en wat jij nodig hebt om tot je recht te komen.',
+    eyebrow: 'Voor jezelf',
+    title: 'De app TOF Persona',
+    text: 'Je eigen profiel: hoe je werkt, waar je energie van krijgt en wat je nodig hebt. Heb je een teamcode, dan breng je het daarna in bij je team.',
   },
 
   teamCard: {
-    eyebrow: 'Alleen voor organisaties',
+    eyebrow: 'Voor je team',
     titleLine1: 'Je team werkt.',
     titleLine2: 'Werkt het ook samen?',
-    text: 'Bekijk wat Teaminzicht, Teamdynamiek en strategisch werkplekinzicht voor jouw organisatie kunnen betekenen.',
+    text: 'Zie wat Teaminzicht en Teamdynamiek over je team laten zien. Wil je verder kijken, dan zijn er het Organisatielandschap en het Strategisch Kompas.',
   },
 
   footer: {
     logoAlt: 'TOF logo',
-    body: 'Wij helpen organisaties om werkplek, gedrag en samenwerking beter op elkaar te laten aansluiten. Vanuit inzicht naar concrete beweging.',
+    body: 'TOF Persona is ontwikkeld door The Office Factory, die werkomgeving, digitale middelen en gedrag in samenhang bekijkt.',
     website: 'Ga naar website →',
     contact: 'Contact',
     privacy:
