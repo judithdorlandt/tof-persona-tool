@@ -100,7 +100,7 @@ const admin = {
      * Code, teamlink, teamnaam en e-mailadres van de manager vult de app in;
      * inkoopordernummer en sessie vult Judith zelf in vóór verzending.
      */
-    mailBody: ({ recipient, code, quizUrl, team, managerEmail }) => `Beste ${recipient},
+    mailBody: ({ recipient, code, appStoreUrl, googlePlayUrl, team, managerEmail }) => `Beste ${recipient},
 
 Hierbij de teamcode voor ${team}. Je team kan vandaag beginnen.
 
@@ -109,16 +109,19 @@ Teamcode: ${code}
 
 VOOR JE TEAM
 
-Stuur je team deze link:
-${quizUrl}
+Iedereen doet de test in de app TOF Persona, op de eigen telefoon en
+zonder account:
 
-De organisatie en de teamcode staan daar al in. Stuur de link door, niet
-alleen de code: zonder de link kan het team zijn team niet kiezen.
+App Store (iPhone): ${appStoreUrl}
+Google Play (Android): ${googlePlayUrl}
 
-Iedereen beantwoordt negen vragen, ongeveer vijf minuten, en ziet daarna
-meteen het eigen profiel. Daarna is er een verdieping van drie minuten; die
-is niet verplicht. Een voornaam invullen mag, maar hoeft niet: zonder naam
-telt iemand gewoon mee in het teambeeld.
+1. Download de app en doe de test: negen vragen, ongeveer vijf minuten.
+   Daarna is er een verdieping van drie minuten; die is niet verplicht.
+2. Tik bij je profiel op "Profiel inbrengen".
+3. Vul de teamcode in: ${code}
+
+Stuur deze stappen en de teamcode door naar je team. Een voornaam invullen
+mag, maar hoeft niet: zonder naam telt iemand gewoon mee in het teambeeld.
 
 Het teambeeld bekijk je op team.persona-tool.nl/team, met de teamcode.
 
@@ -133,7 +136,8 @@ kan gaan zonder dat dit deel meegaat.
 2. Vul ${managerEmail || '[e-mailadres leidinggevende]'} in
 3. Je krijgt een inloglink per mail
 
-Vul de vragenlijst zelf ook in, via de teamlink. Dan tel je mee in het beeld.
+Doe de test zelf ook in de app en breng je profiel in. Dan tel je mee in
+het beeld.
 
 
 WANNEER JE IETS ZIET

@@ -89,7 +89,7 @@ const admin = {
      * The app fills in code, team link, team name and the manager's email;
      * Judith fills in the purchase order number and session before sending.
      */
-    mailBody: ({ recipient, code, quizUrl, team, managerEmail }) => `Dear ${recipient},
+    mailBody: ({ recipient, code, appStoreUrl, googlePlayUrl, team, managerEmail }) => `Dear ${recipient},
 
 Here is the team code for ${team}. Your team can start today.
 
@@ -98,16 +98,19 @@ Team code: ${code}
 
 FOR YOUR TEAM
 
-Send your team this link:
-${quizUrl}
+Everyone takes the test in the TOF Persona app, on their own phone and
+without an account:
 
-The organisation and team code are already in it. Pass on the link, not just
-the code: without the link, people can't select their team.
+App Store (iPhone): ${appStoreUrl}
+Google Play (Android): ${googlePlayUrl}
 
-Everyone answers nine questions, about five minutes, and sees their own
-profile straight away. After that there's an optional deeper section of
-three minutes. Entering a first name is optional: without one, people still
-count in the team picture.
+1. Download the app and take the test: nine questions, about five minutes.
+   After that there's an optional deeper section of three minutes.
+2. On your profile, tap "Add my profile".
+3. Enter the team code: ${code}
+
+Pass these steps and the team code on to your team. Entering a first name is
+optional: without one, people still count in the team picture.
 
 You can view the team picture at team.persona-tool.nl/team, with the team
 code.
@@ -123,7 +126,7 @@ team without that part going with it.
 2. Enter ${managerEmail || '[team lead email]'}
 3. You'll receive a login link by email
 
-Fill in the questionnaire yourself as well, via the team link. Then you count
+Take the test in the app yourself as well and add your profile. Then you count
 in the picture too.
 
 

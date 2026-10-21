@@ -6,15 +6,20 @@
  * hier komt wilde de test doen, dus hij krijgt te horen waar die staat en wat
  * hij daarna met zijn teamcode doet.
  *
- * Wie via een uitnodigingslink van een manager komt (/quiz?org=…&code=…), ziet
- * dit scherm NIET — die doet de test gewoon in de browser, zodat de teamcode
- * vanzelf meegaat (App.js, case 'quiz').
+ * Ook wie via een uitnodigingslink van een manager komt (/quiz?org=…&code=…)
+ * landt hier; dan staat de teamcode bovenaan (`teamCode`).
  */
 const quizInApp = {
   eyebrow: 'De app',
   title: 'De test zit in de app',
   lead:
     'De test staat in de app TOF Persona: op je telefoon en zonder account. Daarna kies je zelf of je profiel bij een team terechtkomt.',
+
+  teamCode: {
+    title: 'Jouw teamcode',
+    body: (team) =>
+      `Bewaar deze code. Na de test tik je in de app bij je profiel op "Profiel inbrengen" en vul je hem in. Dan telt je profiel mee voor ${team}.`,
+  },
 
   appStore: 'Download in de App Store',
   googlePlay: 'Download in Google Play',

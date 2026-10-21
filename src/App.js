@@ -156,12 +156,11 @@ export default function App() {
         // Hij slaat zelf op in Supabase en toont het profiel intern, dus
         // setResultData is hier niet meer nodig.
         //
-        // Op het web alleen voor wie via een uitnodigingslink van een manager
-        // komt (?org=…&code=…): dan gaat de teamcode vanzelf mee en kost een
-        // app-installatie geen deelnemers aan de teammeting. De vrije
-        // "Test jezelf" wijst naar de app in beide stores.
-        const viaUitnodiging = /[?&](org|code)=/.test(window.location.search);
-        return IS_NATIVE || viaUitnodiging
+        // Op het web bestaat de vragenlijst niet meer (besluit Judith, 21 okt
+        // 2026): ook wie via een uitnodigingslink komt (?org=…&code=…), gaat
+        // naar de app. Het storescherm toont dan de teamcode van die link,
+        // zodat die na de test bij "Profiel inbrengen" klaarligt.
+        return IS_NATIVE
           ? <QuizTest setPage={navigate} />
           : <QuizInApp setPage={navigate} />;
       }

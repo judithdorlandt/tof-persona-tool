@@ -7,14 +7,19 @@
  * what to do next with their team code.
  *
  * Anyone arriving through a manager's invitation link (/quiz?org=…&code=…)
- * does NOT see this screen — they take the test in the browser, so the team
- * code comes along automatically (App.js, case 'quiz').
+ * lands here too; the team code is then shown at the top (`teamCode`).
  */
 const quizInApp = {
   eyebrow: 'The app',
   title: 'The test lives in the app',
   lead:
     'The test lives in the TOF Persona app — on your phone, no account needed. Afterwards, you decide whether your profile goes to a team.',
+
+  teamCode: {
+    title: 'Your team code',
+    body: (team) =>
+      `Keep this code. After the test, tap "Add my profile" on your profile in the app and enter it. Your profile then counts for ${team}.`,
+  },
 
   appStore: 'Download on the App Store',
   googlePlay: 'Get it on Google Play',
