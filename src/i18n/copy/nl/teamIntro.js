@@ -23,9 +23,9 @@ const teamIntro = {
         'Heb je een teamcode? Dan voeg je je profiel toe aan je team',
       ],
       cta: 'Ik heb een teamcode',
-      store: 'Te downloaden als TOF Persona in de App Store.',
+      store: 'Te downloaden als TOF Persona in de App Store en Google Play.',
       storeSoon: 'Binnenkort in de App Store.',
-      webCta: 'Of doe de test hier →',
+      webCta: 'Download de app →',
     },
     teams: {
       eyebrow: 'Module 2 · Voor teams',

@@ -13,6 +13,7 @@ import nativeCopy from './native';
 import nav from './nav';
 import quiz from './quiz';
 import quizData from './quizData';
+import quizInApp from './quizInApp';
 import resultsCard from './resultsCard';
 import shell from './shell';
 import signup from './signup';
@@ -42,6 +43,7 @@ const nl = {
   nav,
   quiz,
   quizData,
+  quizInApp,
   resultsCard,
   shell,
   signup,

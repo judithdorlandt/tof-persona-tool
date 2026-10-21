@@ -66,8 +66,8 @@ const contribute = {
     eyebrow: 'No profile found',
     title: 'There is no profile in this link.',
     body:
-      'This page expects a profile from the app. If you got here through the "Add my profile" button in the app, it is in there — if the link was cut short along the way or typed by hand, it is not. You can also take the test here; then you pick your team as you go.',
-    startTest: 'Take the test here',
+      'This page expects a profile from the app. If you got here through the "Add my profile" button in the app, it is in there — if the link was cut short along the way or typed by hand, it is not. No profile yet? Take the test in the app.',
+    startTest: 'Get the app',
     backHome: 'Read the introduction',
   },
 

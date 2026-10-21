@@ -15,9 +15,9 @@ const teamIntro = {
         'Got a team code? Then you add your profile to your team',
       ],
       cta: 'I have a team code',
-      store: 'Available as TOF Persona in the App Store.',
+      store: 'Available as TOF Persona on the App Store and Google Play.',
       storeSoon: 'Coming soon to the App Store.',
-      webCta: 'Or take the test here →',
+      webCta: 'Download the app →',
     },
     teams: {
       eyebrow: 'Module 2 · For teams',

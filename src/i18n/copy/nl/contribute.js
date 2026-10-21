@@ -66,8 +66,8 @@ const contribute = {
     eyebrow: 'Geen profiel gevonden',
     title: 'Er zit geen profiel in deze link.',
     body:
-      'Deze pagina verwacht een profiel uit de app. Kom je hier via de knop "Profiel inbrengen" in de app, dan zit het erin — is de link onderweg afgekapt of met de hand ingetypt, dan niet. Je kunt de test ook hier doen; dan kies je meteen je team.',
-    startTest: 'Doe de test hier',
+      'Deze pagina verwacht een profiel uit de app. Kom je hier via de knop "Profiel inbrengen" in de app, dan zit het erin — is de link onderweg afgekapt of met de hand ingetypt, dan niet. Nog geen profiel? Doe de test in de app.',
+    startTest: 'Naar de app',
     backHome: 'Naar de uitleg',
   },
 

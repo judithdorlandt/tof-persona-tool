@@ -41,6 +41,7 @@ import { WERKPLEKPROFIEL_ENABLED, QUIZTEST_ENABLED } from './experimental/featur
 
 // EXPERIMENTEEL — verkorte testvariant van de vragenlijst, achter een flag.
 import QuizTest from './experimental/quizTest/QuizTest.jsx';
+import QuizInApp from './components/QuizInApp.jsx';
 
 export default function App() {
   const location = useLocation();
@@ -146,11 +147,20 @@ export default function App() {
       case 'library':
         return <Library />;
 
-      case 'quiz':
+      case 'quiz': {
         // De verkorte quiz (voorheen "QuizTest") is nu de echte vragenlijst.
         // Hij slaat zelf op in Supabase en toont het profiel intern, dus
         // setResultData is hier niet meer nodig.
-        return <QuizTest setPage={navigate} />;
+        //
+        // Op het web alleen voor wie via een uitnodigingslink van een manager
+        // komt (?org=…&code=…): dan gaat de teamcode vanzelf mee en kost een
+        // app-installatie geen deelnemers aan de teammeting. De vrije
+        // "Test jezelf" wijst naar de app in beide stores.
+        const viaUitnodiging = /[?&](org|code)=/.test(window.location.search);
+        return IS_NATIVE || viaUitnodiging
+          ? <QuizTest setPage={navigate} />
+          : <QuizInApp setPage={navigate} />;
+      }
 
       case 'results': {
         // Op het web komt het resultaat uit de sessie; in de app uit de
