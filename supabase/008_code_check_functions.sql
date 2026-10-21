@@ -35,6 +35,11 @@
 --   5. SECTIE 4 (responses) los daarvan, na een eigen controle.
 --
 -- Idempotent: create or replace / drop ... if exists.
+--
+-- STATUS: secties 0 t/m 3 gedraaid op 21 okt 2026 (productie). Daarna als
+-- anon geverifieerd: team_access_codes, admin_codes en een insert in
+-- membership geven 42501; check_team_code, check_admin_code en quiz_teams
+-- werken; join_team zonder inloggen geeft not_logged_in. SECTIE 4 nog niet.
 -- ============================================================
 
 
@@ -298,6 +303,14 @@ grant execute on function public.check_admin_code(text)      to anon, authentica
 grant execute on function public.quiz_teams(text, text)      to anon, authenticated;
 grant execute on function public.join_team(text)             to authenticated;
 grant execute on function public.my_team_memberships()       to authenticated;
+
+-- Nagekomen (21 okt 2026): Supabase geeft nieuwe functies in `public` via
+-- default privileges óók rechtstreeks execute aan anon. De revoke from public
+-- hierboven raakt dat niet — na sectie 2 kon anon my_team_memberships nog
+-- aanroepen (gaf een lege lijst, want auth.uid() is dan null; join_team gaf
+-- not_logged_in). Onschuldig, maar dit hoort zo:
+revoke execute on function public.join_team(text)       from anon;
+revoke execute on function public.my_team_memberships() from anon;
 
 
 -- ============================================================
