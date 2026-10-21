@@ -39,7 +39,10 @@
 -- STATUS: secties 0 t/m 3 gedraaid op 21 okt 2026 (productie). Daarna als
 -- anon geverifieerd: team_access_codes, admin_codes en een insert in
 -- membership geven 42501; check_team_code, check_admin_code en quiz_teams
--- werken; join_team zonder inloggen geeft not_logged_in. SECTIE 4 nog niet.
+-- werken; join_team zonder inloggen geeft not_logged_in. SECTIE 4 gedraaid
+-- op 21 okt 2026: anon leest private.responses niet (42501), de RPC geeft
+-- het Demo-team (17 rijen, 0 met naam). Een ingelogde niet-beheerder is
+-- niet getest — dat vraagt een tweede account.
 -- ============================================================
 
 
