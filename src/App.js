@@ -277,10 +277,12 @@ export default function App() {
         return <StrategischKompasReview setPage={navigate} />;
 
       case 'quiztest':
+        // Uit: een oude link landt op het storescherm, niet op de voorpagina —
+        // wie hier komt wilde de test doen.
         return QUIZTEST_ENABLED ? (
           <QuizTest setPage={navigate} />
         ) : (
-          <Landing setPage={navigate} />
+          <QuizInApp setPage={navigate} />
         );
 
       case 'teamwerkplekprofiel':

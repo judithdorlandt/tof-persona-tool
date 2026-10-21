@@ -30,7 +30,10 @@ export const WERKPLEKPROFIEL_ENABLED =
  *   - Snel: zet QUIZTEST_DEFAULT hieronder op false.
  *   - Via build/env: REACT_APP_QUIZTEST = '1' (aan) of '0' (uit).
  */
-const QUIZTEST_DEFAULT = true;
+// Uit sinds 21 okt 2026: /quiz-test was een achterdeur naar de vragenlijst in
+// de browser, terwijl de vrije test in de app zit. Lokaal aanzetten kan met
+// REACT_APP_QUIZTEST=1.
+const QUIZTEST_DEFAULT = false;
 
 const quizTestEnvFlag = process.env.REACT_APP_QUIZTEST;
 
