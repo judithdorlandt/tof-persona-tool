@@ -8,7 +8,7 @@
  * Niet-admin → redirect naar /home met melding.
  *
  * MVP-scope (deze versie):
- *  - Form: nieuwe team-toegangscode aanmaken (org, team, level)
+ *  - Form: nieuwe team-toegangscode aanmaken (org, team, optioneel de leidinggevende)
  *  - Direct kant-en-klare welkomstmail-template tonen om te kopiëren
  *  - Lijst: alle aangemaakte teams met response-telling
  *
@@ -94,7 +94,6 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     // Form state
     const [orgInput, setOrgInput] = useState('');
     const [teamInput, setTeamInput] = useState('');
-    const [levelInput, setLevelInput] = useState('insight');
     const [leaderEmail, setLeaderEmail] = useState('');
     const [createLoading, setCreateLoading] = useState(false);
     const [createError, setCreateError] = useState('');
@@ -208,34 +207,59 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
             setCreateError(t.createTeam.errors.required);
             return;
         }
+        const leader = leaderEmail.trim().toLowerCase();
+        if (leader && !leader.includes('@')) {
+            setCreateError(t.createTeam.errors.invalidEmail);
+            return;
+        }
         setCreateLoading(true);
         try {
+            // Geen niveau meer kiezen: sinds het toegangsmodel van 16 okt geeft
+            // elke teamcode Teaminzicht (access.js, levelFromCode). Teamdynamiek
+            // hangt aan de managerkoppeling + inloggen — die maken we hieronder.
             const result = await createTeamAccessCode({
                 organization: orgInput.trim(),
                 team: teamInput.trim(),
-                level: levelInput,
             });
             if (result.error) {
                 setCreateError(result.error.message || t.createTeam.errors.failed);
                 setCreateLoading(false);
                 return;
             }
+
+            // Leidinggevende ingevuld? Dan meteen koppelen, anders zag hij na
+            // het inloggen zijn team niet. De code bestaat dan al; mislukt de
+            // koppeling, dan melden we dat en kan het alsnog onder
+            // Managerkoppelingen.
+            let leaderLinked = false;
+            if (leader) {
+                const { error: linkErr } = await adminAddTeamManager({ email: leader, teamCode: result.code });
+                if (linkErr) {
+                    setCreateError(t.createTeam.errors.leaderLinkFailed(linkErr.message || ''));
+                } else {
+                    leaderLinked = true;
+                }
+            }
+
             // Bewaar voor de welkomstmail-preview
             setJustCreated({
                 code: result.code,
                 organization: orgInput.trim(),
                 team: teamInput.trim(),
-                level: levelInput,
-                leaderEmail: leaderEmail.trim() || null,
+                leaderEmail: leader || null,
+                leaderLinked,
             });
             // Form leegmaken
             setOrgInput('');
             setTeamInput('');
             setLeaderEmail('');
-            setLevelInput('insight');
-            // Lijst verversen
-            const refreshed = await getAllTeamAccessCodes();
+            // Lijsten verversen
+            const [refreshed, mgrs] = await Promise.all([
+                getAllTeamAccessCodes(),
+                adminListTeamManagers(),
+            ]);
             setTeams(refreshed);
+            setManagers(mgrs);
         } catch (err) {
             setCreateError(err?.message || t.createTeam.errors.unknown);
         } finally {
@@ -433,8 +457,6 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                     setOrgInput={setOrgInput}
                     teamInput={teamInput}
                     setTeamInput={setTeamInput}
-                    levelInput={levelInput}
-                    setLevelInput={setLevelInput}
                     leaderEmail={leaderEmail}
                     setLeaderEmail={setLeaderEmail}
                     createLoading={createLoading}
@@ -590,7 +612,7 @@ function AdminLogin() {
 
 function CreateTeamCard({
     isMobile, orgInput, setOrgInput, teamInput, setTeamInput,
-    levelInput, setLevelInput, leaderEmail, setLeaderEmail,
+    leaderEmail, setLeaderEmail,
     createLoading, createError, onSubmit,
 }) {
     const { admin: { createTeam: t } } = useCopy();
@@ -662,32 +684,18 @@ function CreateTeamCard({
                 </div>
             </div>
 
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-                gap: 14,
-            }}>
-                <div>
-                    <label style={labelStyle}>{t.moduleLabel}</label>
-                    <select
-                        value={levelInput}
-                        onChange={(e) => setLevelInput(e.target.value)}
-                        style={{ ...inputStyle, cursor: 'pointer' }}
-                    >
-                        <option value="insight">{t.moduleOptions.insight}</option>
-                        <option value="dynamics">{t.moduleOptions.dynamics}</option>
-                    </select>
-                </div>
-                <div>
-                    <label style={labelStyle}>{t.leaderEmailLabel}</label>
-                    <input
-                        type="email"
-                        value={leaderEmail}
-                        onChange={(e) => setLeaderEmail(e.target.value)}
-                        placeholder={t.leaderEmailPlaceholder}
-                        style={inputStyle}
-                    />
-                </div>
+            <div>
+                <label style={labelStyle}>{t.leaderEmailLabel}</label>
+                <input
+                    type="email"
+                    value={leaderEmail}
+                    onChange={(e) => setLeaderEmail(e.target.value)}
+                    placeholder={t.leaderEmailPlaceholder}
+                    style={inputStyle}
+                />
+                <p style={{ margin: '6px 0 0', fontSize: 12.5, lineHeight: 1.5, color: 'var(--tof-text-muted)' }}>
+                    {t.leaderEmailHint}
+                </p>
             </div>
 
             {createError && (
@@ -721,9 +729,9 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
     const { admin: { justCreated: t } } = useCopy();
     const [copied, setCopied] = useState(false);
 
-    const moduleLabel = info.level === 'dynamics'
-        ? t.moduleLabels.dynamics
-        : t.moduleLabels.insight;
+    const leaderLine = info.leaderLinked
+        ? t.leaderLinked(info.leaderEmail)
+        : t.noLeader;
     const recipientName = info.leaderEmail
         ? info.leaderEmail.split('@')[0].split('.')[0]
         : t.fallbackRecipient; // voorbeeldnaam
@@ -783,7 +791,7 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
                         {info.organization} — {info.team}
                     </h3>
                     <div style={{ fontSize: 13, color: 'var(--tof-text-muted)', marginTop: 4 }}>
-                        {moduleLabel}
+                        {leaderLine}
                     </div>
                 </div>
                 <SecondaryButton onClick={onDismiss}>{t.dismiss}</SecondaryButton>

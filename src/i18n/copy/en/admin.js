@@ -53,18 +53,18 @@ const admin = {
     organizationPlaceholder: 'E.g. Sample Council',
     teamLabel: 'Team / Department',
     teamPlaceholder: 'E.g. Corporate Affairs',
-    moduleLabel: 'Access level',
-    moduleOptions: {
-      insight: 'Team Insight',
-      dynamics: 'Team Insight + Dynamics',
-    },
     leaderEmailLabel: 'Team leader email (optional)',
     leaderEmailPlaceholder: 'name@organisation.com',
+    leaderEmailHint:
+      'This address is linked to the team as team leader straight away. After logging in, this person sees Team Insight and Team Dynamics. The team code itself gives everyone Team Insight.',
     submit: 'Create team',
     submitting: 'Creating…',
     hint: 'The code is generated automatically.',
     errors: {
       required: 'Organisation and team name are required.',
+      invalidEmail: 'This email address is not valid.',
+      leaderLinkFailed: (msg) =>
+        `The team was created, but the team leader could not be linked${msg ? ` (${msg})` : ''}. Add them under Managers.`,
       failed: 'Could not create the team.',
       unknown: 'Unknown error.',
     },
@@ -72,10 +72,8 @@ const admin = {
 
   justCreated: {
     eyebrow: 'Team created',
-    moduleLabels: {
-      insight: 'Team Insight',
-      dynamics: 'Team Insight + Dynamics',
-    },
+    leaderLinked: (email) => `Team leader linked: ${email}`,
+    noLeader: 'No team leader linked yet — add one under Managers.',
     dismiss: 'Close',
     codeLabel: 'Code',
     copyCode: 'Copy code',

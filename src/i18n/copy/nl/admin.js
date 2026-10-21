@@ -61,21 +61,20 @@ const admin = {
     organizationPlaceholder: 'Bv. Gemeente Voorbeeldstad',
     teamLabel: 'Team / Afdeling',
     teamPlaceholder: 'Bv. Bestuurszaken',
-    // Inzicht en Dynamiek zijn samen Module 2 geworden. Ze blijven twee
-    // toegangsniveaus in de database, dus het label noemt het niveau en niet
-    // langer een modulenummer — dat klopte niet meer.
-    moduleLabel: 'Toegangsniveau',
-    moduleOptions: {
-      insight: 'Teaminzicht',
-      dynamics: 'Teaminzicht + Dynamiek',
-    },
-    leaderEmailLabel: 'Leider e-mail (optioneel)',
+    // Geen keuze voor een toegangsniveau meer: elke teamcode geeft
+    // Teaminzicht. Teamdynamiek hangt aan de leidinggevende (managerkoppeling).
+    leaderEmailLabel: 'E-mail leidinggevende (optioneel)',
     leaderEmailPlaceholder: 'naam@organisatie.nl',
+    leaderEmailHint:
+      'Dit adres wordt meteen als leidinggevende aan het team gekoppeld. Na inloggen ziet deze persoon Teaminzicht én Teamdynamiek. De teamcode zelf geeft iedereen Teaminzicht.',
     submit: 'Team aanmaken',
     submitting: 'Aanmaken…',
     hint: 'Code wordt automatisch gegenereerd.',
     errors: {
       required: 'Organisatie en teamnaam zijn verplicht.',
+      invalidEmail: 'Dit e-mailadres klopt niet.',
+      leaderLinkFailed: (msg) =>
+        `Het team is aangemaakt, maar de leidinggevende kon niet gekoppeld worden${msg ? ` (${msg})` : ''}. Voeg die toe onder Managers.`,
       failed: 'Aanmaken mislukt.',
       unknown: 'Onbekende fout.',
     },
@@ -84,10 +83,8 @@ const admin = {
   /** Bevestiging na aanmaken, met kant-en-klare welkomstmail. */
   justCreated: {
     eyebrow: 'Team aangemaakt',
-    moduleLabels: {
-      insight: 'Teaminzicht',
-      dynamics: 'Teaminzicht + Dynamiek',
-    },
+    leaderLinked: (email) => `Leidinggevende gekoppeld: ${email}`,
+    noLeader: 'Nog geen leidinggevende gekoppeld — voeg die toe onder Managers.',
     dismiss: 'Sluiten',
     codeLabel: 'Code',
     copyCode: 'Kopieer code',
