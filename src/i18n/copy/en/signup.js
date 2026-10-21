@@ -22,10 +22,6 @@ const signup = {
   departmentEmpty: 'No teams found',
   departmentPlaceholder: 'Choose your department…',
 
-  teamcodeLabel: 'Team code',
-  teamcodePlaceholder: 'Appears once you choose a department',
-  teamcodeHint: 'This fills in automatically as soon as you choose a department.',
-
   firstNameLabel: 'First name',
   firstNamePlaceholder: 'What is your name?',
   firstNameHint: 'Add your name and your persona becomes properly personal.',

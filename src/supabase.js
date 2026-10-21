@@ -49,6 +49,16 @@ function ensureSupabase() {
   return true;
 }
 
+// Bestaat de RPC nog niet (migratie nog niet gedraaid)? PostgREST meldt dat
+// als PGRST202 "Could not find the function … in the schema cache". Alleen
+// dán vallen de code-functies terug op de oude, directe leesactie — een
+// geweigerd recht is géén reden om het via de achterdeur te proberen.
+export function isMissingFunction(err) {
+  if (!err) return false;
+  if (String(err.code || '').toUpperCase() === 'PGRST202') return true;
+  return /could not find the function|schema cache/i.test(String(err.message || ''));
+}
+
 // =========================
 // AUTH — magic-link (passwordless)
 // =========================
@@ -733,19 +743,26 @@ export async function validateTeamAccessCode(accessCode) {
 
     }
 
-    const { data, error } = await supabase
+    // Eén code controleren via de server (008): de codetabel zelf is niet
+    // leesbaar, anders vraagt iedereen met de anon-key alle codes op.
+    // Terugval op de directe read zolang 008 nog niet gedraaid is.
+    let data = null;
+    const { data: rpcData, error: rpcErr } = await supabase
+      .rpc('check_team_code', { p_code: cleanCode });
 
-      .from('team_access_codes')
-
-      .select('*')
-
-      .eq('code', cleanCode)
-
-      .eq('active', true)
-
-      .maybeSingle();
-
-    if (error) throw error;
+    if (rpcErr) {
+      if (!isMissingFunction(rpcErr)) throw rpcErr;
+      const { data: direct, error } = await supabase
+        .from('team_access_codes')
+        .select('code, level, organization, team')
+        .eq('code', cleanCode)
+        .eq('active', true)
+        .maybeSingle();
+      if (error) throw error;
+      data = direct;
+    } else {
+      data = Array.isArray(rpcData) ? rpcData[0] || null : rpcData;
+    }
 
     if (!data) return null;
 
@@ -782,6 +799,8 @@ export async function validateTeamAccessCode(accessCode) {
  * Haalt alle teams op waar de huidige ingelogde gebruiker member van is.
  * Returned: [{ team, organization, role, created_at, code, level }]
  * Het 'code' en 'level' veld worden bijgevoegd door te joinen met team_access_codes.
+ * Dat gebeurt op de server (my_team_memberships, 008), zodat de browser de
+ * codetabel niet hoeft te lezen.
  *
  * Returnt lege array als niet ingelogd.
  */
@@ -792,6 +811,11 @@ export async function getMyMemberships() {
     const user = await getCurrentUser();
     if (!user) return [];
 
+    const { data: rpcData, error: rpcErr } = await supabase.rpc('my_team_memberships');
+    if (!rpcErr) return rpcData || [];
+    if (!isMissingFunction(rpcErr)) throw rpcErr;
+
+    // Terugval zolang 008 nog niet gedraaid is.
     const { data: memberships, error } = await supabase
       .from('membership')
       .select('id, team, organization, role, created_at')
@@ -863,6 +887,21 @@ export async function joinTeamByCode(code) {
       return { membership: null, accessCode: null, error: { message: errorCopy().invalidCode } };
     }
 
+    // De server maakt het lidmaatschap aan (join_team, 008): hij bepaalt
+    // team, organisatie en rol zelf. Vanuit de browser kon iemand anders
+    // zichzelf aan elk team toevoegen, met elke rol.
+    const { data: joined, error: joinErr } = await supabase
+      .rpc('join_team', { p_code: accessCode.code });
+    if (!joinErr) {
+      const membership = Array.isArray(joined) ? joined[0] || null : joined;
+      return { membership, accessCode, error: null };
+    }
+    if (!isMissingFunction(joinErr)) {
+      console.error('❌ joinTeamByCode error:', joinErr.message);
+      return { membership: null, accessCode, error: joinErr };
+    }
+
+    // Terugval zolang 008 nog niet gedraaid is.
     // team_access_codes heeft organization + team als aparte kolommen.
     const team = String(accessCode.team || '').trim() || `Team ${accessCode.code}`;
     const organization = accessCode.organization || null;
@@ -1271,8 +1310,9 @@ export async function createTeamAccessCode({ organization, team, level = 'insigh
 // =========================
 // Beheerders-toegang: één code geeft toegang tot alle teams.
 // Opgeslagen in aparte tabel 'admin_codes' zodat frontend de code niet bevat.
-// Iemand die naar de app-code kijkt ziet alleen de query — de code zelf
-// moet bij jou (of in jouw Supabase) bekend zijn.
+// Dat alleen was niet genoeg: zolang anon de tabel mocht lezen, vroeg
+// iedereen met de anon-key de code gewoon op. Sinds 008 controleert de
+// server één ingevoerde code en zegt alleen ja of nee.
 
 export async function validateAdminCode(adminCode) {
   if (!ensureSupabase()) return null;
@@ -1281,9 +1321,17 @@ export async function validateAdminCode(adminCode) {
     const cleanCode = String(adminCode || '').trim();
     if (!cleanCode) return null;
 
+    // Alleen waar/onwaar van de server (check_admin_code, 008) — de tabel
+    // zelf is niet leesbaar, anders ligt de admin-code op straat.
+    const { data: ok, error: rpcErr } = await supabase
+      .rpc('check_admin_code', { p_code: cleanCode });
+    if (!rpcErr) return ok === true ? { active: true } : null;
+    if (!isMissingFunction(rpcErr)) throw rpcErr;
+
+    // Terugval zolang 008 nog niet gedraaid is.
     const { data, error } = await supabase
       .from('admin_codes')
-      .select('*')
+      .select('active')
       .eq('code', cleanCode)
       .eq('active', true)
       .maybeSingle();

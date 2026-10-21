@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../supabase';
+import { supabase, isMissingFunction } from '../supabase';
 import { useCopy } from '../i18n/LanguageContext';
 import { IS_NATIVE } from '../config/platform';
 
@@ -9,12 +9,14 @@ import { IS_NATIVE } from '../config/platform';
  * Upgrade op de vrije-tekst context-stap in Quiz.jsx: in plaats van
  * organisatie/afdeling/teamcode zelf te typen (typo-gevoelig, terwijl de
  * team-matching exact op invite_code draait), kiest de deelnemer hier zijn
- * team uit een dropdown en vult de teamcode zich automatisch.
+ * team uit een dropdown.
  *
- * Bron = Supabase-tabel `team_access_codes` (active = true):
- *   - organization : organisatienaam
- *   - team         : afdeling / team
- *   - code         : automatisch gegenereerde toegangscode (invite_code)
+ * Bron = Supabase-functie `quiz_teams` (008): organisatie + team, ZONDER
+ * codes. Vroeger las dit formulier de hele tabel `team_access_codes`, en
+ * daarmee kon iedereen alle teamcodes opvragen. De code komt er nu op de
+ * server bij: een trigger op private.responses zoekt hem op bij organisatie
+ * + afdeling. Alleen de code uit de uitnodigingslink (?code=) sturen we zelf
+ * mee — die heeft de bezoeker al.
  *
  * Props:
  *   - organisatie : optioneel. Vast-zetten op één organisatie. Leeg = de
@@ -45,7 +47,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   const viaLink = Boolean(urlParams.org || urlParams.code);
   const isDemoOrg = (naam) => String(naam || '').toLowerCase().includes('demo');
 
-  const [rijen, setRijen] = useState([]); // [{ organization, team, code }]
+  const [rijen, setRijen] = useState([]); // [{ organization, team, code, linkTeam }]
   const [laden, setLaden] = useState(!IS_NATIVE);
   const [fout, setFout] = useState('');
 
@@ -77,14 +79,20 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
         return;
       }
 
-      let query = supabase
-        .from('team_access_codes')
-        .select('organization, team, code')
-        .eq('active', true)
-        .order('organization', { ascending: true })
-        .order('team', { ascending: true });
+      let { data, error } = await supabase.rpc('quiz_teams', {
+        p_org: orgVast || null,
+        p_code: urlParams.code || null,
+      });
 
-      const { data, error } = await query;
+      // Terugval zolang 008 nog niet gedraaid is: de oude, directe read.
+      if (isMissingFunction(error)) {
+        ({ data, error } = await supabase
+          .from('team_access_codes')
+          .select('organization, team, code')
+          .eq('active', true)
+          .order('organization', { ascending: true })
+          .order('team', { ascending: true }));
+      }
       if (!actief) return;
 
       if (error) {
@@ -93,12 +101,16 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
       } else {
         setRijen(
           (data || [])
-            .map((r) => ({
-              organization: String(r.organization || '').trim(),
-              team: String(r.team || '').trim(),
-              code: String(r.code || '').trim(),
-            }))
-            .filter((r) => r.team && r.code)
+            .map((r) => {
+              const code = String(r.code || '').trim();
+              return {
+                organization: String(r.organization || '').trim(),
+                team: String(r.team || '').trim(),
+                code,
+                linkTeam: Boolean(r.is_link_team) || (Boolean(code) && code === urlParams.code),
+              };
+            })
+            .filter((r) => r.team)
         );
       }
       setLaden(false);
@@ -107,19 +119,24 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     return () => {
       actief = false;
     };
-  }, [t]);
+  }, [t, orgVast, urlParams.code]);
+
+  // De code die met een afdeling meegaat: alleen de code uit de link, en dan
+  // alleen voor het team van die link. Voor de rest vult de server hem in.
+  // (In de terugval van vóór 008 kent de rij zijn code nog zelf.)
+  const codeVoor = (rij) => (rij ? rij.code || (rij.linkTeam ? urlParams.code : '') : '');
 
   // Teamcode uit de URL: zodra de codes geladen zijn de bijbehorende
   // organisatie + afdeling automatisch voorselecteren.
   useEffect(() => {
     if (!urlParams.code || form.afdeling) return;
-    const match = rijen.find((r) => r.code === urlParams.code);
+    const match = rijen.find((r) => r.linkTeam);
     if (match) {
       setForm((f) => ({
         ...f,
         organisatie: match.organization,
         afdeling: match.team,
-        teamcode: match.code,
+        teamcode: urlParams.code,
       }));
     }
   }, [rijen, urlParams.code, form.afdeling]);
@@ -155,13 +172,14 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
   }, [organisatieVast, organisaties, form.organisatie]);
 
   // Demo-modus (zonder link): bij één afdeling geen keuze bieden, maar de
-  // afdeling + teamcode automatisch invullen.
+  // afdeling automatisch invullen.
   const afdelingVast = !viaLink && afdelingen.length === 1;
 
   useEffect(() => {
     if (!afdelingVast || form.afdeling) return;
     const a = afdelingen[0];
-    setForm((f) => ({ ...f, afdeling: a.team, teamcode: a.code }));
+    setForm((f) => ({ ...f, afdeling: a.team, teamcode: codeVoor(a) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [afdelingVast, afdelingen, form.afdeling]);
 
   // Solo-modus: iemand test de tool voor zichzelf, zonder uitnodigingslink.
@@ -182,14 +200,14 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
     setForm((f) => ({ ...f, organisatie: org, afdeling: '', teamcode: '' }));
   }
 
-  // Bij keuze afdeling: bijbehorende teamcode automatisch invullen.
+  // Bij keuze afdeling: de code uit de link onthouden als het dat team is.
   function kiesAfdeling(e) {
     const naam = e.target.value;
     const gekozen = afdelingen.find((a) => a.team === naam);
     setForm((f) => ({
       ...f,
       afdeling: naam,
-      teamcode: gekozen ? gekozen.code : '',
+      teamcode: codeVoor(gekozen),
     }));
   }
 
@@ -217,6 +235,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
       dept: form.afdeling,
       // Team is optioneel; valt terug op de afdeling als leeg.
       team: form.team.trim() || form.afdeling,
+      // Leeg = de server zoekt de code bij organisatie + afdeling (008).
       invite_code: form.teamcode,
       role: form.overJezelf.trim(),
     };
@@ -388,22 +407,13 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
                     : t.departmentPlaceholder}
                 </option>
                 {afdelingen.map((a) => (
-                  <option key={a.code} value={a.team}>
+                  <option key={a.team} value={a.team}>
                     {a.team}
                   </option>
                 ))}
               </select>
             )}
 
-            {/* Teamcode — automatisch ingevuld */}
-            <label style={S.label}>{t.teamcodeLabel}</label>
-            <input
-              style={S.readonly}
-              value={form.teamcode}
-              placeholder={t.teamcodePlaceholder}
-              readOnly
-            />
-            <p style={S.hint}>{t.teamcodeHint}</p>
           </>
         )}
 

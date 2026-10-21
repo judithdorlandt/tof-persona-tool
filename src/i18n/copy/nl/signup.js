@@ -22,10 +22,6 @@ const signup = {
   departmentEmpty: 'Geen teams gevonden',
   departmentPlaceholder: 'Kies je afdeling…',
 
-  teamcodeLabel: 'Teamcode',
-  teamcodePlaceholder: 'Verschijnt na keuze afdeling',
-  teamcodeHint: 'Wordt automatisch ingevuld zodra je een afdeling kiest.',
-
   firstNameLabel: 'Voornaam',
   firstNamePlaceholder: 'Hoe heet je?',
   firstNameHint: 'Leuk voor je persoonlijke persona als je je naam invult!',
