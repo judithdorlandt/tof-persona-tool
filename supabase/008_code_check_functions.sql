@@ -410,7 +410,14 @@ create policy "admin_reads_responses"
 --
 -- Trigger testen zonder echte data achter te laten:
 --   begin;
---   insert into private.responses (organization, department, team, primary_archetype)
---   values ('Gemeente Nijkerk', 'Informatie en Technologie', 'Informatie en Technologie', 'test')
+--   insert into private.responses (organization, department, team,
+--                                  primary_archetype, secondary_archetype)
+--   values ('Gemeente Nijkerk', 'Informatie en Technologie', 'Informatie en Technologie',
+--           'test', 'test')
 --   returning invite_code;                                   -- verwacht: NJK-IT
 --   rollback;
+--
+-- GEDRAAID 21 okt 2026 (zonder secondary_archetype, dat is verplicht): de
+-- insert werd geweigerd op die kolom, maar de foutmelding toonde de rij mét
+-- invite_code = NJK-IT — de before-trigger draait vóór de not-null-controle.
+-- Trigger werkt dus. Volgnummer 414 is daarbij overgeslagen.
