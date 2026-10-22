@@ -1,4 +1,5 @@
 import { getArchetypes } from '../i18n/archetypes';
+import { getCopy } from '../i18n/copy';
 
 export const WORKPLACE_KEYS = [
     'focus',
@@ -37,6 +38,23 @@ export const WORKPLACE_COLORS = {
 // 5% van de totale werkstijl-energie. Strikte definitie zodat een
 // persona nooit tegelijk dominant in energie én ontbrekend kan zijn.
 export const MISSING_ENERGY_THRESHOLD_PCT = 5;
+
+// ── Dominant (besluit 4, 22 okt 2026) ─────────────────────────
+// Dominant = de werkstijl die bij de meeste mensen als eerste staat
+// (primaire telling), op Teaminzicht én Teamdynamiek. Bij een gelijke stand
+// zijn ze allemaal dominant — niet stil de eerste in de sorteervolgorde.
+export function dominantPersonas(aggregate) {
+    const list = aggregate?.personasByPrimary || [];
+    const max = list[0]?.count || 0;
+    if (max === 0) return [];
+    return list.filter((p) => p.count === max);
+}
+
+// De namen van de dominante werkstijl(en), samengevoegd: "Maker en Presteerder".
+export function dominantNames(aggregate, lang = 'nl') {
+    const names = dominantPersonas(aggregate).map((p) => p.name);
+    return names.length > 0 ? getCopy(lang).teamPanels.names.join(names) : '';
+}
 
 export function getArchetype(id, lang = 'nl') {
     return getArchetypes(lang).find((a) => a.id === id) || null;

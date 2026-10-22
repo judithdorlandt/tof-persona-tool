@@ -49,7 +49,7 @@ import {
 } from '../ui/AppShell';
 import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 
-import { buildTeamAggregate } from '../utils/TeamAggregation';
+import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
 import { buildTiles } from './TeamDashboard.jsx';
 import TeamDynamics from './TeamDynamics.jsx';
@@ -998,8 +998,8 @@ function OrganizationDetail({
     const { admin, teamDashboard, workplaceProfile } = useCopy();
     const t = admin.detail;
     const tiles = useMemo(
-        () => buildTiles(teamDashboard, { workplaceProfile }),
-        [teamDashboard, workplaceProfile]
+        () => buildTiles(teamDashboard, { workplaceProfile, lang }),
+        [teamDashboard, workplaceProfile, lang]
     );
 
     const moduleAccent = moduleSel === 'dynamics' ? DYNAMICS_ACCENT : INSIGHT_ACCENT;
@@ -1068,11 +1068,11 @@ function OrganizationDetail({
         return (org?.teams || []).map((teamRow) => {
             const forTeam = responses.filter((r) => responseMatchesTeam(r, teamRow));
             const agg = buildTeamAggregate(forTeam, lang);
-            const top = agg?.topPersonaByPrimary || agg?.personasByPrimary?.[0];
+            const top = dominantPersonas(agg)[0];
             return {
                 team: teamRow,
                 responseCount: forTeam.length,
-                dominant: top ? `${top.name} ${top.countPercentage}%` : t.empty,
+                dominant: top ? `${dominantNames(agg, lang)} ${top.countPercentage}%` : t.empty,
                 responses: forTeam,
                 aggregate: agg,
             };

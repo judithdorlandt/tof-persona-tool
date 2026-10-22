@@ -29,6 +29,7 @@
 import React from 'react';
 import { SPACING, TYPE, RADIUS, useIsMobile } from '../../ui/tokens';
 import { useCopy } from '../../i18n/LanguageContext';
+import { dominantPersonas } from '../../utils/TeamAggregation';
 
 const PERSONA_COLORS = {
     maker: '#B05252',
@@ -66,7 +67,9 @@ export default function TeamPersonaDistribution({ aggregate, names = null }) {
         );
     }
 
-    const [hero, ...rest] = personasByPrimary;
+    // Dominant = meeste mensen primair; bij een gelijke stand allemaal (besluit 4).
+    const dominant = dominantPersonas(aggregate);
+    const rest = personasByPrimary.filter((p) => !dominant.includes(p));
 
     return (
         <div
@@ -76,7 +79,9 @@ export default function TeamPersonaDistribution({ aggregate, names = null }) {
             }}
         >
             {/* LAAG 1A — SIGNATURE: dominante primaire persona */}
-            <SignatureStatement persona={hero} names={names?.[hero.id]} isMobile={isMobile} />
+            {dominant.map((p) => (
+                <SignatureStatement key={p.id} persona={p} names={names?.[p.id]} isMobile={isMobile} />
+            ))}
 
             {/* LAAG 1B — andere primair-aanwezige persona's */}
             {rest.length > 0 ? (

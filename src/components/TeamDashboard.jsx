@@ -31,7 +31,7 @@ import TeamPersonaDistribution from '../team/components/TeamPersonaDistribution'
 import TeamWorkplaceTension from '../team/components/TeamWorkplaceTension';
 import TeamQuickWins from '../team/components/TeamQuickWins';
 
-import { buildTeamAggregate } from '../utils/TeamAggregation';
+import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
 import { getConfidence } from '../insights';
 import { useLang, useCopy } from '../i18n/LanguageContext';
@@ -69,18 +69,17 @@ const ACCENT = MODULE.insight.accent;
  * `workplaceProfile` is de gelijknamige namespace: de namen van de
  * werkplektypen in de actieve taal, voor de Werkplek-tegel.
  */
-export function buildTiles(t, { names = null, workplaceProfile = null } = {}) {
+export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'nl' } = {}) {
     return [
         {
             id: 'personas',
             eyebrow: t.tiles.personas.eyebrow,
             buildValue: (aggregate) => {
-                // Tegel toont "wie zit er in dit team" — primaire telling.
-                // Anders mismatcht hij met het detail-scherm dat hetzelfde verhaal vertelt.
-                const top = aggregate?.topPersonaByPrimary
-                    || aggregate?.personasByPrimary?.[0];
+                // Tegel toont "wie zit er in dit team" — primaire telling,
+                // bij een gelijke stand beide namen.
+                const top = dominantPersonas(aggregate)[0];
                 if (!top) return t.empty;
-                return `${top.name} ${top.countPercentage}%`;
+                return `${dominantNames(aggregate, lang)} ${top.countPercentage}%`;
             },
             buildHint: () => t.tiles.personas.hint,
             detailTitle: t.tiles.personas.detailTitle,
@@ -167,19 +166,16 @@ export default function TeamDashboard({
         [teamResponses, common.locale]
     );
     const tiles = useMemo(
-        () => buildTiles(t, { names, workplaceProfile }),
-        [t, names, workplaceProfile]
+        () => buildTiles(t, { names, workplaceProfile, lang }),
+        [t, names, workplaceProfile, lang]
     );
 
     const teamName = resolveTeamName(selectedTeam, t.fallbackTeamName);
     const organization = resolveOrg(selectedTeam);
 
-    // "Dominant" in de chip = wie zit er primair in dit team.
-    // Consistent met de Werkstijlen-tegel.
-    const dominantPersona =
-        aggregate?.topPersonaByPrimary?.name
-        || aggregate?.personasByPrimary?.[0]?.name
-        || '';
+    // "Dominant" in de chip = wie zit er primair in dit team (besluit 4),
+    // bij een gelijke stand beide namen. Consistent met de Werkstijlen-tegel.
+    const dominantPersona = dominantNames(aggregate, lang);
 
     const teamCount = aggregate?.teamCount || 0;
     // Eén schaal op beide dashboards en in de PDF's (besluit 6, 22 okt 2026).

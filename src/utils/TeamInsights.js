@@ -27,6 +27,7 @@ import {
     BAND,
 } from '../team/werkplek/werkplekProfielLogic';
 import { PERSONA_WERKPLEKMIX } from '../team/werkplek/werkplekmix';
+import { dominantPersonas } from './TeamAggregation';
 
 // Niveau in de werkplekmix waarop een type kern is voor een werkstijl.
 const KERN_NIVEAU = 3;
@@ -212,26 +213,17 @@ function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, aggr
         };
     };
 
-    let dominant = [];
+    // "De grootste groep" = de dominante werkstijl(en): meeste mensen
+    // primair, bij een gelijke stand allemaal (besluit 4, 22 okt 2026).
+    const dominantIds = new Set(dominantPersonas(aggregate).map((p) => p.id));
+    const dominant = present.filter((p) => dominantIds.has(p.id));
+    const afterDominant = present.filter((p) => !dominantIds.has(p.id));
     let middle = [];
     let minority = [];
 
-    if (present.length === 1) {
-        dominant = [present[0]];
-    } else if (present.length === 2) {
-        dominant = present;
+    if (present.length < 3) {
+        middle = afterDominant;
     } else {
-        const top1 = present[0];
-        const top2 = present[1];
-        const soloDominant = top1.teamPct >= top2.teamPct * 1.5;
-
-        if (soloDominant) {
-            dominant = [top1];
-        } else {
-            dominant = [top1, top2];
-        }
-
-        const afterDominant = present.slice(dominant.length);
         const tail = afterDominant.slice(-2);
 
         if (tail.length === 1) {

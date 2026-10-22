@@ -30,6 +30,7 @@ import { getArchetypeName } from './organisatieLandschap/constants';
 
 import { getCopy } from '../i18n/copy';
 import { getConfidence } from '../insights';
+import { dominantPersonas } from './TeamAggregation';
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -406,13 +407,19 @@ function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCo
     // niet sortedPersonas (= gewogen energie-sortering). Anders kan de
     // "dominante werkstijl" iets anders aanwijzen dan het hoogste
     // percentage in de verdelingstabel — dat leest als bug.
-    const top = aggregate?.personasByPrimary?.[0] || aggregate?.sortedPersonas?.[0];
+    // Teamvariant: de dominant-functie (besluit 4) — bij een gelijke stand
+    // beide namen. De organisatievariant houdt de eerste.
+    const dominant = isOrg ? [] : dominantPersonas(aggregate);
+    const top = dominant[0] || aggregate?.personasByPrimary?.[0] || aggregate?.sortedPersonas?.[0];
     if (!top) return y;
 
     const teamCount = aggregate?.teamCount || 0;
     const personaColor = PERSONA_COLORS[top.id] || COLOR.text;
     // Canonieke persona-naam (taalvast) i.p.v. top.name uit de aggregatie.
-    const topName = getArchetypeName(top.id, lang) || top.name;
+    const nameOf = (p) => getArchetypeName(p.id, lang) || p.name;
+    const topName = dominant.length > 1
+        ? getCopy(lang).teamPanels.names.join(dominant.map(nameOf))
+        : nameOf(top);
 
     const fontSize = 16;
     const lineH = 18;
