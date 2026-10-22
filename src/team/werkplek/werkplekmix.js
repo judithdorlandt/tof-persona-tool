@@ -66,13 +66,15 @@ export const WERKPLEKTYPEN = [
 
 // --- 8 persona's met hun werkplekmix over alle 9 typen ---
 // Per persona: een volledige mix (matrixrij) plus de valkuil als friction-signaal.
+// Maker en Presteerder zijn op 22 okt 2026 gelijkgetrokken met de personateksten
+// en de persoonlijke kaart (bricksProfile in data.js).
 export const PERSONA_WERKPLEKMIX = [
   {
     id: 'maker',
     label: 'Maker',
     kernwoorden: 'doen, bouwen, leveren',
     valkuil: 'Onderschat reflectie- en rustruimte; verzandt zonder pauze.',
-    mix: { standaard: 3, concentratie: 3, samenwerk: 2, hybride: 2, overleg: 2, creatief: 1, informeel: 1, leer: 1, rust: 1 },
+    mix: { creatief: 3, samenwerk: 3, standaard: 2, concentratie: 2, overleg: 2, hybride: 2, informeel: 1, leer: 1, rust: 1 },
   },
   {
     id: 'groeier',
@@ -86,7 +88,7 @@ export const PERSONA_WERKPLEKMIX = [
     label: 'Presteerder',
     kernwoorden: 'doelen, voortgang, impact',
     valkuil: 'Tempo verdringt verdieping; rustplek wordt overgeslagen.',
-    mix: { overleg: 3, standaard: 3, samenwerk: 3, hybride: 2, concentratie: 2, informeel: 1, creatief: 1, leer: 1, rust: 1 },
+    mix: { concentratie: 3, standaard: 3, samenwerk: 3, overleg: 2, hybride: 2, informeel: 1, creatief: 1, leer: 1, rust: 1 },
   },
   {
     id: 'denker',
