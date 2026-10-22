@@ -40,7 +40,7 @@ const contribute = {
   name: {
     label: 'Je voornaam',
     hint:
-      'Mag je overslaan. Een voornaam helpt je leidinggevende het gesprek met jou te voeren; zonder naam tel je alleen mee in het teambeeld.',
+      'Mag je overslaan. Je voornaam is alleen zichtbaar als je team samen heeft afgesproken namen te tonen. Dan ziet iedereen in het team hem, ook je leidinggevende.',
     placeholder: 'Voornaam',
   },
 

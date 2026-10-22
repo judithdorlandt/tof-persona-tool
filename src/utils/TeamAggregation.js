@@ -124,9 +124,9 @@ export function buildTeamAggregate(teamResponses = [], lang = 'nl') {
             });
         }
 
-        // Bewust zonder naam: standaard laat het teambeeld niet zien wie wat
-        // heeft geantwoord, ook niet aan de manager en ook niet in de PDF.
-        // De regel en de route om dat met goedkeuring om te zetten staan in
+        // Bewust zonder naam: het aggregaat voedt ook de PDF en Teamdynamiek,
+        // en daar horen nooit namen. Met goedkeuring van het team komen de
+        // voornamen apart via namesByPersona in Teaminzicht; zie
         // utils/access.js onder "NAMEN IN HET TEAMBEELD".
         members.push({
             role: response?.role || '',

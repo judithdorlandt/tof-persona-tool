@@ -67,6 +67,10 @@ const teamPanels = {
     dominantEyebrow: 'Dominant working style',
     shareOfTeam: (pct) => `${pct}% of the team`,
     furtherRepresented: 'Also represented',
+    // People's first names, only when the team has agreed to show them.
+    people: {
+      unnamed: (n) => `${n} without a name`,
+    },
     energy: {
       eyebrow: 'The energy in this team',
       lead:

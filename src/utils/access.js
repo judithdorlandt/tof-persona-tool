@@ -57,23 +57,57 @@ export function countCompleteProfiles(responses = []) {
 // NAMEN IN HET TEAMBEELD
 // =========================
 // Standaard laat het teambeeld niet zien wie wat heeft geantwoord — ook niet
-// aan de manager, en ook niet in de PDF. Daarom verzamelt buildTeamAggregate
-// geen namen: er is geen component die er nog bij kan.
+// aan de manager, en ook niet in de PDF. buildTeamAggregate verzamelt daarom
+// geen namen; alles wat op het aggregaat draait (PDF, Teamdynamiek, het
+// organisatie-overzicht in /admin) blijft dus naamloos.
 //
 // Dit is een standaard, geen absoluut verbod. Namen mogen aan zodra een team
 // daar zelf goedkeuring voor geeft, en dan geldt dat voor iedereen gelijk:
 // wat de manager ziet, zien de teamleden ook. Een stand waarin alleen de
-// manager namen ziet bestaat bewust niet.
+// manager namen ziet bestaat bewust niet. Daarom staan ze alleen in
+// Teaminzicht en niet in Teamdynamiek.
 //
 // De schakelaar staat in de database en niet hier: `show_names` op
-// public.team_access_codes, standaard false (supabase/007). De RPC
-// responses_for_code geeft `name` alleen mee als die vlag aan staat, dus de
-// naam verlaat de server niet zolang er geen goedkeuring is. Een vlag in
-// localStorage zou de weergave dichtzetten maar de netwerkrespons niet.
+// public.team_access_codes, standaard false (supabase/007), om te zetten in
+// /admin bij het team. De RPC responses_for_code geeft `name` alleen mee als
+// die vlag aan staat, dus de naam verlaat de server niet zolang er geen
+// goedkeuring is. Directe reads (getResponsesByOrganization en de fallbacks
+// in getResponsesByTeam) halen de naam weg in supabase.js, want die gaan om
+// de schakelaar heen. Een naam in de rijen betekent dus: het team stemde in.
 //
-// Wat nog NIET bestaat is de weergavekant: ook met show_names = true toont de
-// app geen namen, want buildTeamAggregate verzamelt ze niet. Dat is bewust —
-// de data is er dan wel, het beeld volgt pas als daar opdracht voor is.
+// Weergave (22 okt 2026): namesByPersona hieronder, getoond onder de
+// personaverdeling in Teaminzicht, en pas vanaf MIN_TEAM_RESPONSES.
+
+/**
+ * Voornamen per primaire werkstijl, of null als er geen enkele naam is
+ * (dan staat de schakelaar uit) of als het team onder de drempel zit.
+ * → { [personaId]: { names: ['Anna', 'Bram'], unnamed: 1 } }
+ */
+export function namesByPersona(responses = [], locale = 'nl') {
+    if (!Array.isArray(responses)) return null;
+    if (countCompleteProfiles(responses) < MIN_TEAM_RESPONSES) return null;
+
+    const byPersona = {};
+    let anyName = false;
+    responses.forEach((r) => {
+        const primary = r?.primary_archetype || r?.primary;
+        if (!primary) return;
+        const entry = byPersona[primary] || (byPersona[primary] = { names: [], unnamed: 0 });
+        const name = String(r?.name || '').trim();
+        if (name) {
+            entry.names.push(name);
+            anyName = true;
+        } else {
+            entry.unnamed += 1;
+        }
+    });
+    if (!anyName) return null;
+
+    Object.values(byPersona).forEach((entry) => {
+        entry.names.sort((x, y) => x.localeCompare(y, locale, { sensitivity: 'base' }));
+    });
+    return byPersona;
+}
 
 // =========================
 // DE ROL BEPAALT HET NIVEAU

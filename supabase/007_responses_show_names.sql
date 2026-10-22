@@ -18,13 +18,13 @@
 --   stand waarin alleen de manager namen ziet bestaat bewust niet.
 --   Daarom hangt de schakelaar aan de teamcode en niet aan de rol.
 --
--- Aanzetten voor één team (Supabase → Table Editor, of hier):
+-- Aanzetten voor één team: in /admin bij het team ("Namen: uit ·
+-- aanzetten"), of hier:
 --   update public.team_access_codes set show_names = true where code = '...';
 --
--- LET OP: aanzetten verandert vandaag niets aan wat je ziet. De app
--- rendert geen namen meer — dat is een bewuste keuze, niet een
--- vergetelheid. Deze migratie zorgt dat de data pas beschikbaar is als
--- er goedkeuring is; de weergave is een aparte opdracht.
+-- Sinds 22 okt 2026 bestaat ook de weergave: met de schakelaar aan staan
+-- de voornamen per werkstijl in Teaminzicht (niet in Teamdynamiek, niet
+-- in de PDF). Tot die datum stond hier dat aanzetten niets veranderde.
 --
 -- Idempotent: add column if not exists / create or replace function.
 -- ============================================================

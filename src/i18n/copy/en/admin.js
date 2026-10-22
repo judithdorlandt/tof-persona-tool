@@ -187,6 +187,14 @@ The Office Factory
     teamsHeading: (n) => `Teams in this organisation (${n})`,
     viewTeam: 'View team →',
     viewTeamBusy: '…',
+    /** Names switch per team (show_names). Only on once the team has agreed. */
+    names: {
+      off: 'Names: off · turn on',
+      on: 'Names: on · turn off',
+      confirmOn: (team) =>
+        `Has ${team} agreed together to show names in the team picture?\n\nEveryone in the team and the manager will then see first names in Team Insight, including names already entered.`,
+      failed: (msg) => `Couldn't save.${msg ? ` ${msg}` : ''}`,
+    },
     empty: '—',
   },
 

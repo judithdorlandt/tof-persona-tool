@@ -3,9 +3,10 @@
  *
  * TWEE LAGEN, ÉÉN VERHAAL:
  *
- * 1. WIE ZIT ER (primair, met namen)
+ * 1. WIE ZIT ER (primair)
  *    → aggregate.personasByPrimary
- *    Hero met dominante primaire persona + namen.
+ *    Hero met dominante primaire persona. Voornamen alleen als het team
+ *    daarmee instemde (`names`, zie utils/access.js); anders geen namen.
  *    Lijst met andere primair-aanwezige persona's.
  *    Dit is wat een leidinggevende herkent: "deze mensen lopen rond".
  *
@@ -44,7 +45,7 @@ function colorFor(id) {
     return PERSONA_COLORS[id] || 'var(--tof-text)';
 }
 
-export default function TeamPersonaDistribution({ aggregate }) {
+export default function TeamPersonaDistribution({ aggregate, names = null }) {
     const isMobile = useIsMobile();
     const t = useCopy().teamPanels.personaDistribution;
 
@@ -75,11 +76,11 @@ export default function TeamPersonaDistribution({ aggregate }) {
             }}
         >
             {/* LAAG 1A — SIGNATURE: dominante primaire persona */}
-            <SignatureStatement persona={hero} isMobile={isMobile} />
+            <SignatureStatement persona={hero} names={names?.[hero.id]} isMobile={isMobile} />
 
             {/* LAAG 1B — andere primair-aanwezige persona's */}
             {rest.length > 0 ? (
-                <SecondaryList items={rest} isMobile={isMobile} />
+                <SecondaryList items={rest} names={names} isMobile={isMobile} />
             ) : null}
 
             {/* LAAG 2 — werkstijl-energie van het team */}
@@ -101,7 +102,7 @@ export default function TeamPersonaDistribution({ aggregate }) {
 // =========================
 // SIGNATURE — dominante primaire persona als hero
 // =========================
-function SignatureStatement({ persona, isMobile }) {
+function SignatureStatement({ persona, names, isMobile }) {
     const t = useCopy().teamPanels.personaDistribution;
     const color = colorFor(persona.id);
 
@@ -155,6 +156,8 @@ function SignatureStatement({ persona, isMobile }) {
             >
                 {persona.name}
             </h3>
+
+            <NameLine entry={names} />
         </div>
     );
 }
@@ -162,7 +165,7 @@ function SignatureStatement({ persona, isMobile }) {
 // =========================
 // SECONDARY LIST — andere primair-aanwezige persona's
 // =========================
-function SecondaryList({ items, isMobile }) {
+function SecondaryList({ items, names, isMobile }) {
     const t = useCopy().teamPanels.personaDistribution;
 
     return (
@@ -182,14 +185,14 @@ function SecondaryList({ items, isMobile }) {
                 }}
             >
                 {items.map((persona) => (
-                    <SecondaryItem key={persona.id} persona={persona} />
+                    <SecondaryItem key={persona.id} persona={persona} names={names?.[persona.id]} />
                 ))}
             </div>
         </div>
     );
 }
 
-function SecondaryItem({ persona }) {
+function SecondaryItem({ persona, names }) {
     const color = colorFor(persona.id);
 
     return (
@@ -270,6 +273,34 @@ function SecondaryItem({ persona }) {
                 />
             </div>
 
+            <NameLine entry={names} />
+        </div>
+    );
+}
+
+// =========================
+// NAME LINE — voornamen onder een werkstijl, alleen met instemming
+// =========================
+// `entry` komt uit namesByPersona en bestaat alleen als het team met namen
+// instemde. Wie geen naam invulde, telt mee als "zonder naam".
+function NameLine({ entry }) {
+    const t = useCopy().teamPanels.personaDistribution.people;
+    if (!entry) return null;
+    const parts = [];
+    if (entry.names.length > 0) parts.push(entry.names.join(', '));
+    if (entry.unnamed > 0) parts.push(t.unnamed(entry.unnamed));
+    if (parts.length === 0) return null;
+
+    return (
+        <div
+            style={{
+                fontFamily: 'var(--tof-font-body)',
+                fontSize: 13,
+                lineHeight: 1.5,
+                color: 'var(--tof-text-muted)',
+            }}
+        >
+            {parts.join(' · ')}
         </div>
     );
 }

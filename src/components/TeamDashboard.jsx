@@ -41,6 +41,7 @@ import {
     isAdminAccess,
     MIN_TEAM_RESPONSES,
     countCompleteProfiles,
+    namesByPersona,
 } from '../utils/access';
 import { logPdfDownload } from '../supabase';
 import TeamGate from './TeamGate';
@@ -60,8 +61,10 @@ const ACCENT = MODULE.insight.accent;
  *
  * `t` is de `teamDashboard`-namespace uit useCopy(). Admin.jsx hergebruikt
  * deze tegels voor het organisatie-overzicht en roept dezelfde functie aan.
+ * `names` (uit namesByPersona) geeft alleen Teaminzicht mee, en alleen als
+ * het team met namen instemde; het organisatie-overzicht laat het weg.
  */
-export function buildTiles(t) {
+export function buildTiles(t, { names = null } = {}) {
     return [
         {
             id: 'personas',
@@ -77,7 +80,7 @@ export function buildTiles(t) {
             buildHint: () => t.tiles.personas.hint,
             detailTitle: t.tiles.personas.detailTitle,
             detailLead: () => '',
-            render: (aggregate) => <TeamPersonaDistribution aggregate={aggregate} />,
+            render: (aggregate) => <TeamPersonaDistribution aggregate={aggregate} names={names} />,
         },
         {
             id: 'workplace',
@@ -148,14 +151,20 @@ export default function TeamDashboard({
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
     const [activeId, setActiveId] = useState('personas');
     const { lang } = useLang();
-    const { teamDashboard: t } = useCopy();
+    const { teamDashboard: t, common } = useCopy();
 
     const aggregate = useMemo(
         () => buildTeamAggregate(teamResponses, lang),
         [teamResponses, lang]
     );
     const insights = useMemo(() => buildTeamInsights(aggregate, lang), [aggregate, lang]);
-    const tiles = useMemo(() => buildTiles(t), [t]);
+    // Voornamen alleen als het team instemde (zie utils/access.js); de
+    // naamloze aggregaat-stroom — PDF, Teamdynamiek — blijft ongemoeid.
+    const names = useMemo(
+        () => namesByPersona(teamResponses, common.locale),
+        [teamResponses, common.locale]
+    );
+    const tiles = useMemo(() => buildTiles(t, { names }), [t, names]);
 
     const teamName = resolveTeamName(selectedTeam, t.fallbackTeamName);
     const organization = resolveOrg(selectedTeam);

@@ -35,6 +35,7 @@ import {
     adminListOrgObservations,
     adminAddOrgObservation,
     adminRemoveOrgObservation,
+    adminSetShowNames,
 } from '../supabase';
 import {
     PageShell,
@@ -983,6 +984,10 @@ function OrganizationDetail({
     const [loadingResponses, setLoadingResponses] = useState(true);
     const [activeTileId, setActiveTileId] = useState('personas');
     const [openingTeamCode, setOpeningTeamCode] = useState(null);
+    // Naamschakelaar per teamcode, bijgewerkt na een klik; anders geldt
+    // show_names zoals de teamlijst hem ophaalde.
+    const [showNamesByCode, setShowNamesByCode] = useState({});
+    const [namesBusyCode, setNamesBusyCode] = useState(null);
     const [moduleSel, setModuleSel] = useState('insight');
     // Eigen observaties per organisatie — handmatige input naast data-driven inzichten.
     const [observations, setObservations] = useState([]);
@@ -1120,6 +1125,28 @@ function OrganizationDetail({
         setActiveTileId((prev) => (prev === id ? null : id));
     }
 
+    function showsNames(teamRow) {
+        return teamRow.code in showNamesByCode
+            ? showNamesByCode[teamRow.code]
+            : !!teamRow.show_names;
+    }
+
+    async function handleToggleNames(teamRow) {
+        if (namesBusyCode) return;
+        const next = !showsNames(teamRow);
+        // Aanzetten maakt namen zichtbaar voor het hele team, ook namen die
+        // al zijn ingevuld. Dus eerst bevestigen dat het team instemde.
+        if (next && !window.confirm(t.names.confirmOn(teamRow.team || teamRow.code))) return;
+        setNamesBusyCode(teamRow.code);
+        const { error } = await adminSetShowNames(teamRow.code, next);
+        setNamesBusyCode(null);
+        if (error) {
+            window.alert(t.names.failed(error.message || ''));
+            return;
+        }
+        setShowNamesByCode((prev) => ({ ...prev, [teamRow.code]: next }));
+    }
+
     async function handleViewTeam(summary) {
         if (openingTeamCode) return;
         setOpeningTeamCode(summary.team.code);
@@ -1132,9 +1159,12 @@ function OrganizationDetail({
                     level: summary.team.level,
                 });
             }
-            const data = summary.responses && summary.responses.length > 0
-                ? summary.responses
-                : await getResponsesByTeam(summary.team.team, summary.team.organization, summary.team.code);
+            // Met een code altijd via getResponsesByTeam: alleen die route
+            // (responses_for_code) levert voornamen als het team instemde.
+            // De organisatie-rijen zijn naamloos.
+            const data = summary.team.code || !(summary.responses && summary.responses.length > 0)
+                ? await getResponsesByTeam(summary.team.team, summary.team.organization, summary.team.code)
+                : summary.responses;
             if (typeof setTeamResponses === 'function') {
                 setTeamResponses(data || []);
             }
@@ -1347,6 +1377,30 @@ function OrganizationDetail({
                                                 }}>
                                                     {s.team.code}
                                                 </div>
+                                                {s.team.code ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleToggleNames(s.team)}
+                                                        disabled={namesBusyCode === s.team.code}
+                                                        style={{
+                                                            justifySelf: 'start',
+                                                            marginTop: 4,
+                                                            padding: 0,
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            fontSize: 12,
+                                                            fontFamily: 'inherit',
+                                                            color: showsNames(s.team)
+                                                                ? 'var(--tof-accent-rose)'
+                                                                : 'var(--tof-text-muted)',
+                                                            cursor: namesBusyCode === s.team.code ? 'wait' : 'pointer',
+                                                            textDecoration: 'underline',
+                                                            textUnderlineOffset: 2,
+                                                        }}
+                                                    >
+                                                        {showsNames(s.team) ? t.names.on : t.names.off}
+                                                    </button>
+                                                ) : null}
                                             </div>
                                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
                                                 {admin.counts.responses(s.responseCount)}

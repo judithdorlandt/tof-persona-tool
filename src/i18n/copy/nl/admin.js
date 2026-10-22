@@ -200,6 +200,14 @@ The Office Factory
     teamsHeading: (n) => `Teams in deze organisatie (${n})`,
     viewTeam: 'Bekijk team →',
     viewTeamBusy: '…',
+    /** Naamschakelaar per team (show_names). Alleen aan na instemming van het team. */
+    names: {
+      off: 'Namen: uit · aanzetten',
+      on: 'Namen: aan · uitzetten',
+      confirmOn: (team) =>
+        `Heeft ${team} samen ingestemd met namen in het teambeeld?\n\nDan zien alle teamleden én de leidinggevende de voornamen in Teaminzicht, ook de namen die al zijn ingevuld.`,
+      failed: (msg) => `Opslaan lukte niet.${msg ? ` ${msg}` : ''}`,
+    },
     empty: '—',
   },
 

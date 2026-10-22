@@ -497,6 +497,14 @@ export async function getTeamsOverview() {
 
 }
 
+// Voornamen mogen de app alleen in via responses_for_code: die geeft `name`
+// pas mee als het team daar goedkeuring voor gaf (show_names, 007). Elke
+// directe read gaat om die schakelaar heen, dus daar halen we de naam weg.
+// Zie utils/access.js, "NAMEN IN HET TEAMBEELD".
+function withoutName(row) {
+  return row && row.name != null ? { ...row, name: null } : row;
+}
+
 export async function getResponsesByTeam(team, organization = null, code = null) {
 
   if (!ensureSupabase()) return [];
@@ -551,7 +559,7 @@ export async function getResponsesByTeam(team, organization = null, code = null)
           .order('created_at', { ascending: true });
 
         if (directErr) throw directErr;
-        codeData = direct;
+        codeData = (direct || []).map(withoutName);
       } else {
         codeData = rpcData;
         viaRpc = true;
@@ -604,7 +612,7 @@ export async function getResponsesByTeam(team, organization = null, code = null)
 
           seen.add(r.id);
 
-          results.push(r);
+          results.push(withoutName(r));
 
         }
 
@@ -675,7 +683,7 @@ export async function getResponsesByOrganization(organization, codes = []) {
 
           seen.add(r.id);
 
-          results.push(r);
+          results.push(withoutName(r));
 
         }
 
@@ -703,7 +711,7 @@ export async function getResponsesByOrganization(organization, codes = []) {
 
           seen.add(r.id);
 
-          results.push(r);
+          results.push(withoutName(r));
 
         }
 
@@ -1078,6 +1086,38 @@ export async function adminRemoveTeamManager(id) {
   }
 }
 
+/**
+ * Zet de naamschakelaar van één team (show_names, 007). Alleen aanzetten
+ * als het team daar samen mee heeft ingestemd: dan zien teamleden én
+ * manager de voornamen in Teaminzicht.
+ */
+export async function adminSetShowNames(teamCode, showNames) {
+  if (!ensureSupabase()) return { error: { message: errorCopy().supabaseUnavailable } };
+  try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) return { error: { message: errorCopy().noAdminRights } };
+
+    // .select() erachter: een update die RLS tegenhoudt geeft géén fout,
+    // alleen nul rijen. Dan mag de knop niet doen alsof het gelukt is.
+    const { data, error } = await supabase
+      .from('team_access_codes')
+      .update({ show_names: !!showNames })
+      .eq('code', teamCode)
+      .select('code, show_names');
+    if (error) {
+      console.error('❌ adminSetShowNames:', error.message);
+      return { error };
+    }
+    if (!data || data.length === 0) {
+      return { error: { message: errorCopy().generic } };
+    }
+    return { error: null };
+  } catch (err) {
+    console.error('❌ adminSetShowNames error:', err?.message || err);
+    return { error: { message: err?.message || errorCopy().generic } };
+  }
+}
+
 // =========================
 // ORGANISATIE-OBSERVATIES (admin handmatige input)
 // =========================
@@ -1202,7 +1242,7 @@ export async function getAllTeamAccessCodes() {
 
     const { data: codes, error } = await supabase
       .from('team_access_codes')
-      .select('code, level, team, organization, active, created_at')
+      .select('code, level, team, organization, active, show_names, created_at')
       .order('created_at', { ascending: false });
 
     if (error) throw error;

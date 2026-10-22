@@ -67,6 +67,10 @@ const teamPanels = {
     dominantEyebrow: 'Dominante werkstijl',
     shareOfTeam: (pct) => `${pct}% van het team`,
     furtherRepresented: 'Verder vertegenwoordigd',
+    // Voornamen van mensen, alleen als het team daarmee instemde.
+    people: {
+      unnamed: (n) => `${n} zonder naam`,
+    },
     energy: {
       eyebrow: 'Energie van dit team',
       lead:

@@ -40,7 +40,7 @@ const contribute = {
   name: {
     label: 'Your first name',
     hint:
-      'You can skip this. A first name helps your manager have the conversation with you; without one you only count towards the team picture.',
+      'You can skip this. Your first name is only visible if your team has agreed together to show names. Then everyone in the team sees it, your manager included.',
     placeholder: 'First name',
   },
 
