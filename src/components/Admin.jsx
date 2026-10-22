@@ -53,7 +53,6 @@ import { buildTeamInsights } from '../utils/TeamInsights';
 import { buildTiles } from './TeamDashboard.jsx';
 import TeamDynamics from './TeamDynamics.jsx';
 import { useCopy, useLang } from '../i18n/LanguageContext';
-import { APP_STORE_URL, GOOGLE_PLAY_URL } from '../config/appStore';
 
 const INSIGHT_ACCENT = MODULE.insight.accent;
 const DYNAMICS_ACCENT = MODULE.dynamics.accent;
@@ -759,14 +758,12 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
         : t.fallbackRecipient; // voorbeeldnaam
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-    // Het team doet de test in de app en brengt daarna het profiel in met de
-    // teamcode. De mail linkt dus naar de stores, niet naar een vragenlijst.
-
+    // Het team krijgt een link naar het storescherm (dat de stores zelf
+    // aanbiedt) en de teamcode, die het na de test bij "Profiel inbrengen"
+    // invult.
     const mailBody = t.mailBody({
         recipient: capitalize(recipientName),
         code: info.code,
-        appStoreUrl: APP_STORE_URL,
-        googlePlayUrl: GOOGLE_PLAY_URL,
         team: info.team,
         managerEmail: info.leaderEmail,
     });

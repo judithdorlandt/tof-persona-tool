@@ -85,70 +85,80 @@ const admin = {
     /** Placeholder shown when no team leader email was entered. */
     fallbackRecipient: '[first name]',
     /**
-     * The delivery email (marketing repo, content/klantreis-teamcode.md §3c).
-     * The app fills in code, team link, team name and the manager's email;
-     * Judith fills in the purchase order number and session before sending.
+     * The delivery email (marketing repo, content/klantreis-teamcode.md § 3(c),
+     * version of 22 Oct 2026). The team gets the link and the code: the link
+     * opens the store screen, the team member enters the code after the test
+     * via "Add my profile" — it does not travel into the app by itself. The
+     * app fills in code, team name and the manager's email; Judith fills in or
+     * deletes the date, first-name line, purchase order number and session
+     * before sending. Touchpoint 4 is deliberately left out (until tasks A, D, F).
      */
-    mailBody: ({ recipient, code, appStoreUrl, googlePlayUrl, team, managerEmail }) => `Dear ${recipient},
+    mailBody: ({ recipient, code, team, managerEmail }) => `Dear ${recipient},
 
-Here is the team code for ${team}. Your team can start today.
+Everything is ready for ${team}. Your team can start today.
 
-Team code: ${code}
-
-
-FOR YOUR TEAM
-
-Everyone takes the test in the TOF Persona app, on their own phone and
-without an account:
-
-App Store (iPhone):
-${appStoreUrl}
-
-Google Play (Android):
-${googlePlayUrl}
-
-1. Download the app and take the test: nine questions, about five minutes.
-   After that there's an optional deeper section of three minutes.
-2. On your profile, tap "Add my profile".
-3. Enter the team code: ${code}
-
-Pass these steps and the team code on to your team. Entering a first name is
-optional: without one, people still count in the team picture.
-
-You can view the team picture at team.persona-tool.nl/team, with the team
-code.
+First, one thing: send your team the message between the two lines below. Copy it in one go and paste it into an email or chat message. It contains both the link and the team code, and your team needs both: the link to get started, the code to add their profile after the test. The message is written in your voice; change whatever doesn't sound like you, and fill in a date at [date] or delete that line.
 
 
-FOR YOU AS TEAM LEAD
+———— MESSAGE FOR YOUR TEAM ————
 
-You have your own login for Team dynamics: what this mix of people asks of
-leadership. It isn't part of the team code, so the code can go round the
-team without that part going with it.
+Hi all,
 
-1. Go to team.persona-tool.nl/login
-2. Enter ${managerEmail || '[team lead email]'}
-3. You'll receive a login link by email
+I'd like us to look at which working styles we have in this team and what we need from our workplace. To do that, each of us takes a short test in the TOF Persona app. Once enough of us have done it, we'll get a picture of the team. Here's how to take part:
 
-Take the test in the app yourself as well and add your profile. Then you count
-in the picture too.
+1. Open this link on your phone and download the TOF Persona app:
+https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}
+
+2. Take the test in the app: nine questions, about five minutes. An optional deep dive of about three minutes follows.
+
+3. Tap "Add my profile" at the bottom of your profile. The website opens. Enter this team code there, tap "Check code" and then "Add my profile" again:
+${code}
+
+[You can leave the first name field empty.]
+
+Your profile only counts once you've tapped "Add my profile" on the website. Keep this message until then: you only need the team code after the test.
+
+Once five colleagues have added their profile, the team picture is ready. You can open it at team.persona-tool.nl/en/team, with the same team code.
+
+Please do this by [date], so we can talk the picture through together.
+
+Nobody sees who has which working style, not even a manager.
+
+———— END OF MESSAGE ————
+
+
+TAKE PART YOURSELF
+
+Follow the same three steps and you'll count in the team picture too.
 
 
 WHEN YOU'LL SEE SOMETHING
 
-The team picture and Team dynamics appear once five profiles are complete.
-Below that the screen stays empty: in a smaller group it's too easy to trace
-who answered what. That applies to you as team lead as well.
+Once five profiles have been added. Until then there's no team picture, not even for you: in a smaller group it's too easy to work out who answered what.
+
+
+HOW TO LOG IN
+
+1. Go to team.persona-tool.nl/en/login
+2. Enter ${managerEmail || '[manager email]'}
+3. Open the login link in the email you receive. It is valid for one hour, and you'll be logged in on the device where you open it.
+
+Once you're logged in, you don't need the team code: you go straight to your team. Until there are five, you'll see how many profiles have been added so far.
+
+
+WHAT YOU SEE AND YOUR TEAM DOESN'T
+
+Your team sees Team Insight: which working styles are in the team and what it needs from the workplace. You see that too, plus Team Dynamics: what this mix of people asks of the person leading it. You'll find it at the bottom of Team Insight.
+
+Team Dynamics is tied to your login, not to the code. That's why you can share the code with your whole team.
 
 
 THE INVOICE
 
-You'll receive the invoice separately by email[, with purchase order number
-…].
+You'll receive the invoice separately by email[, with purchase order number …].
 
-[With a guided session: "You indicated you'd like a guided session. I'll be
-in touch to agree a date; I'll invoice that session separately."]
-[With "not sure yet": "Would you like to read the team picture together with
-your team, in a guided session? Just reply to this email."]
+[With a guided session: "You indicated you'd like a guided session. I'll be in touch to agree a date; I'll invoice that session separately."]
+[With "not sure yet": "Would you like to read the team picture together with your team, in a guided session? Just reply to this email."]
 
 Any questions? Just reply to this email.
 

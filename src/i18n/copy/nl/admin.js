@@ -96,72 +96,82 @@ const admin = {
     /** Plaatshouder als er geen leider-e-mailadres is ingevuld. */
     fallbackRecipient: '[voornaam]',
     /**
-     * De leveringsmail (marketingrepo, content/klantreis-teamcode.md §3c).
-     * Code, teamlink, teamnaam en e-mailadres van de manager vult de app in;
-     * inkoopordernummer en sessie vult Judith zelf in vóór verzending.
+     * De leveringsmail (marketingrepo, content/klantreis-teamcode.md § 3(c), versie
+     * van 22 okt 2026). Het team krijgt de link én de code: de link opent het
+     * storescherm, de code vult het teamlid na de test zelf in bij "Profiel
+     * inbrengen" — hij gaat niet vanzelf mee de app in. Code, teamnaam en
+     * e-mailadres van de manager vult de app in; datum, voornaamregel,
+     * inkoopordernummer en sessie vult of schrapt Judith vóór verzending.
+     * Deelmoment 4 staat er bewust nog niet in (pas na opdracht A, D en F).
      */
-    mailBody: ({ recipient, code, appStoreUrl, googlePlayUrl, team, managerEmail }) => `Beste ${recipient},
+    mailBody: ({ recipient, code, team, managerEmail }) => `Beste ${recipient},
 
-Hierbij de teamcode voor ${team}. Je team kan vandaag beginnen.
+Alles staat klaar voor ${team}. Je team kan vandaag beginnen.
 
-Teamcode: ${code}
-
-
-VOOR JE TEAM
-
-Iedereen doet de test in de app TOF Persona, op de eigen telefoon en
-zonder account:
-
-App Store (iPhone):
-${appStoreUrl}
-
-Google Play (Android):
-${googlePlayUrl}
-
-1. Download de app en doe de test: negen vragen, ongeveer vijf minuten.
-   Daarna is er een verdieping van drie minuten; die is niet verplicht.
-2. Tik bij je profiel op "Profiel inbrengen".
-3. Vul de teamcode in: ${code}
-
-Stuur deze stappen en de teamcode door naar je team. Een voornaam invullen
-mag, maar hoeft niet: zonder naam telt iemand gewoon mee in het teambeeld.
-
-Het teambeeld bekijk je op team.persona-tool.nl/team, met de teamcode.
+Eerst één ding: stuur je team het bericht tussen de twee lijnen hieronder. Kopieer het in één keer en plak het in een mail of chatbericht. De link en de teamcode staan er allebei in, en je team heeft ze allebei nodig: de link om te beginnen, de code om na de test hun profiel in te brengen. Het bericht staat in jouw stem; pas aan wat niet bij je past, en vul bij [datum] een dag in of haal die regel weg.
 
 
-VOOR JOU ALS LEIDINGGEVENDE
+———— BERICHT VOOR JE TEAM ————
 
-Je hebt een eigen inlog voor Teamdynamiek: wat deze samenstelling van
-leiderschap vraagt. Die zit niet in de teamcode, zodat de code door het team
-kan gaan zonder dat dit deel meegaat.
+Hoi allemaal,
 
-1. Ga naar team.persona-tool.nl/login
-2. Vul ${managerEmail || '[e-mailadres leidinggevende]'} in
-3. Je krijgt een inloglink per mail
+Ik wil graag met jullie kijken welke werkstijlen er in ons team zitten en wat we van onze werkplek nodig hebben. Daarvoor doet ieder van ons een korte test in de app TOF Persona. Zodra genoeg collega's meedoen, krijgen we een beeld van het team. Zo doe je mee:
 
-Doe de test zelf ook in de app en breng je profiel in. Dan tel je mee in
-het beeld.
+1. Open deze link op je telefoon en download de app TOF Persona:
+https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}
+
+2. Doe de test in de app: negen vragen, ongeveer vijf minuten. Daarna volgt een verdieping van ongeveer drie minuten; die is niet verplicht.
+
+3. Tik onderaan je profiel op "Profiel inbrengen". De website gaat open. Vul daar deze teamcode in, tik op "Code controleren" en daarna op "Inbrengen":
+${code}
+
+[Het veld voor je voornaam mag leeg blijven.]
+
+Pas na "Inbrengen" telt je profiel mee. Bewaar dit bericht tot dan: de teamcode heb je pas na de test nodig.
+
+Zodra vijf collega's hun profiel hebben ingebracht, staat het teambeeld klaar. Je opent het op team.persona-tool.nl/team, met dezelfde teamcode.
+
+Graag vóór [datum]. Dan bespreken we het beeld samen.
+
+Niemand ziet wie welke werkstijl heeft, ook een leidinggevende niet.
+
+———— TOT HIER ————
+
+
+DOE ZELF OOK MEE
+
+Volg dezelfde drie stappen, dan tel je mee in het teambeeld.
 
 
 WANNEER JE IETS ZIET
 
-Het teambeeld en Teamdynamiek verschijnen zodra vijf profielen zijn
-ingevuld. Daaronder blijft het scherm leeg: in een kleinere groep is te
-makkelijk te herleiden wie wat heeft geantwoord. Dat geldt ook voor jou als
-leidinggevende.
+Zodra vijf profielen zijn ingebracht. Daaronder is er geen teambeeld, ook niet voor jou: in een kleinere groep is te makkelijk te herleiden wie wat heeft geantwoord.
+
+
+HOE JE INLOGT
+
+1. Ga naar team.persona-tool.nl/login
+2. Vul ${managerEmail || '[e-mailadres leidinggevende]'} in
+3. Open de inloglink uit de mail die je dan krijgt. Hij is een uur geldig, en je bent ingelogd op het toestel waarop je hem opent.
+
+Ingelogd heb je de teamcode niet nodig: je komt meteen bij je team. Zolang er nog geen vijf profielen zijn, zie je daar hoeveel er al zijn ingebracht.
+
+
+WAT JIJ ZIET EN JE TEAM NIET
+
+Je team ziet Teaminzicht: welke werkstijlen er in het team zitten en wat het team van de werkplek vraagt. Jij ziet dat ook, en daarnaast Teamdynamiek: wat deze samenstelling vraagt van leidinggeven. Je vindt het onderaan Teaminzicht.
+
+Teamdynamiek hangt aan je inlog en niet aan de code. Daarom kun je de code met je hele team delen.
 
 
 DE FACTUUR
 
 De factuur krijg je apart per mail[, met inkoopordernummer …].
 
-[Bij een begeleide sessie: "Je gaf aan dat je een begeleide sessie wilt.
-Ik neem contact met je op om een datum te kiezen; die sessie factureer ik
-apart."]
-[Bij "weet ik nog niet": "Wil je het teambeeld samen met je team lezen,
-in een begeleide sessie? Antwoord dan op deze mail."]
+[Bij een begeleide sessie: "Je gaf aan dat je een begeleide sessie wilt. Ik neem contact met je op om een datum te kiezen; die sessie factureer ik apart."]
+[Bij "weet ik nog niet": "Wil je het teambeeld samen met je team lezen, in een begeleide sessie? Antwoord dan op deze mail."]
 
-Vragen? Antwoord gerust op deze mail.
+Vragen? Antwoord op deze mail.
 
 Hartelijke groet,
 Judith Dorlandt
