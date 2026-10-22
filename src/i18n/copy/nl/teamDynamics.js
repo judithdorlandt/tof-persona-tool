@@ -83,7 +83,7 @@ const teamDynamics = {
       hint: 'Waar regie helpt',
       detailTitle: 'Waar dit team om regie vraagt',
       detailLead: 'Klik op een spanningsveld om risico en leiderschapsadvies te zien.',
-      detailLeadNone: 'Geen twee werkstijlen met elk minstens 10% van de teamenergie.',
+      detailLeadNone: 'De werkstijlen die vaak botsen, zijn in dit team niet allebei sterk aanwezig.',
     },
     leadership: {
       eyebrow: 'Leiderschap',

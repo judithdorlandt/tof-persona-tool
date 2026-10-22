@@ -63,7 +63,7 @@ const teamDynamics = {
       hint: 'Where direction helps',
       detailTitle: 'Where this team asks for direction',
       detailLead: 'Select a tension to see the risk and the leadership advice.',
-      detailLeadNone: 'No two working styles that each hold at least 10% of the team energy.',
+      detailLeadNone: 'The working styles that often clash are not both strongly present in this team.',
     },
     leadership: {
       eyebrow: 'Leadership',
