@@ -68,7 +68,7 @@ export default function TeamDynamics({
 }) {
     // Standaard staat de eerste tegel (Dynamics) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
-    const [activeId, setActiveId] = useState('dynamics');
+    const [activeId, setActiveId] = useState('tensions');
     const { lang } = useLang();
     const { teamDynamics: t } = useCopy();
     const ARCHETYPES = useArchetypes();
@@ -248,7 +248,28 @@ export default function TeamDynamics({
     }
 
     // ── TEGELS ───────────────────────────────────────────────
+    // Spanningen staat vooraan en is bij openen uitgeklapt (besluit 7,
+    // 22 okt 2026): de open tegel en het paneel horen bij elkaar.
     const TILES = [
+        {
+            id: 'tensions',
+            eyebrow: t.tiles.tensions.eyebrow,
+            value: tensions.length === 0
+                ? t.tiles.tensions.valueNone
+                : t.tiles.tensions.value(tensions.length),
+            hint: t.tiles.tensions.hint,
+            detailTitle: t.tiles.tensions.detailTitle,
+            detailLead: tensions.length === 0
+                ? t.tiles.tensions.detailLeadNone
+                : t.tiles.tensions.detailLead,
+            render: () => (
+                <TensionsPanel
+                    tensions={tensions}
+                    scores={scores}
+                    totalScore={totalScore}
+                />
+            ),
+        },
         {
             id: 'dynamics',
             eyebrow: t.tiles.dynamics.eyebrow,
@@ -275,25 +296,6 @@ export default function TeamDynamics({
                     sorted={sorted}
                     totalScore={totalScore}
                     dominantIds={dominantIds}
-                />
-            ),
-        },
-        {
-            id: 'tensions',
-            eyebrow: t.tiles.tensions.eyebrow,
-            value: tensions.length === 0
-                ? t.tiles.tensions.valueNone
-                : t.tiles.tensions.value(tensions.length),
-            hint: t.tiles.tensions.hint,
-            detailTitle: t.tiles.tensions.detailTitle,
-            detailLead: tensions.length === 0
-                ? t.tiles.tensions.detailLeadNone
-                : t.tiles.tensions.detailLead,
-            render: () => (
-                <TensionsPanel
-                    tensions={tensions}
-                    scores={scores}
-                    totalScore={totalScore}
                 />
             ),
         },
