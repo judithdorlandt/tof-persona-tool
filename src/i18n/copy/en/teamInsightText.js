@@ -140,7 +140,7 @@ const teamInsightText = {
       `Protect ${label}. This is also a core space for this team — ${who} in particular get stuck without it.`,
     tensionWhoFallback: 'team members',
     tensionLimited: (label) =>
-      `Put ${label} to different use. This team needs them only now and then, so a lot of them costs space without adding value.`,
+      `Put ${label} to different use. This team only needs them now and then. If there are a lot of them, they take up space without adding value.`,
 
     // source: 'minderheid' — `count` drives singular or plural.
     minority: (workplaces, personas, count) =>

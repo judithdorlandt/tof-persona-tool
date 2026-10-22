@@ -141,7 +141,7 @@ const teamInsightText = {
       `Bescherm ${label}. Ook dit is een kernplek voor dit team — juist ${who} lopen vast als die ontbreekt.`,
     tensionWhoFallback: 'teamleden',
     tensionLimited: (label) =>
-      `Zet ${label} anders in. Dit team heeft ze maar af en toe nodig, dus veel ervan kost ruimte zonder waarde.`,
+      `Zet ${label} anders in. Dit team heeft ze maar af en toe nodig. Staat er veel van, dan kost dat ruimte zonder waarde.`,
 
     // source: 'minderheid' — `count` bepaalt enkelvoud of meervoud.
     minority: (workplaces, personas, count) =>
