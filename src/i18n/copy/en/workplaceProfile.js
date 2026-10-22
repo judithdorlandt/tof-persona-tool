@@ -113,14 +113,6 @@ const workplaceProfile = {
                 'Informal seating',
             ],
         },
-        hybride: {
-            label: 'Hybrid spaces',
-            voorbeeldplekken: [
-                'Video-call booth',
-                'One- or two-person enclosed space for digital meetings',
-                'Touchdown spot',
-            ],
-        },
         rust: {
             label: 'Retreat spaces',
             voorbeeldplekken: [
@@ -145,7 +137,6 @@ const workplaceProfile = {
         samenwerk: 'For actively building something together, with shared ownership.',
         creatief: 'For exploring, sketching and letting ideas grow by combining them.',
         informeel: 'For the easy contact that feeds trust and collaboration.',
-        hybride: 'For work where online and in person have to meet.',
         rust: 'For recovery, stepping back for a moment and mental breathing space.',
         leer: 'For developing, reflecting and sharing knowledge at your own pace.',
     },
@@ -164,12 +155,6 @@ const workplaceProfile = {
             tekst:
                 'The emphasis lies on aligning and working together, while concentrated work gets little room. ' +
                 'Deep work can be crowded out by the busyness of contact with others.',
-        },
-        altijd_aan: {
-            titel: 'Almost always "on"',
-            tekst:
-                'Plenty of meetings and hybrid switching, little retreat. This team is often connected and reachable — ' +
-                'make sure there are also moments to properly switch off.',
         },
         weinig_ontmoeting: {
             titel: 'Little contact that happens by itself',

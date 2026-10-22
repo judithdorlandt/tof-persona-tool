@@ -42,7 +42,6 @@ const COPY_KEY_VOOR_TYPE = {
     leer: 'learning',
     rust: 'retreat',
     informeel: 'social',
-    hybride: 'hybride',
 };
 
 // Alle zichtbare tekst komt uit copy/<taal>/teamInsightText.js.

@@ -113,14 +113,6 @@ const workplaceProfile = {
                 'Informele zitjes',
             ],
         },
-        hybride: {
-            label: 'Hybride plekken',
-            voorbeeldplekken: [
-                'Videobelplek',
-                '1-/2-persoons gesloten voor digitaal overleg',
-                'Aanlandplek',
-            ],
-        },
         rust: {
             label: 'Rustplekken',
             voorbeeldplekken: [
@@ -145,7 +137,6 @@ const workplaceProfile = {
         samenwerk: 'Voor actief samen bouwen aan iets, met gedeeld eigenaarschap.',
         creatief: 'Voor verkennen, schetsen en ideeën laten groeien door te combineren.',
         informeel: 'Voor het losse contact dat vertrouwen en samenwerking voedt.',
-        hybride: 'Voor werk waar online en fysiek elkaar moeten ontmoeten.',
         rust: 'Voor herstel, even terugschakelen en mentale ademruimte.',
         leer: 'Voor ontwikkelen, reflecteren en kennis delen in eigen tempo.',
     },
@@ -164,12 +155,6 @@ const workplaceProfile = {
             tekst:
                 'De nadruk ligt op afstemmen en samen werken, terwijl geconcentreerd werk weinig ruimte krijgt. ' +
                 'Diep werk kan verdrongen raken door de drukte van onderling contact.',
-        },
-        altijd_aan: {
-            titel: 'Bijna altijd "aan"',
-            tekst:
-                'Veel overleg en hybride schakelen, weinig rust. Dit team is vaak verbonden en bereikbaar — ' +
-                'let erop dat er ook momenten zijn om echt los te koppelen.',
         },
         weinig_ontmoeting: {
             titel: 'Weinig vanzelfsprekend contact',

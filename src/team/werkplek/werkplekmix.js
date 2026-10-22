@@ -1,6 +1,6 @@
 // werkplekmix.js
 // Persona-werkplekmix voor de TOF Persona Tool.
-// Brug tussen Behaviour (8 persona's) en Bricks (9 werkplektypen) in het BBB-model.
+// Brug tussen Behaviour (8 persona's) en Bricks (8 werkplektypen) in het BBB-model.
 //
 // SCOPE: deze versie gaat uitsluitend over BEHOEFTE en GEBRUIK.
 // Bewust GEEN vierkante meters, afmetingen, aantallen of inrichtingsverhoudingen.
@@ -15,7 +15,9 @@
 //   2 = steun      — regelmatig nodig, ondersteunend
 //   1 = aanvullend — beperkt nodig; afwezigheid is zelden een probleem
 
-// --- 9 werkplektypen, met voorbeeldplekken als illustratie van het soort plek ---
+// --- 8 werkplektypen, met voorbeeldplekken als illustratie van het soort plek ---
+// Hybride staat er bewust niet in: dat is een manier van werken, geen plek
+// (zelfde besluit als het persoonlijke profiel, d66f8ff, 30 sep 2026).
 export const WERKPLEKTYPEN = [
   {
     id: 'standaard',
@@ -48,11 +50,6 @@ export const WERKPLEKTYPEN = [
     voorbeeldplekken: ['Break-outruimte', 'Koffiepunt', 'Zitgebied', 'Horeca', 'Aanlandplekken', 'Informele zitjes'],
   },
   {
-    id: 'hybride',
-    label: 'Hybride plekken',
-    voorbeeldplekken: ['Videobelplek', '1-/2-persoons gesloten voor digitaal overleg', 'Aanlandplek'],
-  },
-  {
     id: 'rust',
     label: 'Rustplekken',
     voorbeeldplekken: ['Rustruimte', 'Stilteruimte', 'Gebedsruimte', 'Vitaliteitsruimte', 'Ontprikkelruimte'],
@@ -64,7 +61,7 @@ export const WERKPLEKTYPEN = [
   },
 ];
 
-// --- 8 persona's met hun werkplekmix over alle 9 typen ---
+// --- 8 persona's met hun werkplekmix over alle 8 typen ---
 // Per persona: een volledige mix (matrixrij) plus de valkuil als friction-signaal.
 // Maker en Presteerder zijn op 22 okt 2026 gelijkgetrokken met de personateksten
 // en de persoonlijke kaart (bricksProfile in data.js).
@@ -74,56 +71,56 @@ export const PERSONA_WERKPLEKMIX = [
     label: 'Maker',
     kernwoorden: 'doen, bouwen, leveren',
     valkuil: 'Onderschat reflectie- en rustruimte; verzandt zonder pauze.',
-    mix: { creatief: 3, samenwerk: 3, standaard: 2, concentratie: 2, overleg: 2, hybride: 2, informeel: 1, leer: 1, rust: 1 },
+    mix: { creatief: 3, samenwerk: 3, standaard: 2, concentratie: 2, overleg: 2, informeel: 1, leer: 1, rust: 1 },
   },
   {
     id: 'groeier',
     label: 'Groeier',
     kernwoorden: 'leren, ontwikkelen, verdiepen',
     valkuil: 'Zonder duidelijke oplevermomenten blijft de behoefte open.',
-    mix: { leer: 3, concentratie: 3, rust: 3, informeel: 2, creatief: 2, overleg: 1, samenwerk: 1, standaard: 1, hybride: 1 },
+    mix: { leer: 3, concentratie: 3, rust: 3, informeel: 2, creatief: 2, overleg: 1, samenwerk: 1, standaard: 1 },
   },
   {
     id: 'presteerder',
     label: 'Presteerder',
     kernwoorden: 'doelen, voortgang, impact',
     valkuil: 'Tempo verdringt verdieping; rustplek wordt overgeslagen.',
-    mix: { concentratie: 3, standaard: 3, samenwerk: 3, overleg: 2, hybride: 2, informeel: 1, creatief: 1, leer: 1, rust: 1 },
+    mix: { concentratie: 3, standaard: 3, samenwerk: 3, overleg: 2, informeel: 1, creatief: 1, leer: 1, rust: 1 },
   },
   {
     id: 'denker',
     label: 'Denker',
     kernwoorden: 'analyse, structuur, helderheid',
     valkuil: 'Te ver weg van het sociale veld; lijkt afstandelijk.',
-    mix: { concentratie: 3, rust: 3, standaard: 3, overleg: 2, leer: 2, samenwerk: 1, creatief: 1, informeel: 1, hybride: 1 },
+    mix: { concentratie: 3, rust: 3, standaard: 3, overleg: 2, leer: 2, samenwerk: 1, creatief: 1, informeel: 1 },
   },
   {
     id: 'verbinder',
     label: 'Verbinder',
     kernwoorden: 'mensen, relaties, vertrouwen',
     valkuil: 'Eigen concentratiebehoefte sneeuwt onder.',
-    mix: { informeel: 3, samenwerk: 3, overleg: 3, rust: 2, hybride: 2, standaard: 1, creatief: 1, leer: 1, concentratie: 1 },
+    mix: { informeel: 3, samenwerk: 3, overleg: 3, rust: 2, standaard: 1, creatief: 1, leer: 1, concentratie: 1 },
   },
   {
     id: 'teamspeler',
     label: 'Teamspeler',
     kernwoorden: 'samen, ritme, structuur',
     valkuil: 'Heeft juist een eigen focusplek nodig om niet op te gaan in het team.',
-    mix: { samenwerk: 3, overleg: 3, standaard: 3, informeel: 2, hybride: 2, concentratie: 1, creatief: 1, leer: 1, rust: 1 },
+    mix: { samenwerk: 3, overleg: 3, standaard: 3, informeel: 2, concentratie: 1, creatief: 1, leer: 1, rust: 1 },
   },
   {
     id: 'zekerzoeker',
     label: 'Zekerzoeker',
     kernwoorden: 'kwaliteit, zorgvuldigheid, controle',
     valkuil: 'Wisselende en ambigue settings remmen het tempo.',
-    mix: { concentratie: 3, standaard: 3, overleg: 2, leer: 2, rust: 2, samenwerk: 1, informeel: 1, creatief: 1, hybride: 1 },
+    mix: { concentratie: 3, standaard: 3, overleg: 2, leer: 2, rust: 2, samenwerk: 1, informeel: 1, creatief: 1 },
   },
   {
     id: 'vernieuwer',
     label: 'Vernieuwer',
     kernwoorden: 'mogelijkheden, experiment, verandering',
     valkuil: 'Heeft een ankerplek nodig om ideeën ook af te maken.',
-    mix: { creatief: 3, informeel: 3, samenwerk: 3, hybride: 2, leer: 2, overleg: 1, standaard: 1, concentratie: 1, rust: 1 },
+    mix: { creatief: 3, informeel: 3, samenwerk: 3, leer: 2, overleg: 1, standaard: 1, concentratie: 1, rust: 1 },
   },
 ];
 

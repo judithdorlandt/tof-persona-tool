@@ -8,7 +8,7 @@
  * Sleutels die logica zijn en dus NOOIT vertaald worden:
  *   - persona-ids: maker, groeier, presteerder, denker, verbinder,
  *     teamspeler, zekerzoeker, vernieuwer
- *   - werkplek-ids: focus, work, hybride, meeting, project, team,
+ *   - werkplek-ids: focus, work, meeting, project, team,
  *     learning, retreat, social
  *   - spanningsveld-ids: de `persona:persona`-sleutels onder `tensionPairs`
  *   - de `source`-waarden van quick wins (werkstijlen, werkplek, spanning,
@@ -34,14 +34,13 @@ function joinNatural(parts = []) {
 
 const teamInsightText = {
   // ── Werkplek-labels ────────────────────────────────────────────────
-  // De negen werkplektypen, per taalvaste sleutel. Deze labels komen in de
+  // De acht werkplektypen, per taalvaste sleutel. Deze labels komen in de
   // gegenereerde zinnen terecht (vaak via .toLowerCase()) én op de
   // underserved/oversupplied-objecten die het dashboard en de PDF tonen.
   // De NL-waarden zijn identiek aan WORKPLACE_LABELS in TeamAggregation.js.
   workplaceLabels: {
     focus: 'Concentratieplekken',
     work: 'Standaard werkplekken',
-    hybride: 'Hybride plekken',
     meeting: 'Overlegplekken',
     project: 'Creatieve plekken',
     team: 'Samenwerkplekken',
@@ -84,7 +83,6 @@ const teamInsightText = {
   underserved: {
     focus: 'Het team verliest concentratie in een open omgeving.',
     work: 'Er is geen vaste basis om rustig dagelijks werk te doen.',
-    hybride: 'Online en fysiek werken loopt vast op slechte schakelmomenten.',
     meeting: 'Afstemming krijgt geen gestructureerde plek.',
     project: 'Werk in lagen kan niet visueel gemaakt worden.',
     team: 'Het werkbare contact valt weg in een te formele omgeving.',
@@ -98,7 +96,6 @@ const teamInsightText = {
   oversupplied: {
     focus: 'Veel concentratieplekken die niemand echt nodig heeft worden een leeg eiland.',
     work: 'Een zee aan standaard werkplekken werkt niet — dit team doet ander soort werk.',
-    hybride: 'Veel hybride faciliteiten die weinig gebruikt worden kosten meer dan ze opleveren.',
     meeting: 'Te veel overlegruimtes verleiden tot overleggen in plaats van werken.',
     project: 'Veel creatieve zones die leeg staan voelen als een verwijt.',
     team: 'Grote samenwerkplekken zonder vraag worden luidruchtige doorlooproutes.',
@@ -126,7 +123,6 @@ const teamInsightText = {
     workplace: {
       focus: 'Maak een afgeschermde concentratiezone. Geen telefoongesprekken, geen meetings.',
       work: 'Investeer in rustige standaardplekken. Kwaliteit boven variatie.',
-      hybride: 'Bouw één goede schakelruimte. Vaste camera, goede akoestiek, plug-and-play.',
       meeting: 'Splits overlegruimtes. Klein voor afstemming, groot voor verdieping.',
       project: 'Reserveer wand- en tafelruimte voor lopend werk. Dit team werkt visueel.',
       team: 'Maak een echte samenwerkplek. Geen vergaderzaal, maar een werkbare ontmoetingsplek.',

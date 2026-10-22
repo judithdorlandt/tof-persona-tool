@@ -130,11 +130,6 @@ export function buildGedragssignalen(typen) {
         signalen.push('focus_verdrongen');
     }
 
-    // Veel overleg én hybride, weinig rust → continu "aan", weinig ademruimte.
-    if (hoog('overleg') && hoog('hybride') && laag('rust')) {
-        signalen.push('altijd_aan');
-    }
-
     // Veel concentratie/rust, weinig sociaal/samen → onderlinge afstemming verschraalt.
     if ((hoog('concentratie') || hoog('rust')) && laag('informeel') && laag('samenwerk')) {
         signalen.push('weinig_ontmoeting');

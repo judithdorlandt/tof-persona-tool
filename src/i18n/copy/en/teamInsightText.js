@@ -8,7 +8,7 @@
  * Keys that are logic and are therefore NEVER translated:
  *   - persona ids: maker, groeier, presteerder, denker, verbinder,
  *     teamspeler, zekerzoeker, vernieuwer
- *   - workplace ids: focus, work, hybride, meeting, project, team,
+ *   - workplace ids: focus, work, meeting, project, team,
  *     learning, retreat, social
  *   - tension-pair ids: the `persona:persona` keys under `tensionPairs`
  *   - the quick-win `source` values — used downstream as lookup keys
@@ -33,14 +33,13 @@ function joinNatural(parts = []) {
 
 const teamInsightText = {
   // ── Workplace labels ───────────────────────────────────────────────
-  // The nine workplace types, per language-neutral key. These end up inside
+  // The eight workplace types, per language-neutral key. These end up inside
   // the generated sentences (often via .toLowerCase()) and on the
   // underserved/oversupplied objects shown in the dashboard and the PDF.
   // Wording matches teamPanels.workplaceNeeds.labels.
   workplaceLabels: {
     focus: 'Focus spaces',
     work: 'Standard workstations',
-    hybride: 'Hybrid spaces',
     meeting: 'Meeting spaces',
     project: 'Creative spaces',
     team: 'Collaboration spaces',
@@ -83,7 +82,6 @@ const teamInsightText = {
   underserved: {
     focus: 'The team loses concentration in an open environment.',
     work: 'There is no steady base for calm day-to-day work.',
-    hybride: 'Online and physical working stalls on poor switching moments.',
     meeting: 'Alignment has no structured place to happen.',
     project: 'Layered work cannot be made visible.',
     team: 'Workable contact disappears in an environment that is too formal.',
@@ -97,7 +95,6 @@ const teamInsightText = {
   oversupplied: {
     focus: 'Plenty of focus spaces that nobody really needs turn into an empty island.',
     work: 'An ocean of standard workstations does not work — this team does a different kind of work.',
-    hybride: 'Hybrid facilities that are barely used cost more than they return.',
     meeting: 'Too many meeting rooms tempt people into meeting instead of working.',
     project: 'Creative zones standing empty start to feel like a reproach.',
     team: 'Large collaboration spaces without demand become noisy thoroughfares.',
@@ -125,7 +122,6 @@ const teamInsightText = {
     workplace: {
       focus: 'Create a screened-off concentration zone. No phone calls, no meetings.',
       work: 'Invest in quiet standard workstations. Quality over variety.',
-      hybride: 'Build one good switching room. Fixed camera, good acoustics, plug-and-play.',
       meeting: 'Split up your meeting rooms. Small for alignment, large for depth.',
       project: 'Reserve wall and table space for work in progress. This team works visually.',
       team: 'Create a real collaboration space. Not a boardroom, but a workable place to meet.',
