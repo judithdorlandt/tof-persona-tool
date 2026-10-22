@@ -130,10 +130,11 @@ export function getSignatureLine(dom, missing, maturity, dynamics, lang = 'nl') 
     return c.complementary;
   if (maturity.level === 1)
     return c.imbalance;
+  // Creatie–Structuur, met dezelfde 60/40-grens als het label Disbalans.
   const d = dynamics[0];
-  if (d.lv > d.rv + 25)
+  if (d.imbalanced && d.lPct > d.rPct)
     return c.ideasWithoutStructure;
-  if (d.rv > d.lv + 25)
+  if (d.imbalanced && d.rPct > d.lPct)
     return c.structureWithoutCreation;
   return c.fallback;
 }
