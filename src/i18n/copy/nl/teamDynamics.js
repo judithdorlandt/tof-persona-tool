@@ -79,11 +79,11 @@ const teamDynamics = {
     tensions: {
       eyebrow: 'Spanningen',
       value: (n) => `${n} actief`,
-      valueNone: 'Geen actieve',
+      valueNone: 'Geen directe',
       hint: 'Waar regie helpt',
       detailTitle: 'Waar dit team om regie vraagt',
       detailLead: 'Klik op een spanningsveld om risico en leiderschapsadvies te zien.',
-      detailLeadNone: 'Geen directe spanningsparen — de meest voorkomende combinaties zijn niet tegelijk sterk vertegenwoordigd.',
+      detailLeadNone: 'Geen twee werkstijlen met elk minstens 10% van de teamenergie.',
     },
     leadership: {
       eyebrow: 'Leiderschap',
@@ -169,7 +169,7 @@ const teamDynamics = {
   },
 
   tensions: {
-    empty: 'Geen directe spanningsparen gedetecteerd. De meest voorkomende combinaties zijn niet tegelijk sterk vertegenwoordigd in dit team.',
+    empty: 'Geen directe spanningen.',
     and: 'en',
     risk: 'Risico',
     advice: 'Leiderschapsadvies',

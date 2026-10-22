@@ -91,12 +91,39 @@ export function buildPersonaScores(teamResponses) {
     return scores;
 }
 
+// Aandeel in de teamenergie, afgerond op hele procenten — zoals het scherm
+// het toont. De grenzen (10% spanning, 8% ontbreekt) toetsen op dit getal,
+// zodat "Teamspeler 10%" ook als 10% meetelt (besluit Judith, 22 okt 2026).
+export function energyPercentages(sorted) {
+    const total = sorted.reduce((sum, [, v]) => sum + Number(v || 0), 0);
+    const pct = {};
+    sorted.forEach(([id, v]) => {
+        pct[id] = total > 0 ? Math.round((Number(v || 0) / total) * 100) : 0;
+    });
+    return pct;
+}
+
+export const TENSION_MIN_PCT = 10;
+export const MAX_TENSIONS = 3;
+export const MISSING_BELOW_PCT = 8;
+
+// Actief als beide werkstijlen minstens 10% van de teamenergie hebben
+// (besluit 2). Gesorteerd op de zwakste van de twee, hoogste eerst;
+// hoogstens drie.
 export function findActiveTensions(sorted, lang = 'nl') {
-    const present = new Set(sorted.filter(([, v]) => v > 0).map(([id]) => id));
+    const pct = energyPercentages(sorted);
+    const raw = Object.fromEntries(sorted);
     const pairs = t(lang).tensions.pairs;
     return TENSION_PAIRS
-        .filter((p) => present.has(p.a) && present.has(p.b))
-        .map((p) => ({ ...p, ...(pairs[`${p.a}:${p.b}`] || {}) }));
+        .filter((p) => (pct[p.a] || 0) >= TENSION_MIN_PCT && (pct[p.b] || 0) >= TENSION_MIN_PCT)
+        .map((p) => ({
+            ...p,
+            ...(pairs[`${p.a}:${p.b}`] || {}),
+            weakest: Math.min(pct[p.a], pct[p.b]),
+            weakestRaw: Math.min(raw[p.a] || 0, raw[p.b] || 0),
+        }))
+        .sort((x, y) => y.weakest - x.weakest || y.weakestRaw - x.weakestRaw)
+        .slice(0, MAX_TENSIONS);
 }
 
 export function buildDynamicsAxes(sorted, totalScore, lang = 'nl') {

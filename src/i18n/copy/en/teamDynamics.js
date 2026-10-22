@@ -59,11 +59,11 @@ const teamDynamics = {
     tensions: {
       eyebrow: 'Tensions',
       value: (n) => `${n} active`,
-      valueNone: 'None active',
+      valueNone: 'No direct',
       hint: 'Where direction helps',
       detailTitle: 'Where this team asks for direction',
       detailLead: 'Select a tension to see the risk and the leadership advice.',
-      detailLeadNone: 'No direct tension pairs — the most common combinations are not both strongly represented.',
+      detailLeadNone: 'No two working styles that each hold at least 10% of the team energy.',
     },
     leadership: {
       eyebrow: 'Leadership',
@@ -146,7 +146,7 @@ const teamDynamics = {
   },
 
   tensions: {
-    empty: 'No direct tension pairs detected. The most common combinations are not both strongly represented in this team.',
+    empty: 'No direct tensions.',
     and: 'and',
     risk: 'Risk',
     advice: 'Leadership advice',

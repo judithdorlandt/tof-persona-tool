@@ -509,13 +509,13 @@ function SignatureBlock({
                 {dominantPersona ? (
                     <MetaChip label={t.chips.dominant} value={dominantPersona} accent={dominantColor || accent} />
                 ) : null}
-                {tensionsCount > 0 ? (
-                    <MetaChip
-                        label={t.chips.tensions}
-                        value={t.tiles.tensions.value(tensionsCount)}
-                        accent={accent}
-                    />
-                ) : null}
+                <MetaChip
+                    label={t.chips.tensions}
+                    value={tensionsCount > 0
+                        ? t.tiles.tensions.value(tensionsCount)
+                        : t.tiles.tensions.valueNone}
+                    accent={accent}
+                />
                 {reliability ? <MetaChip label={t.chips.reliability} value={reliability} /> : null}
             </div>
         </div>

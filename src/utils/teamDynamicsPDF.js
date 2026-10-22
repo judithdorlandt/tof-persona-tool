@@ -85,7 +85,7 @@ const DYNAMICS_COPY = {
         },
         axesEyebrow: 'DRIE ASSEN — WAAR HET TEAM ZIT',
         tensionsEyebrow: 'ACTIEVE SPANNINGEN',
-        tensionsEmpty: 'Geen actieve spanningen — werkstijlen zijn in balans.',
+        tensionsEmpty: 'Geen directe spanningen.',
         // Voegwoord tussen de twee persona-pills. `joinerGap` is de ruimte in mm
         // die we ervoor reserveren — taalafhankelijk, want "and" is breder.
         joiner: 'en',
@@ -94,7 +94,7 @@ const DYNAMICS_COPY = {
         backPill: 'REGIE EN ACTIE',
         backTitle: 'Waar regie helpt en wat te doen',
         adviceEyebrow: 'PER SPANNING — WAT VRAAGT REGIE',
-        adviceEmpty: 'Geen actieve spanningen om regie op te voeren.',
+        adviceEmpty: 'Geen directe spanningen.',
         actionsEyebrow: (n) =>
             n > 0
                 ? `${ACTION_COUNT_WORDS.nl[n - 1] || n} ${n === 1 ? 'ACTIE' : 'ACTIES'} VOOR LEIDERSCHAP`
@@ -127,14 +127,14 @@ const DYNAMICS_COPY = {
         },
         axesEyebrow: 'THREE AXES — WHERE THE TEAM SITS',
         tensionsEyebrow: 'ACTIVE TENSIONS',
-        tensionsEmpty: 'No active tensions — working styles are in balance.',
+        tensionsEmpty: 'No direct tensions.',
         joiner: 'and',
         joinerGap: 11,
         footerHint: 'SEE REVERSE FOR DIRECTION AND ACTION',
         backPill: 'DIRECTION AND ACTION',
         backTitle: 'Where direction helps and what to do',
         adviceEyebrow: 'PER TENSION — WHAT NEEDS DIRECTION',
-        adviceEmpty: 'No active tensions to give direction to.',
+        adviceEmpty: 'No direct tensions.',
         actionsEyebrow: (n) =>
             n > 0
                 ? `${ACTION_COUNT_WORDS.en[n - 1] || n} ${n === 1 ? 'ACTION' : 'ACTIONS'} FOR LEADERSHIP`
@@ -526,12 +526,12 @@ function drawTensionsList({ svg, y, tensions, aggregate, c, lang }) {
         return Math.round(((totalScores[id] || 0) / totalEnergy) * 100);
     };
 
-    // Hoogstens vier spanningen, gelijk aan "Per spanning" op de achterkant
-    // (keuze Judith, 22 okt 2026); zo is er ruimte tussen titel en werkstijlen.
+    // Hoogstens drie spanningen (besluit 2, 22 okt 2026); dezelfde regel als
+    // het scherm en "Per spanning" op de achterkant.
     let lineY = y + 18;
     const lineHeight = 19;
 
-    tensions.slice(0, 4).forEach((t) => {
+    tensions.slice(0, 3).forEach((t) => {
         const pctA = pctFor(t.a);
         const pctB = pctFor(t.b);
         const colorA = PERSONA_COLORS[t.a];
@@ -688,7 +688,7 @@ function drawTensionAdvice({ svg, y, tensions, c }) {
     let lineY = y + 20;
     const usableW = PAGE_W - MARGIN * 2;
 
-    tensions.slice(0, 4).forEach((t) => {
+    tensions.slice(0, 3).forEach((t) => {
         // Titel in rose
         svg.appendChild(createText({
             x: MARGIN,
