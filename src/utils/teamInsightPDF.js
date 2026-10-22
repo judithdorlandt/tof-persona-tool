@@ -29,6 +29,7 @@ import {
 import { getArchetypeName } from './organisatieLandschap/constants';
 
 import { getCopy } from '../i18n/copy';
+import { getConfidence } from '../insights';
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -69,6 +70,14 @@ const INSIGHT_COPY = {
             `${isOrg ? 'De organisatie' : 'Het team'} werkt vanuit ${persona.toLowerCase()}.`,
         responses: (n) => `${n} respons${n === 1 ? '' : 'en'}`,
         reliability: { low: 'Indicatief', mid: 'Groeiend', high: 'Sterk beeld' },
+        // Teamvariant: één schaal met Teamdynamiek (besluit 6, 22 okt 2026),
+        // per niveau uit getConfidence() in src/insights.js.
+        confidence: {
+            low: 'Eerste signalen',
+            emerging: 'Opkomend patroon',
+            reliable: 'Betrouwbaar beeld',
+            strong: 'Sterk patroon',
+        },
         distributionEyebrow: 'VERDELING',
         mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATIE-MIX' : 'JOUW TEAM-MIX'),
         roundingNote: 'Percentages zijn afgerond; de som ligt tussen 99 en 101%.',
@@ -138,6 +147,12 @@ const INSIGHT_COPY = {
             `${isOrg ? 'The organisation' : 'The team'} works from ${persona.toLowerCase()}.`,
         responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
         reliability: { low: 'Indicative', mid: 'Growing', high: 'Strong picture' },
+        confidence: {
+            low: 'First signals',
+            emerging: 'Emerging pattern',
+            reliable: 'Reliable picture',
+            strong: 'Strong pattern',
+        },
         distributionEyebrow: 'BREAKDOWN',
         mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATION MIX' : 'YOUR TEAM MIX'),
         roundingNote: 'Percentages are rounded; the total sits between 99 and 101%.',
@@ -435,7 +450,7 @@ function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCo
 
     const headlineLines = wrapText(headline, PAGE_W - MARGIN * 2, 6.4, 'Inter');
     const metaY = subY + headlineLines.length * 8.8 + 6;
-    const reliability = buildReliabilityLabel(teamCount, c);
+    const reliability = buildReliabilityLabel(teamCount, c, isOrg);
     const metaLine = `${c.responses(teamCount)}${reliability ? ' · ' + reliability : ''}`;
     svg.appendChild(createText({
         x: MARGIN,
@@ -1169,8 +1184,12 @@ function wrapText(text, maxWidth, fontSize, font) {
 // HELPERS
 // =========================
 
-function buildReliabilityLabel(count, c = INSIGHT_COPY.nl) {
+// Teamvariant: de schaal van getConfidence() (5–15 opkomend, 16–30
+// betrouwbaar, meer dan 30 sterk). De organisatievariant houdt zijn oude
+// drempels tot daar apart over besloten is.
+function buildReliabilityLabel(count, c = INSIGHT_COPY.nl, isOrg = false) {
     if (count === null || count === undefined) return '';
+    if (!isOrg) return c.confidence[getConfidence(count).level] || '';
     if (count < 3) return c.reliability.low;
     if (count < 6) return c.reliability.mid;
     return c.reliability.high;
