@@ -17,31 +17,18 @@ import {
     setupTofFonts,
     formatPdfDate,
 } from './tofPdfBrand';
-// Voorbeeldplekken ("soort plek") per werkplektype. Alleen kwalitatieve
-// illustratie van het SOORT plek; geen aantallen.
-import { WERKPLEKTYPEN } from '../team/werkplek/werkplekmix';
-// Persona-namen en werkplek-labels komen uit één taalvaste bron, zodat NL/EN
+// Werkplekprofiel (kern / steun / beperkt nodig) — dezelfde bron als het
+// Werkplek-paneel op het scherm.
+import {
+    aantallenUitAggregate,
+    buildWerkplekProfiel,
+    BAND,
+} from '../team/werkplek/werkplekProfielLogic';
+// Persona-namen komen uit één taalvaste bron, zodat NL/EN
 // rapporten dezelfde termen gebruiken als de Organisatie-Landschap PDF.
 import { getArchetypeName } from './organisatieLandschap/constants';
-import { WORKPLACE_LABELS_EN } from './organisatieLandschap/copy.en';
 
 import { getCopy } from '../i18n/copy';
-
-// De aggregatie levert vaste Nederlandse labels die exact matchen met
-// WERKPLEKTYPEN (Concentratieplekken, Standaard werkplekken, ...). Via dat
-// label vinden we het type-id, en daarmee de voorbeeldplekken in de juiste taal.
-const WERKPLEKTYPE_ID_BY_LABEL = WERKPLEKTYPEN.reduce((acc, t) => {
-    acc[t.label] = t.id;
-    return acc;
-}, {});
-
-function voorbeeldplekkenFor(label, lang) {
-    const id = WERKPLEKTYPE_ID_BY_LABEL[label];
-    if (!id) return null;
-    return getCopy(lang).workplaceProfile?.types?.[id]?.voorbeeldplekken
-        || WERKPLEKTYPEN.find((t) => t.id === id)?.voorbeeldplekken
-        || null;
-}
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -126,7 +113,6 @@ const INSIGHT_COPY = {
             ? 'Wat deze organisatie vraagt van de werkomgeving'
             : 'Wat dit team vraagt van de werkomgeving'),
         workplaceEyebrow: 'WERKPLEKBEHOEFTE',
-        workplaceLabel: (label) => label,
         actionsEyebrow: (n) => `${n === 1 ? 'EÉN ACTIE' : n + ' ACTIES'} VOOR MORGEN`,
         sourceLabels: {
             werkstijlen: 'WAT DE WERKSTIJLEN VRAGEN',
@@ -196,7 +182,6 @@ const INSIGHT_COPY = {
             ? 'What this organisation asks of the work environment'
             : 'What this team asks of the work environment'),
         workplaceEyebrow: 'WORKPLACE NEED',
-        workplaceLabel: (label) => WORKPLACE_LABELS_EN[label] || label,
         actionsEyebrow: (n) => `${n === 1 ? 'ONE ACTION' : n + ' ACTIONS'} FOR TOMORROW`,
         sourceLabels: {
             werkstijlen: 'WHAT THE WORKING STYLES ASK FOR',
@@ -758,112 +743,160 @@ function drawAchterkantTitle({ svg, y, mode = 'team', c = INSIGHT_COPY.nl }) {
 }
 
 function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = 'nl' }) {
-    const items = (aggregate?.sortedWorkplaceNeeds || []).slice();
-    if (items.length === 0) return y;
+    // Zelfde opbouw als het Werkplek-paneel: de sterkste behoefte groot, dan
+    // de overige kern- en steunplekken in twee kolommen, dan één regel met wat
+    // beperkt nodig is. Geen percentages, geen balkjes.
+    const profiel = buildWerkplekProfiel(aantallenUitAggregate(aggregate));
+    if (!profiel.heeftData || profiel.typen.length === 0) return y;
 
-    const total = items.reduce((sum, item) => sum + Number(item.value || item.count || 0), 0);
-    const enriched = items.map((item) => {
-        const value = Number(item.value || item.count || 0);
-        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-        return { ...item, percentage };
-    });
+    const wp = getCopy(lang).workplaceProfile;
+    const typeLabel = (t) => wp?.types?.[t.id]?.label || t.label;
+    const plekkenVoor = (t) => wp?.types?.[t.id]?.voorbeeldplekken || t.voorbeeldplekken || [];
+    const bandLabel = (band) => String(wp?.band?.[band]?.label || band).toUpperCase();
 
-    const averagePct = enriched.length > 0 ? 100 / enriched.length : 0;
+    const [hero, ...overige] = profiel.typen;
+    const secundair = overige.filter((t) => t.band !== BAND.AANVULLEND);
+    const beperkt = overige.filter((t) => t.band === BAND.AANVULLEND);
 
+    const totalWidth = PAGE_W - MARGIN * 2;
+    const plekSize = 3.8;
+    const plekLineH = 4.2;
+
+    // Kleine "soort plek"-regel onder een type. Volledig uitgeschreven; past
+    // het niet op één regel, dan zakt het netjes naar de volgende regel.
+    function drawPlekken(type, x, startY, w) {
+        const plekken = plekkenVoor(type);
+        if (plekken.length === 0) return startY;
+        const lines = wrapText(plekken.slice(0, 3).join(' · '), w, plekSize, 'Inter');
+        lines.forEach((line, i) => {
+            svg.appendChild(createText({
+                x,
+                y: startY + i * plekLineH,
+                text: line,
+                font: 'Inter',
+                weight: 400,
+                size: plekSize,
+                color: COLOR.textMuted,
+            }));
+        });
+        return startY + lines.length * plekLineH;
+    }
+
+    // ── Sterkste behoefte ──
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 8,
-        text: c.workplaceEyebrow,
+        text: String(wp?.ui?.heroEyebrow || c.workplaceEyebrow).toUpperCase(),
         font: 'Inter',
         weight: 700,
         size: 4.8,
         color: COLOR.textMuted,
         letterSpacing: 0.8,
     }));
+    svg.appendChild(createText({
+        x: MARGIN + totalWidth,
+        y: y + 8,
+        text: bandLabel(hero.band),
+        font: 'Inter',
+        weight: 700,
+        size: 4.2,
+        color: hero.band === BAND.AANVULLEND ? COLOR.textMuted : COLOR.sage,
+        letterSpacing: 0.8,
+        anchor: 'end',
+    }));
+    svg.appendChild(createText({
+        x: MARGIN,
+        y: y + 20,
+        text: typeLabel(hero),
+        font: 'Playfair Display',
+        weight: 500,
+        size: 12,
+        color: COLOR.sage,
+    }));
+    let lineY = drawPlekken(hero, MARGIN, y + 26, totalWidth);
 
-    const totalWidth = PAGE_W - MARGIN * 2;
-    const gap = 16;
-    const colWidth = (totalWidth - gap) / 2;
-    const colLeftX = MARGIN;
-    const colRightX = MARGIN + colWidth + gap;
+    // ── Overige kern- en steunplekken, op volgorde ──
+    if (secundair.length > 0) {
+        lineY += 6;
+        svg.appendChild(createText({
+            x: MARGIN,
+            y: lineY,
+            text: String(wp?.ui?.overzichtKop || '').toUpperCase(),
+            font: 'Inter',
+            weight: 700,
+            size: 4.2,
+            color: COLOR.textMuted,
+            letterSpacing: 0.8,
+        }));
 
-    const lineHeight = 10;
-    const startY = y + 18;
+        const gap = 16;
+        const colWidth = (totalWidth - gap) / 2;
+        const startY = lineY + 9;
+        const half = Math.ceil(secundair.length / 2);
 
-    const halfPoint = Math.ceil(enriched.length / 2);
-    const leftItems = enriched.slice(0, halfPoint);
-    const rightItems = enriched.slice(halfPoint);
+        const drawColumn = (items, x) => {
+            let colY = startY;
+            items.forEach((type) => {
+                svg.appendChild(createText({
+                    x,
+                    y: colY,
+                    text: typeLabel(type),
+                    font: 'Inter',
+                    weight: 500,
+                    size: 5.6,
+                    color: COLOR.text,
+                }));
+                svg.appendChild(createText({
+                    x: x + colWidth,
+                    y: colY,
+                    text: bandLabel(type.band),
+                    font: 'Inter',
+                    weight: 700,
+                    size: 3.8,
+                    color: COLOR.sage,
+                    letterSpacing: 0.6,
+                    anchor: 'end',
+                }));
+                colY = drawPlekken(type, x, colY + 5, colWidth) + 3.5;
+            });
+            return colY;
+        };
 
-    function drawColumn(items, x, w) {
-        let lineY = startY;
-        items.forEach((item) => {
-            const isAbove = item.percentage >= averagePct;
-            const accent = isAbove ? COLOR.sage : COLOR.rose;
-
-            svg.appendChild(createText({
-                x: x,
-                y: lineY,
-                text: c.workplaceLabel(item.label),
-                font: 'Inter',
-                weight: 500,
-                size: 5.6,
-                color: COLOR.text,
-            }));
-
-            svg.appendChild(createText({
-                x: x + w,
-                y: lineY,
-                text: `${item.percentage}%`,
-                font: 'Inter',
-                weight: 600,
-                size: 5.6,
-                color: COLOR.textMuted,
-                anchor: 'end',
-            }));
-
-            const barY = lineY + 2.6;
-            const barH = 1.4;
-
-            svg.appendChild(createRect(x, barY, w, barH, '#EADFD4'));
-            if (item.percentage > 0) {
-                svg.appendChild(createRect(x, barY, w * (item.percentage / 100), barH, accent));
-            }
-
-            let advance = lineHeight;
-
-            // Kleine "soort plek"-regel onder het type. Volledig uitgeschreven;
-            // past het niet op één regel, dan zakt het netjes naar de volgende
-            // regel (geen afkapping).
-            const plekken = voorbeeldplekkenFor(item.label, lang);
-            if (plekken && plekken.length > 0) {
-                const txt = plekken.slice(0, 3).join(' · ');
-                const lines = wrapText(txt, w, 3.8, 'Inter');
-                const plekLineH = 4.2;
-                lines.forEach((line, i) => {
-                    svg.appendChild(createText({
-                        x: x,
-                        y: barY + 5 + i * plekLineH,
-                        text: line,
-                        font: 'Inter',
-                        weight: 400,
-                        size: 3.8,
-                        color: COLOR.textMuted,
-                    }));
-                });
-                // Beetje lucht onder elk type-blok, zodat de voorbeeldplekken
-                // niet tegen het volgende type aan plakken (niet te ruim).
-                advance = lineHeight + lines.length * plekLineH + 2.5;
-            }
-
-            lineY += advance;
-        });
-        return lineY;
+        lineY = Math.max(
+            drawColumn(secundair.slice(0, half), MARGIN),
+            drawColumn(secundair.slice(half), MARGIN + colWidth + gap)
+        );
     }
 
-    const leftEnd = drawColumn(leftItems, colLeftX, colWidth);
-    const rightEnd = drawColumn(rightItems, colRightX, colWidth);
+    // ── Beperkt nodig ──
+    if (beperkt.length > 0) {
+        lineY += 4;
+        svg.appendChild(createText({
+            x: MARGIN,
+            y: lineY,
+            text: String(wp?.band?.aanvullend?.kort || '').toUpperCase(),
+            font: 'Inter',
+            weight: 700,
+            size: 4.2,
+            color: COLOR.textMuted,
+            letterSpacing: 0.8,
+        }));
+        const lines = wrapText(beperkt.map(typeLabel).join(' · '), totalWidth, 5, 'Inter');
+        lines.forEach((line, i) => {
+            svg.appendChild(createText({
+                x: MARGIN,
+                y: lineY + 8 + i * 6,
+                text: line,
+                font: 'Inter',
+                weight: 400,
+                size: 5,
+                color: COLOR.textSoft,
+            }));
+        });
+        lineY += 8 + (lines.length - 1) * 6;
+    }
 
-    return Math.max(leftEnd, rightEnd);
+    return lineY;
 }
 
 function drawQuickWinsCompact({ svg, y, insights, c = INSIGHT_COPY.nl }) {
