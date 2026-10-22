@@ -126,7 +126,7 @@ const INSIGHT_COPY = {
         footerQuote: '"Een organisatie die zichzelf herkent, beweegt sneller."',
         footerTagline: (isOrg) => (isOrg
             ? 'Helping organisations understand their workplace through insight, design and movement.'
-            : 'Helping teams understand their workplace through insight, design and movement.'),
+            : 'TOF Persona · The Office Factory'),
     },
     en: {
         fileSuffix: (isOrg) => (isOrg ? 'organisation insight' : 'team insight'),
@@ -195,7 +195,7 @@ const INSIGHT_COPY = {
         footerQuote: '"An organisation that recognises itself moves faster."',
         footerTagline: (isOrg) => (isOrg
             ? 'Helping organisations understand their workplace through insight, design and movement.'
-            : 'Helping teams understand their workplace through insight, design and movement.'),
+            : 'TOF Persona · The Office Factory'),
     },
 };
 
