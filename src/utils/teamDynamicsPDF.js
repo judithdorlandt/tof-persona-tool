@@ -525,10 +525,12 @@ function drawTensionsList({ svg, y, tensions, aggregate, c, lang }) {
         return Math.round(((totalScores[id] || 0) / totalEnergy) * 100);
     };
 
+    // Hoogstens vier spanningen, gelijk aan "Per spanning" op de achterkant
+    // (keuze Judith, 22 okt 2026); zo is er ruimte tussen titel en werkstijlen.
     let lineY = y + 18;
-    const lineHeight = 16;
+    const lineHeight = 19;
 
-    tensions.slice(0, 6).forEach((t) => {
+    tensions.slice(0, 4).forEach((t) => {
         const pctA = pctFor(t.a);
         const pctB = pctFor(t.b);
         const colorA = PERSONA_COLORS[t.a];
@@ -548,7 +550,7 @@ function drawTensionsList({ svg, y, tensions, aggregate, c, lang }) {
         // Persona-pills regel — namen uit de taalvaste bron, nooit hardcoded.
         // `capitalize` blijft eromheen staan voor onbekende ids (die geeft
         // getArchetypeName ongewijzigd terug).
-        const pillY = lineY + 7;
+        const pillY = lineY + 9;
         const archAName = capitalize(getArchetypeName(t.a, lang));
         const archBName = capitalize(getArchetypeName(t.b, lang));
 
@@ -702,7 +704,7 @@ function drawTensionAdvice({ svg, y, tensions, c }) {
         adviceLines.forEach((line, i) => {
             svg.appendChild(createText({
                 x: MARGIN,
-                y: lineY + 8 + i * 7.4,
+                y: lineY + 8 + i * 7.9,
                 text: line,
                 font: 'Inter',
                 weight: 400,
@@ -711,7 +713,7 @@ function drawTensionAdvice({ svg, y, tensions, c }) {
             }));
         });
 
-        lineY += 8 + adviceLines.length * 7.4 + 6;
+        lineY += 8 + adviceLines.length * 7.9 + 6;
     });
 
     return lineY;
@@ -754,7 +756,8 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
     // Eén kolom: elke actie volledig, geen afbreking.
     const numberColW = 14;
     const bodyW = PAGE_W - MARGIN * 2 - numberColW;
-    const lineStep = 7.2;
+    // Regelstap 1,39 × de lettergrootte, zelfde regel als Teaminzicht.
+    const lineStep = 7.8;
     let rowY = y + 18;
 
     leadershipWins.slice(0, MAX_PDF_ACTIONS).forEach((win, index) => {
