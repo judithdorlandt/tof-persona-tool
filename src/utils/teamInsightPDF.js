@@ -781,7 +781,8 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
 
     const totalWidth = PAGE_W - MARGIN * 2;
     const plekSize = 3.8;
-    const plekLineH = 4.2;
+    // Regelstap 1,35 × de lettergrootte (Judith, 22 okt 2026: "staat soms erg dicht op elkaar").
+    const plekLineH = 5.1;
 
     // Kleine "soort plek"-regel onder een type. Volledig uitgeschreven; past
     // het niet op één regel, dan zakt het netjes naar de volgende regel.
@@ -834,7 +835,7 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
         size: 12,
         color: COLOR.sage,
     }));
-    let lineY = drawPlekken(hero, MARGIN, y + 26, totalWidth);
+    let lineY = drawPlekken(hero, MARGIN, y + 26.4, totalWidth);
 
     // ── Overige kern- en steunplekken, op volgorde ──
     if (secundair.length > 0) {
@@ -878,7 +879,7 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
                     letterSpacing: 0.6,
                     anchor: 'end',
                 }));
-                colY = drawPlekken(type, x, colY + 5, colWidth) + 3.5;
+                colY = drawPlekken(type, x, colY + 5.4, colWidth) + 4.5;
             });
             return colY;
         };
@@ -906,7 +907,7 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
         lines.forEach((line, i) => {
             svg.appendChild(createText({
                 x: MARGIN,
-                y: lineY + 8 + i * 6,
+                y: lineY + 8 + i * 7,
                 text: line,
                 font: 'Inter',
                 weight: 400,
@@ -914,7 +915,7 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
                 color: COLOR.textSoft,
             }));
         });
-        lineY += 8 + (lines.length - 1) * 6;
+        lineY += 8 + (lines.length - 1) * 7;
     }
 
     return lineY;
@@ -970,7 +971,7 @@ function drawQuickWinsCompact({ svg, y, insights, c = INSIGHT_COPY.nl }) {
         actionLines.forEach((line, i) => {
             svg.appendChild(createText({
                 x: MARGIN + numberColW,
-                y: lineY + 6 + i * 6.4,
+                y: lineY + 6 + i * 7.8,
                 text: line,
                 font: 'Inter',
                 weight: 400,
@@ -979,7 +980,7 @@ function drawQuickWinsCompact({ svg, y, insights, c = INSIGHT_COPY.nl }) {
             }));
         });
 
-        lineY += 6 + actionLines.length * 6.4 + 3;
+        lineY += 6 + actionLines.length * 7.8 + 4;
     });
 
     return lineY;
