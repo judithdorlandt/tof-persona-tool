@@ -33,6 +33,20 @@ const WORKPLACE_PRESENT_PCT = 15;
 // Niveau in de werkplekmix waarop een type kern is voor een werkstijl.
 const KERN_NIVEAU = 3;
 
+// De werkplekteksten in teamInsightText staan nog op de sleutels van het oude
+// model (focus/work/...). Type-id uit het werkplekprofiel → die sleutel.
+const COPY_KEY_VOOR_TYPE = {
+    concentratie: 'focus',
+    standaard: 'work',
+    overleg: 'meeting',
+    creatief: 'project',
+    samenwerk: 'team',
+    leer: 'learning',
+    rust: 'retreat',
+    informeel: 'social',
+    hybride: 'hybride',
+};
+
 // Alle zichtbare tekst komt uit copy/<taal>/teamInsightText.js.
 function text(lang) {
     return getCopy(lang).teamInsightText;
@@ -299,7 +313,6 @@ function formatNamesNatural(names, lang = 'nl') {
 // =========================
 function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
     const wins = [];
-    const needs = aggregate?.sortedWorkplaceNeeds || [];
 
     // QuickWins gaan over "wie zit er in dit team" voor de werkstijl-actie,
     // zodat ze rijmen met het dashboard. Voor de werkstijl-actie kiezen we
@@ -310,7 +323,10 @@ function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
     // Ontbrekend op basis van strikte definitie uit aggregate
     const missingPersonas = aggregate?.missingPersonas || [];
 
-    const topNeed = needs[0];
+    // Zelfde type als de Werkplek-tegel: de eerste kern, anders het hoogste.
+    const { type: werkplekType } = tegelKern(
+        buildWerkplekProfiel(aantallenUitAggregate(aggregate))
+    );
     const tension = buildWorkplaceTension(aggregate, lang);
     const t = text(lang).quickWins;
 
@@ -326,8 +342,8 @@ function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
     }
 
     // WIN 2 — uit WERKPLEK
-    if (topNeed) {
-        const action = t.workplace[topNeed.key];
+    if (werkplekType) {
+        const action = t.workplace[COPY_KEY_VOOR_TYPE[werkplekType.id]];
         if (action) {
             wins.push({ source: 'werkplek', action });
         }
@@ -360,22 +376,20 @@ function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
         const personaNames = minority.map((p) => p.name);
         const personaText = formatNamesNatural(personaNames, lang);
 
+        // Wat de minderheid vraagt, uit de werkplekmix (zelfde bron als het profiel).
         const workplaceScores = {};
         minority.forEach((p) => {
-            const arch = getArchetypes(lang).find((a) => a.id === p.id);
-            if (!arch?.bricksProfile) return;
-            Object.entries(arch.bricksProfile).forEach(([key, score]) => {
-                workplaceScores[key] = (workplaceScores[key] || 0) + score;
+            const mix = PERSONA_WERKPLEKMIX.find((m) => m.id === p.id)?.mix;
+            if (!mix) return;
+            Object.entries(mix).forEach(([typeId, niveau]) => {
+                workplaceScores[typeId] = (workplaceScores[typeId] || 0) + niveau;
             });
         });
 
         const topMinorityWorkplaces = Object.entries(workplaceScores)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 2)
-            .map(([key]) => {
-                const need = needs.find((n) => n.key === key);
-                return workplaceLabel(need || { key }, lang);
-            });
+            .map(([typeId]) => profielTypeLabel({ id: typeId }, lang));
 
         const workplacesText = formatNamesNatural(
             topMinorityWorkplaces.map((w) => w.toLowerCase()),
