@@ -138,10 +138,12 @@ export function buildDynamicsAxes(sorted, totalScore, lang = 'nl') {
     return getDynamics(pcts, lang);
 }
 
+// Onder 8% van de teamenergie = "ontbreekt of is nauwelijks aanwezig"
+// (besluit 5). Voorheen alleen bij 0%.
 export function findMissingCritical(sorted, lang = 'nl') {
-    const present = new Set(sorted.filter(([, v]) => v > 0).map(([id]) => id));
+    const pct = energyPercentages(sorted);
     return ['denker', 'verbinder', 'vernieuwer']
-        .filter((id) => !present.has(id))
+        .filter((id) => (pct[id] || 0) < MISSING_BELOW_PCT)
         .map((id) => ({ id, archetype: getArchetype(id, lang) }))
         .filter((x) => x.archetype);
 }
