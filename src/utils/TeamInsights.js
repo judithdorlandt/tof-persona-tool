@@ -28,8 +28,6 @@ import {
 } from '../team/werkplek/werkplekProfielLogic';
 import { PERSONA_WERKPLEKMIX } from '../team/werkplek/werkplekmix';
 
-const WORKPLACE_PRESENT_PCT = 15;
-
 // Niveau in de werkplekmix waarop een type kern is voor een werkstijl.
 const KERN_NIVEAU = 3;
 
@@ -50,14 +48,6 @@ const COPY_KEY_VOOR_TYPE = {
 // Alle zichtbare tekst komt uit copy/<taal>/teamInsightText.js.
 function text(lang) {
     return getCopy(lang).teamInsightText;
-}
-
-// Werkplek-label in de juiste taal. De aggregatie levert nog een vaste
-// Nederlandse `label`; die blijft de terugval zodat er nooit een lege
-// naam in een zin belandt. De sleutel (focus/work/...) is taalonafhankelijk.
-function workplaceLabel(need, lang) {
-    if (!need) return '';
-    return text(lang).workplaceLabels[need.key] || need.label || need.key;
 }
 
 // Naam van een type uit het werkplekprofiel, in de juiste taal.
@@ -83,15 +73,13 @@ export function buildTeamInsights(aggregate, lang = 'nl') {
     const topByEnergy = aggregate?.sortedPersonas?.[0] || null;
     const secondByEnergy = aggregate?.sortedPersonas?.[1] || null;
 
-    const topNeed = aggregate?.sortedWorkplaceNeeds?.[0];
-    const secondNeed = aggregate?.sortedWorkplaceNeeds?.[1];
     const teamCount = aggregate?.teamCount || 0;
 
     return {
         headline: buildHeadline(aggregate, lang),
         workplaceTension: buildWorkplaceTension(aggregate, lang),
         quickWins: buildWorkplaceQuickWins(aggregate, lang),
-        highlights: buildHighlights(topByPrimary, secondByPrimary, topNeed, secondNeed, lang),
+        highlights: buildHighlights(topByPrimary, secondByPrimary, lang),
 
         // Voor Module 2 — energie-basis
         energy: buildEnergy(aggregate, lang),
@@ -107,8 +95,6 @@ export function buildTeamInsights(aggregate, lang = 'nl') {
             second: secondByPrimary,
             topByEnergy,
             secondByEnergy,
-            topNeed,
-            secondNeed,
         },
     };
 }
@@ -117,42 +103,29 @@ export function buildTeamInsights(aggregate, lang = 'nl') {
 // HEADLINE
 // =========================
 function buildHeadline(aggregate, lang = 'nl') {
-    const needs = (aggregate?.sortedWorkplaceNeeds || []).filter(
-        (n) => n.percentage >= WORKPLACE_PRESENT_PCT
-    );
     const teamCount = aggregate?.teamCount || 0;
     const t = text(lang).headline;
 
-    if (teamCount === 0) {
+    const profiel = buildWerkplekProfiel(aantallenUitAggregate(aggregate));
+    if (teamCount === 0 || !profiel.heeftData) {
         return t.empty;
     }
 
-    if (needs.length >= 2) {
-        return t.two(
-            workplaceLabel(needs[0], lang).toLowerCase(),
-            workplaceLabel(needs[1], lang).toLowerCase()
-        );
+    // Volgt het werkplekprofiel: de kernplekken, in de volgorde van het paneel.
+    const kernen = profiel.typen.filter((k) => k.band === BAND.KERN);
+    const label = (type) => profielTypeLabel(type, lang).toLowerCase();
+
+    if (kernen.length >= 2) {
+        return t.two(label(kernen[0]), label(kernen[1]));
     }
 
-    if (needs.length === 1) {
-        return t.one(workplaceLabel(needs[0], lang).toLowerCase());
+    if (kernen.length === 1) {
+        return t.one(label(kernen[0]));
     }
 
-    // Geen categorie boven de drempel: de behoeften liggen dicht bij elkaar.
-    // Maak de basis voor de acties expliciet — de winst zit niet in een
-    // verschil van één procentpunt, maar in de balans tussen relatief veel
-    // en relatief weinig gevraagde plekken (vraag versus aanbod).
-    const base = t.mixedBase;
-    const tension = buildWorkplaceTension(aggregate, lang);
-    const under = tension.underserved?.[0];
-    const over = tension.oversupplied?.[0];
-    if (under && over) {
-        return `${base} ${t.mixedBalance(under.label.toLowerCase(), over.label.toLowerCase())}`;
-    }
-    if (under) {
-        return `${base} ${t.mixedUnderOnly(under.label.toLowerCase())}`;
-    }
-    return base;
+    // Geen kern: de behoeften liggen dicht bij elkaar. Noem het hoogste type,
+    // gelijk aan de Werkplek-tegel.
+    return `${t.mixedBase} ${t.mixedUnderOnly(label(profiel.typen[0]))}`;
 }
 
 // =========================
@@ -426,7 +399,7 @@ function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
 // =========================
 // HIGHLIGHTS — gebaseerd op personasByPrimary (consistent met dashboard)
 // =========================
-function buildHighlights(top, second, topNeed, secondNeed, lang = 'nl') {
+function buildHighlights(top, second, lang = 'nl') {
     const t = text(lang).highlights;
     const out = [];
     if (top) {
@@ -434,14 +407,6 @@ function buildHighlights(top, second, topNeed, secondNeed, lang = 'nl') {
     }
     if (top && second) {
         out.push(t.combination(personaName(top.id, lang), personaName(second.id, lang)));
-    }
-    if (topNeed && secondNeed) {
-        out.push(
-            t.needs(
-                workplaceLabel(topNeed, lang).toLowerCase(),
-                workplaceLabel(secondNeed, lang).toLowerCase()
-            )
-        );
     }
     return out;
 }
@@ -526,7 +491,6 @@ function buildUsage(aggregate, lang = 'nl') {
     // Bewust op personasByPrimary voor consistentie met dashboard
     const top = aggregate?.personasByPrimary?.[0]
         || aggregate?.sortedPersonas?.[0];
-    const topNeed = aggregate?.sortedWorkplaceNeeds?.[0];
     const pct = top?.countPercentage ?? top?.percentage ?? 0;
 
     return [
@@ -534,11 +498,6 @@ function buildUsage(aggregate, lang = 'nl') {
             situation: t.meeting.situation,
             title: t.meeting.title,
             items: top ? [t.meeting.item(personaName(top.id, lang), pct)] : [],
-        },
-        {
-            situation: t.workplace.situation,
-            title: t.workplace.title,
-            items: topNeed ? [t.workplace.item(workplaceLabel(topNeed, lang))] : [],
         },
     ];
 }

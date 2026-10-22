@@ -62,8 +62,6 @@ const teamInsightText = {
     one: (first) => `This team mainly asks for ${first}.`,
     // No category above the threshold: the needs sit close together.
     mixedBase: 'This team has a mixed workplace need — no single category clearly stands out.',
-    mixedBalance: (under, over) =>
-      `The gain lies in the balance: relatively high demand for ${under}, low for ${over}.`,
     mixedUnderOnly: (under) => `The largest relative demand lies with ${under}.`,
   },
 
@@ -169,8 +167,6 @@ const teamInsightText = {
       `${name} is the most present working style in this team and probably sets the tone for pace, preferences and collaboration.`,
     combination: (first, second) =>
       `The combination of ${first} and ${second} shows where both strength and tension can arise in alignment, decision-making and rhythm.`,
-    needs: (first, second) =>
-      `The strongest workplace need lies with ${first} and ${second}. That calls for deliberate choices in focus, meeting and collaboration.`,
   },
 
   // ── Energy — kept for Module 2 ──────────────────────────────────────
@@ -222,11 +218,6 @@ const teamInsightText = {
       situation: 'Before a team meeting',
       title: 'What do you put on the table?',
       item: (name, percentage) => `The team is dominated by ${name} (${percentage}%).`,
-    },
-    workplace: {
-      situation: 'Before a workplace decision',
-      title: 'What does this team ask of the space?',
-      item: (label) => `${label} is the strongest need.`,
     },
   },
 };

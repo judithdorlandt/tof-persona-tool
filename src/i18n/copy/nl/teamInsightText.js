@@ -63,8 +63,6 @@ const teamInsightText = {
     one: (first) => `Dit team vraagt vooral om ${first}.`,
     // Geen categorie boven de drempel: de behoeften liggen dicht bij elkaar.
     mixedBase: 'Dit team heeft een gemengde werkplekbehoefte — geen enkele categorie springt er duidelijk uit.',
-    mixedBalance: (under, over) =>
-      `De winst zit in de balans: relatief veel vraag naar ${under}, weinig naar ${over}.`,
     mixedUnderOnly: (under) => `De grootste relatieve vraag ligt bij ${under}.`,
   },
 
@@ -170,8 +168,6 @@ const teamInsightText = {
       `${name} is de meest aanwezige werkstijl in dit team en zet waarschijnlijk de toon in tempo, voorkeuren en samenwerking.`,
     combination: (first, second) =>
       `De combinatie van ${first} en ${second} laat zien waar kracht én spanning kunnen ontstaan in afstemming, besluitvorming en ritme.`,
-    needs: (first, second) =>
-      `De sterkste werkplekbehoefte ligt bij ${first} en ${second}. Dat vraagt om bewuste keuzes in focus, overleg en samenwerking.`,
   },
 
   // ── Energie — bewaard voor Module 2 ─────────────────────────────────
@@ -223,11 +219,6 @@ const teamInsightText = {
       situation: 'Voor een teamoverleg',
       title: 'Wat leg je op tafel?',
       item: (name, percentage) => `Het team wordt gedomineerd door ${name} (${percentage}%).`,
-    },
-    workplace: {
-      situation: 'Voor een werkplekbeslissing',
-      title: 'Wat vraagt dit team van de ruimte?',
-      item: (label) => `${label} is de sterkste behoefte.`,
     },
   },
 };
