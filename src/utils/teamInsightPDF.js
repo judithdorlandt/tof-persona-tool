@@ -99,10 +99,11 @@ const INSIGHT_COPY = {
         },
         leeglopersEyebrow: (isOrg) => (isOrg
             ? 'WAAR DE ORGANISATIE OP LEEGLOOPT'
-            : 'WAAR HET TEAM OP LEEGLOOPT'),
+            : 'CHECK IN HET KANTOOR'),
         leeglopers: {
-            tooLittle: (label) => `Te weinig ${label}`,
-            tooMuch: (label) => `Te veel ${label}`,
+            // Teamvariant: een vraag, geen bewering — de tool kent het kantoor niet.
+            tooLittle: (label, isOrg) => (isOrg ? `Te weinig ${label}` : `Zijn er genoeg ${label}?`),
+            tooMuch: (label, isOrg) => (isOrg ? `Te veel ${label}` : `Worden de ${label} echt gebruikt?`),
             tension: (label) => `Spanning tussen ${label}`,
             tensionPairs: {
                 tempoZorgvuldigheid: 'tempo en zorgvuldigheid',
@@ -174,10 +175,10 @@ const INSIGHT_COPY = {
         },
         leeglopersEyebrow: (isOrg) => (isOrg
             ? 'WHERE THE ORGANISATION DRAINS'
-            : 'WHERE THE TEAM DRAINS'),
+            : 'CHECK THE OFFICE'),
         leeglopers: {
-            tooLittle: (label) => `Too little ${label}`,
-            tooMuch: (label) => `Too much ${label}`,
+            tooLittle: (label, isOrg) => (isOrg ? `Too little ${label}` : `Are there enough ${label}?`),
+            tooMuch: (label, isOrg) => (isOrg ? `Too much ${label}` : `Are the ${label} actually used?`),
             tension: (label) => `Tension between ${label}`,
             tensionPairs: {
                 tempoZorgvuldigheid: 'pace and care',
@@ -1028,15 +1029,21 @@ function drawAchterkantFooter({ svg, mode = 'team', c = INSIGHT_COPY.nl }) {
 function buildLeeglopers(insights, mode = 'team', c = INSIGHT_COPY.nl) {
     const t = insights?.workplaceTension || {};
     const lg = c.leeglopers;
+    const isOrg = mode === 'organization';
     const out = [];
 
     if (t.underserved && t.underserved.length > 0) {
-        out.push(lg.tooLittle(t.underserved[0].label.toLowerCase()));
+        out.push(lg.tooLittle(t.underserved[0].label.toLowerCase(), isOrg));
     }
 
     if (t.oversupplied && t.oversupplied.length > 0) {
-        out.push(lg.tooMuch(t.oversupplied[0].label.toLowerCase()));
+        out.push(lg.tooMuch(t.oversupplied[0].label.toLowerCase(), isOrg));
     }
+
+    // Teamvariant: alleen de twee vragen. Geen spanningsregel (eigen paren die
+    // Teamdynamiek tegenspreken, en die horen bij het deel voor de
+    // leidinggevende) en geen opvulregel (ook een bewering over het kantoor).
+    if (!isOrg) return out;
 
     const personas = [
         ...(t.impactSummary?.dominant || []),
