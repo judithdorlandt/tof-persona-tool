@@ -813,7 +813,9 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
 }
 
 function drawAchterkantFooter({ svg, c }) {
-    const footerY = PAGE_H - 56;
+    // Het citaat stond op 364 mm, midden in de acties. Het hele voetblok
+    // staat nu lager: citaat 384, logo 388–404, slotregel 411 mm.
+    const footerY = PAGE_H - 36;
 
     svg.appendChild(createText({
         x: PAGE_W / 2,
@@ -828,11 +830,11 @@ function drawAchterkantFooter({ svg, c }) {
     }));
 
     const logoSize = 16;
-    drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 10, logoSize);
+    drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 4, logoSize);
 
     svg.appendChild(createText({
         x: PAGE_W / 2,
-        y: footerY + 36,
+        y: footerY + 27,
         text: c.footerTagline,
         font: 'Inter',
         weight: 400,
