@@ -1,12 +1,11 @@
 /**
- * WerkplekProfiel.jsx — EXPERIMENTEEL, geïsoleerd
+ * WerkplekProfiel.jsx — losse pagina (/team/werkplekprofiel)
  *
  * Vertaalt de persona-samenstelling van een team naar een werkplekbehoefte- en
  * gebruiksprofiel: HOE dit team de werkomgeving nodig heeft en gebruikt.
  *
  * Bewust NIET: m², aantallen plekken, inrichtings-/capaciteitsadvies.
- * De component leest alleen, muteert niets en zit achter een feature-flag +
- * aparte route, zodat het bestaande dashboard ongemoeid blijft.
+ * De component leest alleen en muteert niets.
  *
  * LEESLIJN (één type verschijnt precies één keer, geen herhaling):
  *   1. Sterkste behoefte  — de #1 als groot, dominant leespunt (positief, prominent).
@@ -21,17 +20,17 @@ import {
     HeroBlock,
     SecondaryButton,
     SectionEyebrow,
-} from '../ui/AppShell';
-import { SPACING, TYPE, RADIUS, useIsMobile } from '../ui/tokens';
+} from '../../ui/AppShell';
+import { SPACING, TYPE, RADIUS, useIsMobile } from '../../ui/tokens';
 
-import { buildTeamAggregate } from '../utils/TeamAggregation';
+import { buildTeamAggregate } from '../../utils/TeamAggregation';
 import {
     aantallenUitAggregate,
     buildWerkplekProfiel,
     buildGedragssignalen,
     BAND,
 } from './werkplekProfielLogic';
-import { useCopy, useLang } from '../i18n/LanguageContext';
+import { useCopy, useLang } from '../../i18n/LanguageContext';
 
 const ACCENT = 'var(--tof-accent-sage)';
 const ROSE = 'var(--tof-accent-rose)';

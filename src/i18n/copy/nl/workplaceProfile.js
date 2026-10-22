@@ -1,6 +1,6 @@
 /**
  * workplaceProfile.js (NL) — ALLE zichtbare tekst voor het experimentele
- * werkplekbehoefteprofiel (src/experimental/WerkplekProfiel*.jsx).
+ * werkplekbehoefteprofiel (src/team/werkplek/WerkplekProfiel*.jsx).
  *
  * Toon: behoefte, gebruik en gedrag — NOOIT m², aantallen plekken of
  * inrichting. De "soort plek"-illustraties beschrijven het SOORT plek, niet

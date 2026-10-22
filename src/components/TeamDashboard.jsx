@@ -28,7 +28,6 @@ import {
 import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 
 import TeamPersonaDistribution from '../team/components/TeamPersonaDistribution';
-import TeamWorkplaceNeeds from '../team/components/TeamWorkplaceNeeds';
 import TeamWorkplaceTension from '../team/components/TeamWorkplaceTension';
 import TeamQuickWins from '../team/components/TeamQuickWins';
 
@@ -46,9 +45,7 @@ import {
 import { logPdfDownload } from '../supabase';
 import TeamGate from './TeamGate';
 
-// EXPERIMENTEEL — link naar het werkplekbehoefteprofiel, alleen als de flag aanstaat.
-import { WERKPLEKPROFIEL_ENABLED } from '../experimental/featureFlag';
-import WerkplekProfielInline from '../experimental/WerkplekProfielInline';
+import WerkplekProfielInline from '../team/werkplek/WerkplekProfielInline';
 
 const ACCENT = MODULE.insight.accent;
 
@@ -93,12 +90,7 @@ export function buildTiles(t, { names = null } = {}) {
             buildHint: () => t.tiles.workplace.hint,
             detailTitle: t.tiles.workplace.detailTitle,
             detailLead: () => '',
-            render: (aggregate) =>
-                WERKPLEKPROFIEL_ENABLED ? (
-                    <WerkplekProfielInline aggregate={aggregate} />
-                ) : (
-                    <TeamWorkplaceNeeds aggregate={aggregate} />
-                ),
+            render: (aggregate) => <WerkplekProfielInline aggregate={aggregate} />,
         },
         {
             id: 'tension',

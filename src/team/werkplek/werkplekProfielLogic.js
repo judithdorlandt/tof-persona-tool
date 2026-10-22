@@ -1,5 +1,5 @@
 /**
- * werkplekProfielLogic.js — EXPERIMENTEEL
+ * werkplekProfielLogic.js
  *
  * Pure, taalonafhankelijke logica voor het werkplekbehoefte- en gebruiksprofiel
  * van een team. Vertaalt de persona-samenstelling (primaire archetype-telling)

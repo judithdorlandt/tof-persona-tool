@@ -1,10 +1,9 @@
 /**
- * WerkplekProfielInline — EXPERIMENTEEL
+ * WerkplekProfielInline
  *
- * Vervangt (achter de feature-flag) de inhoud van de "Werkplek"-tegel op het
- * teamdashboard. Gebruikt het GEDRAGSMODEL (werkplekmix → kern/steun/aanvullend)
+ * De inhoud van de "Werkplek"-tegel op het teamdashboard. Gebruikt het GEDRAGSMODEL (werkplekmix → kern/steun/aanvullend)
  * in plaats van de energie-gewogen percentages, maar behoudt bewust de
- * redactionele LOOK & FEEL van TeamWorkplaceNeeds:
+ * redactionele LOOK & FEEL van het vroegere TeamWorkplaceNeeds:
  *   - Hero: de sterkste behoefte als statement (sage)
  *   - Secundaire lijst: overige kern/steun-behoeften in 2 kolommen
  *   - Subtiele afsluiting: aanvullende behoeften ("minder vraag")
@@ -13,12 +12,12 @@
  * SCOPE — bewust ALLEEN behoefte, gebruik en gedrag:
  *   GEEN m², aantallen, percentages of inrichtingsadvies.
  *
- * NIEUW t.o.v. TeamWorkplaceNeeds: per type tonen we de Ruimteboek-bouwstenen
+ * NIEUW t.o.v. dat vroegere blok: per type tonen we de Ruimteboek-bouwstenen
  * (voorbeeldplekken) als verduidelijking van wat dit SOORT plek kan zijn.
  */
 
 import React from 'react';
-import { SPACING, TYPE, useIsMobile } from '../ui/tokens';
+import { SPACING, TYPE, useIsMobile } from '../../ui/tokens';
 
 import {
     buildWerkplekProfiel,
@@ -26,7 +25,7 @@ import {
     aantallenUitAggregate,
     BAND,
 } from './werkplekProfielLogic';
-import { useCopy } from '../i18n/LanguageContext';
+import { useCopy } from '../../i18n/LanguageContext';
 
 // Visuele duiding per band (subtiel, binnen het bestaande palet).
 const BAND_KLEUR = {

@@ -17,10 +17,9 @@ import {
     setupTofFonts,
     formatPdfDate,
 } from './tofPdfBrand';
-// EXPERIMENTEEL — voorbeeldplekken ("soort plek") per werkplektype, achter de
-// feature-flag. Alleen kwalitatieve illustratie van het SOORT plek; geen aantallen.
-import { WERKPLEKTYPEN } from '../experimental/werkplekmix';
-import { WERKPLEKPROFIEL_ENABLED } from '../experimental/featureFlag';
+// Voorbeeldplekken ("soort plek") per werkplektype. Alleen kwalitatieve
+// illustratie van het SOORT plek; geen aantallen.
+import { WERKPLEKTYPEN } from '../team/werkplek/werkplekmix';
 // Persona-namen en werkplek-labels komen uit één taalvaste bron, zodat NL/EN
 // rapporten dezelfde termen gebruiken als de Organisatie-Landschap PDF.
 import { getArchetypeName } from './organisatieLandschap/constants';
@@ -832,12 +831,10 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
 
             let advance = lineHeight;
 
-            // EXPERIMENTEEL — kleine "soort plek"-regel onder het type, achter de
-            // flag. Volledig uitgeschreven; past het niet op één regel, dan zakt
-            // het netjes naar de volgende regel (geen afkapping).
-            const plekken = WERKPLEKPROFIEL_ENABLED
-                ? voorbeeldplekkenFor(item.label, lang)
-                : null;
+            // Kleine "soort plek"-regel onder het type. Volledig uitgeschreven;
+            // past het niet op één regel, dan zakt het netjes naar de volgende
+            // regel (geen afkapping).
+            const plekken = voorbeeldplekkenFor(item.label, lang);
             if (plekken && plekken.length > 0) {
                 const txt = plekken.slice(0, 3).join(' · ');
                 const lines = wrapText(txt, w, 3.8, 'Inter');

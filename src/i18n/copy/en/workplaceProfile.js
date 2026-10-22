@@ -1,6 +1,6 @@
 /**
  * workplaceProfile.js (EN) — all visible copy for the experimental workplace
- * needs profile (src/experimental/WerkplekProfiel*.jsx).
+ * needs profile (src/team/werkplek/WerkplekProfiel*.jsx).
  *
  * Tone: needs, use and behaviour — NEVER square metres, numbers of desks or
  * fit-out advice. The "type of space" illustrations describe the KIND of space,

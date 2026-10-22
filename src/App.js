@@ -35,9 +35,8 @@ import Privacy from './native/Privacy.jsx';
 import TabBar from './native/TabBar.jsx';
 import { getCurrentEntry, subscribe } from './native/localStore';
 
-// EXPERIMENTEEL — werkplekbehoefteprofiel, achter een feature-flag.
-import WerkplekProfiel from './experimental/WerkplekProfiel.jsx';
-import { WERKPLEKPROFIEL_ENABLED, QUIZTEST_ENABLED } from './experimental/featureFlag';
+import WerkplekProfiel from './team/werkplek/WerkplekProfiel.jsx';
+import { QUIZTEST_ENABLED } from './experimental/featureFlag';
 
 // EXPERIMENTEEL — verkorte testvariant van de vragenlijst, achter een flag.
 import QuizTest from './experimental/quizTest/QuizTest.jsx';
@@ -289,14 +288,12 @@ export default function App() {
         );
 
       case 'teamwerkplekprofiel':
-        return WERKPLEKPROFIEL_ENABLED ? (
+        return (
           <WerkplekProfiel
             setPage={navigate}
             teamResponses={teamResponses}
             selectedTeam={selectedTeam}
           />
-        ) : (
-          <Landing setPage={navigate} />
         );
 
       default:
