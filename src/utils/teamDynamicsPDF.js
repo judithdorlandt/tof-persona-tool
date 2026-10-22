@@ -725,9 +725,25 @@ function drawTensionAdvice({ svg, y, tensions, c }) {
 // toont ze wel allemaal.
 const MAX_PDF_ACTIONS = 3;
 
+// Welke acties de PDF toont (A6, 22 okt 2026). Acties uit de bron
+// "spanningen" vallen weg: dat advies staat al bij "Per spanning". De actie
+// uit blinde vlek komt op plek 03; zonder blinde vlek de volgende actie in de
+// rij. De volgorde verder zoals op het scherm, dat alle acties houdt.
+function pickPdfActions(leadershipWins = []) {
+    const items = leadershipWins.map((win) => (
+        typeof win === 'string' ? { source: 'reflectie', action: win } : win
+    ));
+    const rest = items.filter((w) => w.source !== 'tension' && w.source !== 'missing');
+    const blindSpot = items.find((w) => w.source === 'missing');
+    const first = rest.slice(0, MAX_PDF_ACTIONS - 1);
+    const third = blindSpot || rest[MAX_PDF_ACTIONS - 1];
+    return third ? [...first, third] : first;
+}
+
 function drawLeadershipActions({ svg, y, leadershipWins, c }) {
+    const actions = pickPdfActions(leadershipWins || []);
     // Tel wat er straks écht getekend wordt, niet wat er aangeleverd is.
-    const shown = Math.min(leadershipWins?.length || 0, MAX_PDF_ACTIONS);
+    const shown = actions.length;
 
     svg.appendChild(createText({
         x: MARGIN,
@@ -740,7 +756,7 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
         letterSpacing: 0.8,
     }));
 
-    if (!leadershipWins || leadershipWins.length === 0) {
+    if (actions.length === 0) {
         svg.appendChild(createText({
             x: MARGIN,
             y: y + 22,
@@ -761,10 +777,7 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
     const lineStep = 7.8;
     let rowY = y + 18;
 
-    leadershipWins.slice(0, MAX_PDF_ACTIONS).forEach((win, index) => {
-        const item = typeof win === 'string'
-            ? { source: 'reflectie', action: win }
-            : win;
+    actions.forEach((item, index) => {
         // Source-keys zijn logica-ids uit TeamDynamics.jsx — niet vertalen.
         const sourceLabel = c.sourceLabels[item.source] || c.sourceFallback;
 
