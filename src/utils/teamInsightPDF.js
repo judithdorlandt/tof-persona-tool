@@ -337,7 +337,7 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
     y += blokRuimte;
     y = drawDivider({ svg, y });
     y += blokRuimte;
-    drawQuickWinsCompact({ svg, y, insights, c });
+    drawQuickWinsCompact({ svg, y, insights, mode, c });
 
     drawAchterkantFooter({ svg, mode, c });
 
@@ -929,8 +929,14 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
     return lineY;
 }
 
-function drawQuickWinsCompact({ svg, y, insights, c = INSIGHT_COPY.nl }) {
-    const wins = insights?.quickWins || [];
+// Teamvariant: hoogstens vijf acties, de eerste vijf in de bestaande
+// volgorde — meer past niet altijd op de achterkant. Het scherm en de
+// organisatievariant tonen ze allemaal.
+const MAX_TEAM_ACTIONS = 5;
+
+function drawQuickWinsCompact({ svg, y, insights, mode = 'team', c = INSIGHT_COPY.nl }) {
+    const allWins = insights?.quickWins || [];
+    const wins = mode === 'organization' ? allWins : allWins.slice(0, MAX_TEAM_ACTIONS);
     if (wins.length === 0) return y;
 
     svg.appendChild(createText({
