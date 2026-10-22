@@ -46,7 +46,7 @@ import {
 } from '../insights';
 import { logPdfDownload } from '../supabase';
 import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/TeamAggregation';
-import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, findMentionedPersona, describeAxis } from './teamDynamicsLogic';
+import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, findMentionedPersona, MISSING_BELOW_PCT, describeAxis } from './teamDynamicsLogic';
 
 const ACCENT = MODULE.dynamics.accent;
 // =========================
@@ -155,7 +155,8 @@ export default function TeamDynamics({
             });
             const srt = pcts.map((c, i) => ({ c, i })).sort((a, b) => b.c - a.c);
             const dom = srt.filter(x => x.c > 0).slice(0, 3).map(x => ARCHETYPES[x.i]);
-            const missing = srt.filter(x => x.c === 0).map(x => ARCHETYPES[x.i]);
+            // Onder 8% = ontbreekt of is nauwelijks aanwezig (besluit 5).
+            const missing = srt.filter(x => x.c < MISSING_BELOW_PCT).map(x => ARCHETYPES[x.i]);
             const mat = getMaturity(pcts, srt, lang);
             const dyn = getDynamics(pcts, lang);
             return getSignatureLine(dom, missing, mat, dyn, lang);

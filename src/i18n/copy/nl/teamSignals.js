@@ -143,7 +143,6 @@ const teamSignals = {
     achieverWithoutConnector: 'Waar snelheid domineert en verbinding ontbreekt, groeit resultaat — maar verdwijnt draagvlak.',
     makerAndStabiliser: 'Creativiteit en zekerheid trekken aan hetzelfde team in tegenovergestelde richting. Zonder regie wint de sterkste — niet de beste.',
     innovatorAndStabiliser: 'Een team dat tegelijk wil vernieuwen en vasthouden, staat zichzelf in de weg.',
-    missingConnectorWithAchiever: 'Een team dat alleen resultaten telt, raakt uiteindelijk de mensen kwijt die het resultaat maken.',
     missingInnovator: 'Een organisatie zonder vernieuwers ziet de toekomst pas als het te laat is om te bewegen.',
     complementary: 'Diversiteit is geen belofte — het is een ontwerpvraagstuk. Dit team heeft de ingrediënten. Nu de regie.',
     imbalance: 'Homogeniteit voelt als kracht — totdat de context verandert en iedereen dezelfde blinde vlek heeft.',

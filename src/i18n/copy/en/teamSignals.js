@@ -133,7 +133,6 @@ const teamSignals = {
     achieverWithoutConnector: 'Where pace dominates and connection is missing, results grow — but support disappears.',
     makerAndStabiliser: 'Creativity and certainty pull the same team in opposite directions. Without direction the strongest wins — not the best.',
     innovatorAndStabiliser: 'A team that wants to renew and hold on at the same time gets in its own way.',
-    missingConnectorWithAchiever: 'A team that only counts results eventually loses the people who produce them.',
     missingInnovator: 'An organisation without innovators sees the future only when it is too late to move.',
     complementary: 'Diversity is not a promise — it is a design question. This team has the ingredients. Now the direction.',
     imbalance: 'Homogeneity feels like strength — until the context changes and everyone has the same blind spot.',

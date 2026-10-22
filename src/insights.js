@@ -98,17 +98,18 @@ export function getAdaptiveTone(conf, maturity, lang = 'nl') {
   return c.confident;
 }
 
+// `missing` = werkstijlen onder de 8%-grens van de teamenergie (besluit 5,
+// 22 okt 2026): dezelfde grens als "Wie ontbreekt". "Verbinding ontbreekt"
+// zegt de zin dus alleen als de Verbinder echt onder die grens zit.
 export function getSignatureLine(dom, missing, maturity, dynamics, lang = 'nl') {
   const c = t(lang).signature;
   const ids = dom.map(a => a.id);
-  if (ids.includes('presteerder') && !ids.includes('verbinder'))
+  if (ids.includes('presteerder') && missing.some(a => a.id === 'verbinder'))
     return c.achieverWithoutConnector;
   if (ids.includes('maker') && ids.includes('zekerzoeker'))
     return c.makerAndStabiliser;
   if (ids.includes('vernieuwer') && ids.includes('zekerzoeker'))
     return c.innovatorAndStabiliser;
-  if (missing.some(a => a.id === 'verbinder') && ids.includes('presteerder'))
-    return c.missingConnectorWithAchiever;
   if (missing.some(a => a.id === 'vernieuwer'))
     return c.missingInnovator;
   if (maturity.level === 3)
