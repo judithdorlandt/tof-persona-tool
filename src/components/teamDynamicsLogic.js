@@ -183,20 +183,16 @@ export function findMentionedPersona(text, presentMap, lang = 'nl') {
 // axis.left / axis.right komen uit src/insights.js.
 
 export function describeAxis(axis, lang = 'nl') {
-    const total = axis.lv + axis.rv;
-    if (total === 0) return axis.desc || '';
-
-    const lPct = Math.round((axis.lv / total) * 100);
-    const rPct = 100 - lPct;
-    const balanced = Math.abs(lPct - rPct) <= 20;
+    if (axis.lv + axis.rv === 0) return '';
 
     const left = (axis.left || '').trim();
     const right = (axis.right || '').trim();
-    const dominant = lPct >= rPct ? left : right;
-    const recessive = lPct >= rPct ? right : left;
+    const dominant = axis.lPct >= axis.rPct ? left : right;
+    const recessive = axis.lPct >= axis.rPct ? right : left;
 
     const copy = t(lang).dynamics;
-    if (balanced) return copy.axisBalanced(left, right);
+    // Zelfde grens als het label Disbalans: boven 60/40 (besluit 3).
+    if (!axis.imbalanced) return copy.axisBalanced(left, right);
     return copy.axisDominant(dominant, recessive);
 }
 

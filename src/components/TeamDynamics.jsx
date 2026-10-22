@@ -642,10 +642,7 @@ function DynamicsPanel({ dynamicsAxes, missingCritical }) {
 function DynamicsAxis({ axis, isFirst }) {
     const { lang } = useLang();
     const { teamDynamics: t } = useCopy();
-    const total = axis.lv + axis.rv || 1;
-    const lPct = Math.round((axis.lv / total) * 100);
-    const rPct = 100 - lPct;
-    const imbalance = Math.abs(axis.lv - axis.rv) > 20;
+    const { lPct, rPct, imbalanced: imbalance } = axis;
     const description = describeAxis(axis, lang);
 
     return (

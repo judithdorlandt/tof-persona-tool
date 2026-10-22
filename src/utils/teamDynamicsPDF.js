@@ -416,9 +416,9 @@ function drawAxes({ svg, y, dynamicsAxes, c }) {
     const axisHeight = 32;
 
     dynamicsAxes.slice(0, 3).forEach((axis) => {
-        const total = (axis.lv || 0) + (axis.rv || 0);
-        const lPct = total > 0 ? Math.round((axis.lv / total) * 100) : 50;
-        const rPct = 100 - lPct;
+        // Zelfde afgeronde verdeling als het scherm (getDynamics).
+        const lPct = axis.lPct ?? 50;
+        const rPct = axis.rPct ?? 50;
 
         // Pool-labels
         svg.appendChild(createText({

@@ -59,29 +59,43 @@ export function getMaturity(pcts, srt, lang = 'nl') {
   };
 }
 
-/** Bouwt één as: kiest de desc/tension-variant op basis van de weging. */
+// Grens voor "weegt zwaarder" + het label Disbalans (besluit 3, 22 okt 2026).
+export const AXIS_IMBALANCE_PCT = 60;
+
+/**
+ * Bouwt één as. `lv`/`rv` = het gemiddelde per werkstijl aan elke kant;
+ * `lPct`/`rPct` = de afgeronde verdeling zoals het scherm en de PDF die tonen.
+ * Disbalans = de grootste kant boven 60. Label, leeszin, acties, signatuurzin
+ * en PDF lezen allemaal deze velden.
+ */
 function buildAxis(copy, leftValue, rightValue) {
-  const leftDominant = leftValue > rightValue + 20;
-  const rightDominant = rightValue > leftValue + 20;
+  const total = leftValue + rightValue;
+  const lPct = total > 0 ? Math.round((leftValue / total) * 100) : 50;
+  const rPct = 100 - lPct;
   return {
     label: copy.label,
     left: copy.left,
     right: copy.right,
-    lv: Math.min(leftValue, 100),
-    rv: Math.min(rightValue, 100),
-    desc: leftDominant ? copy.descLeft : rightDominant ? copy.descRight : copy.descBalanced,
-    tension: leftDominant ? copy.tensionLeft : rightDominant ? copy.tensionRight : copy.tensionBalanced,
+    lv: leftValue,
+    rv: rightValue,
+    lPct,
+    rPct,
+    imbalanced: total > 0 && Math.max(lPct, rPct) > AXIS_IMBALANCE_PCT,
   };
 }
 
+// Per kant het GEMIDDELDE per werkstijl, niet de som — anders wint de kant
+// met de meeste werkstijlen. De Denker telt voor de helft mee bij Structuur,
+// dus Structuur deelt door 1,5. `pcts` volgt ARCHETYPE_ORDER: maker, groeier,
+// presteerder, denker, verbinder, teamspeler, zekerzoeker, vernieuwer.
 export function getDynamics(pcts, lang = 'nl') {
   const c = t(lang).axes;
-  const creatie = pcts[0] + pcts[1] + pcts[7];
-  const structuur = pcts[6] + Math.round(pcts[3] / 2);
-  const verbinding = pcts[4] + pcts[5];
-  const individueel = pcts[0] + pcts[2] + pcts[3];
-  const executie = pcts[2] + pcts[7];
-  const reflectie = pcts[3] + pcts[1];
+  const creatie = (pcts[0] + pcts[1] + pcts[7]) / 3;
+  const structuur = (pcts[6] + pcts[3] / 2) / 1.5;
+  const verbinding = (pcts[4] + pcts[5]) / 2;
+  const individueel = (pcts[0] + pcts[2] + pcts[3]) / 3;
+  const executie = (pcts[2] + pcts[7]) / 2;
+  const reflectie = (pcts[3] + pcts[1]) / 2;
 
   return [
     buildAxis(c.creationStructure, creatie, structuur),
