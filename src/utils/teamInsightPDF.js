@@ -64,7 +64,7 @@ const INSIGHT_COPY = {
         pill: (isOrg) => (isOrg ? 'ORGANISATIE-INZICHT' : 'TEAMINZICHT'),
         heroTitle: (isOrg) => (isOrg
             ? 'Dominante werkstijl in de organisatie:'
-            : 'Jouw dominante teamwerkstijl is:'),
+            : 'De grootste groep in dit team:'),
         headlineFallback: (isOrg, persona) =>
             `${isOrg ? 'De organisatie' : 'Het team'} werkt vanuit ${persona.toLowerCase()}.`,
         responses: (n) => `${n} respons${n === 1 ? '' : 'en'}`,
@@ -133,7 +133,7 @@ const INSIGHT_COPY = {
         pill: (isOrg) => (isOrg ? 'ORGANISATION INSIGHT' : 'TEAM INSIGHT'),
         heroTitle: (isOrg) => (isOrg
             ? 'Dominant working style in the organisation:'
-            : 'Your dominant team working style is:'),
+            : 'The largest group in this team:'),
         headlineFallback: (isOrg, persona) =>
             `${isOrg ? 'The organisation' : 'The team'} works from ${persona.toLowerCase()}.`,
         responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
