@@ -63,7 +63,7 @@ const PERSONA_COLORS = TOF_PERSONA_COLORS;
 // Font-subsets missen >= en <=; gebruik die glyphs nooit. · – — é mogen wel.
 // Geen cursief voor niet-Latin1-tekst: er is geen Inter-italic gebundeld.
 
-// De PDF tekent hoogstens zes acties (slice(0, 6)), dus 1..6 volstaat.
+// De PDF tekent hoogstens drie acties (MAX_PDF_ACTIONS); 1..6 blijft staan.
 const ACTION_COUNT_WORDS = {
     nl: ['EÉN', 'TWEE', 'DRIE', 'VIER', 'VIJF', 'ZES'],
     en: ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'],
@@ -717,9 +717,14 @@ function drawTensionAdvice({ svg, y, tensions, c }) {
     return lineY;
 }
 
+// Hoogstens drie acties, elk volledig, in één kolom over de volle breedte
+// (keuze Judith, 22 okt 2026). Zes passen alleen afgebroken; het scherm
+// toont ze wel allemaal.
+const MAX_PDF_ACTIONS = 3;
+
 function drawLeadershipActions({ svg, y, leadershipWins, c }) {
     // Tel wat er straks écht getekend wordt, niet wat er aangeleverd is.
-    const shown = Math.min(leadershipWins?.length || 0, 6);
+    const shown = Math.min(leadershipWins?.length || 0, MAX_PDF_ACTIONS);
 
     svg.appendChild(createText({
         x: MARGIN,
@@ -746,29 +751,22 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
         return;
     }
 
-    // 2-koloms grid: 3 rijen × 2 kolommen — past comfortabel boven de footer
-    const startY = y + 18;
+    // Eén kolom: elke actie volledig, geen afbreking.
     const numberColW = 14;
-    const colGap = 14;
-    const colW = (PAGE_W - MARGIN * 2 - colGap) / 2;
-    const bodyW = colW - numberColW;
-    const rowH = 36;        // hoogte per actie — past 2 regels body
+    const bodyW = PAGE_W - MARGIN * 2 - numberColW;
+    const lineStep = 7.2;
+    let rowY = y + 18;
 
-    leadershipWins.slice(0, 6).forEach((win, index) => {
+    leadershipWins.slice(0, MAX_PDF_ACTIONS).forEach((win, index) => {
         const item = typeof win === 'string'
             ? { source: 'reflectie', action: win }
             : win;
         // Source-keys zijn logica-ids uit TeamDynamics.jsx — niet vertalen.
         const sourceLabel = c.sourceLabels[item.source] || c.sourceFallback;
 
-        const col = index % 2;
-        const row = Math.floor(index / 2);
-        const colX = MARGIN + col * (colW + colGap);
-        const rowY = startY + row * rowH;
-
         // Nummer in Playfair rose
         svg.appendChild(createText({
-            x: colX,
+            x: MARGIN,
             y: rowY + 1,
             text: String(index + 1).padStart(2, '0'),
             font: 'Playfair Display',
@@ -779,7 +777,7 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
 
         // Source-label
         svg.appendChild(createText({
-            x: colX + numberColW,
+            x: MARGIN + numberColW,
             y: rowY,
             text: sourceLabel,
             font: 'Inter',
@@ -789,19 +787,11 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
             letterSpacing: 0.8,
         }));
 
-        // Actie-tekst — gelimiteerd tot 3 regels zodat alle 6 acties zonder
-        // overlap binnen rowH (36mm) passen vóór de footer.
-        const maxLines = 3;
-        let actionLines = wrapText(item.action || '', bodyW, 5.6, 'Inter');
-        if (actionLines.length > maxLines) {
-            actionLines = actionLines.slice(0, maxLines);
-            const last = actionLines[maxLines - 1];
-            actionLines[maxLines - 1] = last.replace(/\s+\S+\s*$/, '') + '…';
-        }
+        const actionLines = wrapText(item.action || '', bodyW, 5.6, 'Inter');
         actionLines.forEach((line, i) => {
             svg.appendChild(createText({
-                x: colX + numberColW,
-                y: rowY + 7 + i * 7.2,
+                x: MARGIN + numberColW,
+                y: rowY + 7 + i * lineStep,
                 text: line,
                 font: 'Inter',
                 weight: 400,
@@ -809,6 +799,8 @@ function drawLeadershipActions({ svg, y, leadershipWins, c }) {
                 color: COLOR.text,
             }));
         });
+
+        rowY += 7 + (actionLines.length - 1) * lineStep + 9;
     });
 }
 
