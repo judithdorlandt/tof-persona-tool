@@ -45,6 +45,7 @@ import {
     getSignatureLine,
 } from '../insights';
 import { logPdfDownload } from '../supabase';
+import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/TeamAggregation';
 import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, findMentionedPersona, describeAxis } from './teamDynamicsLogic';
 
 const ACCENT = MODULE.dynamics.accent;
@@ -82,6 +83,19 @@ export default function TeamDynamics({
     );
 
     const scores = useMemo(() => buildPersonaScores(teamResponses), [teamResponses]);
+
+    // Dominant = meeste mensen primair, bij een gelijke stand allemaal
+    // (besluit 4, 22 okt 2026) — dezelfde functie als Teaminzicht. De
+    // energie-sortering hieronder blijft voor assen, spanningen en aandelen.
+    const primaryAggregate = useMemo(
+        () => buildTeamAggregate(teamResponses, lang),
+        [teamResponses, lang]
+    );
+    const dominantIds = useMemo(
+        () => dominantPersonas(primaryAggregate).map((p) => p.id),
+        [primaryAggregate]
+    );
+    const dominantLabel = dominantNames(primaryAggregate, lang);
     const sorted = useMemo(
         () => Object.entries(scores).sort((a, b) => b[1] - a[1]),
         [scores]
@@ -93,7 +107,19 @@ export default function TeamDynamics({
     const tensions = useMemo(() => findActiveTensions(sorted, lang), [sorted, lang]);
     const dynamicsAxes = useMemo(() => buildDynamicsAxes(sorted, totalScore, lang), [sorted, totalScore, lang]);
     const missingCritical = useMemo(() => findMissingCritical(sorted, lang), [sorted, lang]);
-    const leadershipActions = useMemo(() => buildLeadershipActions(sorted, lang), [sorted, lang]);
+    // Actie "uit samenwerking" begint bij de dominante werkstijl(en), daarna
+    // de energie-volgorde.
+    const leadershipOrder = useMemo(
+        () => [
+            ...sorted.filter(([id]) => dominantIds.includes(id)),
+            ...sorted.filter(([id]) => !dominantIds.includes(id)),
+        ],
+        [sorted, dominantIds]
+    );
+    const leadershipActions = useMemo(
+        () => buildLeadershipActions(leadershipOrder, lang),
+        [leadershipOrder, lang]
+    );
 
     // Leadership-wins (de 6 acties) voor zowel het paneel als de PDF.
     const leadershipWins = useMemo(
@@ -113,8 +139,7 @@ export default function TeamDynamics({
         totalEnergy: totalScore,
     }), [teamResponses.length, scores, totalScore]);
 
-    const topPersonaId = sorted[0]?.[0] || null;
-    const topPersona = topPersonaId ? getArchetype(topPersonaId, lang) : null;
+    const topPersonaId = dominantIds[0] || null;
     // Eén schaal op beide dashboards en in de PDF's (besluit 6, 22 okt 2026).
     const reliability = teamResponses.length > 0 ? getConfidence(teamResponses.length, lang).label : '';
 
@@ -240,7 +265,7 @@ export default function TeamDynamics({
         {
             id: 'collaboration',
             eyebrow: t.tiles.collaboration.eyebrow,
-            value: topPersona?.name || t.tiles.collaboration.value,
+            value: dominantLabel || t.tiles.collaboration.value,
             hint: t.tiles.collaboration.hint,
             detailTitle: t.tiles.collaboration.detailTitle,
             detailLead: '',
@@ -248,6 +273,7 @@ export default function TeamDynamics({
                 <CollaborationPanel
                     sorted={sorted}
                     totalScore={totalScore}
+                    dominantIds={dominantIds}
                 />
             ),
         },
@@ -426,7 +452,7 @@ export default function TeamDynamics({
                 accent={ACCENT}
                 teamCount={teamResponses.length}
                 organization={organization}
-                dominantPersona={topPersona?.name}
+                dominantPersona={dominantLabel}
                 dominantColor={topPersonaId ? PERSONA_COLORS[topPersonaId] : ACCENT}
                 tensionsCount={tensions.length}
                 reliability={reliability}
@@ -732,7 +758,7 @@ function MissingPersonaRow({ name, description, color }) {
 // PANEL 2: SAMENWERKING
 // =========================
 
-function CollaborationPanel({ sorted, totalScore }) {
+function CollaborationPanel({ sorted, totalScore, dominantIds = [] }) {
     const ARCHETYPES = useArchetypes();
     const { teamDynamics: t } = useCopy();
     const presentMap = {};
@@ -758,16 +784,24 @@ function CollaborationPanel({ sorted, totalScore }) {
         (a, b) => (presentMap[b.id]?.percentage || 0) - (presentMap[a.id]?.percentage || 0)
     );
 
-    const dominant = sortedPresent[0];
-    const rest = sortedPresent.slice(1);
+    // Dominant = meeste mensen primair (besluit 4); bij een gelijke stand
+    // krijgt elke dominante werkstijl een eigen blok. Aandelen blijven energie.
+    const dominantList = sortedPresent.filter((a) => dominantIds.includes(a.id));
+    const dominant = dominantList.length > 0 ? dominantList : sortedPresent.slice(0, 1);
+    const rest = sortedPresent.filter((a) => !dominant.includes(a));
 
     return (
         <div>
-            <DominantCollaborationBlock
-                archetype={dominant}
-                data={presentMap[dominant.id]}
-                presentMap={presentMap}
-            />
+            {dominant.map((a, i) => (
+                <React.Fragment key={a.id}>
+                    {i > 0 ? <Divider marginY={SPACING.xl} /> : null}
+                    <DominantCollaborationBlock
+                        archetype={a}
+                        data={presentMap[a.id]}
+                        presentMap={presentMap}
+                    />
+                </React.Fragment>
+            ))}
 
             {rest.length > 0 ? (
                 <>
