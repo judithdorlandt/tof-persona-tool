@@ -258,8 +258,13 @@ function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, aggr
     const middleEnriched = middle.map((p) => enrichPersona(p, 'middle'));
     const minorityEnriched = minority.map((p) => enrichPersona(p, 'minority'));
 
+    // Zelfde volgorde als het Werkplek-paneel en de PDF (meeste nadruk eerst);
+    // `oversupplied` zelf staat laagste-eerst voor de leeglopers en acties.
     const checkWorkplaces = underserved.map((w) => ({ key: w.key, label: w.label }));
-    const uncheckWorkplaces = oversupplied.map((w) => ({ key: w.key, label: w.label }));
+    const uncheckWorkplaces = oversupplied
+        .slice()
+        .reverse()
+        .map((w) => ({ key: w.key, label: w.label }));
 
     return {
         dominant: dominantEnriched,
