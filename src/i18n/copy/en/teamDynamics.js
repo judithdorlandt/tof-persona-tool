@@ -91,7 +91,7 @@ const teamDynamics = {
 
   collaboration: {
     empty: 'No collaboration patterns visible yet — wait until more team members have taken part.',
-    dominantEyebrow: (pct) => `Dominant working style · ${pct}% of the team`,
+    dominantEyebrow: (pct) => `Dominant working style · ${pct}% of the team energy`,
     worksWell: 'What works well',
     attentionFor: 'Watch out for',
     strongWith: (name) => `Strong with the ${name}`,

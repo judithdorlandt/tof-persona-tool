@@ -112,7 +112,7 @@ const teamDynamics = {
 
   collaboration: {
     empty: 'Nog geen samenwerkingspatronen zichtbaar — wacht tot meer teamleden hebben ingevuld.',
-    dominantEyebrow: (pct) => `Dominante werkstijl · ${pct}% van het team`,
+    dominantEyebrow: (pct) => `Dominante werkstijl · ${pct}% van de teamenergie`,
     worksWell: 'Wat werkt goed',
     attentionFor: 'Aandacht voor',
     strongWith: (name) => `Sterk met ${name}`,
