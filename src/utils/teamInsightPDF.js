@@ -319,18 +319,24 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
     y += 10;
     y = drawAchterkantTitle({ svg, y, mode, c });
     y += 8;
+    // Teamvariant: minder witruimte rond de scheidingslijnen en "Check in het
+    // kantoor", zodat er na de ruimere regelafstand nog vijf acties passen.
+    // De organisatievariant houdt zijn oude maten.
+    const isOrg = mode === 'organization';
+    const blokRuimte = isOrg ? 8 : 5;
+
     y = drawWorkplaceCompact({ svg, y, aggregate, c, lang });
-    y += 8;
+    y += blokRuimte;
     y = drawDivider({ svg, y });
-    y += 8;
+    y += blokRuimte;
     // "Waar het team op leegloopt" verhuist van pagina 1 naar hier: het
     // hoort thematisch bij de werkplekbehoefte (vraag → spanning → actie)
     // en vult de voorheen lege onderhelft van pagina 2, terwijl pagina 1
     // lucht krijgt onder de team-mix.
     y = drawLeeglopers({ svg, y, insights, mode, c });
-    y += 8;
+    y += blokRuimte;
     y = drawDivider({ svg, y });
-    y += 8;
+    y += blokRuimte;
     drawQuickWinsCompact({ svg, y, insights, c });
 
     drawAchterkantFooter({ svg, mode, c });
@@ -683,8 +689,9 @@ function drawLeeglopers({ svg, y, insights, mode = 'team', c = getInsightCopy('n
     }));
 
     const leeglopers = buildLeeglopers(insights, mode, c);
+    const isOrg = mode === 'organization';
 
-    let lineY = y + 16;
+    let lineY = y + (isOrg ? 16 : 15);
     leeglopers.forEach((tekst) => {
         svg.appendChild(createCircle(MARGIN + 2, lineY - 2, 1, COLOR.rose));
 
@@ -701,7 +708,8 @@ function drawLeeglopers({ svg, y, insights, mode = 'team', c = getInsightCopy('n
         lineY += 9;
     });
 
-    return lineY;
+    // Teamvariant: minder lucht onder de laatste regel.
+    return isOrg ? lineY : lineY - 4;
 }
 
 function drawFooterHint({ svg, c = getInsightCopy('nl') }) {
@@ -990,8 +998,9 @@ function drawAchterkantFooter({ svg, mode = 'team', c = INSIGHT_COPY.nl }) {
     // Footer compacter en lager geplaatst zodat hij niet overlapt met de
     // quick-wins erboven. Blok loopt van quote (PAGE_H-40) tot tagline
     // (PAGE_H-14), dus ~26mm hoog met nog 14mm marge tot de onderrand.
-    const footerY = PAGE_H - 40;
     const isOrg = mode === 'organization';
+    // Teamvariant: 6 mm lager (geen quote erboven), meer ruimte voor de acties.
+    const footerY = PAGE_H - (isOrg ? 40 : 34);
 
     // Quote alleen in het organisatie-rapport; in de team-insight PDF
     // liep hij door de quick-wins-tekst erboven heen.
