@@ -33,6 +33,7 @@ import TeamQuickWins from '../team/components/TeamQuickWins';
 
 import { buildTeamAggregate } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
+import { getConfidence } from '../insights';
 import { useLang, useCopy } from '../i18n/LanguageContext';
 import {
     hasTeamLevel,
@@ -181,7 +182,8 @@ export default function TeamDashboard({
         || '';
 
     const teamCount = aggregate?.teamCount || 0;
-    const reliability = buildReliabilityLabel(teamCount, t.reliability);
+    // Eén schaal op beide dashboards en in de PDF's (besluit 6, 22 okt 2026).
+    const reliability = teamCount > 0 ? getConfidence(teamCount, lang).label : '';
 
     const team = resolveTeamKey(selectedTeam);
     const hasDynamicsAccess = hasTeamLevel(team, organization, LEVEL_DYNAMICS);
@@ -521,9 +523,3 @@ function resolveOrg(sel) {
     return sel.organization || '';
 }
 
-function buildReliabilityLabel(count, labels) {
-    if (count === null || count === undefined) return '';
-    if (count < 3) return labels.low;
-    if (count < 6) return labels.mid;
-    return labels.high;
-}

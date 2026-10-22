@@ -41,12 +41,6 @@ const teamDynamics = {
     reliability: 'Reliability',
   },
 
-  reliability: {
-    first: 'First signals',
-    emerging: 'Emerging pattern',
-    reliable: 'Reliable picture',
-    strong: 'Strong pattern',
-  },
 
   tiles: {
     dynamics: {

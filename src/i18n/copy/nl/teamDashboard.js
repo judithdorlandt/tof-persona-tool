@@ -27,11 +27,6 @@ const teamDashboard = {
     reliability: 'Betrouwbaarheid',
   },
 
-  reliability: {
-    low: 'Indicatief',
-    mid: 'Groeiend',
-    high: 'Sterk beeld',
-  },
 
   // Wat er in plaats van het dashboard staat als het team nog te klein is
   // (drempel in utils/access.js, blok in components/TeamGate.jsx).

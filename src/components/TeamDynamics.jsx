@@ -39,12 +39,13 @@ import {
 } from '../utils/access';
 import TeamGate from './TeamGate';
 import {
+    getConfidence,
     getDynamics,
     getMaturity,
     getSignatureLine,
 } from '../insights';
 import { logPdfDownload } from '../supabase';
-import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, getReliability, findMentionedPersona, describeAxis } from './teamDynamicsLogic';
+import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, findMentionedPersona, describeAxis } from './teamDynamicsLogic';
 
 const ACCENT = MODULE.dynamics.accent;
 // =========================
@@ -114,7 +115,8 @@ export default function TeamDynamics({
 
     const topPersonaId = sorted[0]?.[0] || null;
     const topPersona = topPersonaId ? getArchetype(topPersonaId, lang) : null;
-    const reliability = getReliability(teamResponses.length, lang);
+    // Eén schaal op beide dashboards en in de PDF's (besluit 6, 22 okt 2026).
+    const reliability = teamResponses.length > 0 ? getConfidence(teamResponses.length, lang).label : '';
 
     const signatureLine = useMemo(() => {
         if (!teamResponses.length) return null;

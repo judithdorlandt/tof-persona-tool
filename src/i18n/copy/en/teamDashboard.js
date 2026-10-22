@@ -16,11 +16,6 @@ const teamDashboard = {
     reliability: 'Reliability',
   },
 
-  reliability: {
-    low: 'Indicative',
-    mid: 'Growing',
-    high: 'Strong picture',
-  },
 
   gate: {
     title: 'No team picture yet',

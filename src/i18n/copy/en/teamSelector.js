@@ -43,11 +43,6 @@ const teamSelector = {
     inviteCode: (code) => `Invite code: ${code}`,
   },
 
-  reliability: {
-    low: 'Low reliability',
-    basic: 'Basic insight',
-    strong: 'Strong picture',
-  },
 
   invite: {
     loggedInPrefix: 'You are signed in with invite code ',

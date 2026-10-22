@@ -35,11 +35,6 @@ const teamPanels = {
       dominant: 'Dominant',
       reliability: 'Betrouwbaarheid',
     },
-    reliability: {
-      indicative: 'Indicatief',
-      growing: 'Groeiend',
-      strong: 'Sterk beeld',
-    },
     actions: {
       otherTeam: 'Ander team',
       backHome: 'Terug naar home',

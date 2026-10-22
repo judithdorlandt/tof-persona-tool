@@ -132,14 +132,6 @@ export function buildLeadershipActions(sorted, lang = 'nl') {
         }));
 }
 
-export function getReliability(count, lang = 'nl') {
-    const r = t(lang).reliability;
-    if (count < 3) return r.first;
-    if (count < 6) return r.emerging;
-    if (count <= 15) return r.reliable;
-    return r.strong;
-}
-
 export function findMentionedPersona(text, presentMap, lang = 'nl') {
     const lowered = String(text).toLowerCase();
     for (const arch of getArchetypes(lang)) {

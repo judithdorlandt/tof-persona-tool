@@ -61,12 +61,6 @@ const teamDynamics = {
     reliability: 'Betrouwbaarheid',
   },
 
-  reliability: {
-    first: 'Eerste signalen',
-    emerging: 'Opkomend patroon',
-    reliable: 'Betrouwbaar beeld',
-    strong: 'Sterk patroon',
-  },
 
   tiles: {
     dynamics: {

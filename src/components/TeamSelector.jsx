@@ -13,7 +13,8 @@ import {
     SecondaryButton,
     SectionEyebrow,
 } from '../ui/AppShell';
-import { useCopy } from '../i18n/LanguageContext';
+import { useCopy, useLang } from '../i18n/LanguageContext';
+import { getConfidence } from '../insights';
 
 export default function TeamSelector({
     setPage,
@@ -22,6 +23,7 @@ export default function TeamSelector({
     setSelectedTeam,
 }) {
     const { common, teamSelector: t } = useCopy();
+    const { lang } = useLang();
     const locale = common.locale;
 
     const storedAccess = getStoredTeamAccess();
@@ -263,10 +265,9 @@ export default function TeamSelector({
         }
     }
 
+    // Zelfde schaal als de dashboards en de PDF's (besluit 6).
     function reliabilityLabel(count) {
-        if (count < 3) return t.reliability.low;
-        if (count < 6) return t.reliability.basic;
-        return t.reliability.strong;
+        return getConfidence(count, lang).label;
     }
 
     function buildTeamResultData(members, meta = {}) {
