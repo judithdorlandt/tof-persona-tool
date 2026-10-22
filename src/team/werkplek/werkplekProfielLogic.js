@@ -89,6 +89,21 @@ export function buildWerkplekProfiel(aantallen) {
 }
 
 /**
+ * Wat de Werkplek-tegel toont: de eerste kern plus hoeveel kernen er nog meer
+ * zijn. Zonder kern het hoogste type — dezelfde als de grote kop in het
+ * detailscherm, zodat tegel en paneel altijd hetzelfde zeggen.
+ *
+ * @param {{ typen: Array }} profiel — output van buildWerkplekProfiel()
+ * @returns {{ type: object|null, extra: number }}
+ */
+export function tegelKern(profiel) {
+    const typen = profiel?.typen || [];
+    const kernen = typen.filter((t) => t.band === BAND.KERN);
+    if (kernen.length > 0) return { type: kernen[0], extra: kernen.length - 1 };
+    return { type: typen[0] || null, extra: 0 };
+}
+
+/**
  * Leidt gedragssignalen af waar de balans scheef staat. Geeft alleen signal-ids
  * terug; de begeleidende tekst staat in de copy. Signalen zijn GEDRAGS-duidingen
  * (waar leunt het team op, wat dreigt te verschralen), nooit ruimtetekorten.

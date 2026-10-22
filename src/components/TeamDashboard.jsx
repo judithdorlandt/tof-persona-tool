@@ -46,6 +46,11 @@ import { logPdfDownload } from '../supabase';
 import TeamGate from './TeamGate';
 
 import WerkplekProfielInline from '../team/werkplek/WerkplekProfielInline';
+import {
+    aantallenUitAggregate,
+    buildWerkplekProfiel,
+    tegelKern,
+} from '../team/werkplek/werkplekProfielLogic';
 
 const ACCENT = MODULE.insight.accent;
 
@@ -60,8 +65,10 @@ const ACCENT = MODULE.insight.accent;
  * deze tegels voor het organisatie-overzicht en roept dezelfde functie aan.
  * `names` (uit namesByPersona) geeft alleen Teaminzicht mee, en alleen als
  * het team met namen instemde; het organisatie-overzicht laat het weg.
+ * `workplaceProfile` is de gelijknamige namespace: de namen van de
+ * werkplektypen in de actieve taal, voor de Werkplek-tegel.
  */
-export function buildTiles(t, { names = null } = {}) {
+export function buildTiles(t, { names = null, workplaceProfile = null } = {}) {
     return [
         {
             id: 'personas',
@@ -83,9 +90,13 @@ export function buildTiles(t, { names = null } = {}) {
             id: 'workplace',
             eyebrow: t.tiles.workplace.eyebrow,
             buildValue: (aggregate) => {
-                const top = aggregate?.sortedWorkplaceNeeds?.[0];
-                if (!top) return t.empty;
-                return top.label;
+                // Zelfde bron als het paneel: het werkplekprofiel, niet de
+                // energie-gewogen sortedWorkplaceNeeds.
+                const profiel = buildWerkplekProfiel(aantallenUitAggregate(aggregate));
+                const { type, extra } = tegelKern(profiel);
+                if (!profiel.heeftData || !type) return t.empty;
+                const label = workplaceProfile?.types?.[type.id]?.label || type.label;
+                return extra > 0 ? `${label} +${extra}` : label;
             },
             buildHint: () => t.tiles.workplace.hint,
             detailTitle: t.tiles.workplace.detailTitle,
@@ -143,7 +154,7 @@ export default function TeamDashboard({
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
     const [activeId, setActiveId] = useState('personas');
     const { lang } = useLang();
-    const { teamDashboard: t, common } = useCopy();
+    const { teamDashboard: t, common, workplaceProfile } = useCopy();
 
     const aggregate = useMemo(
         () => buildTeamAggregate(teamResponses, lang),
@@ -156,7 +167,10 @@ export default function TeamDashboard({
         () => namesByPersona(teamResponses, common.locale),
         [teamResponses, common.locale]
     );
-    const tiles = useMemo(() => buildTiles(t, { names }), [t, names]);
+    const tiles = useMemo(
+        () => buildTiles(t, { names, workplaceProfile }),
+        [t, names, workplaceProfile]
+    );
 
     const teamName = resolveTeamName(selectedTeam, t.fallbackTeamName);
     const organization = resolveOrg(selectedTeam);

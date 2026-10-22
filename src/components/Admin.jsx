@@ -995,9 +995,12 @@ function OrganizationDetail({
     const [obsBusy, setObsBusy] = useState(false);
     const [obsError, setObsError] = useState(null);
     const { lang } = useLang();
-    const { admin, teamDashboard } = useCopy();
+    const { admin, teamDashboard, workplaceProfile } = useCopy();
     const t = admin.detail;
-    const tiles = useMemo(() => buildTiles(teamDashboard), [teamDashboard]);
+    const tiles = useMemo(
+        () => buildTiles(teamDashboard, { workplaceProfile }),
+        [teamDashboard, workplaceProfile]
+    );
 
     const moduleAccent = moduleSel === 'dynamics' ? DYNAMICS_ACCENT : INSIGHT_ACCENT;
 
