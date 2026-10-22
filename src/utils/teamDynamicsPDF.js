@@ -72,7 +72,7 @@ const ACTION_COUNT_WORDS = {
 const DYNAMICS_COPY = {
     nl: {
         fileSuffix: 'teamdynamics',
-        pill: 'TEAM DYNAMICS',
+        pill: 'TEAMDYNAMIEK',
         heroTitle: 'Wat onder de samenwerking ligt',
         heroFallback: 'Drie assen tonen waar dit team in evenwicht is en waar regie nodig is.',
         responses: (n) => `${n} respons${n === 1 ? '' : 'en'}`,
@@ -110,7 +110,7 @@ const DYNAMICS_COPY = {
         },
         sourceFallback: 'REFLECTIE',
         footerQuote: '"Regie geven is duidelijkheid scheppen — niet bepalen."',
-        footerTagline: 'Helping teams understand their workplace through insight, design and movement.',
+        footerTagline: 'TOF Persona · The Office Factory',
     },
     en: {
         fileSuffix: 'team dynamics',
@@ -148,7 +148,7 @@ const DYNAMICS_COPY = {
         },
         sourceFallback: 'REFLECTION',
         footerQuote: '"Giving direction is creating clarity — not deciding for people."',
-        footerTagline: 'Helping teams understand their workplace through insight, design and movement.',
+        footerTagline: 'TOF Persona · The Office Factory',
     },
 };
 
