@@ -29,7 +29,7 @@ const workplaceProfile = {
         teamFallback: 'jouw team',
 
         // Hero — de sterkste behoefte als dominant leespunt.
-        heroEyebrow: 'Waar de energie van dit team naartoe gaat',
+        heroEyebrow: 'Wat dit team het meest nodig heeft',
         heroOnderschrift: 'De plek waar dit team het meeste aan heeft. Onderbelicht blijven kost energie.',
 
         // Volledige, gerangschikte behoefte (alle overige typen, gegroepeerd per band).

@@ -29,7 +29,7 @@ const workplaceProfile = {
         teamFallback: 'your team',
 
         // Hero — the strongest need as the dominant point of entry.
-        heroEyebrow: 'Where this team puts its energy',
+        heroEyebrow: 'What this team needs most',
         heroOnderschrift: 'The space this team benefits from most. Leaving it underexposed costs energy.',
 
         // The full, ranked picture of needs (all remaining types, grouped by band).
