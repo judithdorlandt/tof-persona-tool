@@ -28,7 +28,7 @@ const teamSignals = {
         `${n} profiles give an emerging pattern. The insights are probably representative, but they gain strength as more colleagues take the test.`,
     },
     reliable: {
-      label: 'Reliable pattern',
+      label: 'Reliable picture',
       text: (n) =>
         `With ${n} profiles this is a reliable picture. The patterns recur consistently and give a solid basis for concrete decisions.`,
     },

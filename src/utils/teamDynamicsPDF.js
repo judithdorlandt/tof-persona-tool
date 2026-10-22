@@ -35,6 +35,7 @@ import {
 // Persona-namen komen uit één taalvaste bron, zodat NL/EN rapporten dezelfde
 // termen gebruiken als de team-insight en Organisatie-Landschap PDF.
 import { getArchetypeName } from './organisatieLandschap/constants';
+import { getConfidence } from '../insights';
 
 // =========================
 // CONSTANTEN — A3 PORTRAIT
@@ -965,12 +966,12 @@ function capitalize(s) {
     return String(s).charAt(0).toUpperCase() + String(s).slice(1);
 }
 
-// Drempels blijven in cijfers (geen >= of <= in PDF-tekst — die glyphs
-// ontbreken in de gebundelde font-subsets). Alleen het label is vertaald.
+// Zelfde schaal als de PDF van Teaminzicht (besluit 6, 22 okt 2026):
+// getConfidence() uit src/insights.js — 5–15 opkomend, 16–30 betrouwbaar,
+// meer dan 30 sterk. Alleen het label staat hier, per taal.
+const RELIABILITY_KEY = { low: 'first', emerging: 'emerging', reliable: 'reliable', strong: 'strong' };
+
 function buildReliabilityLabel(count, c) {
     if (count === null || count === undefined) return '';
-    if (count < 3) return c.reliability.first;
-    if (count < 6) return c.reliability.emerging;
-    if (count <= 15) return c.reliability.reliable;
-    return c.reliability.strong;
+    return c.reliability[RELIABILITY_KEY[getConfidence(count).level]] || '';
 }

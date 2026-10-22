@@ -37,7 +37,7 @@ const teamSignals = {
         `${n} profielen geven een opkomend patroon. De inzichten zijn waarschijnlijk representatief, maar winnen aan kracht naarmate meer collega's de test invullen.`,
     },
     reliable: {
-      label: 'Betrouwbaar patroon',
+      label: 'Betrouwbaar beeld',
       text: (n) =>
         `Met ${n} profielen is dit een betrouwbaar beeld. De patronen komen consistent terug en geven een solide basis voor concrete beslissingen.`,
     },
