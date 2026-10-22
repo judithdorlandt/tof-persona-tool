@@ -328,23 +328,25 @@ function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
     }
 
     // WIN 3 — uit SPANNING
-    if (tension.underserved.length > 0) {
-        const first = tension.underserved[0];
+    // De eerste kern zit al in de Werkplek-actie, dus hier de tweede kern;
+    // zonder tweede kern het laagste type uit "beperkt nodig".
+    if ((tension.kernCount || 0) >= 2) {
+        const second = tension.underserved[1];
         // Bewust niet op persoonsnaam: de behoefte volgt uit de werkstijl
-        // (bricksProfile), niet uit een individuele werkplekvoorkeur. We
+        // (werkplekmix), niet uit een individuele werkplekvoorkeur. We
         // benoemen het patroon — de werkstijl die vastloopt — niet "de pijn
         // van persoon X".
-        const arch = first.impactedPersonas?.[0];
+        const arch = second.impactedPersonas?.[0];
         const who = arch ? text(lang).personaPlural(arch.name) : t.tensionWhoFallback;
         wins.push({
             source: 'spanning',
-            action: t.tensionUnderserved(first.label.toLowerCase(), who),
+            action: t.tensionSecondCore(second.label.toLowerCase(), who),
         });
     } else if (tension.oversupplied.length > 0) {
-        const first = tension.oversupplied[0];
+        const lowest = tension.oversupplied[0];
         wins.push({
             source: 'spanning',
-            action: t.tensionOversupplied(first.label.toLowerCase()),
+            action: t.tensionLimited(lowest.label.toLowerCase()),
         });
     }
 

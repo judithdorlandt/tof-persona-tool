@@ -136,11 +136,12 @@ const teamInsightText = {
     },
 
     // source: 'spanning' — bewust op werkstijl, niet op persoonsnaam.
-    tensionUnderserved: (label, who) =>
-      `Bescherm ${label}. De vraag ligt hier bovengemiddeld terwijl het kantoor het vaak niet biedt — juist ${who} lopen dan vast.`,
+    // De tweede kernplek; zonder tweede kern het laagste type uit "beperkt nodig".
+    tensionSecondCore: (label, who) =>
+      `Bescherm ${label}. Ook dit is een kernplek voor dit team — juist ${who} lopen vast als die ontbreekt.`,
     tensionWhoFallback: 'teamleden',
-    tensionOversupplied: (label) =>
-      `Zet ${label} anders in. Dit team gebruikt ze nauwelijks, dus het kost ruimte zonder waarde.`,
+    tensionLimited: (label) =>
+      `Zet ${label} anders in. Dit team heeft ze maar af en toe nodig, dus veel ervan kost ruimte zonder waarde.`,
 
     // source: 'minderheid' — `count` bepaalt enkelvoud of meervoud.
     minority: (workplaces, personas, count) =>

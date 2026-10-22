@@ -135,11 +135,12 @@ const teamInsightText = {
     },
 
     // source: 'spanning' — deliberately about working style, not individuals.
-    tensionUnderserved: (label, who) =>
-      `Protect ${label}. Demand here is above average while the office often fails to provide it — and it is ${who} who get stuck.`,
+    // The second core space; without a second core, the lowest "needed only now and then".
+    tensionSecondCore: (label, who) =>
+      `Protect ${label}. This is also a core space for this team — ${who} in particular get stuck without it.`,
     tensionWhoFallback: 'team members',
-    tensionOversupplied: (label) =>
-      `Put ${label} to different use. This team barely uses them, so they cost space without adding value.`,
+    tensionLimited: (label) =>
+      `Put ${label} to different use. This team needs them only now and then, so a lot of them costs space without adding value.`,
 
     // source: 'minderheid' — `count` drives singular or plural.
     minority: (workplaces, personas, count) =>
