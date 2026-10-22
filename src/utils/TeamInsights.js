@@ -14,17 +14,24 @@
 // Consistency-regel:
 //   "Dominante persona" in meta + highlights = personasByPrimary[0].
 //   Dat is dezelfde definitie die Tegel + Chip gebruiken in TeamDashboard.
-//   Werkplek-spanning blijft gewogen op energie/full_scores — daar gaat
-//   het om wat het hele profiel van de werkplek vraagt, niet wie er
-//   primair zit.
+//   Werkplek-spanning volgt het werkplekprofiel (src/team/werkplek/):
+//   kern / steun / beperkt nodig op de primaire werkstijlen, zonder
+//   percentages — dezelfde bron als de Werkplek-tegel en het paneel.
 
 import { getArchetypes } from '../i18n/archetypes';
 import { getCopy } from '../i18n/copy';
+import {
+    aantallenUitAggregate,
+    buildWerkplekProfiel,
+    tegelKern,
+    BAND,
+} from '../team/werkplek/werkplekProfielLogic';
+import { PERSONA_WERKPLEKMIX } from '../team/werkplek/werkplekmix';
 
 const WORKPLACE_PRESENT_PCT = 15;
 
-// Persona scoort >= deze waarde op een werkplek → die persona heeft hoge behoefte
-const PERSONA_NEED_THRESHOLD = 3;
+// Niveau in de werkplekmix waarop een type kern is voor een werkstijl.
+const KERN_NIVEAU = 3;
 
 // Alle zichtbare tekst komt uit copy/<taal>/teamInsightText.js.
 function text(lang) {
@@ -37,6 +44,12 @@ function text(lang) {
 function workplaceLabel(need, lang) {
     if (!need) return '';
     return text(lang).workplaceLabels[need.key] || need.label || need.key;
+}
+
+// Naam van een type uit het werkplekprofiel, in de juiste taal.
+function profielTypeLabel(type, lang) {
+    if (!type) return '';
+    return getCopy(lang).workplaceProfile?.types?.[type.id]?.label || type.label || type.id;
 }
 
 // Persona-naam uit de archetypes van die taal; nooit hardcoden.
@@ -129,69 +142,60 @@ function buildHeadline(aggregate, lang = 'nl') {
 }
 
 // =========================
-// WORKPLACE TENSION — onderbediend + overdosis
+// WORKPLACE TENSION — kernplekken + beperkt nodig
 // =========================
+// Volgt het werkplekprofiel:
+//   underserved  = de kernplekken ("Voorzien jullie genoeg in"); zonder kern
+//                  het hoogste type, gelijk aan de Werkplek-tegel.
+//   oversupplied = de plekken in "beperkt nodig" ("En staat het niet vol
+//                  met"), laagste eerst.
+// De veldnamen blijven voor de bestaande lezers (tegel, PDF, acties).
 function buildWorkplaceTension(aggregate, lang = 'nl') {
-    const needs = aggregate?.sortedWorkplaceNeeds || [];
     const presentPersonaIds = new Set(
         (aggregate?.sortedPersonas || [])
             .filter((p) => p.count > 0)
             .map((p) => p.id)
     );
 
-    if (needs.length === 0) {
-        return { underserved: [], oversupplied: [], impactSummary: null };
+    const profiel = buildWerkplekProfiel(aantallenUitAggregate(aggregate));
+    if (!profiel.heeftData) {
+        return { underserved: [], oversupplied: [], kernCount: 0, impactSummary: null };
     }
 
-    // Gemiddelde als scheidslijn (gelijk aan TeamWorkplaceNeeds)
-    const averagePct = 100 / needs.length;
+    const kernen = profiel.typen.filter((t) => t.band === BAND.KERN);
+    const { type: hoogste } = tegelKern(profiel);
+    const nodig = kernen.length > 0 ? kernen : (hoogste ? [hoogste] : []);
+    const beperkt = profiel.typen
+        .filter((t) => t.band === BAND.AANVULLEND)
+        .slice()
+        .reverse();
 
-    const underserved = [];
-    const oversupplied = [];
+    const underserved = nodig.map((t) => ({
+        key: t.id,
+        label: profielTypeLabel(t, lang),
+        band: t.band,
+        impactedPersonas: impactedPersonas(t.id, presentPersonaIds, lang),
+    }));
 
-    needs.forEach((need) => {
-        const impacted = impactedPersonas(need.key, presentPersonaIds, lang);
-
-        // Onderbediend: bovengemiddelde behoefte
-        if (need.percentage >= averagePct && impacted.length > 0) {
-            underserved.push({
-                key: need.key,
-                label: workplaceLabel(need, lang),
-                percentage: need.percentage,
-                impactedPersonas: impacted,
-                message: buildUnderservedMessage(need, lang),
-            });
-        }
-
-        // Overdosis: ondergemiddeld en relatief laag
-        if (need.percentage < averagePct * 0.7) {
-            oversupplied.push({
-                key: need.key,
-                label: workplaceLabel(need, lang),
-                percentage: need.percentage,
-                message: buildOversuppliedMessage(need, lang),
-            });
-        }
-    });
-
-    underserved.sort((a, b) => b.percentage - a.percentage);
-    oversupplied.sort((a, b) => a.percentage - b.percentage);
+    const oversupplied = beperkt.map((t) => ({
+        key: t.id,
+        label: profielTypeLabel(t, lang),
+        band: t.band,
+    }));
 
     const impactSummary = buildImpactSummary({
         underserved,
         oversupplied,
         presentPersonaIds,
-        needs,
-        averagePct,
         aggregate,
         lang,
     });
 
-    return { underserved, oversupplied, impactSummary };
+    return { underserved, oversupplied, kernCount: kernen.length, impactSummary };
 }
 
 // Bouw drie groepen: Dominant / Gemiddeld / Minderheid
-function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, needs, averagePct, aggregate, lang = 'nl' }) {
+function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, aggregate, lang = 'nl' }) {
     if (presentPersonaIds.size === 0) {
         return null;
     }
@@ -267,13 +271,8 @@ function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, need
     const middleEnriched = middle.map((p) => enrichPersona(p, 'middle'));
     const minorityEnriched = minority.map((p) => enrichPersona(p, 'minority'));
 
-    const checkWorkplaces = needs
-        .filter((n) => n.percentage >= averagePct)
-        .map((n) => ({ label: workplaceLabel(n, lang), percentage: n.percentage }));
-
-    const uncheckWorkplaces = needs
-        .filter((n) => n.percentage < averagePct * 0.7)
-        .map((n) => ({ label: workplaceLabel(n, lang), percentage: n.percentage }));
+    const checkWorkplaces = underserved.map((w) => ({ key: w.key, label: w.label }));
+    const uncheckWorkplaces = oversupplied.map((w) => ({ key: w.key, label: w.label }));
 
     return {
         dominant: dominantEnriched,
@@ -284,38 +283,15 @@ function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, need
     };
 }
 
-function impactedPersonas(workplaceKey, presentPersonaIds, lang = 'nl') {
-    return getArchetypes(lang)
-        .filter((arch) => presentPersonaIds.has(arch.id))
-        .filter((arch) => {
-            const score = arch?.bricksProfile?.[workplaceKey] || 0;
-            return score >= PERSONA_NEED_THRESHOLD;
-        })
-        .map((arch) => ({
-            id: arch.id,
-            name: arch.name,
-            score: arch.bricksProfile[workplaceKey],
-        }));
+// Aanwezige werkstijlen voor wie dit type kern is in de werkplekmix.
+function impactedPersonas(typeId, presentPersonaIds, lang = 'nl') {
+    return PERSONA_WERKPLEKMIX
+        .filter((p) => presentPersonaIds.has(p.id) && p.mix[typeId] === KERN_NIVEAU)
+        .map((p) => ({ id: p.id, name: personaName(p.id, lang), niveau: p.mix[typeId] }));
 }
 
 function formatNamesNatural(names, lang = 'nl') {
     return text(lang).joinNatural(names);
-}
-
-function buildUnderservedMessage(need, lang = 'nl') {
-    const tension = text(lang).underserved;
-    return (
-        tension[need.key] ||
-        tension.fallback(workplaceLabel(need, lang).toLowerCase())
-    );
-}
-
-function buildOversuppliedMessage(need, lang = 'nl') {
-    const noise = text(lang).oversupplied;
-    return (
-        noise[need.key] ||
-        noise.fallback(workplaceLabel(need, lang).toLowerCase())
-    );
 }
 
 // =========================

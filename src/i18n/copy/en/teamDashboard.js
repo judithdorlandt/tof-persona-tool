@@ -48,14 +48,18 @@ const teamDashboard = {
       eyebrow: 'Tension',
       hint: 'Where things may rub',
       detailTitle: 'Where need and supply may rub',
-      valueConsistent: 'Consistent',
-      valueUnderserved: (n) => `${n} underserved`,
-      valueOversupplied: (n) => `${n} too many`,
-      leadNone: 'The workplace need is consistent — little friction.',
-      leadBoth: (under, over) =>
-        `${under} workplace type${under > 1 ? 's' : ''} underserved, ${over} possibly present in excess.`,
-      leadUnder: (n) => `${n} workplace type${n > 1 ? 's' : ''} this team leans on extra hard.`,
-      leadOver: (n) => `${n} workplace type${n > 1 ? 's' : ''} this team has little use for.`,
+      // `kern` = number of core spaces, `beperkt` = number needed only now and then.
+      value: (kern, beperkt) => {
+        const k = kern > 0 ? `${kern} core` : 'no core';
+        return beperkt > 0 ? `${k} · ${beperkt} occasional` : k;
+      },
+      lead: (kern, beperkt) => {
+        const k = kern > 0
+          ? `${kern} core space${kern > 1 ? 's' : ''} this team really needs`
+          : 'No clear core space';
+        if (beperkt === 0) return `${k}.`;
+        return `${k}, ${beperkt} needed only now and then.`;
+      },
     },
     quickwins: {
       eyebrow: 'Quick wins',

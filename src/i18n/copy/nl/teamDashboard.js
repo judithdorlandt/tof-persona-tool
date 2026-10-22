@@ -62,14 +62,18 @@ const teamDashboard = {
       eyebrow: 'Spanning',
       hint: 'Waar het kan botsen',
       detailTitle: 'Waar behoefte en aanbod kunnen botsen',
-      valueConsistent: 'Consistent',
-      valueUnderserved: (n) => `${n} onderbediend`,
-      valueOversupplied: (n) => `${n} teveel`,
-      leadNone: 'De werkplekbehoefte is consistent — weinig botsing.',
-      leadBoth: (under, over) =>
-        `${under} werkplek${under > 1 ? 'ken' : ''} onderbediend, ${over} mogelijk te veel aanwezig.`,
-      leadUnder: (n) => `${n} werkplek${n > 1 ? 'ken' : ''} waar dit team extra op leunt.`,
-      leadOver: (n) => `${n} werkplek${n > 1 ? 'ken' : ''} waar dit team weinig aan heeft.`,
+      // `kern` = aantal kernplekken, `beperkt` = aantal plekken in "beperkt nodig".
+      value: (kern, beperkt) => {
+        const k = kern > 0 ? `${kern} kern` : 'geen kern';
+        return beperkt > 0 ? `${k} · ${beperkt} beperkt` : k;
+      },
+      lead: (kern, beperkt) => {
+        const k = kern > 0
+          ? `${kern} kernplek${kern > 1 ? 'ken' : ''} die dit team echt nodig heeft`
+          : 'Geen uitgesproken kernplek';
+        if (beperkt === 0) return `${k}.`;
+        return `${k}, ${beperkt} plek${beperkt > 1 ? 'ken' : ''} die beperkt nodig ${beperkt > 1 ? 'zijn' : 'is'}.`;
+      },
     },
     quickwins: {
       eyebrow: 'Quick wins',

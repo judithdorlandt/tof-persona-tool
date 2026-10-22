@@ -128,7 +128,7 @@ const teamPanels = {
   workplaceTension: {
     empty: 'No workplace need visible yet — wait until more team members have taken part.',
     headerQuestion: 'What does your current office look like?',
-    coreEyebrow: 'The core',
+    coreEyebrow: 'The largest group',
     shareOne: (pct) => `${pct}% of the team`,
     shareTwo: (a, b) => `${a}% + ${b}% of the team`,
     shareMany: (total) => `${total}% of the team`,

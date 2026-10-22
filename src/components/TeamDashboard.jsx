@@ -107,24 +107,22 @@ export function buildTiles(t, { names = null, workplaceProfile = null } = {}) {
             id: 'tension',
             eyebrow: t.tiles.tension.eyebrow,
             buildValue: (aggregate, insights) => {
-                const tension = insights?.workplaceTension || { underserved: [], oversupplied: [] };
-                const under = tension.underserved?.length || 0;
-                const over = tension.oversupplied?.length || 0;
-                if (under === 0 && over === 0) return t.tiles.tension.valueConsistent;
-                if (under > 0 && over > 0) return `${under} + ${over}`;
-                if (under > 0) return t.tiles.tension.valueUnderserved(under);
-                return t.tiles.tension.valueOversupplied(over);
+                const tension = insights?.workplaceTension;
+                if (!tension?.impactSummary) return t.empty;
+                return t.tiles.tension.value(
+                    tension.kernCount || 0,
+                    tension.oversupplied?.length || 0
+                );
             },
             buildHint: () => t.tiles.tension.hint,
             detailTitle: t.tiles.tension.detailTitle,
             detailLead: (aggregate, insights) => {
-                const tension = insights?.workplaceTension || { underserved: [], oversupplied: [] };
-                const under = tension.underserved?.length || 0;
-                const over = tension.oversupplied?.length || 0;
-                if (under === 0 && over === 0) return t.tiles.tension.leadNone;
-                if (under > 0 && over > 0) return t.tiles.tension.leadBoth(under, over);
-                if (under > 0) return t.tiles.tension.leadUnder(under);
-                return t.tiles.tension.leadOver(over);
+                const tension = insights?.workplaceTension;
+                if (!tension?.impactSummary) return '';
+                return t.tiles.tension.lead(
+                    tension.kernCount || 0,
+                    tension.oversupplied?.length || 0
+                );
             },
             render: (aggregate, insights) => <TeamWorkplaceTension insights={insights} />,
         },

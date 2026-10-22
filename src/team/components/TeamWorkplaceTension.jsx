@@ -361,7 +361,7 @@ function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                         {checkWorkplaces.map((wp) => (
-                            <WorkplacePill key={wp.label} workplace={wp} accent="var(--tof-accent-sage)" />
+                            <WorkplacePill key={wp.key} workplace={wp} accent="var(--tof-accent-sage)" />
                         ))}
                     </div>
                 </div>
@@ -381,7 +381,7 @@ function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                         {uncheckWorkplaces.map((wp) => (
-                            <WorkplacePill key={wp.label} workplace={wp} accent="var(--tof-accent-rose)" />
+                            <WorkplacePill key={wp.key} workplace={wp} accent="var(--tof-accent-rose)" />
                         ))}
                     </div>
                 </div>
@@ -407,16 +407,6 @@ function WorkplacePill({ workplace, accent }) {
             }}
         >
             {workplace.label}
-            <span
-                style={{
-                    fontSize: 11,
-                    color: accent,
-                    fontWeight: 600,
-                    fontVariantNumeric: 'tabular-nums',
-                }}
-            >
-                {workplace.percentage}%
-            </span>
         </span>
     );
 }
