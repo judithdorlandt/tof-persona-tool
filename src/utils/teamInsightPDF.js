@@ -473,7 +473,8 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsig
     const nameLineH = isOrg ? 5 : 7;
     const totalWidth = PAGE_W - MARGIN * 2;
     const gap = 24;
-    const colWidth = (totalWidth - gap) / 2;
+    // Teamvariant heeft geen mix-kolom: de verdeling krijgt de volle breedte.
+    const colWidth = isOrg ? (totalWidth - gap) / 2 : totalWidth;
     const colLeftX = MARGIN;
     const colRightX = MARGIN + colWidth + gap;
 
