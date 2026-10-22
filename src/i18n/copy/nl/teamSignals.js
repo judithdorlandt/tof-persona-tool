@@ -78,9 +78,9 @@ const teamSignals = {
       right: 'Structuur',
     },
     connectionIndividual: {
-      label: 'Verbinding tegenover Individueel',
+      label: 'Verbinding tegenover Zelfstandigheid',
       left: 'Verbinding',
-      right: 'Individueel',
+      right: 'Zelfstandigheid',
     },
     executionReflection: {
       label: 'Executie tegenover Reflectie',

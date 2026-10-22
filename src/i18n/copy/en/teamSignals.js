@@ -69,9 +69,9 @@ const teamSignals = {
       right: 'Structure',
     },
     connectionIndividual: {
-      label: 'Connection vs Individual',
+      label: 'Connection vs Independence',
       left: 'Connection',
-      right: 'Individual',
+      right: 'Independence',
     },
     executionReflection: {
       label: 'Execution vs Reflection',
