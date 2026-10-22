@@ -73,17 +73,17 @@ const teamSignals = {
   // en de bijbehorende `tension`-regel.
   axes: {
     creationStructure: {
-      label: 'Creatie vs Structuur',
+      label: 'Creatie tegenover Structuur',
       left: 'Creatie',
       right: 'Structuur',
     },
     connectionIndividual: {
-      label: 'Verbinding vs Individualiteit',
+      label: 'Verbinding tegenover Individueel',
       left: 'Verbinding',
       right: 'Individueel',
     },
     executionReflection: {
-      label: 'Executie vs Reflectie',
+      label: 'Executie tegenover Reflectie',
       left: 'Executie',
       right: 'Reflectie',
     },

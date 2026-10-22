@@ -69,7 +69,7 @@ const teamSignals = {
       right: 'Structure',
     },
     connectionIndividual: {
-      label: 'Connection vs Individuality',
+      label: 'Connection vs Individual',
       left: 'Connection',
       right: 'Individual',
     },
