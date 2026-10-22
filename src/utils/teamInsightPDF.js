@@ -472,7 +472,9 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsig
         letterSpacing: 0.8,
     }));
 
-    svg.appendChild(createText({
+    // De mix met aantallen mensen alleen in de organisatievariant: binnen een
+    // team wijst "1 persoon" iemand aan.
+    if (isOrg) svg.appendChild(createText({
         x: colRightX,
         y: y + 6,
         text: c.mixEyebrow(isOrg),
@@ -544,6 +546,8 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsig
         color: COLOR.textMuted,
     }));
     lineY += 8;
+
+    if (!isOrg) return lineY;
 
     // Alle primair-aanwezige archetypes tonen, gesorteerd op aantal
     // mensen primair (= personasByPrimary). Eerder werd sortedPersonas
