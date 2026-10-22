@@ -1270,13 +1270,16 @@ function buildLeadershipSynthesis({
     const t = getCopy(lang).teamDynamics.leadership;
     const wins = [];
 
+    // Alleen assen in disbalans (boven 60/40, besluit 3), de grootste
+    // afwijking eerst. Een as in balans levert geen actie op.
     const sortedAxes = [...(dynamicsAxes || [])]
-        .map((axis, i) => ({ axis, i, gap: Math.abs(axis.lv - axis.rv) }))
+        .filter((axis) => axis.imbalanced)
+        .map((axis, i) => ({ axis, i, gap: Math.abs(axis.lPct - axis.rPct) }))
         .sort((a, b) => b.gap - a.gap);
 
     // 1. UIT DYNAMIEK — meest disbalans
     const axis1 = sortedAxes[0];
-    if (axis1 && axis1.gap > 0) {
+    if (axis1) {
         wins.push({
             source: 'dynamics',
             action: dynamicsActionFor(axis1.axis, lang),
@@ -1305,7 +1308,7 @@ function buildLeadershipSynthesis({
 
     // 4. UIT DYNAMIEK — tweede in disbalans
     const axis2 = sortedAxes[1];
-    if (axis2 && axis2.gap > 0) {
+    if (axis2) {
         wins.push({
             source: 'dynamics',
             action: dynamicsActionFor(axis2.axis, lang),
@@ -1406,8 +1409,8 @@ function dynamicsActionFor(axis, lang = 'nl') {
     const total = axis.lv + axis.rv;
     if (total === 0) return '';
 
-    const dominantSide = axis.lv >= axis.rv ? axis.left : axis.right;
-    const recessiveSide = axis.lv >= axis.rv ? axis.right : axis.left;
+    const dominantSide = axis.lPct >= axis.rPct ? axis.left : axis.right;
+    const recessiveSide = axis.lPct >= axis.rPct ? axis.right : axis.left;
 
     return getCopy(lang).teamDynamics.leadership.axisAction(dominantSide, recessiveSide);
 }
