@@ -20,6 +20,7 @@ import {
     reliabilityFor,
 } from './constants';
 import { getOLCopy } from './copy';
+import { getArchetypes } from '../../i18n/archetypes';
 
 /**
  * Hoofd-entry — verwerkt input van Admin tot stabiele dataset voor pagina's.
@@ -61,7 +62,7 @@ export function prepareOrganisatieData({
     const dominantStyle = computeDominantStyle(aggregate, lang);
     const topNeed = computeTopWorkplaceNeed(aggregate, cd);
     const workplaceNeeds = computeWorkplaceNeeds(aggregate, cd, 5);
-    const leeglopers = computeLeeglopers(insights, cd);
+    const leeglopers = computeLeeglopers(insights, cd, aggregate);
 
     const leegloperObservations = (observations || [])
         .filter((o) => o.category === 'leegloper')
@@ -215,16 +216,41 @@ const TENSION_PAIRS = [
     ['teamspeler', 'maker', 'loyaliteitAutonomie'],
 ];
 
-function computeLeeglopers(insights, cd) {
+// Bewust op het OUDE werkplekmodel (sortedWorkplaceNeeds, % t.o.v. het
+// gemiddelde). Teaminzicht volgt sinds 22 okt 2026 het werkplekprofiel; het
+// organisatielandschap nog niet — dat is een apart besluit. Dit zijn de regels
+// die TeamInsights daarvoor gebruikte: tekort = bovengemiddeld én een
+// aanwezige werkstijl met bricksProfile >= 3; te veel = onder 70% van het
+// gemiddelde.
+function oudeWerkplekSpanning(aggregate) {
+    const needs = aggregate?.sortedWorkplaceNeeds || [];
+    if (needs.length === 0) return { under: null, over: null };
+    const averagePct = 100 / needs.length;
+    const present = new Set(
+        (aggregate?.sortedPersonas || []).filter((p) => p.count > 0).map((p) => p.id)
+    );
+    const archetypes = getArchetypes('nl').filter((a) => present.has(a.id));
+    const under = needs
+        .filter((n) => n.percentage >= averagePct)
+        .filter((n) => archetypes.some((a) => (a.bricksProfile?.[n.key] || 0) >= 3))
+        .sort((a, b) => b.percentage - a.percentage)[0] || null;
+    const over = needs
+        .filter((n) => n.percentage < averagePct * 0.7)
+        .sort((a, b) => a.percentage - b.percentage)[0] || null;
+    return { under, over };
+}
+
+function computeLeeglopers(insights, cd, aggregate) {
     const t = insights?.workplaceTension || {};
     const cl = cd.leeglopers;
     const out = [];
-    if (t.underserved?.[0]) {
-        const label = cd.workplaceLabel(t.underserved[0].label || '').toLowerCase();
+    const { under, over } = oudeWerkplekSpanning(aggregate);
+    if (under) {
+        const label = cd.workplaceLabel(under.label || '').toLowerCase();
         out.push(sanitizeUserText(cl.tooLittle(label)));
     }
-    if (t.oversupplied?.[0]) {
-        const label = cd.workplaceLabel(t.oversupplied[0].label || '').toLowerCase();
+    if (over) {
+        const label = cd.workplaceLabel(over.label || '').toLowerCase();
         out.push(sanitizeUserText(cl.tooMuch(label)));
     }
 
