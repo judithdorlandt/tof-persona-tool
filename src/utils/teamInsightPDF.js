@@ -69,7 +69,7 @@ const INSIGHT_COPY = {
             : 'De grootste groep in dit team:'),
         headlineFallback: (isOrg, persona) =>
             `${isOrg ? 'De organisatie' : 'Het team'} werkt vanuit ${persona.toLowerCase()}.`,
-        responses: (n) => `${n} respons${n === 1 ? '' : 'en'}`,
+        responses: (n) => `${n} ${n === 1 ? 'ingevuld profiel' : 'ingevulde profielen'}`,
         reliability: { low: 'Indicatief', mid: 'Groeiend', high: 'Sterk beeld' },
         // Teamvariant: één schaal met Teamdynamiek (besluit 6, 22 okt 2026),
         // per niveau uit getConfidence() in src/insights.js.
@@ -81,7 +81,6 @@ const INSIGHT_COPY = {
         },
         distributionEyebrow: 'VERDELING',
         mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATIE-MIX' : 'JOUW TEAM-MIX'),
-        roundingNote: 'Percentages zijn afgerond; de som ligt tussen 99 en 101%.',
         personCount: (n) => `${n} ${n === 1 ? 'persoon' : 'mensen'}`,
         signatureEyebrow: (isOrg) => (isOrg
             ? 'WAT DEZE ORGANISATIE IN BEWEGING BRENGT'
@@ -119,7 +118,7 @@ const INSIGHT_COPY = {
                 : 'Werkplek die niet aansluit bij teambehoefte'),
         },
         seeBack: 'ZIE ACHTERKANT',
-        workplacePill: 'JOUW IDEALE WERKPLEKMIX',
+        workplacePill: 'WERKPLEK',
         workplaceTitle: (isOrg) => (isOrg
             ? 'Wat deze organisatie vraagt van de werkomgeving'
             : 'Wat dit team vraagt van de werkomgeving'),
@@ -147,7 +146,7 @@ const INSIGHT_COPY = {
             : 'The largest group in this team:'),
         headlineFallback: (isOrg, persona) =>
             `${isOrg ? 'The organisation' : 'The team'} works from ${persona.toLowerCase()}.`,
-        responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
+        responses: (n) => `${n} completed ${n === 1 ? 'profile' : 'profiles'}`,
         reliability: { low: 'Indicative', mid: 'Growing', high: 'Strong picture' },
         confidence: {
             low: 'First signals',
@@ -157,7 +156,6 @@ const INSIGHT_COPY = {
         },
         distributionEyebrow: 'BREAKDOWN',
         mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATION MIX' : 'YOUR TEAM MIX'),
-        roundingNote: 'Percentages are rounded; the total sits between 99 and 101%.',
         personCount: (n) => `${n} ${n === 1 ? 'person' : 'people'}`,
         signatureEyebrow: (isOrg) => (isOrg
             ? 'WHAT GETS THIS ORGANISATION MOVING'
@@ -194,7 +192,7 @@ const INSIGHT_COPY = {
                 : 'A workplace that does not match what the team needs'),
         },
         seeBack: 'SEE REVERSE',
-        workplacePill: 'YOUR IDEAL WORKPLACE MIX',
+        workplacePill: 'WORKPLACE',
         workplaceTitle: (isOrg) => (isOrg
             ? 'What this organisation asks of the work environment'
             : 'What this team asks of the work environment'),
@@ -375,7 +373,10 @@ function drawHeader({ svg, y, teamName, organization, aggregate, mode = 'team', 
     drawTOFMark(svg, PAGE_W - MARGIN - 12, pillY + 2, 10);
 
     const metaY = pillY + pillH + 16;
-    const metaText = `${teamName}${organization ? ' · ' + organization : ''}`;
+    // Organisatie en team gelijk (zoals "Demo · Demo")? Dan maar één keer.
+    const sameName = String(teamName || '').trim().toLowerCase()
+        === String(organization || '').trim().toLowerCase();
+    const metaText = `${teamName}${organization && !sameName ? ' · ' + organization : ''}`;
     svg.appendChild(createText({
         x: MARGIN,
         y: metaY,
@@ -563,19 +564,6 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsig
 
         lineY += lineHeight;
     });
-
-    // Afrondingsnoot: de verdeling rondt af op hele procenten, dus de
-    // kolom telt niet altijd exact op tot 100% (org-rapport doet dit ook).
-    svg.appendChild(createText({
-        x: colLeftX,
-        y: lineY + 2,
-        text: c.roundingNote,
-        font: 'Inter',
-        weight: 400,
-        size: 4.4,
-        color: COLOR.textMuted,
-    }));
-    lineY += 8;
 
     if (!isOrg) return lineY;
 

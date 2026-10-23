@@ -76,7 +76,7 @@ const DYNAMICS_COPY = {
         pill: 'TEAMDYNAMIEK',
         heroTitle: 'Wat onder de samenwerking ligt',
         heroFallback: 'Drie assen tonen waar dit team in evenwicht is en waar regie nodig is.',
-        responses: (n) => `${n} respons${n === 1 ? '' : 'en'}`,
+        responses: (n) => `${n} ${n === 1 ? 'ingevuld profiel' : 'ingevulde profielen'}`,
         reliability: {
             first: 'Eerste signalen',
             emerging: 'Opkomend patroon',
@@ -118,7 +118,7 @@ const DYNAMICS_COPY = {
         pill: 'TEAM DYNAMICS',
         heroTitle: 'What sits beneath the collaboration',
         heroFallback: 'Three axes show where this team is in balance and where it needs direction.',
-        responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
+        responses: (n) => `${n} completed ${n === 1 ? 'profile' : 'profiles'}`,
         reliability: {
             first: 'First signals',
             emerging: 'Emerging pattern',
@@ -321,7 +321,10 @@ function drawHeader({ svg, y, teamName, organization, pillLabel, pillColor, lang
     drawTOFMark(svg, PAGE_W - MARGIN - 12, pillY + 2, 10);
 
     const metaY = pillY + pillH + 16;
-    const metaText = `${teamName}${organization ? ' · ' + organization : ''}`;
+    // Organisatie en team gelijk (zoals "Demo · Demo")? Dan maar één keer.
+    const sameName = String(teamName || '').trim().toLowerCase()
+        === String(organization || '').trim().toLowerCase();
+    const metaText = `${teamName}${organization && !sameName ? ' · ' + organization : ''}`;
     svg.appendChild(createText({
         x: MARGIN,
         y: metaY,
