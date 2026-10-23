@@ -303,7 +303,13 @@ export default function App() {
       // Het profiel uit de app bij een team leggen. Alleen op het web, want de
       // app stuurt zelf niets; zie components/Bijdragen.jsx.
       case 'bijdragen':
-        return <Bijdragen setPage={navigate} />;
+        return (
+          <Bijdragen
+            setPage={navigate}
+            setSelectedTeam={setSelectedTeam}
+            setTeamResponses={setTeamResponses}
+          />
+        );
 
       case 'historie':
         return <History setPage={navigate} />;

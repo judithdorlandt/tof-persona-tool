@@ -60,6 +60,12 @@ const contribute = {
       `Je persona is toegevoegd aan ${team}. Vanaf nu telt hij mee in het teambeeld — en in het beeld van de hele organisatie. Je kunt dit venster sluiten en terug naar de app.`,
     once:
       'Eén keer is genoeg. Deze browser onthoudt dat je het hebt gedaan, dus je kunt niet per ongeluk dubbel meetellen.',
+    // Waar en wanneer het teambeeld komt (opdracht C5, akkoord Judith 23 okt).
+    next: 'Het teambeeld is te zien zodra er minstens vijf profielen zijn ingebracht. Je opent het op team.persona-tool.nl/team, met dezelfde teamcode.',
+    privacy: 'Niemand ziet wie welke werkstijl heeft, ook een leidinggevende niet.',
+    // Alleen als de namenschakelaar van het team aan staat.
+    privacyNames: 'Je team heeft afgesproken voornamen te tonen in Teaminzicht. Iedereen in het team ziet dezelfde namen, ook je leidinggevende.',
+    cta: 'Naar het teambeeld',
   },
 
   empty: {

@@ -60,6 +60,10 @@ const contribute = {
       `Your persona has been added to ${team}. From now on it counts towards the team picture — and towards the picture of the whole organisation. You can close this window and go back to the app.`,
     once:
       'Once is enough. This browser remembers that you did it, so you cannot accidentally be counted twice.',
+    next: 'The team picture is available once at least five profiles have been added. You can open it at team.persona-tool.nl/en/team, with the same team code.',
+    privacy: 'Nobody sees who has which working style, not even a manager.',
+    privacyNames: 'Your team has agreed to show first names in Team Insight. Everyone in the team sees the same names, your manager included.',
+    cta: 'Go to the team picture',
   },
 
   empty: {

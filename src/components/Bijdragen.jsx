@@ -36,7 +36,8 @@ import { useCopy, useLang } from '../i18n/LanguageContext';
 import { pagePath } from '../i18n/routes';
 import { DEFAULT_PERSONA_COLOR, PERSONA_COLORS } from '../lib/resultDerivations';
 import { decodeHandoff } from '../lib/profileHandoff';
-import { saveResponse, validateTeamAccessCode } from '../supabase';
+import { getResponsesByTeam, saveResponse, validateTeamAccessCode } from '../supabase';
+import { grantTeamLevel, LEVEL_INSIGHT } from '../utils/access';
 import {
     HeroBlock,
     PageShell,
@@ -111,7 +112,7 @@ const LINK_KNOP = {
     textDecoration: 'underline',
 };
 
-export default function Bijdragen({ setPage }) {
+export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }) {
     const { contribute: t } = useCopy();
     const { lang } = useLang();
     const ARCHETYPES = useArchetypes();
@@ -127,6 +128,7 @@ export default function Bijdragen({ setPage }) {
     const [status, setStatus] = useState('idle'); // idle | checking | saving | done
     const [fout, setFout] = useState('');
     const [nogmaals, setNogmaals] = useState(false); // bewust door de blokkade heen
+    const [openingTeam, setOpeningTeam] = useState(false);
 
     const naamVan = (id) => ARCHETYPES.find((a) => a.id === id)?.name || null;
     const accent = PERSONA_COLORS[profiel?.primary] || DEFAULT_PERSONA_COLOR;
@@ -235,6 +237,32 @@ export default function Bijdragen({ setPage }) {
         );
     }
 
+    // Naar het teambeeld van dit team. De code is hier net ingevoerd en
+    // gecontroleerd, dus die toegang geven we meteen — zo hoeft hij niet in
+    // een URL en hoef je hem niet nog eens in te typen. Onder de vijf staat
+    // daar het wachtscherm, anders het teambeeld.
+    async function openTeamPicture() {
+        if (!access || openingTeam) return;
+        setOpeningTeam(true);
+        grantTeamLevel({
+            team: access.team,
+            organization: access.organization,
+            level: LEVEL_INSIGHT,
+            code: access.code,
+        });
+        let responses = [];
+        try {
+            responses = await getResponsesByTeam(access.team, access.organization, access.code);
+        } catch (_e) {
+            responses = [];
+        }
+        if (typeof setTeamResponses === 'function') setTeamResponses(responses || []);
+        if (typeof setSelectedTeam === 'function') {
+            setSelectedTeam({ team: access.team, organization: access.organization, code: access.code });
+        }
+        setPage('teamdashboard');
+    }
+
     // ── Gelukt ────────────────────────────────────────────────────────────────
     if (status === 'done') {
         return (
@@ -250,6 +278,17 @@ export default function Bijdragen({ setPage }) {
                     <p style={{ ...TYPE.bodySmall, color: 'var(--tof-text-muted)', margin: 0 }}>
                         {t.done.once}
                     </p>
+                </SectionCard>
+                <SectionCard accent={accent}>
+                    <p style={{ ...TYPE.body, margin: 0 }}>{t.done.next}</p>
+                    <p style={{ ...TYPE.body, margin: 0 }}>
+                        {access.show_names ? t.done.privacyNames : t.done.privacy}
+                    </p>
+                    <div>
+                        <PrimaryButton onClick={openTeamPicture} disabled={openingTeam}>
+                            {t.done.cta}
+                        </PrimaryButton>
+                    </div>
                 </SectionCard>
             </PageShell>
         );
