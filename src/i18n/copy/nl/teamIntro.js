@@ -78,7 +78,6 @@ const teamIntro = {
   errors: {
     empty: 'Voer eerst een toegangscode in.',
     unknownCode: 'Onjuiste of onbekende code.',
-    managerOnly: 'Teamdynamiek is voor de teammanager. Log in met het mailadres dat aan dit team gekoppeld is — met een code kom je er niet in.',
     generic: 'Er ging iets mis. Probeer het opnieuw.',
   },
 

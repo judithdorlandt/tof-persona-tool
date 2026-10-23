@@ -10,7 +10,7 @@ const teamIntro = {
     title: 'Open your team picture',
     bullets: [
       'Team member: the team code shows you Team Insight, without names (unless your team agrees otherwise) and from five profiles',
-      'Team lead: log in with the email address linked to your team. Team Dynamics is there too',
+      'Manager: log in with the email address linked to your team. Team Dynamics is there too',
       'Fewer than five people in your team? Contact TOF to look together at how the team picture can still work, with privacy in mind',
       'No profile yet? Take the test in the app and add your profile to your team afterwards',
     ],
@@ -46,8 +46,8 @@ const teamIntro = {
     titleLead: 'Your team has a pattern.',
     titleHighlight: 'This is where you see it.',
     leadDesktop:
-      'Open the team picture with your team code, or log in as team lead.',
-    leadMobile: 'Open the team picture with your team code, or log in as team lead.',
+      'Open the team picture with your team code, or log in as manager.',
+    leadMobile: 'Open the team picture with your team code, or log in as manager.',
     makerMode: 'Maker mode active',
   },
 
@@ -73,7 +73,6 @@ const teamIntro = {
   errors: {
     empty: 'Please enter an access code first.',
     unknownCode: 'Incorrect or unknown code.',
-    managerOnly: 'Team Dynamics is for the team manager. Sign in with the email address linked to this team — a code will not open it.',
     generic: 'Something went wrong. Please try again.',
   },
 
