@@ -19,6 +19,7 @@ const MANAGER_TEAMS_KEY = 'tof_manager_teams';          // teams waar jij manage
 const MODULE2_LEGACY_KEY = 'tof_module2_access';        // legacy: algemeen Module 2 vlag
 const ADMIN_ACCESS_KEY = 'tof_admin_access';            // beheerders-toegang
 const CURRENT_TEAM_KEY = 'tof_current_team';            // laatst geopende team
+const AFTER_LOGIN_KEY = 'tof_after_login';              // waarheen na inloggen
 
 export const LEVEL_INSIGHT = 'insight';
 export const LEVEL_DYNAMICS = 'dynamics';
@@ -309,6 +310,44 @@ export function getCurrentTeam() {
     } catch {
         return null;
     }
+}
+
+// =========================
+// NA HET INLOGGEN TERUG
+// =========================
+// "Inloggen als leidinggevende" op Teamdynamiek onthoudt waar je was, zodat
+// AuthCallback je daar na de inloglink terugzet. localStorage, want de link
+// opent in een nieuw tabblad. Wie de mail in een andere browser opent, komt
+// op de gewone bestemming uit. Na een dag vervalt het: een inloglink is
+// dan allang verlopen.
+const AFTER_LOGIN_MAX_AGE = 24 * 60 * 60 * 1000;
+
+export function rememberAfterLogin({ page, team, organization }) {
+    if (!page) return;
+    localStorage.setItem(
+        AFTER_LOGIN_KEY,
+        JSON.stringify({ page, team: team || '', organization: organization || '', at: Date.now() })
+    );
+}
+
+/**
+ * De bewaarde bestemming, of null als er geen (geldige) is. Wist niets: de
+ * callback kan twee keer draaien, dus wissen gebeurt pas bij het doorsturen.
+ */
+export function readAfterLogin() {
+    const raw = localStorage.getItem(AFTER_LOGIN_KEY);
+    if (!raw) return null;
+    try {
+        const parsed = JSON.parse(raw);
+        if (!parsed?.page || Date.now() - (parsed.at || 0) > AFTER_LOGIN_MAX_AGE) return null;
+        return parsed;
+    } catch {
+        return null;
+    }
+}
+
+export function clearAfterLogin() {
+    localStorage.removeItem(AFTER_LOGIN_KEY);
 }
 
 /**

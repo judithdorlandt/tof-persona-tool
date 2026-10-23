@@ -27,8 +27,9 @@ const teamDynamics = {
 
   noAccess: {
     title: 'Dit deel is voor de',
-    titleAccent: 'teammanager',
-    lead: 'Teaminzicht is er voor het hele team. Teamdynamiek gaat een laag dieper — over wat leiderschap van deze samenstelling vraagt — en is daarom voor wie het team leidt. Je manager logt daarvoor in met het mailadres dat aan dit team gekoppeld is.',
+    titleAccent: 'leidinggevende',
+    lead: 'Teaminzicht is er voor het hele team. Teamdynamiek gaat een laag dieper: wat deze samenstelling vraagt van leidinggeven. Je opent het door in te loggen met het mailadres dat aan dit team gekoppeld is.',
+    login: 'Inloggen als leidinggevende',
     cta: 'Naar Teaminzicht',
   },
 

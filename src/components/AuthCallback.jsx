@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { getMyManagedTeams, getResponsesByTeam } from '../supabase';
-import { grantTeamLevel, LEVEL_INSIGHT, LEVEL_DYNAMICS } from '../utils/access';
+import { grantTeamLevel, LEVEL_INSIGHT, readAfterLogin, clearAfterLogin } from '../utils/access';
 import {
   PageShell,
   HeroBlock,
@@ -34,7 +34,9 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
 
   // Zodra een sessie verschijnt: bepaal waar we heen gaan.
   // - individuele tester    → direct naar de quiz (zie sendIndividualInvite)
-  // - 1 manager-team        → direct naar dashboard (skip /team helemaal)
+  // - kwam je via "Inloggen als leidinggevende" en leid je dat team
+  //                          → terug naar die pagina van dat team
+  // - 1 manager-team        → direct naar Teamdynamiek (skip /team helemaal)
   // - meerdere manager-teams → /team (manager-mode lijst)
   // - geen manager-rijen    → /home
   useEffect(() => {
@@ -51,9 +53,17 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
 
         const managed = await getMyManagedTeams();
 
-        if (managed.length === 1) {
-          // Direct naar dashboard — geen tussenpagina met 3 modules.
-          const t = managed[0];
+        // Teruggaan kan alleen naar een team dat je leidt; anders geldt de
+        // gewone bestemming hieronder.
+        const norm = (v) => String(v || '').trim().toLowerCase();
+        const after = readAfterLogin();
+        const afterTeam = after && managed.find(
+          (m) => norm(m.team) === norm(after.team) && norm(m.organization) === norm(after.organization)
+        );
+
+        const openTeam = afterTeam || (managed.length === 1 ? managed[0] : null);
+        if (openTeam) {
+          const t = openTeam;
           grantTeamLevel({
             team: t.team,
             organization: t.organization,
@@ -72,12 +82,16 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
             if (typeof setTeamResponses === 'function') setTeamResponses([]);
           }
           if (cancelled) return;
-          const destination = t.level === LEVEL_DYNAMICS ? 'teamdynamics' : 'teamdashboard';
+          // Teamdynamiek hangt aan de rol, niet aan het niveau van de code
+          // (access.js): een leidinggevende komt daar altijd op uit.
+          const destination = afterTeam ? after.page : 'teamdynamics';
+          clearAfterLogin();
           setTimeout(() => { if (!cancelled) setPage(destination); }, 200);
           return;
         }
 
         if (cancelled) return;
+        clearAfterLogin();
         const destination = managed.length > 1 ? 'team' : 'home';
         setTimeout(() => { if (!cancelled) setPage(destination); }, 400);
       } catch (_e) {

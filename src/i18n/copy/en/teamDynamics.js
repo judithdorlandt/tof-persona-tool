@@ -10,8 +10,9 @@ const teamDynamics = {
 
   noAccess: {
     title: 'This part is for the',
-    titleAccent: 'team manager',
-    lead: 'Team Insight is there for the whole team. Team Dynamics goes a layer deeper — into what this make-up asks of leadership — and is therefore for whoever leads the team. Your manager signs in with the email address linked to this team.',
+    titleAccent: 'manager',
+    lead: 'Team Insight is for the whole team. Team Dynamics goes a layer deeper: what this mix of people asks of the person leading it. To open it, log in with the email address linked to this team.',
+    login: 'Log in as manager',
     cta: 'Go to Team Insight',
   },
 

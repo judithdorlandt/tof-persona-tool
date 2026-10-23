@@ -36,6 +36,7 @@ import {
     isAdminAccess,
     MIN_TEAM_RESPONSES,
     countCompleteProfiles,
+    rememberAfterLogin,
 } from '../utils/access';
 import TeamGate from './TeamGate';
 import {
@@ -174,15 +175,24 @@ export default function TeamDynamics({
                     titleAccent={t.noAccess.titleAccent}
                     titleAccentColor={ACCENT}
                     lead={t.noAccess.lead}
-                    actions={
-                        <PrimaryButton
-                            onClick={() => setPage('teamdashboard')}
-                            style={{ background: 'var(--tof-accent-sage)' }}
-                        >
-                            {t.noAccess.cta}
-                        </PrimaryButton>
-                    }
                 />
+                {/* Onder de uitleg, niet ernaast: eerst lezen waarom, dan de knop. */}
+                <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
+                    <PrimaryButton
+                        onClick={() => {
+                            // Na de inloglink terug naar Teamdynamiek
+                            // van dit team (AuthCallback).
+                            rememberAfterLogin({ page: 'teamdynamics', team, organization });
+                            setPage('login');
+                        }}
+                        style={{ background: 'var(--tof-accent-sage)' }}
+                    >
+                        {t.noAccess.login}
+                    </PrimaryButton>
+                    <SecondaryButton onClick={() => setPage('teamdashboard')}>
+                        {t.noAccess.cta}
+                    </SecondaryButton>
+                </div>
             </PageShell>
         );
     }
