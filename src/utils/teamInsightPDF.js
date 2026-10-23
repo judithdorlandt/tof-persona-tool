@@ -314,7 +314,7 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
 
     let y = MARGIN;
 
-    y = drawAchterkantHeader({ svg, y, c });
+    y = drawAchterkantHeader({ svg, y, mode, c });
     y += 10;
     y = drawAchterkantTitle({ svg, y, mode, c });
     y += 8;
@@ -725,8 +725,10 @@ function drawFooterHint({ svg, c = getInsightCopy('nl') }) {
 // SECTIES — ACHTERKANT
 // =========================
 
-function drawAchterkantHeader({ svg, y, c = INSIGHT_COPY.nl }) {
-    const pillW = 120;
+function drawAchterkantHeader({ svg, y, mode = 'team', c = INSIGHT_COPY.nl }) {
+    // Even breed als de pil op de voorkant (drawHeader), sinds de tekst
+    // daar "WERKPLEK" is in plaats van "JOUW IDEALE WERKPLEKMIX".
+    const pillW = mode === 'organization' ? 110 : 80;
     const pillH = 12;
 
     const pill = createRect(MARGIN, y, pillW, pillH, COLOR.sage);
