@@ -47,6 +47,8 @@ const teamDynamics = {
   fallbackTeamName: 'jouw team',
 
   close: 'Sluiten ✕',
+  // Voor de schermlezer; het kruisje zelf leest als "maal".
+  closeLabel: 'Paneel sluiten',
 
   chips: {
     responses: 'Ingevuld',

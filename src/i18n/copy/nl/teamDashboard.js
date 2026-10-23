@@ -56,6 +56,8 @@ const teamDashboard = {
   },
 
   close: 'Sluiten ✕',
+  // Voor de schermlezer; het kruisje zelf leest als "maal".
+  closeLabel: 'Paneel sluiten',
 
   // Als een waarde ontbreekt.
   empty: '—',

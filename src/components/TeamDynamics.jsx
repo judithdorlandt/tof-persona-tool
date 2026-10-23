@@ -51,6 +51,8 @@ import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/Te
 import { PERSONA_COLORS, getArchetype, resolveTeamName, resolveTeamKey, resolveOrg, buildPersonaScores, findActiveTensions, buildDynamicsAxes, findMissingCritical, buildLeadershipActions, findMentionedPersona, MISSING_BELOW_PCT, describeAxis } from './teamDynamicsLogic';
 
 const ACCENT = MODULE.dynamics.accent;
+// Eén paneel tegelijk; elke tegel wijst ernaar met aria-controls.
+const PANEL_ID = 'teamdynamiek-paneel';
 // =========================
 // MAIN COMPONENT
 // =========================
@@ -338,7 +340,7 @@ export default function TeamDynamics({
 
     // ── DASHBOARD ────────────────────────────────────────────
     const detailPanel = activeTile ? (
-        <SectionCard accent={ACCENT} padding={0}>
+        <SectionCard id={PANEL_ID} accent={ACCENT} padding={0}>
             <div
                 style={{
                     padding: '22px 22px 8px',
@@ -365,6 +367,7 @@ export default function TeamDynamics({
                 <button
                     type="button"
                     onClick={() => setActiveId(null)}
+                    aria-label={t.closeLabel}
                     style={{
                         background: 'transparent',
                         border: '1px solid var(--tof-border)',
@@ -401,6 +404,7 @@ export default function TeamDynamics({
                             hint={tile.hint}
                             accent={ACCENT}
                             isActive={activeId === tile.id}
+                            panelId={PANEL_ID}
                             onClick={(e) => handleTileClick(tile.id, e)}
                         />
                         {isNarrow && activeId === tile.id ? detailPanel : null}
@@ -1129,6 +1133,7 @@ function TensionsPanel({ tensions, scores, totalScore }) {
             {tensions.map((tension, i) => (
                 <TensionRow
                     key={i}
+                    index={i}
                     tension={tension}
                     scores={scores}
                     totalScore={totalScore}
@@ -1141,82 +1146,88 @@ function TensionsPanel({ tensions, scores, totalScore }) {
     );
 }
 
-function TensionRow({ tension, scores, totalScore, isOpen, isFirst, onToggle }) {
+function TensionRow({ tension, index, scores, totalScore, isOpen, isFirst, onToggle }) {
     const { lang } = useLang();
     const { teamDynamics: t } = useCopy();
     const pctA = totalScore > 0 ? Math.round(((scores[tension.a] || 0) / totalScore) * 100) : 0;
     const pctB = totalScore > 0 ? Math.round(((scores[tension.b] || 0) / totalScore) * 100) : 0;
     const archA = getArchetype(tension.a, lang);
     const archB = getArchetype(tension.b, lang);
+    const contentId = `spanningsveld-${index}`;
 
+    // Alleen de kopregel is de knop. Beschrijving, risico en advies staan
+    // erbuiten: zo kun je die tekst selecteren en kopiëren, en leest een
+    // schermlezer de knop niet als één lange tekst voor.
     return (
         <>
             {!isFirst ? <Divider marginY={0} /> : null}
 
-            <button
-                type="button"
-                onClick={onToggle}
-                style={{
-                    width: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    padding: `${SPACING.md}px 0`,
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    fontFamily: 'var(--tof-font-body)',
-                    display: 'grid',
-                    gap: SPACING.sm,
-                }}
-            >
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: SPACING.md,
-                    }}
-                >
-                    <div style={{ display: 'grid', gap: SPACING.xs, flex: 1 }}>
-                        <h3
-                            style={{
-                                margin: 0,
-                                fontFamily: 'var(--tof-font-heading)',
-                                fontSize: 'clamp(18px, 2vw, 22px)',
-                                lineHeight: 1.2,
-                                fontWeight: 500,
-                                color: ACCENT,
-                            }}
-                        >
-                            {tension.label}
-                        </h3>
-
-                        <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap', alignItems: 'center' }}>
-                            <PersonaPill name={archA?.name || tension.a} pct={pctA} color={PERSONA_COLORS[tension.a]} />
-                            <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>{t.tensions.and}</span>
-                            <PersonaPill name={archB?.name || tension.b} pct={pctB} color={PERSONA_COLORS[tension.b]} />
-                        </div>
-                    </div>
-
-                    <span
+            <div>
+                <h3 style={{ margin: 0, fontSize: 'inherit', fontWeight: 'inherit' }}>
+                    <button
+                        type="button"
+                        onClick={onToggle}
+                        aria-expanded={isOpen}
+                        aria-controls={contentId}
                         style={{
-                            fontSize: 14,
-                            color: ACCENT,
-                            fontWeight: 700,
-                            transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
-                            transition: 'transform 0.2s ease',
-                            flexShrink: 0,
+                            width: '100%',
+                            background: 'transparent',
+                            border: 'none',
+                            padding: `${SPACING.md}px 0`,
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            fontFamily: 'var(--tof-font-body)',
+                            fontWeight: 400,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: SPACING.md,
                         }}
                     >
-                        ▾
-                    </span>
-                </div>
+                        <span style={{ display: 'grid', gap: SPACING.xs, flex: 1 }}>
+                            <span
+                                style={{
+                                    fontFamily: 'var(--tof-font-heading)',
+                                    fontSize: 'clamp(18px, 2vw, 22px)',
+                                    lineHeight: 1.2,
+                                    fontWeight: 500,
+                                    color: ACCENT,
+                                }}
+                            >
+                                {tension.label}
+                            </span>
+
+                            <span style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap', alignItems: 'center' }}>
+                                <PersonaPill name={archA?.name || tension.a} pct={pctA} color={PERSONA_COLORS[tension.a]} />
+                                <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>{t.tensions.and}</span>
+                                <PersonaPill name={archB?.name || tension.b} pct={pctB} color={PERSONA_COLORS[tension.b]} />
+                            </span>
+                        </span>
+
+                        <span
+                            aria-hidden="true"
+                            style={{
+                                fontSize: 14,
+                                color: ACCENT,
+                                fontWeight: 700,
+                                transform: isOpen ? 'rotate(180deg)' : 'rotate(0)',
+                                transition: 'transform 0.2s ease',
+                                flexShrink: 0,
+                            }}
+                        >
+                            ▾
+                        </span>
+                    </button>
+                </h3>
 
                 {isOpen ? (
                     <div
+                        id={contentId}
                         style={{
                             display: 'grid',
                             gap: SPACING.md,
-                            paddingTop: SPACING.sm,
+                            paddingTop: SPACING.xs,
+                            paddingBottom: SPACING.md,
                         }}
                     >
                         <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
@@ -1236,7 +1247,7 @@ function TensionRow({ tension, scores, totalScore, isOpen, isFirst, onToggle }) 
                         </LabelGrid>
                     </div>
                 ) : null}
-            </button>
+            </div>
         </>
     );
 }

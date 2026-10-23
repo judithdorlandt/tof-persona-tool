@@ -27,6 +27,7 @@ const teamDynamics = {
   fallbackTeamName: 'your team',
 
   close: 'Close ✕',
+  closeLabel: 'Close panel',
 
   chips: {
     responses: 'Completed',

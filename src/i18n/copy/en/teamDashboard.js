@@ -39,6 +39,7 @@ const teamDashboard = {
   },
 
   close: 'Close ✕',
+  closeLabel: 'Close panel',
 
   empty: '—',
 

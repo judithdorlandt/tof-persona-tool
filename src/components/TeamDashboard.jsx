@@ -56,6 +56,8 @@ import {
 } from '../team/werkplek/werkplekProfielLogic';
 
 const ACCENT = MODULE.insight.accent;
+// Eén paneel tegelijk; elke tegel wijst ernaar met aria-controls.
+const PANEL_ID = 'teaminzicht-paneel';
 
 // =========================
 // TILE DEFINITIONS
@@ -212,7 +214,7 @@ export default function TeamDashboard({
     }
 
     const detailPanel = activeTile ? (
-        <SectionCard accent={ACCENT} padding={0}>
+        <SectionCard id={PANEL_ID} accent={ACCENT} padding={0}>
             <div
                 style={{
                     padding: '22px 22px 8px',
@@ -249,6 +251,7 @@ export default function TeamDashboard({
                 <button
                     type="button"
                     onClick={() => setActiveId(null)}
+                    aria-label={t.closeLabel}
                     style={{
                         background: 'transparent',
                         border: '1px solid var(--tof-border)',
@@ -336,6 +339,7 @@ export default function TeamDashboard({
                             hint={tile.buildHint(aggregate, insights)}
                             accent={ACCENT}
                             isActive={activeId === tile.id}
+                            panelId={PANEL_ID}
                             onClick={(e) => handleTileClick(tile.id, e)}
                         />
                         {isNarrow && activeId === tile.id ? detailPanel : null}

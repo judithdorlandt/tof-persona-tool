@@ -175,12 +175,14 @@ export function SectionCard({
     accent = 'var(--tof-accent-rose)',
     padding,
     style = {},
+    id,
 }) {
     const isMobile = useIsMobile();
     const resolvedPadding = padding !== undefined ? padding : (isMobile ? SPACING.xl : 22);
 
     return (
         <div
+            id={id}
             style={{
                 background: 'var(--tof-surface)',
                 borderRadius: RADIUS.xl,
@@ -443,11 +445,14 @@ export function Tile({
     accent = 'var(--tof-accent-rose)',
     isActive = false,
     onClick,
+    panelId,       // id van het paneel dat deze tegel opent (aria-controls)
 }) {
     return (
         <button
             type="button"
             onClick={onClick}
+            aria-expanded={isActive}
+            aria-controls={panelId}
             style={{
                 background: isActive ? accent : 'var(--tof-surface)',
                 border: isActive
@@ -520,6 +525,7 @@ export function Tile({
 
             {/* Chevron onderaan rechts */}
             <div
+                aria-hidden="true"
                 style={{
                     position: 'absolute',
                     bottom: 12,

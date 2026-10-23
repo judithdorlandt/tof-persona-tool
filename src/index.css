@@ -67,6 +67,14 @@ textarea {
   color: inherit;
 }
 
+/* Focusrand in de huisstijl, overal waar je met het toetsenbord komt.
+   `!important` omdat een aantal knoppen en velden `outline: none` in hun
+   inline-stijl heeft; zonder deze regel bleven die zonder rand. */
+:focus-visible {
+  outline: 2px solid var(--tof-accent-rose) !important;
+  outline-offset: 2px;
+}
+
 h1,
 h2,
 h3,
