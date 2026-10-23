@@ -21,6 +21,7 @@ import {
 } from './constants';
 import { getOLCopy } from './copy';
 import { getArchetypes } from '../../i18n/archetypes';
+import { MIN_TEAM_RESPONSES } from '../access';
 
 /**
  * Hoofd-entry — verwerkt input van Admin tot stabiele dataset voor pagina's.
@@ -44,16 +45,33 @@ export function prepareOrganisatieData({
 
     const totalRespondents = aggregate?.teamCount || 0;
 
+    // Drempel van vijf, ook hier (zie utils/access.js): een team onder de vijf
+    // krijgt geen eigen rij en nergens een eigen cijfer, anders is een uitslag
+    // herleidbaar tot een persoon. Die teams komen samen in één rij "Overige
+    // teams", maar alleen als ze samen ook vijf of meer profielen hebben. In
+    // het organisatietotaal tellen ze altijd mee (dat komt uit `aggregate`).
+    const ownTeams = activeTeams.filter((t) => (t.responseCount || 0) >= MIN_TEAM_RESPONSES);
+    const smallTeams = activeTeams.filter((t) => (t.responseCount || 0) < MIN_TEAM_RESPONSES);
+    const smallTotal = smallTeams.reduce((s, t) => s + (t.responseCount || 0), 0);
+
     const orgRow = buildOrgRow(aggregate, cd);
-    const teamRows = activeTeams
+    const teamRows = ownTeams
         .map((t) => buildTeamRow(t, cd))
         .sort((a, b) => b.n - a.n);
+    if (smallTotal >= MIN_TEAM_RESPONSES) {
+        teamRows.push(buildOtherTeamsRow(smallTeams, smallTotal, cd));
+    }
+
+    // Teams zonder eigen beeld: onder de vijf, of nog zonder profielen. Alleen
+    // het aantal wordt genoemd, geen namen.
+    const teamsWithoutOwnPicture = smallTeams.length + inactiveTeams.length;
 
     // Reconciliatie respondenten: het organisatietotaal (aggregate.teamCount)
-    // telt álle responses; de teamrijen tellen alleen responses die aan een
-    // team gekoppeld konden worden. Het verschil maken we expliciet zichtbaar
-    // i.p.v. het stil weg te laten.
-    const linkedRespondents = teamRows.reduce((s, r) => s + r.n, 0);
+    // telt álle responses; de teams tellen alleen responses die aan een team
+    // gekoppeld konden worden. Het verschil maken we expliciet zichtbaar
+    // i.p.v. het stil weg te laten. Kleine teams tellen hier mee, ook als ze
+    // geen rij krijgen: ze zijn wél gekoppeld.
+    const linkedRespondents = activeTeams.reduce((s, t) => s + (t.responseCount || 0), 0);
     const unlinkedRespondents = Math.max(0, totalRespondents - linkedRespondents);
     // Theoretisch kan een response aan meerdere teams matchen (dubbeltelling);
     // dan is linked > totaal. Dat signaleren we apart.
@@ -89,6 +107,7 @@ export function prepareOrganisatieData({
         activeTeamCount: activeTeams.length,
         inactiveTeamCount: inactiveTeams.length,
         inactiveTeams: inactiveTeams.map((t) => getTeamName(t, cd)),
+        teamsWithoutOwnPicture,
         dominantStyle,
         topNeed,
         workplaceNeeds,
@@ -149,6 +168,30 @@ function buildTeamRow(t, cd) {
         cells,
         reliability: reliabilityFor(n),
         isOrg: false,
+    };
+}
+
+// Teams onder de vijf samen: de primaire werkstijlen opgeteld, dan pas in
+// procenten. Zo is geen enkel klein team terug te lezen.
+function buildOtherTeamsRow(teams, n, cd) {
+    const counts = {};
+    teams.forEach((t) => {
+        (t.aggregate?.personasByPrimary || []).forEach((p) => {
+            counts[p.id] = (counts[p.id] || 0) + (p.count || 0);
+        });
+    });
+    const cells = ARCHETYPE_ORDER.map((id) => {
+        const count = counts[id] || 0;
+        if (count === 0) return { id, pct: null, count: 0 };
+        return { id, pct: Math.round((count / n) * 100), count };
+    });
+    return {
+        name: cd.otherTeamsRowLabel(n),
+        n,
+        cells,
+        reliability: reliabilityFor(n),
+        isOrg: false,
+        isOther: true,
     };
 }
 
@@ -356,18 +399,10 @@ export function buildEnvironmentDirections(data, copy = getOLCopy('nl')) {
     return out;
 }
 
-export function buildAttentionTeams(data, copy = getOLCopy('nl')) {
-    const ca = copy.data.attention;
-    const out = (data.lowReliabilityTeams || []).map((t) => ({
-        name: t.name,
-        n: t.n,
-        why: t.n === 0 ? ca.noResponse : ca.onlyN(t.n),
-    }));
-    // Voeg ook teams toe die helemaal geen respons hebben.
-    (data.inactiveTeams || []).forEach((name) => {
-        if (!out.find((x) => x.name === name)) {
-            out.push({ name, n: 0, why: ca.noResponse });
-        }
-    });
-    return out;
+// "Teams die ruimte verdienen": alleen hoeveel teams nog geen eigen beeld
+// hebben. Geen teamnamen en geen aantallen per team — samen met de heatmap
+// zou dat een klein team herleidbaar maken.
+export function buildAttentionSummary(data, copy = getOLCopy('nl')) {
+    const x = data.teamsWithoutOwnPicture || 0;
+    return x > 0 ? [copy.data.attention.noOwnPicture(x)] : [];
 }

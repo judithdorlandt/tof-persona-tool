@@ -100,7 +100,6 @@ export const COPY_EN = {
         unlinkedRowLabel: 'Not linked to a team',
         unlinkedNote: (n) =>
             `${n} ${n === 1 ? 'respondent counts' : 'respondents count'} towards the organisation total, but ${n === 1 ? 'is' : 'are'} not linked to a specific team. That is why the team rows add up to the total.`,
-        lowReliabilityNote: 'Where reliability is low the cell colour is muted — with a single respondent one choice can already make 100%.',
         // No >= / <= glyphs: the bundled font subsets do not contain them.
         reliabilityHelp: 'fewer than 5 = low · 5–9 = medium · 10 or more = high',
         // Labels next to the reliability dot per row (keyed on dot id).
@@ -179,11 +178,7 @@ export const COPY_EN = {
             title: 'Teams that deserve room',
             subtitle: 'Low response or little visibility in the data.',
             empty: 'Every team has enough data for analysis.',
-            moreOnNext: (n) =>
-                `${n} more ${n === 1 ? 'team' : 'teams'} — see next page`,
         },
-        continuationSubtitle:
-            'Continued — remaining teams that deserve attention.',
         tagline: 'An organisation that recognises itself moves faster.',
     },
 
@@ -193,6 +188,7 @@ export const COPY_EN = {
         dateLocale: 'en-GB',
         orgRowLabel: 'ORGANISATION',
         teamNameFallback: '—',
+        otherTeamsRowLabel: (n) => `Other teams (together ${n})`,
 
         // Workplace-type labels arrive from the aggregation in Dutch; map them
         // to the agreed English names. Unknown labels pass through unchanged,
@@ -244,8 +240,9 @@ export const COPY_EN = {
         },
 
         attention: {
-            noResponse: 'no response yet',
-            onlyN: (n) => `only ${n} ${n === 1 ? 'respondent' : 'respondents'}`,
+            noOwnPicture: (x) => (x === 1
+                ? "1 team doesn't have its own picture yet: fewer than five profiles."
+                : `${x} teams don't have their own picture yet: fewer than five profiles.`),
         },
     },
 

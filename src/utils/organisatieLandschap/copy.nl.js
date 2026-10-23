@@ -106,9 +106,6 @@ export const COPY_NL = {
         unlinkedRowLabel: 'Niet aan een team gekoppeld',
         unlinkedNote: (n) =>
             `${n} ${n === 1 ? 'respondent telt' : 'respondenten tellen'} mee in het organisatietotaal, maar ${n === 1 ? 'is' : 'zijn'} niet aan een specifiek team gekoppeld. Daardoor sluit de som van de teamrijen aan op het totaal.`,
-        // Lage betrouwbaarheid: celkleur gedempt zodat één respondent niet als
-        // "harde" 100% leest.
-        lowReliabilityNote: 'Bij lage betrouwbaarheid is de celkleur gedempt — bij een enkele respondent kan één keuze al 100% vormen.',
         // De gebundelde Inter/Playfair zijn subsets ZONDER ≥ (U+2265) / ≤ (U+2264)
         // — die glyphs renderen nooit, ongeacht italic/normaal. Daarom de drempels
         // in woorden i.p.v. wiskundige tekens; leest bovendien prettiger voor een
@@ -196,13 +193,7 @@ export const COPY_NL = {
             title: 'Teams die ruimte verdienen',
             subtitle: 'Lage respons of weinig zichtbaarheid in de data.',
             empty: 'Alle teams hebben voldoende data voor analyse.',
-            // Verwijzing onderaan de kaart wanneer niet alle teams passen.
-            moreOnNext: (n) =>
-                `Nog ${n} ${n === 1 ? 'team' : 'teams'} — zie volgende pagina`,
         },
-        // Vervolgpagina wanneer de teams-lijst niet in de kaart past.
-        continuationSubtitle:
-            'Vervolg — overige teams die aandacht verdienen.',
         tagline: 'Een organisatie die zichzelf herkent, beweegt sneller.',
     },
 
@@ -212,6 +203,8 @@ export const COPY_NL = {
         dateLocale: 'nl-NL',
         orgRowLabel: 'ORGANISATIE',
         teamNameFallback: '—',
+        // Teams onder de vijf samen (opdracht L1, akkoord Judith 23 okt).
+        otherTeamsRowLabel: (n) => `Overige teams (samen ${n})`,
 
         // Werkplektype-labels komen uit de aggregatie in het Nederlands.
         // In NL laten we ze ongemoeid; copy.en.js vertaalt ze.
@@ -264,8 +257,9 @@ export const COPY_NL = {
         },
 
         attention: {
-            noResponse: 'nog geen respons',
-            onlyN: (n) => `slechts ${n} ${n === 1 ? 'respondent' : 'respondenten'}`,
+            noOwnPicture: (x) => (x === 1
+                ? '1 team heeft nog geen eigen beeld: minder dan vijf profielen.'
+                : `${x} teams hebben nog geen eigen beeld: minder dan vijf profielen.`),
         },
     },
 

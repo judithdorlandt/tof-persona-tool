@@ -335,9 +335,6 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
 // Voetnootregels — alleen relevante regels, onder→boven gestapeld.
 function buildFootnoteLines(data, copy) {
     const lines = [`${copy.heatmap.roundingNote} · ${copy.heatmap.reliabilityHelp}`];
-    if ((data.lowReliabilityTeams || []).length > 0) {
-        lines.push(copy.heatmap.lowReliabilityNote);
-    }
     if (data.unlinkedRespondents > 0) {
         lines.push(copy.heatmap.unlinkedNote(data.unlinkedRespondents));
     }
