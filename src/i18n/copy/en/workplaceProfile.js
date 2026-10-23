@@ -74,43 +74,45 @@ const workplaceProfile = {
         standaard: {
             label: 'Standard workstations',
             voorbeeldplekken: [
-                'Single workstation (open/enclosed)',
-                'Two-person workstation (open/enclosed)',
-                'Open multi-person workstation',
+                'Single workstation, open or enclosed',
+                'Two-person workstation, open or enclosed',
+                'Open workstation for several people',
             ],
         },
         concentratie: {
             label: 'Focus spaces',
-            voorbeeldplekken: ['Single enclosed workstation', 'Quiet zone in a library setting'],
+            voorbeeldplekken: ['Enclosed single space', 'Quiet zone, as in a library'],
         },
         overleg: {
             label: 'Meeting spaces',
-            voorbeeldplekken: ['Multi-person workstation (planned/spontaneous meetings)', 'Meeting room S/M/L'],
+            voorbeeldplekken: ['Space for planned or spontaneous meetings', 'Meeting room, small or large'],
         },
         samenwerk: {
             label: 'Collaboration spaces',
-            voorbeeldplekken: ['Multi-person workstation (enclosed/open)', 'Team room', 'Project table'],
+            voorbeeldplekken: [
+                'Workstation for several people, open or enclosed',
+                'Team room',
+                'Project table',
+            ],
         },
         creatief: {
             label: 'Creative spaces',
             voorbeeldplekken: [
-                'Break-out',
                 'Brainstorm room',
                 'Project room',
-                'Scrum room',
-                'Obeya room',
-                'Writable walls',
+                'Walls to write on',
+                'Break-out',
+                'Room to make progress visible',
             ],
         },
         informeel: {
             label: 'Informal spaces',
             voorbeeldplekken: [
-                'Break-out area',
                 'Coffee point',
                 'Seating area',
-                'Café',
-                'Touchdown spots',
+                'Restaurant or café',
                 'Informal seating',
+                'Spot to touch down for a moment',
             ],
         },
         rust: {
@@ -118,14 +120,16 @@ const workplaceProfile = {
             voorbeeldplekken: [
                 'Rest room',
                 'Quiet room',
-                'Prayer room',
-                'Wellbeing room',
                 'Low-stimulus room',
+                'Wellbeing room',
+                'Prayer room',
             ],
         },
         leer: {
             label: 'Learning spaces',
-            voorbeeldplekken: ['No building block of its own — via the team room, break-out and meeting plaza'],
+            voorbeeldplekken: [
+                'No separate room: learning can happen in a team room, a meeting room or a common area.',
+            ],
         },
     },
 

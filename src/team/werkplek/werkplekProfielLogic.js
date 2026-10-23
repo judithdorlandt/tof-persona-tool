@@ -78,7 +78,6 @@ export function buildWerkplekProfiel(aantallen) {
         return {
             id: t.id,
             label: t.label,
-            voorbeeldplekken: t.voorbeeldplekken,
             score,
             gemiddeld,
             band: bandVoorNiveau(gemiddeld),

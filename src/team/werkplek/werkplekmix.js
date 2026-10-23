@@ -4,7 +4,8 @@
 //
 // SCOPE: deze versie gaat uitsluitend over BEHOEFTE en GEBRUIK.
 // Bewust GEEN vierkante meters, afmetingen, aantallen of inrichtingsverhoudingen.
-// De gekoppelde voorbeeldplekken dienen alleen als illustratie van het SOORT plek.
+// De voorbeeldplekken (illustratie van het SOORT plek) staan alleen in de
+// teksten: i18n/copy/{nl,en}/workplaceProfile.js. Eén bron, voor scherm én PDF.
 //
 // Tweetaligheid: alle LOGICA (ids, niveaus, koppelingen) is taalonafhankelijk.
 // Alle ZICHTBARE TEKST staat in losse label-/tekstvelden en kan later naar een
@@ -15,49 +16,41 @@
 //   2 = steun      — regelmatig nodig, ondersteunend
 //   1 = aanvullend — beperkt nodig; afwezigheid is zelden een probleem
 
-// --- 8 werkplektypen, met voorbeeldplekken als illustratie van het soort plek ---
+// --- 8 werkplektypen ---
 // Hybride staat er bewust niet in: dat is een manier van werken, geen plek
 // (zelfde besluit als het persoonlijke profiel, d66f8ff, 30 sep 2026).
 export const WERKPLEKTYPEN = [
   {
     id: 'standaard',
     label: 'Standaard werkplekken',
-    voorbeeldplekken: ['Eenpersoonswerkplek (open/gesloten)', 'Tweepersoonswerkplek (open/gesloten)', 'Meerpersoonswerkplek open'],
   },
   {
     id: 'concentratie',
     label: 'Concentratieplekken',
-    voorbeeldplekken: ['Eenpersoonswerkplek (gesloten)', 'Stiltezone in bibliotheeksetting'],
   },
   {
     id: 'overleg',
     label: 'Overlegplekken',
-    voorbeeldplekken: ['Meerpersoonswerkplek (gepland/spontaan overleg)', 'Overlegruimte S/M/L'],
   },
   {
     id: 'samenwerk',
     label: 'Samenwerkplekken',
-    voorbeeldplekken: ['Meerpersoonswerkplek (gesloten/open)', 'Teamruimte', 'Projecttafel'],
   },
   {
     id: 'creatief',
     label: 'Creatieve plekken',
-    voorbeeldplekken: ['Break-out', 'Brainstormruimte', 'Projectruimte', 'Scrumruimte', 'Obeyaruimte', 'Schrijfbare wanden'],
   },
   {
     id: 'informeel',
     label: 'Informele plekken',
-    voorbeeldplekken: ['Break-outruimte', 'Koffiepunt', 'Zitgebied', 'Horeca', 'Aanlandplekken', 'Informele zitjes'],
   },
   {
     id: 'rust',
     label: 'Rustplekken',
-    voorbeeldplekken: ['Rustruimte', 'Stilteruimte', 'Gebedsruimte', 'Vitaliteitsruimte', 'Ontprikkelruimte'],
   },
   {
     id: 'leer',
     label: 'Leerplekken',
-    voorbeeldplekken: ['Geen eigen bouwsteen — via teamruimte, break-out en ontmoetingsplein'],
   },
 ];
 

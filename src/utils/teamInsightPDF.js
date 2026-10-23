@@ -787,7 +787,7 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
 
     const wp = getCopy(lang).workplaceProfile;
     const typeLabel = (t) => wp?.types?.[t.id]?.label || t.label;
-    const plekkenVoor = (t) => wp?.types?.[t.id]?.voorbeeldplekken || t.voorbeeldplekken || [];
+    const plekkenVoor = (t) => wp?.types?.[t.id]?.voorbeeldplekken || [];
     const bandLabel = (band) => String(wp?.band?.[band]?.label || band).toUpperCase();
 
     const [hero, ...overige] = profiel.typen;

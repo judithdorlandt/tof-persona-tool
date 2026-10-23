@@ -74,43 +74,45 @@ const workplaceProfile = {
         standaard: {
             label: 'Standaard werkplekken',
             voorbeeldplekken: [
-                'Eenpersoonswerkplek (open/gesloten)',
-                'Tweepersoonswerkplek (open/gesloten)',
-                'Meerpersoonswerkplek open',
+                'Eenpersoonswerkplek, open of afgesloten',
+                'Tweepersoonswerkplek, open of afgesloten',
+                'Open werkplek voor meer mensen',
             ],
         },
         concentratie: {
             label: 'Concentratieplekken',
-            voorbeeldplekken: ['Eenpersoonswerkplek (gesloten)', 'Stiltezone in bibliotheeksetting'],
+            voorbeeldplekken: ['Afgesloten eenpersoonsplek', 'Stiltezone, zoals in een bibliotheek'],
         },
         overleg: {
             label: 'Overlegplekken',
-            voorbeeldplekken: ['Meerpersoonswerkplek (gepland/spontaan overleg)', 'Overlegruimte S/M/L'],
+            voorbeeldplekken: ['Plek voor gepland of spontaan overleg', 'Overlegruimte, klein of groot'],
         },
         samenwerk: {
             label: 'Samenwerkplekken',
-            voorbeeldplekken: ['Meerpersoonswerkplek (gesloten/open)', 'Teamruimte', 'Projecttafel'],
+            voorbeeldplekken: [
+                'Werkplek voor meer mensen, open of afgesloten',
+                'Teamruimte',
+                'Projecttafel',
+            ],
         },
         creatief: {
             label: 'Creatieve plekken',
             voorbeeldplekken: [
-                'Break-out',
                 'Brainstormruimte',
                 'Projectruimte',
-                'Scrumruimte',
-                'Obeyaruimte',
-                'Schrijfbare wanden',
+                'Wanden om op te schrijven',
+                'Break-out',
+                'Ruimte om voortgang zichtbaar te maken',
             ],
         },
         informeel: {
             label: 'Informele plekken',
             voorbeeldplekken: [
-                'Break-outruimte',
                 'Koffiepunt',
-                'Zitgebied',
-                'Horeca',
-                'Aanlandplekken',
+                'Zithoek',
+                'Restaurant of café',
                 'Informele zitjes',
+                'Plek om even neer te strijken',
             ],
         },
         rust: {
@@ -118,14 +120,16 @@ const workplaceProfile = {
             voorbeeldplekken: [
                 'Rustruimte',
                 'Stilteruimte',
-                'Gebedsruimte',
+                'Ruimte om te ontprikkelen',
                 'Vitaliteitsruimte',
-                'Ontprikkelruimte',
+                'Gebedsruimte',
             ],
         },
         leer: {
             label: 'Leerplekken',
-            voorbeeldplekken: ['Geen eigen bouwsteen — via teamruimte, break-out en ontmoetingsplein'],
+            voorbeeldplekken: [
+                'Geen aparte ruimte: leren kan in een teamruimte, een overlegruimte of op een ontmoetingsplek.',
+            ],
         },
     },
 

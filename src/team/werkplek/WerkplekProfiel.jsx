@@ -72,7 +72,7 @@ function typeCopy(COPY, type) {
     const c = COPY.types?.[type.id];
     return {
         label: c?.label || type.label,
-        voorbeeldplekken: c?.voorbeeldplekken || type.voorbeeldplekken,
+        voorbeeldplekken: c?.voorbeeldplekken || [],
     };
 }
 
