@@ -15,7 +15,7 @@
 
 const workplaceProfile = {
     ui: {
-        eyebrow: 'Experimenteel — Werkplekbehoefte',
+        eyebrow: 'Werkplekbehoefte',
         title: 'Hoe dit team de werkomgeving',
         titleAccent: 'nodig heeft en gebruikt',
         lead:
