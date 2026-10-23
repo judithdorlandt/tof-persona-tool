@@ -27,6 +27,8 @@ export function drawPageHeader(svg, { date, pageTitle, copy = getOLCopy('nl') })
         x: MARGIN, y: MARGIN + 3,
         content: copy.moduleLabel,
         ...TYPE_V9.eyebrow,
+        // Vaste kopregel blijft rustig (grafisch punt 15).
+        color: TYPE_V9.footer.color,
     }));
     // Datum rechts
     svg.appendChild(text({

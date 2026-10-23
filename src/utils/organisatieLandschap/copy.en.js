@@ -13,7 +13,6 @@
 export const COPY_EN = {
     // ── Shared
     brand: 'TOF · The Office Factory',
-    dateLocale: 'en-GB',
 
     // Page-header label (pages 2–6). No module number (decision J1).
     moduleLabel: 'ORGANISATION LANDSCAPE',
@@ -102,21 +101,17 @@ export const COPY_EN = {
         cols: {
             officeCheck: {
                 title: 'Check the office',
-                subtitle: 'Questions to check in your own office.',
             },
             vraagt: {
                 title: 'What the work environment asks for',
-                subtitle: 'From most to least emphasis: how central a space is to the work, not how many spaces are needed.',
             },
             werkt: {
                 title: 'What works well',
-                subtitle: 'What keeps the organisation standing.',
                 empty: 'No observations added yet.',
             },
         },
         signalsBlock: {
             eyebrow: 'Qualitative signals',
-            source: 'Source: observation and conversations (not measured).',
         },
         methodNoteEyebrow: 'METHODOLOGICAL NOTE',
         methodNote:
@@ -132,17 +127,14 @@ export const COPY_EN = {
         subtitle: 'Direction for leadership and the work environment.',
         leadership: {
             title: 'For leadership',
-            subtitle: 'What deserves attention in conversation with teams.',
             empty: 'Too few completed profiles to give direction.',
         },
         environment: {
             title: 'For the work environment',
-            subtitle: 'Where the conversation about the workplace can start.',
             empty: 'Too few completed profiles for a picture of the workplace.',
         },
         attention: {
             title: 'Teams without their own row',
-            subtitle: 'Why not every team appears separately in the overview.',
             empty: 'Every team has its own row in the overview.',
         },
         tagline: 'An organisation that recognises itself moves faster.',
@@ -151,7 +143,6 @@ export const COPY_EN = {
     // ── Derived sentences (organisatieAggregation.js builds the data-driven
     //    texts with these; no loose string concatenation in the logic).
     data: {
-        dateLocale: 'en-GB',
         orgRowLabel: 'ORGANISATION',
         teamNameFallback: '—',
         otherTeamsRowLabel: (n) => `Other (together ${n})`,
@@ -182,8 +173,8 @@ export const COPY_EN = {
 
         attention: {
             noOwnRow: (x) => (x === 1
-                ? '1 team doesn\'t appear as its own row in this overview. This way no group of fewer than five profiles is shown separately. It is counted in "Other" and in the organisation total.'
-                : `${x} teams don't appear as their own row in this overview. This way no group of fewer than five profiles is shown separately. They are counted in "Other" and in the organisation total.`),
+                ? '1 team doesn\'t appear as its own row in this overview. This way no group of fewer than five profiles is shown separately. It is counted in “Other” and in the organisation total.'
+                : `${x} teams don't appear as their own row in this overview. This way no group of fewer than five profiles is shown separately. They are counted in “Other” and in the organisation total.`),
             noOwnRowNoRest: (x) => (x === 1
                 ? '1 team doesn\'t appear as its own row in this overview. This way no group of fewer than five profiles is shown separately. It is counted in the organisation total.'
                 : `${x} teams don't appear as their own row in this overview. This way no group of fewer than five profiles is shown separately. They are counted in the organisation total.`),

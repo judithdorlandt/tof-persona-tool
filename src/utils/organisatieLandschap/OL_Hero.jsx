@@ -10,7 +10,8 @@
  *   - Subtiele 1pt top-border per kaart in border-grijs, géén dikke gekleurde balk.
  *   - Sage als kaart-accent (4pt linker indicator) — uniforme kleur.
  *   - Big-number 36pt Playfair voor visueel zwaartepunt.
- *   - Label klein, uppercase, tracking; textMuted kleur.
+ *   - Label klein, uppercase, tracking; textSoft (ronde 2, groep 4: contrast).
+ *   - Alle drie de KPI-waarden op één basislijn, kaartbovenkant + 20.
  */
 
 import {
@@ -139,7 +140,7 @@ function drawKpiCard(svg, { x, y, w, h, label, big, unit, accent }) {
     svg.appendChild(text({
         x: x + SPACING.md, y: y + topPad,
         content: String(label).toUpperCase(),
-        font: 'Inter', weight: 600, size: 3.18, color: C.textMuted,
+        font: 'Inter', weight: 600, size: 3.18, color: C.textSoft,
         letterSpacing: 0.45,
     }));
 
@@ -149,7 +150,9 @@ function drawKpiCard(svg, { x, y, w, h, label, big, unit, accent }) {
     const availW = w - padding * 2;
     const defaultBig = 12.7;
     const bigSize = fitBigNumberSize(big, availW, defaultBig);
-    const bigBaseline = y + topPad + SPACING.sm + bigSize;
+    // Eén basislijn voor alle kaarten, ook als een waarde kleiner wordt
+    // gezet (grafisch punt 8).
+    const bigBaseline = y + KPI_BASELINE;
 
     // Eén woord (zoals "Concentratieplekken") nooit midden in het woord
     // afbreken: dan op één regel, zo groot als past.
@@ -176,11 +179,13 @@ function drawKpiCard(svg, { x, y, w, h, label, big, unit, accent }) {
     // unit komt onder de wrap (2 regels = ~9.5mm extra ruimte).
     const unitOffsetY = (bigSize >= 7 || singleWord) ? 0 : 9.5;
     svg.appendChild(text({
-        x: x + padding, y: bigBaseline + unitOffsetY + SPACING.xs + TYPE_V9.bigNumberUnit.size,
+        x: x + padding, y: bigBaseline + unitOffsetY + SPACING.lg,
         content: unit,
         ...TYPE_V9.bigNumberUnit,
     }));
 }
+
+const KPI_BASELINE = 20;
 
 function fitBigNumberSize(content, availW, defaultSize) {
     // Playfair Regular caps zijn breed (vooral S in "Samenwerkplekken").
@@ -237,7 +242,6 @@ function drawTeamsBanner(svg, y, bannerH, data, copy) {
         x: dotX + 5, y: eyebrowY,
         content: copy.cover.teamsWithoutResponses.eyebrow,
         ...TYPE_V9.eyebrow,
-        color: C.textMuted,
     }));
 
     const headline = isEmpty
@@ -289,7 +293,6 @@ function drawMeasurementBlock(svg, y, bottomLimit, data, copy, lang) {
         x: innerX, y: eyebrowY,
         content: m.eyebrow,
         ...TYPE_V9.eyebrow,
-        color: C.textMuted,
     }));
 
     // Intro — kort, over de volle breedte.

@@ -76,7 +76,7 @@ export function buildCoverSVG({ data, copy }) {
         x: cx, y: baseline,
         content: copy.brandCover.eyebrow,
         font: 'Inter', weight: 600, size: SZ.label,
-        color: C.textMuted, letterSpacing: 0.45, anchor: 'middle',
+        color: C.textSoft, letterSpacing: 0.45, anchor: 'middle',
     }));
 
     // ── 5. Organisatielandschap — Playfair Italic 18pt
@@ -113,10 +113,10 @@ export function buildCoverSVG({ data, copy }) {
             data.date, data.totalRespondents, data.activeTeamCount, data.totalTeams,
         ),
         font: 'Inter', weight: 400, size: SZ.meta,
-        color: C.textMuted, anchor: 'middle',
+        color: C.textSoft, anchor: 'middle',
     }));
 
-    // ── Slotsignatuur — Inter Regular 9pt textMuted, ~25mm boven onderrand.
+    // ── Slotsignatuur — Inter Regular 9pt textSoft, ~25mm boven onderrand.
     // Niet cursief: zonder cursieve Inter valt de PDF terug op Times.
     // Verbindt elk rapport met de TOF-propositie.
     const taglineY = PAGE_H - 25;
@@ -124,7 +124,7 @@ export function buildCoverSVG({ data, copy }) {
         x: cx, y: taglineY,
         content: copy.brandCover.tagline,
         font: 'Inter', weight: 400, size: SZ.tagline,
-        color: C.textMuted, anchor: 'middle',
+        color: C.textSoft, anchor: 'middle',
     }));
 
     return svg;

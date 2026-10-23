@@ -11,7 +11,7 @@
  */
 
 import { PAGE_W, PAGE_H, MARGIN, USABLE_W } from './constants';
-import { TYPE_V9, COLOR_FAMILIES, SPACING } from './OL_styles';
+import { TYPE_V9, COLOR_FAMILIES, SPACING, RHYTHM } from './OL_styles';
 import {
     createCanvas, rect, text, drawWrapped, line, circle, wrapTextLines,
 } from './svgPrimitives';
@@ -33,7 +33,8 @@ export function buildDuidingSVG({ data, copy }) {
     drawPageHeader(svg1, { date: data.date, pageTitle: copy.duiding.pageTitle, copy });
     let y = CONTENT_TOP;
     y = drawTitleBlock(svg1, y, copy.duiding.title, copy.duiding.subtitle);
-    y += SPACING.lg;
+    // Eyebrow van de kaarten 14 mm onder de ondertitel (ronde 2, groep 4).
+    y += RHYTHM.subToContent - CARD_EYEBROW;
     drawThreeCards(svg1, y, data, copy);
     drawClosingZone(svg1, data, copy);
     pages.push(svg1);
@@ -63,7 +64,7 @@ function drawTitleBlock(svg, y, title, subtitle) {
 // grote leegte staan. Errt bewust naar iets ruimer (geen afkapping).
 function measureBulletCardH(items, w) {
     const textW = w - 14.86;                 // zie drawCard: indicator + paddings + bullet
-    let h = 16.35;                           // titel + subtitel tot eerste bullet
+    let h = CARD_FIRST_LINE;                 // kaarttop tot eerste bullet
     if (!items || items.length === 0) return h + 8;
     items.forEach((it) => {
         const lines = Math.max(1, wrapTextLines(it, textW, 3.6, 'Inter').length);
@@ -82,13 +83,11 @@ function drawThreeCards(svg, y, data, copy) {
     const cards = [
         {
             title: copy.duiding.leadership.title,
-            subtitle: copy.duiding.leadership.subtitle,
             items: buildLeadershipDirections(data, copy),
             emptyFallback: copy.duiding.leadership.empty,
         },
         {
             title: copy.duiding.environment.title,
-            subtitle: copy.duiding.environment.subtitle,
             items: buildEnvironmentDirections(data, copy),
             emptyFallback: copy.duiding.environment.empty,
         },
@@ -96,7 +95,6 @@ function drawThreeCards(svg, y, data, copy) {
     if (attention.length > 0) {
         cards.push({
             title: copy.duiding.attention.title,
-            subtitle: copy.duiding.attention.subtitle,
             items: attention,
             emptyFallback: copy.duiding.attention.empty,
         });
@@ -121,7 +119,11 @@ function drawThreeCards(svg, y, data, copy) {
     });
 }
 
-function drawCard({ svg, x, y, w, h, title, subtitle, items, emptyFallback, accent, bulletColor }) {
+// Geen cursieve sub-eyebrow meer onder de kaarttitel (ronde 2, groep 4).
+const CARD_EYEBROW = SPACING.md + 2;                         // kaarttop → eyebrow
+const CARD_FIRST_LINE = CARD_EYEBROW + SPACING.lg + SPACING.sm; // → eerste regel
+
+function drawCard({ svg, x, y, w, h, title, items, emptyFallback, accent, bulletColor }) {
     // V12 consistentie: zelfde stijl als hero-cards op pagina 2.
     // 1pt border, 4pt sage indicator links, géén dikke gekleurde topbalk.
     svg.appendChild(rect(x, y, w, h, C.surface, {
@@ -130,27 +132,17 @@ function drawCard({ svg, x, y, w, h, title, subtitle, items, emptyFallback, acce
     svg.appendChild(rect(x, y, 1.4, h, COLOR_FAMILIES.accent.rust));
 
     svg.appendChild(text({
-        x: x + SPACING.md, y: y + SPACING.md + 2,
+        x: x + SPACING.md, y: y + CARD_EYEBROW,
         content: title.toUpperCase(),
         ...TYPE_V9.eyebrow,
-        color: accent || C.textMuted,
-    }));
-    const subtitleY = y + SPACING.md + SPACING.sm + 4;
-    svg.appendChild(text({
-        x: x + SPACING.md, y: subtitleY,
-        content: subtitle,
-        ...TYPE_V9.bodySoft,
-        size: 3.18, lineHeight: 4.45,
+        color: accent || C.textSoft,
     }));
 
-    // Fix: minimaal 8pt (2.12mm) tussen subtitle baseline en eerste bullet.
-    // Subtitle font 3mm → bottom van tekst ≈ subtitleY + 0.6. Eerste baseline
-    // bullet moet dus op subtitleY + 0.6 + SPACING.sm + caps (~2.6) = +5.3.
-    let ly = subtitleY + 6;
+    let ly = y + CARD_FIRST_LINE;
     if (items.length === 0) {
         // Binnen de kaart afbreken: als één regel liep hij over de rand.
         drawWrapped({
-            svg, x: x + SPACING.md, y: ly + 4,
+            svg, x: x + SPACING.md, y: ly,
             maxWidth: w - SPACING.md * 2 - 1.4,
             content: emptyFallback,
             ...TYPE_V9.bodyQuiet,
@@ -203,7 +195,7 @@ function drawClosingZone(svg, data, copy) {
     svg.appendChild(text({
         x: PAGE_W / 2, y: quoteY + SPACING.md + 2,
         content: data.signatureSentence,
-        font: 'Inter', weight: 500, size: 3.4, color: C.textMuted,
+        font: 'Inter', weight: 500, size: 3.4, color: C.textSoft,
         anchor: 'middle',
     }));
 }

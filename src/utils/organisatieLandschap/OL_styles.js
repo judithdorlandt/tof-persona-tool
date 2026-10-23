@@ -25,6 +25,7 @@ export const SPACING = {
 export const RHYTHM = {
     h1ToH2: 3.18,        // 12px tussen H1 en H2
     h2ToBody: 10.58,     // 40px tussen H2 en eerste body
+    subToContent: 14,    // basislijn ondertitel → eerste inhoud (ronde 2, groep 4)
     quoteAbove: 10.58,   // 40px boven quote
     quoteBelow: 6.35,    // 24px onder quote
     quoteToSub: 4.76,    // 18px tussen quote en ondertekst (16–20px mid)
@@ -54,11 +55,11 @@ export const TYPE_V9 = {
         font: 'Inter', weight: 600,
         size: 4.94, lineHeight: 6.92, color: '#1F1F1F',
     },
-    // Eyebrow — Inter SemiBold 8pt uppercase tracked
+    // Eyebrow — Inter SemiBold 8pt uppercase tracked, textSoft (draagt informatie)
     eyebrow: {
         font: 'Inter', weight: 600,
         size: 3.18, lineHeight: 4.45, letterSpacing: 0.45,
-        color: '#9A8E82', upper: true,
+        color: '#4D433D', upper: true,
     },
     // Body — Inter Regular 11pt
     body: {
@@ -89,9 +90,16 @@ export const TYPE_V9 = {
     },
     bigNumberUnit: {
         font: 'Inter', weight: 400,
-        size: 3.18, lineHeight: 4.47, color: '#9A8E82',
+        size: 3.18, lineHeight: 4.47, color: '#4D433D',
     },
-    // Footnote, paginanummer — Inter Regular 9pt
+    // Kleine tekst die informatie draagt (voetnoten, legenda-uitleg,
+    // subregels): Inter Regular 9pt in textSoft. textMuted is te licht voor
+    // een kantoorprinter (ronde 2, groep 4, grafisch punt 15).
+    small: {
+        font: 'Inter', weight: 400,
+        size: 3.18, lineHeight: 4.45, color: '#4D433D',
+    },
+    // Vaste kop- en voetregel, paginanummer, "0%/100%" — Inter Regular 9pt
     footer: {
         font: 'Inter', weight: 400,
         size: 3.18, lineHeight: 4.45, color: '#9A8E82',
@@ -101,11 +109,11 @@ export const TYPE_V9 = {
         font: 'Playfair Display', weight: 400,
         size: 5.65, lineHeight: 7.76, color: '#4D433D', italic: true,
     },
-    // Signatuurregel op cover — Inter Regular 9pt textMuted (niet cursief,
+    // Signatuurregel op cover — Inter Regular 9pt textSoft (niet cursief,
     // zie bodySoft)
     tagline: {
         font: 'Inter', weight: 400,
-        size: 3.18, lineHeight: 4.45, color: '#9A8E82',
+        size: 3.18, lineHeight: 4.45, color: '#4D433D',
     },
 };
 

@@ -6,8 +6,8 @@
  *
  * Lost op:
  *  - Fout #4 pagina 1: betrouwbaarheidscategorie per team al voorbereid.
- *  - Fout #1 pagina 1 (cellen): verschil tussen "0% gemeten" en "niet aanwezig"
- *    wordt hier expliciet in de matrix gezet als null vs 0.
+ *  - Cellen: niemand met die werkstijl = pct 0 (de cel toont "—"); null alleen
+ *    als een rij geen profielen heeft (opdracht ronde 2, groep 4).
  *  - Werkplek volgt sinds opdracht L3 (23 okt 2026) het werkplekprofiel, net
  *    als Teaminzicht: kern, steun en beperkt nodig, zonder percentages.
  */
@@ -25,6 +25,7 @@ import { getConfidence } from '../../insights';
 import { getOLCopy } from './copy';
 import { MIN_TEAM_RESPONSES } from '../access';
 import { getCopy } from '../../i18n/copy';
+import { formatPdfDate } from '../tofPdfBrand';
 // Werkplek: hetzelfde werkplekprofiel als Teaminzicht (opdracht L3, besluit
 // Judith 23 okt 2026) — kern, steun en beperkt nodig, zonder percentages.
 import {
@@ -124,9 +125,8 @@ export function prepareOrganisatieData({
     return {
         lang,
         organizationName,
-        date: new Date().toLocaleDateString(cd.dateLocale, {
-            day: 'numeric', month: 'long', year: 'numeric',
-        }),
+        // Zelfde notatie als de team-PDF's (ronde 2, groep 4).
+        date: formatPdfDate(new Date(), lang),
         totalRespondents,
         linkedRespondents,
         unlinkedRespondents,
@@ -173,8 +173,9 @@ function buildOrgRow(aggregate, cd, lang) {
     const map = new Map(personas.map((p) => [p.id, p]));
     const cells = ARCHETYPE_ORDER.map((id) => {
         const p = map.get(id);
-        if (!p) return { id, pct: null, count: 0 };
-        return { id, pct: n > 0 ? Math.round((p.count / n) * 100) : 0, count: p.count || 0 };
+        if (n === 0) return { id, pct: null, count: 0 };
+        if (!p) return { id, pct: 0, count: 0 };              // niemand: "—"
+        return { id, pct: Math.round((p.count / n) * 100), count: p.count || 0 };
     });
     // Ook de organisatie krijgt een betrouwbaarheidslabel (redactie punt 21).
     return { name: cd.orgRowLabel, n, cells, isOrg: true, reliability: confidenceFor(n, lang) };
@@ -193,8 +194,8 @@ function buildTeamRow(t, cd, lang) {
     const map = new Map(personas.map((p) => [p.id, p]));
     const cells = ARCHETYPE_ORDER.map((id) => {
         const p = map.get(id);
-        if (!p) return { id, pct: null, count: 0 };           // niet voorgekomen
         if (n === 0) return { id, pct: null, count: 0 };
+        if (!p) return { id, pct: 0, count: 0 };              // niemand: "—"
         return { id, pct: Math.round((p.count / n) * 100), count: p.count || 0 };
     });
     return {
@@ -221,7 +222,7 @@ function buildRestRow(aggregate, ownTeams, n, cd, lang) {
     });
     const cells = ARCHETYPE_ORDER.map((id) => {
         const count = Math.max(0, counts[id] || 0);
-        if (count === 0) return { id, pct: null, count: 0 };
+        if (count === 0) return { id, pct: 0, count: 0 };     // niemand: "—"
         return { id, pct: Math.round((count / n) * 100), count };
     });
     return {

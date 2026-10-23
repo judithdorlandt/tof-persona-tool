@@ -19,9 +19,9 @@
  */
 
 import { PAGE_W, PAGE_H, MARGIN, USABLE_W } from './constants';
-import { TYPE_V9, COLOR_FAMILIES, SPACING } from './OL_styles';
+import { TYPE_V9, COLOR_FAMILIES, SPACING, RHYTHM } from './OL_styles';
 import {
-    createCanvas, rect, text, drawWrapped, circle, wrapTextLines,
+    createCanvas, rect, text, drawWrapped, circle,
 } from './svgPrimitives';
 import { drawPageHeader } from './OL_Chrome';
 
@@ -40,11 +40,12 @@ function buildQuantPage(data, copy) {
 
     let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
     y = drawTitleBlock(svg, y, copy.patronen.title, copy.patronen.subtitle);
-    y += SPACING.lg;
+    // Eerste eyebrow 14 mm onder de ondertitel, links en rechts op dezelfde
+    // basislijn (ronde 2, groep 4).
+    y += RHYTHM.subToContent;
 
-    // Methodologische noot vast onderaan → bepaalt de vloer voor de kolommen.
-    const noteBoxTop = drawMethodNoteFramed(svg, copy);
-    const floor = noteBoxTop - SPACING.md;
+    // Methodologische noot vast onderaan.
+    drawMethodNoteFramed(svg, copy);
 
     const gap = SPACING.xl;
     const leftW = USABLE_W * 0.50;            // werkplekprofiel
@@ -53,14 +54,13 @@ function buildQuantPage(data, copy) {
 
     // LINKS — werkplekprofiel van de organisatie.
     drawWerkomgevingColumn({
-        svg, x: MARGIN, y, w: leftW, floor, workplace: data.workplace, copy,
+        svg, x: MARGIN, y, w: leftW, workplace: data.workplace, copy,
     });
 
     // RECHTS — check in het kantoor (vragen).
     drawBulletList({
-        svg, x: rightX, y, w: rightW, floor,
+        svg, x: rightX, y, w: rightW,
         eyebrow: copy.patronen.cols.officeCheck.title.toUpperCase(),
-        subtitle: copy.patronen.cols.officeCheck.subtitle,
         items: data.officeCheck,
         bulletColor: ROSE,
     });
@@ -75,11 +75,10 @@ function buildQualPage(data, copy) {
 
     let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
     y = drawTitleBlock(svg, y, copy.patronen.qualTitle, copy.patronen.qualSubtitle);
-    y += SPACING.lg;
+    y += RHYTHM.subToContent;
 
-    // Voorbehoud onderaan → bepaalt de vloer voor de kolommen.
-    const caveatTop = drawCaveat(svg, copy);
-    const floor = caveatTop - SPACING.md;
+    // Voorbehoud onderaan.
+    drawCaveat(svg, copy);
 
     const gap = SPACING.xl;
     const colW = (USABLE_W - gap) / 2;
@@ -90,9 +89,8 @@ function buildQualPage(data, copy) {
 
     // LINKS — wat werkt goed (groene bullets, positief).
     drawBulletList({
-        svg, x: MARGIN, y, w: colW, floor,
+        svg, x: MARGIN, y, w: colW,
         eyebrow: copy.patronen.cols.werkt.title.toUpperCase(),
-        subtitle: copy.patronen.cols.werkt.subtitle,
         items: werktItems,
         emptyText: copy.patronen.cols.werkt.empty,
         bulletColor: SAGE,
@@ -100,9 +98,8 @@ function buildQualPage(data, copy) {
 
     // RECHTS — kwalitatieve signalen (rode bullets, aandacht).
     drawBulletList({
-        svg, x: rightX, y, w: colW, floor,
+        svg, x: rightX, y, w: colW,
         eyebrow: copy.patronen.signalsBlock.eyebrow.toUpperCase(),
-        subtitle: copy.patronen.signalsBlock.source,
         items: data.leegloperObservations,
         emptyText: copy.patronen.cols.werkt.empty,
         bulletColor: ROSE,
@@ -128,25 +125,22 @@ function drawTitleBlock(svg, y, title, subtitle) {
     return subBaseline;
 }
 
-// ── Bullet-lijst met kop + subtitel. Bullets optisch gecentreerd op de
-// eerste regel van elk item. De lijst wordt verticaal verdeeld over de
-// beschikbare ruimte (tot `floor`) zodat de pagina niet topzwaar wordt.
-function drawBulletList({ svg, x, y, w, floor, eyebrow, subtitle, items, emptyText, bulletColor }) {
+// ── Bullet-lijst met kop. Bullets optisch gecentreerd op de eerste regel
+// van elk item. Geen cursieve sub-eyebrow meer (ronde 2, groep 4: zevende
+// tekstmaat, valt in print weg); de lijst staat bovenaan, op de basislijn
+// van de kolom ernaast.
+const HEADER_OFFSET = SPACING.lg + SPACING.sm;   // eyebrow → eerste regel
+
+function drawBulletList({ svg, x, y, eyebrow, items, emptyText, bulletColor, w }) {
     const itemSize = TYPE_V9.body.size;
     const itemLineHeight = 5.2;
     const baseGap = SPACING.md;
-    // Afstand van de eyebrow-baseline tot het eerste datapunt (kop + subtitel).
-    const headerOffset = SPACING.md * 2 + SPACING.lg;
+    const headerOffset = HEADER_OFFSET;
 
     const drawHeader = (hy) => {
         svg.appendChild(text({
             x, y: hy, content: eyebrow,
             ...TYPE_V9.eyebrow,
-        }));
-        if (subtitle) svg.appendChild(text({
-            x, y: hy + SPACING.md,
-            content: subtitle,
-            ...TYPE_V9.bodySoft, size: 3.18, lineHeight: 4.45,
         }));
     };
 
@@ -160,20 +154,7 @@ function drawBulletList({ svg, x, y, w, floor, eyebrow, subtitle, items, emptyTe
         return y + headerOffset + SPACING.sm;
     }
 
-    // Voor-meet de itemhoogtes om het blok als geheel te kunnen positioneren.
-    const lineCounts = items.map((it) => Math.max(1, wrapTextLines(
-        capitalizeFirst(it), w - 7, itemSize, 'Inter').length));
-    const naturalTotal = lineCounts.reduce((sum, l) => sum + l * itemLineHeight, 0)
-        + baseGap * (items.length - 1);
-
-    // De kop + subtitel + bullets vormen ÉÉN blok dat als geheel optisch
-    // gecentreerd naar beneden schuift. Zo blijft de kop dicht tegen de bullets
-    // staan i.p.v. losgekoppeld bovenaan de kolom te hangen.
-    const blockTotal = headerOffset + naturalTotal;
-    const available = floor - y;
-    const topPad = available > blockTotal ? (available - blockTotal) * 0.5 : 0;
-    const headerY = y + topPad;
-
+    const headerY = y;
     drawHeader(headerY);
 
     let ly = headerY + headerOffset;
@@ -200,32 +181,13 @@ const KERN_LH = 7;
 const ROW_LH = 5.4;
 const BAND_HEAD = SPACING.sm + 3;
 
-function drawWerkomgevingColumn({ svg, x, y, w, floor, workplace, copy }) {
-    // Net als de kolom rechts als één blok verticaal gecentreerd tot de vloer,
-    // zodat kop en lijst bij elkaar blijven en de pagina niet topzwaar wordt.
-    const headerOffset = SPACING.md * 2 + SPACING.lg;
-    let blockH = headerOffset;
-    if (workplace?.hasData) {
-        BANDS.forEach((band) => {
-            const n = (workplace.bands[band] || []).length;
-            if (n === 0) return;
-            const lh = band === 'kern' ? KERN_LH : ROW_LH;
-            blockH += BAND_HEAD + n * (lh + SPACING.xs + 1) + SPACING.md;
-        });
-    }
-    const available = (floor || PAGE_H) - y;
-    const top = y + (available > blockH ? (available - blockH) * 0.5 : 0);
-
+function drawWerkomgevingColumn({ svg, x, y, w, workplace, copy }) {
+    // Bovenaan, op dezelfde basislijn als de kolom rechts (grafisch punt 10).
     svg.appendChild(text({
-        x, y: top, content: copy.patronen.cols.vraagt.title.toUpperCase(),
+        x, y, content: copy.patronen.cols.vraagt.title.toUpperCase(),
         ...TYPE_V9.eyebrow,
     }));
-    svg.appendChild(text({
-        x, y: top + SPACING.md,
-        content: copy.patronen.cols.vraagt.subtitle,
-        ...TYPE_V9.bodySoft, size: 3.18, lineHeight: 4.45,
-    }));
-    let ly = top + headerOffset;
+    let ly = y + HEADER_OFFSET;
     if (!workplace?.hasData) return ly;
 
     BANDS.forEach((band) => {
@@ -235,7 +197,7 @@ function drawWerkomgevingColumn({ svg, x, y, w, floor, workplace, copy }) {
             x, y: ly,
             content: String(workplace.bandLabels[band]).toUpperCase(),
             ...TYPE_V9.eyebrow,
-            color: band === 'kern' ? SAGE : C.textMuted,
+            color: band === 'kern' ? SAGE : C.textSoft,
         }));
         ly += BAND_HEAD;
         labels.forEach((label) => {

@@ -15,7 +15,6 @@
 export const COPY_NL = {
     // ── Gedeeld
     brand: 'TOF · The Office Factory',
-    dateLocale: 'nl-NL',
 
     // Label in de paginakop (pagina 2–6). Geen modulenummer: een opdrachtgever
     // kent de module-indeling niet (besluit Judith J1, 23 okt 2026).
@@ -118,22 +117,18 @@ export const COPY_NL = {
             // Vragen zoals in de team-PDF, geen beweringen over het kantoor.
             officeCheck: {
                 title: 'Check in het kantoor',
-                subtitle: 'Vragen om in het eigen kantoor na te gaan.',
             },
             // Het werkplekprofiel: kern, steun en beperkt nodig, geen percentages.
             vraagt: {
                 title: 'Wat de werkomgeving vraagt',
-                subtitle: 'Van meeste naar minste nadruk: hoe centraal een plek is in het werk, niet hoeveel plekken nodig zijn.',
             },
             werkt: {
                 title: 'Wat werkt goed',
-                subtitle: 'Wat de organisatie staande houdt.',
                 empty: 'Nog geen observaties toegevoegd.',
             },
         },
         signalsBlock: {
             eyebrow: 'Kwalitatieve signalen',
-            source: 'Bron: observatie en gesprekken (geen meting).',
         },
         // Fix #6 page 4: eigen kader voor methodologische noot.
         methodNoteEyebrow: 'METHODOLOGISCHE NOOT',
@@ -153,17 +148,14 @@ export const COPY_NL = {
         subtitle: 'Richting voor leiderschap en werkomgeving.',
         leadership: {
             title: 'Voor leiderschap',
-            subtitle: 'Wat verdient aandacht in gesprek met teams.',
             empty: 'Te weinig ingevulde profielen om richting te geven.',
         },
         environment: {
             title: 'Voor de werkomgeving',
-            subtitle: 'Waar het gesprek over de werkplek kan beginnen.',
             empty: 'Te weinig ingevulde profielen voor een beeld van de werkplek.',
         },
         attention: {
             title: 'Teams zonder eigen rij',
-            subtitle: 'Waarom niet elk team apart in het overzicht staat.',
             empty: 'Elk team staat als eigen rij in het overzicht.',
         },
         tagline: 'Een organisatie die zichzelf herkent, beweegt sneller.',
@@ -172,7 +164,6 @@ export const COPY_NL = {
     // ── Afgeleide zinnen (organisatieAggregation.js bouwt hiermee de
     //    data-gedreven teksten; geen losse string-concatenatie in de logica).
     data: {
-        dateLocale: 'nl-NL',
         orgRowLabel: 'ORGANISATIE',
         teamNameFallback: '—',
         // Alles zonder eigen rij samen (opdracht L1/L1b, besluit Judith 23 okt).
@@ -209,8 +200,8 @@ export const COPY_NL = {
 
         attention: {
             noOwnRow: (x) => (x === 1
-                ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Het telt mee in "Overige" en in het totaal van de organisatie.'
-                : `${x} teams staan niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Ze tellen mee in "Overige" en in het totaal van de organisatie.`),
+                ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Het telt mee in “Overige” en in het totaal van de organisatie.'
+                : `${x} teams staan niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Ze tellen mee in “Overige” en in het totaal van de organisatie.`),
             // Zonder rij "Overige" (besluit Judith 23 okt).
             noOwnRowNoRest: (x) => (x === 1
                 ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Het telt mee in het totaal van de organisatie.'

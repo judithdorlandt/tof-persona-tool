@@ -8,7 +8,7 @@
  *  #3: Betrouwbaarheidspillen → dot + tekst op één baseline, geen padding.
  *  #4: Team-naam font 12px (Inter Regular) + breder kolom (75mm) → geen wraps.
  *  #5: Footer-noot: "Rij-totalen kunnen door afronding optellen tot 99–101%".
- *  #6: ORGANISATIE-rij betrouwbaarheid → "n.v.t." in muted i.p.v. zwakke em-dash.
+ *  #6: ORGANISATIE-rij krijgt ook een betrouwbaarheidslabel (redactie punt 21).
  */
 
 import {
@@ -16,7 +16,7 @@ import {
     PERSONA_COLORS, ARCHETYPE_ORDER, getArchetypeName,
 } from './constants';
 import {
-    TYPE_V9, COLOR_FAMILIES, SPACING,
+    TYPE_V9, COLOR_FAMILIES, SPACING, RHYTHM,
 } from './OL_styles';
 import {
     createCanvas, rect, text, drawWrapped, circle, wrapTextLines,
@@ -45,30 +45,42 @@ export function buildHeatmapSVG({ data, copy, lang = 'nl' }) {
     // Eén team zonder rest: die rij is gelijk aan de organisatierij, dus
     // alleen de organisatie tonen (grafisch punt 5a).
     const rows = data.teamRows.length === 1 && !data.hasRestRow ? [] : data.teamRows;
-    const chunks = [];
-    for (let i = 0; i < rows.length; i += ROWS_PER_PAGE) chunks.push(rows.slice(i, i + ROWS_PER_PAGE));
-    if (chunks.length === 0) chunks.push([]);
 
-    return chunks.map((chunk) => {
+    const pages = [];
+    let next = 0;
+    do {
         const svg = createCanvas();
         svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
 
         // V12: pageTitle weglaten — anders staat hij identiek aan de H2.
-        let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
+        const titleTopY = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
+        const subBottom = drawTitleBlock(svg, titleTopY, copy);
+        const legendBottom = drawLegendTopRight(svg, titleTopY, copy);
+        // Kolomkoppen 14 mm onder de ondertitel, en altijd onder de legenda.
+        const headerBaseline = Math.max(subBottom + RHYTHM.subToContent, legendBottom + 7);
+        const tableY = headerBaseline - HEADER_BASELINE;
 
-        // V24: legenda uitgelijnd met de titel-bovenkant (hoger), zodat de tabel
-        // eerder kan beginnen.
-        const titleTopY = y;
-        y = drawTitleBlock(svg, y, copy);
-        drawLegendTopRight(svg, titleTopY, copy);
-        y += SPACING.sm;
-        const tableBottom = drawHeatmap(svg, y, chunk, data, copy, lang);
+        // Rijen tot 12 per pagina, of minder als ze anders over de voetnoot lopen.
+        const floor = FN_BOTTOM_BASELINE - 6.35;
+        let bottom = tableY + HEADER_H + ORG_H + ORG_GAP;
+        const chunk = [];
+        while (next < rows.length && chunk.length < ROWS_PER_PAGE) {
+            const h = rowHeightFor(rows[next]);
+            if (chunk.length > 0 && bottom + h > floor) break;
+            chunk.push(rows[next]);
+            bottom += h;
+            next += 1;
+        }
+
+        const tableBottom = drawHeatmap(svg, tableY, chunk, data, copy, lang);
         drawHeatmapFootnote(svg, tableBottom, data, copy);
         // Footer wordt centraal door de orchestrator getekend (dynamische nummering).
-        return svg;
-    });
+        pages.push(svg);
+    } while (next < rows.length);
+    return pages;
 }
 
+// Geeft de basislijn van de laatste ondertitelregel terug.
 function drawTitleBlock(svg, y, copy) {
     // V14: Playfair Regular 28pt — matcht web-app.
     const titleSize = TYPE_V9.h2.size;
@@ -78,22 +90,26 @@ function drawTitleBlock(svg, y, copy) {
         content: copy.heatmap.title,
         ...TYPE_V9.h2,
     }));
-    // Subtekst max 60% van pagina-breedte (anders botst hij met de
-    // KLEURINTENSITEIT-legenda rechtsboven).
+    // Ondertitel tot aan de legenda (66 breed) met 10,6 ruimte (grafisch punt 4).
     const subBaseline = titleBaseline + 4 + TYPE_V9.bodySoft.size;
-    drawWrapped({
+    const end = drawWrapped({
         svg, x: MARGIN, y: subBaseline,
-        maxWidth: USABLE_W * 0.60,
+        maxWidth: USABLE_W - LEGEND_W - SPACING.xl,
         content: copy.heatmap.subtitle,
         ...TYPE_V9.bodySoft,
     });
-    return subBaseline + SPACING.md;
+    return end - TYPE_V9.bodySoft.lineHeight;
 }
 
-// Fix #2: grijswaarde-schaal met uitleg
+// Fix #2: grijswaarde-schaal met uitleg. Binnen de marge: vijf vlakjes van
+// 12 mm, rechts uitgelijnd, uitleg met anchor 'end' (grafisch punt 1).
+// Geeft de basislijn van de laatste regel terug.
+const LEGEND_SW = 12;
+const LEGEND_GAP = 1.5;
+const LEGEND_W = 5 * LEGEND_SW + 4 * LEGEND_GAP;   // 66
 function drawLegendTopRight(svg, y, copy) {
-    const legW = 70;
-    const legX = PAGE_W - MARGIN - legW;
+    const right = PAGE_W - MARGIN;
+    const legX = right - LEGEND_W;
     const legY = y + 5;
 
     svg.appendChild(text({
@@ -102,14 +118,13 @@ function drawLegendTopRight(svg, y, copy) {
         ...TYPE_V9.eyebrow,
     }));
 
-    const sw = 13;
     const sh = 4;
     // Swatches volgen exact dezelfde lineaire schaal als de cellen (0%→1.0):
     // 0.12 + (pct/100) * 0.88 op 0/25/50/75/100%.
     [0.12, 0.34, 0.56, 0.78, 1].forEach((op, i) => {
-        const sx = legX + i * (sw + 1.5);
+        const sx = legX + i * (LEGEND_SW + LEGEND_GAP);
         // Grijswaarde — neutraal, niet persona-gekleurd
-        svg.appendChild(rect(sx, legY + 3, sw, sh, '#5C544B', { opacity: op }));
+        svg.appendChild(rect(sx, legY + 3, LEGEND_SW, sh, '#5C544B', { opacity: op }));
     });
     svg.appendChild(text({
         x: legX, y: legY + 11.5,
@@ -117,28 +132,29 @@ function drawLegendTopRight(svg, y, copy) {
         ...TYPE_V9.footer,
     }));
     svg.appendChild(text({
-        x: legX + 5 * (sw + 1.5) - 1.5, y: legY + 11.5,
+        x: right, y: legY + 11.5,
         content: copy.heatmap.legend.scaleHigh,
         ...TYPE_V9.footer, anchor: 'end',
     }));
-    // Uitleg-regel
-    svg.appendChild(text({
-        x: legX + (5 * (sw + 1.5)) / 2, y: legY + 17,
-        content: copy.heatmap.legend.explanation,
-        ...TYPE_V9.footer, anchor: 'middle',
-    }));
-    // Wat een lege cel betekent (redactie punt 22).
-    svg.appendChild(text({
-        x: PAGE_W - MARGIN, y: legY + 21.5,
-        content: copy.heatmap.legend.cellEmpty,
-        ...TYPE_V9.footer, anchor: 'end',
-    }));
+    // Uitleg-regel, en wat een lege cel betekent (redactie punt 22).
+    let ly = legY + 16.5;
+    [copy.heatmap.legend.explanation, copy.heatmap.legend.cellEmpty].forEach((content) => {
+        ly = drawWrapped({
+            svg, x: right, y: ly, maxWidth: LEGEND_W,
+            content, ...TYPE_V9.small, anchor: 'end',
+        });
+    });
+    return ly - TYPE_V9.small.lineHeight;
 }
 
 const ROW_H = 7;          // vaste rijhoogte (grafisch punt 6)
 const ROW_H_TWO = 9;      // teamnaam over twee regels
 const NAME_LH = 4.4;
 const TEAM_COL_W = 60;
+const HEADER_H = 12;
+const HEADER_BASELINE = 8; // basislijn kolomkoppen t.o.v. de bovenkant van de tabel
+const ORG_H = ROW_H * 1.2;
+const ORG_GAP = 4.2;
 
 // Rijhoogte op maat van de teamnaam: één regel 7 mm, twee regels 9 mm.
 function rowHeightFor(row) {
@@ -158,14 +174,12 @@ function drawHeatmap(svg, y, rows, data, copy, lang) {
     const personaAreaW = USABLE_W - teamColW - nColW - relColW;
     const cellW = personaAreaW / ARCHETYPE_ORDER.length;
 
-    const headerH = 12;
-    const orgGap = 4.2;
-
     drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang);
 
     // ORGANISATIE-rij bovenaan als vergelijkingsrij.
-    let cursorY = y + headerH;
-    const orgH = ROW_H * 1.2;
+    let cursorY = y + HEADER_H;
+    const orgH = ORG_H;
+    const orgGap = ORG_GAP;
     drawDataRow(svg, {
         x: MARGIN, y: cursorY, h: orgH,
         teamColW, nColW, relColW, cellW,
@@ -187,7 +201,7 @@ function drawHeatmap(svg, y, rows, data, copy, lang) {
 }
 
 function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang) {
-    const yBase = y + 8;
+    const yBase = y + HEADER_BASELINE;
     svg.appendChild(text({
         x: MARGIN, y: yBase,
         content: copy.heatmap.cols.team,
@@ -221,8 +235,9 @@ function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang) 
 function drawDataRow(svg, {
     x, y, h, teamColW, nColW, relColW, cellW, row, isOrg, zebra, copy,
 }) {
+    // Bij een opkomend patroon alleen de celkleur dempen; de tekst blijft op
+    // volle sterkte (grafisch punt 7, geen opacity 0,65 meer).
     const lowReliability = !isOrg && row.reliability?.id === 'low';
-    const rowOpacity = lowReliability ? 0.65 : 1;
 
     if (zebra) svg.appendChild(rect(x, y, USABLE_W, h - 0.8, '#F2EBE0'));
     if (isOrg) {
@@ -256,7 +271,6 @@ function drawDataRow(svg, {
         font: 'Inter', weight: isOrg ? 700 : 500, size: 3.3,
         color: isOrg ? SAGE : C.textSoft,
         anchor: 'middle',
-        opacity: rowOpacity < 1 ? rowOpacity : null,
     }));
 
     // V14: dot uniform muted (label draagt al de betekenis), 4pt diameter (~0.7mm radius).
@@ -264,15 +278,12 @@ function drawDataRow(svg, {
     if (row.reliability) {
         const cx = x + teamColW + nColW + 4;
         const cy = y + h / 2 + 0.4;
-        svg.appendChild(circle(cx, cy, 0.7, C.textMuted, {
-            opacity: rowOpacity < 1 ? rowOpacity : 1,
-        }));
+        svg.appendChild(circle(cx, cy, 0.7, C.textMuted));
         svg.appendChild(text({
             x: cx + 2.5, y: cy + 1.1,
             // Label uit getConfidence(), zoals de dashboards (opdracht L4).
             content: row.reliability.label,
             font: 'Inter', weight: 500, size: 3.18, color: C.textSoft,
-            opacity: rowOpacity < 1 ? rowOpacity : null,
         }));
     }
 
@@ -283,23 +294,22 @@ function drawDataRow(svg, {
         drawCell(svg, {
             x: cx + 1, y: y + 0.8, w: cellW - 2, h: h - 2.4,
             pct: c.pct, color: PERSONA_COLORS[ARCHETYPE_ORDER[ci]],
-            isOrg, opacity: rowOpacity, lowReliability,
+            isOrg, lowReliability,
         });
     });
 }
 
-function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability }) {
+function drawCell(svg, { x, y, w, h, pct, color, isOrg, lowReliability }) {
     if (pct === null || pct === undefined) return;
+    // Niemand met deze werkstijl: "—", zodat de cel niet op een fout lijkt
+    // (UX O3, grafisch punt 2).
     if (pct === 0) {
-        svg.appendChild(rect(x, y, w, h, C.cellZero, {
-            opacity: opacity != null ? opacity * 0.7 : 0.7,
-        }));
+        svg.appendChild(rect(x, y, w, h, C.cellZero, { opacity: 0.7 }));
         svg.appendChild(text({
             x: x + w / 2, y: y + h / 2 + 1.2,
             content: '—',
-            font: 'Inter', weight: 500, size: 3.18, color: C.textMuted,
+            font: 'Inter', weight: 500, size: 3.18, color: C.textSoft,
             anchor: 'middle',
-            opacity: opacity != null && opacity < 1 ? opacity : null,
         }));
         return;
     }
@@ -311,17 +321,13 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
     // team. Het cijfer blijft staan; de footnote legt de demping uit.
     const rawOp = 0.12 + Math.min(1, Math.max(0, pct / 100)) * 0.88;
     const op = lowReliability ? Math.min(rawOp, 0.30) : rawOp;
-    svg.appendChild(rect(x, y, w, h, color, {
-        opacity: opacity != null ? op * opacity : op,
-    }));
-    const labelColor = (!lowReliability && pct >= 55) ? '#fff'
-        : (lowReliability ? C.textMuted : C.text);
+    svg.appendChild(rect(x, y, w, h, color, { opacity: op }));
+    const labelColor = (!lowReliability && pct >= 55) ? '#fff' : C.text;
     svg.appendChild(text({
         x: x + w / 2, y: y + h / 2 + 1.2,
         content: `${pct}`,
         font: 'Inter', weight: isOrg ? 700 : 600, size: 3.18,
         color: labelColor, anchor: 'middle',
-        opacity: opacity != null && opacity < 1 ? opacity : null,
     }));
 }
 
@@ -347,7 +353,7 @@ function drawHeatmapFootnote(svg, tableBottom, data, copy) {
         svg.appendChild(text({
             x: MARGIN, y: firstBaseline + i * FN_LINE_H,
             content,
-            font: 'Inter', weight: 400, size: FN_SIZE, color: C.textMuted,
+            font: 'Inter', weight: 400, size: FN_SIZE, color: C.textSoft,
             letterSpacing: 0,
         }));
     });
