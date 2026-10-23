@@ -739,34 +739,29 @@ function DynamicsAxis({ axis, isFirst }) {
                 ) : null}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.sm + 2 }}>
-                <span
-                    style={{
-                        fontSize: 12,
-                        color: 'var(--tof-text-muted)',
-                        minWidth: 72,
-                        textAlign: 'right',
-                    }}
-                >
-                    {axis.left}
-                </span>
-                <div
-                    style={{
-                        flex: 1,
-                        height: 6,
-                        background: 'var(--tof-border)',
-                        borderRadius: RADIUS.pill,
-                        overflow: 'hidden',
-                        display: 'flex',
-                    }}
-                >
-                    <div style={{ width: `${lPct}%`, height: '100%', background: 'var(--tof-accent-rose)' }} />
-                    <div style={{ width: `${rPct}%`, height: '100%', background: 'var(--tof-accent-sage)' }} />
+            {/* Verhouding in getallen én in kleur: rose tegen sage alleen is
+                voor de meest voorkomende kleurenblindheid niet te onderscheiden.
+                Op een telefoon staan de labels boven de balk, anders blijft er
+                van de balk te weinig over. */}
+            {isNarrow ? (
+                <div style={{ display: 'grid', gap: SPACING.xs }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: SPACING.sm }}>
+                        <AxisEnd label={axis.left} pct={lPct} />
+                        <AxisEnd label={axis.right} pct={rPct} pctFirst />
+                    </div>
+                    <AxisBar lPct={lPct} rPct={rPct} />
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--tof-text-muted)', minWidth: 72 }}>
-                    {axis.right}
-                </span>
-            </div>
+            ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.sm + 2 }}>
+                    <span style={{ minWidth: 72, textAlign: 'right' }}>
+                        <AxisEnd label={axis.left} pct={lPct} />
+                    </span>
+                    <AxisBar lPct={lPct} rPct={rPct} />
+                    <span style={{ minWidth: 72 }}>
+                        <AxisEnd label={axis.right} pct={rPct} pctFirst />
+                    </span>
+                </div>
+            )}
 
             <p
                 style={{
@@ -780,6 +775,51 @@ function DynamicsAxis({ axis, isFirst }) {
             >
                 {description}
             </p>
+        </div>
+    );
+}
+
+// Eén uiteinde van een as: label plus percentage, zoals in de PDF ("67%").
+// Het percentage staat aan de kant van de balk: "Creatie 67%" links,
+// "33% Structuur" rechts (pctFirst).
+function AxisEnd({ label, pct, pctFirst = false }) {
+    const pctEl = (
+        <span style={{ fontWeight: 600, color: 'var(--tof-text)', fontVariantNumeric: 'tabular-nums' }}>
+            {pct}%
+        </span>
+    );
+    return (
+        <span
+            style={{
+                fontSize: 12,
+                color: 'var(--tof-text-muted)',
+                whiteSpace: 'nowrap',
+            }}
+        >
+            {pctFirst ? <>{pctEl} {label}</> : <>{label} {pctEl}</>}
+        </span>
+    );
+}
+
+function AxisBar({ lPct, rPct }) {
+    return (
+        <div
+            aria-hidden="true"
+            style={{
+                flex: 1,
+                height: 6,
+                background: 'var(--tof-border)',
+                borderRadius: RADIUS.pill,
+                overflow: 'hidden',
+                display: 'flex',
+            }}
+        >
+            <div style={{ width: `${lPct}%`, height: '100%', background: 'var(--tof-accent-rose)' }} />
+            {/* Smalle witte scheiding tussen de twee delen. */}
+            {lPct > 0 && rPct > 0 ? (
+                <div style={{ width: 2, height: '100%', background: '#FFFFFF', flexShrink: 0 }} />
+            ) : null}
+            <div style={{ width: `${rPct}%`, height: '100%', background: 'var(--tof-accent-sage)' }} />
         </div>
     );
 }
