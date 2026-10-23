@@ -2,7 +2,7 @@ const teamDashboard = {
   hero: {
     eyebrow: '01 — Team Insight',
     title: 'Team insight for',
-    lead: 'What the working styles are, what this team asks of its workplace, and where the first opportunities sit.',
+    lead: 'Which working styles this team has, what it needs from the workplace and where the first opportunities lie.',
     downloadPdf: 'Download as PDF',
     otherTeam: 'Another team',
   },
@@ -10,7 +10,7 @@ const teamDashboard = {
   fallbackTeamName: 'your team',
 
   chips: {
-    responses: 'Responses',
+    responses: 'Completed',
     organisation: 'Organisation',
     dominant: 'Dominant',
     reliability: 'Reliability',
@@ -71,7 +71,7 @@ const teamDashboard = {
       },
     },
     quickwins: {
-      eyebrow: 'Quick wins',
+      eyebrow: 'First steps',
       hint: 'For tomorrow',
       detailTitle: 'Actions for tomorrow',
       detailLead: 'Concrete actions drawn from every insight on this dashboard.',

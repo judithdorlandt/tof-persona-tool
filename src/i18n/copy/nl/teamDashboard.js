@@ -12,7 +12,7 @@ const teamDashboard = {
   hero: {
     eyebrow: '01 — Teaminzicht',
     title: 'Teaminzicht voor',
-    lead: 'Wat werkstijlen zijn, wat het team van de werkplek vraagt en waar de eerste kansen liggen.',
+    lead: 'Welke werkstijlen in dit team zitten, wat het team van de werkplek vraagt en waar de eerste kansen liggen.',
     downloadPdf: 'Download als PDF',
     otherTeam: 'Ander team',
   },
@@ -21,7 +21,7 @@ const teamDashboard = {
   fallbackTeamName: 'jouw team',
 
   chips: {
-    responses: 'Responses',
+    responses: 'Ingevuld',
     organisation: 'Organisatie',
     dominant: 'Dominant',
     reliability: 'Betrouwbaarheid',
@@ -89,7 +89,7 @@ const teamDashboard = {
       },
     },
     quickwins: {
-      eyebrow: 'Quick wins',
+      eyebrow: 'Direct te doen',
       hint: 'Voor morgen',
       detailTitle: 'Acties voor morgen',
       detailLead: 'Concrete acties afgeleid uit alle inzichten van dit dashboard.',

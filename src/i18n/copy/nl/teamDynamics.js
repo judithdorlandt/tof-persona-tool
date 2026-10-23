@@ -49,7 +49,7 @@ const teamDynamics = {
   close: 'Sluiten ✕',
 
   chips: {
-    responses: 'Responses',
+    responses: 'Ingevuld',
     organisation: 'Organisatie',
     dominant: 'Dominant',
     tensions: 'Spanningen',

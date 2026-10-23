@@ -21,42 +21,6 @@ const teamPanels = {
     join: joinNames,
   },
 
-  header: {
-    defaultEyebrow: '01 — Team insight',
-    defaultTitleLead: 'Team insight for',
-    teamFallback: 'your team',
-    leadRose:
-      'Where collaboration rubs, why pace and reflection collide, and what that asks of leadership.',
-    leadSage:
-      'What the working styles are, what the team needs from its workplace and where the first opportunities lie.',
-    chips: {
-      responses: 'Responses',
-      organization: 'Organisation',
-      dominant: 'Dominant',
-      reliability: 'Reliability',
-    },
-    actions: {
-      otherTeam: 'Another team',
-      backHome: 'Back to home',
-    },
-  },
-
-  stats: {
-    empty: '—',
-    responses: {
-      label: 'Number of responses',
-      subtext: 'Completed profiles in this dashboard',
-    },
-    dominant: {
-      label: 'Dominant working style',
-      subtext: 'Most common primary working style',
-    },
-    topNeed: {
-      label: 'Top workplace need',
-      subtext: 'Strongest spatial need at team level',
-    },
-  },
-
   personaDistribution: {
     empty: 'No working styles available yet.',
     dominantEyebrow: 'Dominant working style',

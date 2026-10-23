@@ -21,42 +21,6 @@ const teamPanels = {
     join: joinNames,
   },
 
-  header: {
-    defaultEyebrow: '01 — Teaminzicht',
-    defaultTitleLead: 'Teaminzicht voor',
-    teamFallback: 'jouw team',
-    leadRose:
-      'Waar samenwerking schuurt, waarom tempo en reflectie botsen, en wat dat vraagt van leiderschap.',
-    leadSage:
-      'Wat werkstijlen zijn, wat het team van de werkomgeving vraagt en waar de eerste kansen liggen.',
-    chips: {
-      responses: 'Responses',
-      organization: 'Organisatie',
-      dominant: 'Dominant',
-      reliability: 'Betrouwbaarheid',
-    },
-    actions: {
-      otherTeam: 'Ander team',
-      backHome: 'Terug naar home',
-    },
-  },
-
-  stats: {
-    empty: '—',
-    responses: {
-      label: 'Aantal responses',
-      subtext: 'Ingevulde profielen in dit dashboard',
-    },
-    dominant: {
-      label: 'Dominante werkstijl',
-      subtext: 'Meest aanwezige primaire werkstijl',
-    },
-    topNeed: {
-      label: 'Top werkplekbehoefte',
-      subtext: 'Sterkste ruimtelijke behoefte op teamniveau',
-    },
-  },
-
   personaDistribution: {
     empty: 'Nog geen werkstijlen beschikbaar.',
     dominantEyebrow: 'Dominante werkstijl',
