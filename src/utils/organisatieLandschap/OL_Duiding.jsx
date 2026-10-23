@@ -72,56 +72,51 @@ function measureBulletCardH(items, w) {
     return h + 6;
 }
 
-// Fix #3: drie kaarten gelijke hoogte — inhoud-gestuurd, begrensd door de
-// ruimte boven de sluit-quote.
+// Fix #3: kaarten van gelijke hoogte — inhoud-gestuurd, begrensd door de
+// ruimte boven de sluit-quote. De kaart "Teams zonder eigen rij" staat er
+// alleen als er zulke teams zijn (ronde 2); anders worden de andere twee
+// kaarten breder.
 function drawThreeCards(svg, y, data, copy) {
     const gap = SPACING.lg;
-    const cardW = (USABLE_W - 2 * gap) / 3;
-
-    const leadership = buildLeadershipDirections(data, copy);
-    const environment = buildEnvironmentDirections(data, copy);
     const attention = buildAttentionSummary(data, copy);
+    const cards = [
+        {
+            title: copy.duiding.leadership.title,
+            subtitle: copy.duiding.leadership.subtitle,
+            items: buildLeadershipDirections(data, copy),
+            emptyFallback: copy.duiding.leadership.empty,
+        },
+        {
+            title: copy.duiding.environment.title,
+            subtitle: copy.duiding.environment.subtitle,
+            items: buildEnvironmentDirections(data, copy),
+            emptyFallback: copy.duiding.environment.empty,
+        },
+    ];
+    if (attention.length > 0) {
+        cards.push({
+            title: copy.duiding.attention.title,
+            subtitle: copy.duiding.attention.subtitle,
+            items: attention,
+            emptyFallback: copy.duiding.attention.empty,
+        });
+    }
+    const cardW = (USABLE_W - (cards.length - 1) * gap) / cards.length;
 
     // Gelijke hoogte = de grootste benodigde hoogte, begrensd zodat de kaarten
     // niet de sluit-quote raken (max) en niet onnodig leeg ogen (min).
-    const needed = Math.max(
-        measureBulletCardH(leadership, cardW),
-        measureBulletCardH(environment, cardW),
-        measureBulletCardH(attention, cardW),
-    );
+    const needed = Math.max(...cards.map((c) => measureBulletCardH(c.items, cardW)));
     const cardFloor = PAGE_H - MARGIN - 36;           // vloer boven de sluit-quote
     const maxCardH = cardFloor - y;
     const cardH = Math.max(62, Math.min(maxCardH, needed));
 
-    drawCard({
-        svg, x: MARGIN, y, w: cardW, h: cardH,
-        title: copy.duiding.leadership.title,
-        subtitle: copy.duiding.leadership.subtitle,
-        items: leadership,
-        emptyFallback: copy.duiding.leadership.empty,
-        // V14: sage — leiderschap = richting/advies, geen frictie.
-        accent: COLOR_FAMILIES.accent.rust,
-        bulletColor: COLOR_FAMILIES.accent.rust,
-    });
-
-    drawCard({
-        svg, x: MARGIN + cardW + gap, y, w: cardW, h: cardH,
-        title: copy.duiding.environment.title,
-        subtitle: copy.duiding.environment.subtitle,
-        items: environment,
-        emptyFallback: copy.duiding.environment.empty,
-        accent: COLOR_FAMILIES.accent.rust,
-        bulletColor: COLOR_FAMILIES.accent.rust,
-    });
-
-    drawCard({
-        svg, x: MARGIN + 2 * (cardW + gap), y, w: cardW, h: cardH,
-        title: copy.duiding.attention.title,
-        subtitle: copy.duiding.attention.subtitle,
-        items: attention,
-        emptyFallback: copy.duiding.attention.empty,
-        accent: COLOR_FAMILIES.accent.rust,
-        bulletColor: COLOR_FAMILIES.accent.rust,
+    cards.forEach((c, i) => {
+        drawCard({
+            svg, x: MARGIN + i * (cardW + gap), y, w: cardW, h: cardH,
+            ...c,
+            accent: COLOR_FAMILIES.accent.rust,
+            bulletColor: COLOR_FAMILIES.accent.rust,
+        });
     });
 }
 

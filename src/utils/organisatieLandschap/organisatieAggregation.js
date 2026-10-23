@@ -89,10 +89,11 @@ export function prepareOrganisatieData({
         teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd, lang));
     }
 
-    // Teams zonder eigen rij in dit overzicht: onder de vijf, nog zonder
-    // profielen, of meegeschoven in de rest-groep. Alleen het aantal wordt
-    // genoemd, geen namen.
-    const teamsWithoutOwnRow = allTeams.length - ownTeams.length;
+    // Teams zonder eigen rij in dit overzicht: onder de vijf, of meegeschoven
+    // in de rest-groep. Alleen teams mét profielen (redactie punt 2, voorstel
+    // A): teams zonder profielen tellen nergens mee en staan al op p2. Alleen
+    // het aantal wordt genoemd, geen namen.
+    const teamsWithoutOwnRow = activeTeams.length - ownTeams.length;
 
     // Reconciliatie respondenten: het organisatietotaal (aggregate.teamCount)
     // telt álle responses; de teams tellen alleen responses die aan een team

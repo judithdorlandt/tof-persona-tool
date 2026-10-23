@@ -18,7 +18,7 @@ import {
     ARCHETYPE_ORDER, getArchetypeName, PERSONA_COLORS,
 } from './constants';
 import { COLOR_FAMILIES, TYPE_V9, SPACING } from './OL_styles';
-import { createCanvas, rect, text, drawWrapped, circle } from './svgPrimitives';
+import { createCanvas, rect, text, drawWrapped, circle, wrapTextLines } from './svgPrimitives';
 import { drawPageHeader } from './OL_Chrome';
 
 const C = COLOR_FAMILIES.neutral;
@@ -36,12 +36,18 @@ export function buildHeroSVG({ data, copy, lang = 'nl' }) {
     y = drawThreeKpiCards(svg, y, data, copy);
     y += SPACING.lg;
 
-    // Onderblok vult de resterende ruimte tot de footer — balanceert de pagina.
-    // Reageerden alle teams? → leeswijzer 'Over deze meting'. Anders → respons-banner.
+    // "Over deze meting" staat er altijd (UX O1, ronde 2): juist bij een grote
+    // organisatie, waar bijna altijd een team zonder profielen is, heeft de
+    // lezer die uitleg nodig. Zijn er teams zonder profielen, dan komt de
+    // banner daaronder, onderaan de pagina.
+    const pageBottom = PAGE_H - MARGIN - 4;      // net boven de footer-lijn
     if (data.inactiveTeamCount > 0) {
-        drawTeamsBanner(svg, y, data, copy);
+        const bannerH = teamsBannerHeight(data, copy);
+        const bannerY = pageBottom - bannerH;
+        drawMeasurementBlock(svg, y, bannerY - SPACING.md, data, copy, lang);
+        drawTeamsBanner(svg, bannerY, bannerH, data, copy);
     } else {
-        drawMeasurementBlock(svg, y, data, copy, lang);
+        drawMeasurementBlock(svg, y, pageBottom, data, copy, lang);
     }
 
     // Footer wordt centraal door de orchestrator getekend (dynamische nummering).
@@ -187,8 +193,25 @@ function fitBigNumberSize(content, availW, defaultSize) {
 // ── Informatieve banner (neutraal, geen 4e kaart).
 // V12 fixes: geen rose accent (info ≠ spanning), namen volledig zichtbaar
 // (geen ellipsis), banner hoog genoeg voor 2 regels.
-function drawTeamsBanner(svg, y, data, copy) {
-    const bannerH = 32;                          // hoog genoeg voor 2 regels namen
+const BANNER_HEAD = 3.6;
+const BANNER_HEAD_LH = 5;
+const BANNER_NAMES = 3.2;
+const BANNER_NAMES_LH = 4.6;
+
+// Hoogte op maat van de inhoud (eyebrow, zin, namenlijst), zodat de uitleg
+// erboven zoveel mogelijk ruimte houdt.
+function teamsBannerHeight(data, copy) {
+    const w = USABLE_W * 0.95;
+    const head = copy.cover.teamsWithoutResponses.note(data.inactiveTeamCount);
+    const headLines = Math.min(2, Math.max(1, wrapTextLines(head, w, BANNER_HEAD, 'Inter').length));
+    const names = (data.inactiveTeams || []).join(' · ');
+    const nameLines = names
+        ? Math.min(2, Math.max(1, wrapTextLines(names, USABLE_W - SPACING.md * 2, BANNER_NAMES, 'Inter').length))
+        : 0;
+    return SPACING.md + 5 + headLines * BANNER_HEAD_LH + nameLines * BANNER_NAMES_LH + SPACING.sm;
+}
+
+function drawTeamsBanner(svg, y, bannerH, data, copy) {
     const isEmpty = data.inactiveTeamCount === 0;
 
     // 1pt border, géén kleur-accent — info is neutraal.
@@ -243,9 +266,8 @@ function drawTeamsBanner(svg, y, data, copy) {
 // ── Leeswijzer "Over deze meting" — vervangt het lege respons-blok wanneer
 // alle teams hebben gereageerd. Legt uit wat de meting meet + legenda van de
 // acht werkstijlen (één regel elk). Vult de ruimte tot net boven de footer.
-function drawMeasurementBlock(svg, y, data, copy, lang) {
+function drawMeasurementBlock(svg, y, bottomLimit, data, copy, lang) {
     const m = copy.cover.measurement;
-    const bottomLimit = PAGE_H - MARGIN - 4;     // net boven de footer-lijn
     const blockH = bottomLimit - y;
 
     svg.appendChild(rect(MARGIN, y, USABLE_W, blockH, C.surface, {
