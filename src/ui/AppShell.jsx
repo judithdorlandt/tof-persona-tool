@@ -124,9 +124,12 @@ export function HeroBlock({
                 {titleAccent ? (
                     <>
                         {' '}
+                        {/* inherit: index.css zet `span` vlak op de bodyletter,
+                            en die regel wint van overerving uit de h1. */}
                         <span
                             style={{
                                 color: accentColor,
+                                fontFamily: 'inherit',
                                 fontStyle: 'italic',
                                 whiteSpace: 'nowrap',
                             }}
