@@ -149,19 +149,19 @@ const teamDynamics = {
       'presteerder:verbinder': {
         label: 'Pace and connection need direction',
         desc: 'The achiever steers on pace and outcome, the connector on relationship and alignment. Both are needed — but without direction they do not take turns, they collide.',
-        risk: 'Decisions come quickly, but nobody is behind them. The achiever gets irritated by what looks to him like delay. The connector feels overruled. Frustration builds on both sides.',
+        risk: 'Decisions come quickly, but nobody is behind them. Achievers get irritated by what looks to them like delay. Connectors feel overruled. Frustration builds on both sides.',
         leadership: 'Say out loud, per situation, what leads: speed or connection. Not as a compromise, but as a deliberate choice. Then everyone knows what is being steered on, and why.',
       },
       'maker:zekerzoeker': {
         label: 'Freedom and certainty need boundaries',
         desc: 'The maker wants to experiment and move fast; the stabiliser needs clarity and continuity. Without clear agreements it feels cramped to one and chaotic to the other.',
         risk: 'Unease for the stabiliser, frustration for the maker. Energy that should have gone into the work disappears into an internal argument about how to work.',
-        leadership: 'Build stable boundaries within which experimenting is normal. The stabiliser keeps his footing and the maker gets his room — without either having to give way.',
+        leadership: 'Build stable boundaries within which experimenting is normal. Stabilisers keep their footing and makers get their room — without either having to give way.',
       },
       'denker:presteerder': {
         label: 'Depth and pace need rhythm',
-        desc: 'The thinker wants to understand before he moves. The achiever wants to move before he fully understands. Both belong to good decision-making, but not at the same speed.',
-        risk: 'The thinker gets shut out of decisions because he does not keep up. The achiever decides without enough substance underneath. Over time that erodes the quality of the work and the trust between them.',
+        desc: 'Thinkers want to understand before they move. Achievers want to move before they fully understand. Both belong to good decision-making, but not at the same speed.',
+        risk: 'Thinkers get shut out of decisions because they do not keep up. Achievers decide without enough substance underneath. Over time that erodes the quality of the work and the trust between them.',
         leadership: 'Reserve thinking time before decisions, not after. Be clear about when analysis leads and when action does. That gives both working styles the rhythm they need.',
       },
       'vernieuwer:zekerzoeker': {
@@ -174,7 +174,7 @@ const teamDynamics = {
         label: 'Loyalty and autonomy need ownership',
         desc: 'The team player works from shared responsibility, the maker from personal drive and autonomy. Both want results — by a different route.',
         risk: 'The team player sees the maker as individualistic and not much of a colleague. The maker sees the team player as slow and political. Both withdraw, each in their own way.',
-        leadership: 'Define ownership explicitly, task by task. Who decides, who is consulted, who is informed? The maker gets his room without the team player feeling left out.',
+        leadership: 'Define ownership explicitly, task by task. Who decides, who is consulted, who is informed? Makers get their room without team players feeling left out.',
       },
       'groeier:zekerzoeker': {
         label: 'Development and stability need anchoring',
@@ -207,7 +207,7 @@ const teamDynamics = {
       ],
       verbinder: [
         'Ask regularly how things really are. Connectors pick up tension earlier than anyone else, but only if there is room to say so.',
-        'Use the connector as your early warning. What they catch in the corridor reaches you three weeks later in a formal conversation — if it reaches you at all.',
+        'Use connectors as your early warning. What they catch in the corridor reaches you three weeks later in a formal conversation — if it reaches you at all.',
         'Make meeting part of the work. To a connector a good conversation is not a break; it is how the work gets done.',
       ],
       maker: [
@@ -216,24 +216,24 @@ const teamDynamics = {
         'Make experimenting safe. Makers learn by doing, and doing sometimes means failing. Without that room you lose their best work.',
       ],
       denker: [
-        'Share information early and in full. A thinker forced to respond at the last minute does not deliver his best work — and knows it.',
+        'Share information early and in full. Thinkers forced to respond at the last minute do not deliver their best work — and know it.',
         'Protect thinking time. In a team built on pace, reflection quickly becomes a luxury — which is exactly where the thinker adds value.',
         'Value thoroughness, even when it is slower. The thinker prevents mistakes others only spot once they have been made.',
       ],
       teamspeler: [
-        'Keep roles clear and relationships steady. A team player does his best work when he knows where he stands in the whole — ambiguity costs him disproportionate energy.',
+        'Keep roles clear and relationships steady. Team players do their best work when they know where they stand in the whole — ambiguity costs them disproportionate energy.',
         'Communicate change early and in person. To a team player, an email about a reorganisation is not information; it is a sign of distance.',
-        'Name team results alongside individual ones. The team player sees his contribution in what the team achieves — if only individual performance is celebrated, he feels invisible.',
+        'Name team results alongside individual ones. Team players see their contribution in what the team achieves — if only individual performance is celebrated, they feel invisible.',
       ],
       zekerzoeker: [
-        'Keep expectations predictable. A stabiliser performs best when the rules hold — not because he cannot handle change, but because otherwise he loses his focus.',
+        'Keep expectations predictable. Stabilisers perform best when the rules hold — not because they cannot handle change, but because otherwise they lose their focus.',
         'Communicate change with a reason and a timeline. A stabiliser accepts change, but needs the context around it: why now, what changes, when.',
         'Value reliability visibly. Work that is always finished on time stops being noticed — while it is the base everything else is built on.',
       ],
       groeier: [
-        'Talk about learning goals actively. A grower who sees no path forward gets restless — even when the work itself suits him fine.',
-        'Add stretching work alongside the routine. A grower handles routine perfectly well, but without something to get his teeth into he loses his edge.',
-        'Make growth visible. A grower wants to know whether he is moving forward — not out of vanity, but because development is what drives him.',
+        'Talk about learning goals actively. Growers who see no path forward get restless — even when the work itself suits them fine.',
+        'Add stretching work alongside the routine. Growers handle routine perfectly well, but without something to get their teeth into they lose their edge.',
+        'Make growth visible. Growers want to know whether they are moving forward — not out of vanity, but because development is what drives them.',
       ],
       vernieuwer: [
         'Set aside room to experiment. Innovators need small protected spaces where new ideas are allowed to fail — otherwise they stay stuck in the existing routine.',

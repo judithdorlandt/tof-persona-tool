@@ -172,19 +172,19 @@ const teamDynamics = {
       'presteerder:verbinder': {
         label: 'Tempo en verbinding vragen om regie',
         desc: 'De presteerder stuurt op tempo en uitkomst, de verbinder op relatie en afstemming. Beide zijn nodig — maar zonder regie wisselen ze elkaar niet af, ze botsen.',
-        risk: 'Besluiten worden snel genomen, maar draagvlak ontbreekt. De presteerder raakt geïrriteerd door wat hij ziet als vertraging. De verbinder voelt zich overruled. Frustratie stapelt zich aan beide kanten.',
+        risk: 'Besluiten worden snel genomen, maar draagvlak ontbreekt. Presteerders raken geïrriteerd door wat ze zien als vertraging. Verbinders voelen zich overruled. Frustratie stapelt zich aan beide kanten.',
         leadership: 'Maak per situatie expliciet wat leidend is: snelheid of verbinding. Niet als compromis, maar als bewuste keuze. Zo weet iedereen waarop wordt gestuurd, en waarom.',
       },
       'maker:zekerzoeker': {
         label: 'Vrijheid en zekerheid vragen om kaders',
         desc: 'De maker wil experimenteren en snel bewegen, de zekerzoeker heeft helderheid en continuïteit nodig. Zonder duidelijke afspraken voelt het voor de één benauwd en voor de ander chaotisch.',
         risk: 'Onrust bij de zekerzoeker, frustratie bij de maker. Energie die naar het werk had moeten gaan, verdwijnt in intern conflict over werkwijze en aanpak.',
-        leadership: 'Zorg voor stabiele kaders waarbinnen experimenteren normaal is. Zo houdt de zekerzoeker zijn houvast en krijgt de maker zijn ruimte — zonder dat één van beiden hoeft te buigen.',
+        leadership: 'Zorg voor stabiele kaders waarbinnen experimenteren normaal is. Zo houden zekerzoekers hun houvast en krijgen makers hun ruimte — zonder dat één van beiden hoeft te buigen.',
       },
       'denker:presteerder': {
         label: 'Diepgang en tempo vragen om ritme',
-        desc: 'De denker wil begrijpen voordat hij beweegt. De presteerder wil bewegen voordat hij volledig begrijpt. Beide horen bij goede besluitvorming, maar in hetzelfde tempo gaan ze niet.',
-        risk: 'De denker wordt buitengesloten van besluiten omdat hij niet snel genoeg meekomt. De presteerder neemt besluiten zonder voldoende inhoudelijke onderbouwing. Op termijn ondermijnt dat de kwaliteit van het werk én het vertrouwen in elkaar.',
+        desc: 'Denkers willen begrijpen voordat ze bewegen. Presteerders willen bewegen voordat ze volledig begrijpen. Beide horen bij goede besluitvorming, maar in hetzelfde tempo gaan ze niet.',
+        risk: 'Denkers worden buitengesloten van besluiten omdat ze niet snel genoeg meekomen. Presteerders nemen besluiten zonder voldoende inhoudelijke onderbouwing. Op termijn ondermijnt dat de kwaliteit van het werk én het vertrouwen in elkaar.',
         leadership: 'Reserveer denktijd vóór besluitvorming, niet erna. Maak duidelijk wanneer analyse leidend is en wanneer actie. Dat geeft beide werkstijlen het ritme dat ze nodig hebben.',
       },
       'vernieuwer:zekerzoeker': {
@@ -197,7 +197,7 @@ const teamDynamics = {
         label: 'Loyaliteit en autonomie vragen om eigenaarschap',
         desc: 'De teamspeler werkt vanuit gedeelde verantwoordelijkheid, de maker vanuit persoonlijke drang en autonomie. Allebei willen ze resultaat — maar via een ander pad.',
         risk: 'De teamspeler ervaart de maker als individualistisch en weinig collegiaal. De maker ervaart de teamspeler als remmend en politiek. Beiden trekken zich terug op hun eigen manier.',
-        leadership: 'Definieer eigenaarschap expliciet per taak. Wie beslist, wie wordt geconsulteerd, wie informeert? Zo krijgt de maker zijn ruimte zonder dat de teamspeler het gevoel heeft buitengesloten te worden.',
+        leadership: 'Definieer eigenaarschap expliciet per taak. Wie beslist, wie wordt geconsulteerd, wie informeert? Zo krijgen makers hun ruimte zonder dat teamspelers het gevoel hebben buitengesloten te worden.',
       },
       'groeier:zekerzoeker': {
         label: 'Ontwikkeling en stabiliteit vragen om verankering',
@@ -228,37 +228,37 @@ const teamDynamics = {
       presteerder: [
         'Maak prioriteiten concreet en zichtbaar. Presteerders verliezen energie als ze niet weten waar ze naartoe werken — een helder doel met meetbare voortgang houdt ze scherp.',
         'Erken voortgang en uitkomst actief. Stilte voelt voor een presteerder als afkeuring of desinteresse, ook als die er niet is.',
-        'Stuur op resultaat, niet op drukte. Aanwezigheid en activiteit zeggen een presteerder weinig — alleen wat wordt opgeleverd telt voor hem.',
+        'Stuur op resultaat, niet op drukte. Aanwezigheid en activiteit zeggen presteerders weinig — alleen wat wordt opgeleverd telt voor hen.',
       ],
       verbinder: [
         'Vraag regelmatig hoe het echt gaat. Verbinders signaleren spanning eerder dan anderen, maar alleen als de ruimte er is om dat te delen.',
-        'Gebruik de verbinder als vroege signaalgever. Wat zij oppikken in de wandelgangen, hoor jij pas drie weken later in een formeel gesprek — als je het al hoort.',
+        'Gebruik verbinders als vroege signaalgevers. Wat zij oppikken in de wandelgangen, hoor jij pas drie weken later in een formeel gesprek — als je het al hoort.',
         'Maak ontmoeting onderdeel van het werk. Voor een verbinder is een goed gesprek geen pauze, maar de manier waarop het werk gedaan wordt.',
       ],
       maker: [
-        'Geef richting op hoofdlijnen, laat ruimte in de aanpak. Een maker heeft een doel nodig, geen draaiboek — anders dooft de energie waarmee hij dingen voor elkaar krijgt.',
+        'Geef richting op hoofdlijnen, laat ruimte in de aanpak. Makers hebben een doel nodig, geen draaiboek — anders dooft de energie waarmee ze dingen voor elkaar krijgen.',
         'Beloon initiatief zichtbaar. Makers nemen risico door dingen op te pakken die nog niet zijn afgesproken — als dat wordt afgestraft of genegeerd, stoppen ze ermee.',
         'Maak experimenteren veilig. Makers leren door te doen, en doen betekent soms falen. Zonder die ruimte verlies je hun beste werk.',
       ],
       denker: [
-        'Geef informatie op tijd en volledig. Een denker die op het laatste moment moet reageren, levert niet zijn beste werk — en weet dat zelf ook.',
-        'Bescherm denktijd. In een team dat draait om tempo wordt reflectie al snel een luxe — terwijl de denker juist daar zijn waarde heeft.',
+        'Geef informatie op tijd en volledig. Denkers die op het laatste moment moeten reageren, leveren niet hun beste werk — en weten dat zelf ook.',
+        'Bescherm denktijd. In een team dat draait om tempo wordt reflectie al snel een luxe — terwijl denkers juist daar hun waarde hebben.',
         'Waardeer grondigheid, ook als het langzamer gaat. De denker voorkomt fouten die anderen pas zien als ze al gemaakt zijn.',
       ],
       teamspeler: [
-        'Zorg voor duidelijke rollen en stabiele verhoudingen. Een teamspeler levert het beste werk als hij weet waar hij staat in het geheel — onduidelijkheid kost hem onevenredig veel energie.',
+        'Zorg voor duidelijke rollen en stabiele verhoudingen. Teamspelers leveren het beste werk als ze weten waar ze staan in het geheel — onduidelijkheid kost hen onevenredig veel energie.',
         'Communiceer verandering vroeg en persoonlijk. Voor een teamspeler is een mailtje over een reorganisatie geen informatie, maar een teken van afstand.',
-        'Benoem teamresultaten naast individuele prestaties. De teamspeler ziet zijn bijdrage in wat het team bereikt — als alleen individuele prestaties gevierd worden, voelt hij zich onzichtbaar.',
+        'Benoem teamresultaten naast individuele prestaties. Teamspelers zien hun bijdrage in wat het team bereikt — als alleen individuele prestaties gevierd worden, voelen ze zich onzichtbaar.',
       ],
       zekerzoeker: [
-        'Geef voorspelbaarheid in verwachtingen. Een zekerzoeker presteert het beste als de regels stabiel zijn — niet omdat hij geen verandering aankan, maar omdat hij anders zijn focus kwijtraakt.',
+        'Geef voorspelbaarheid in verwachtingen. Zekerzoekers presteren het beste als de regels stabiel zijn — niet omdat ze geen verandering aankunnen, maar omdat ze anders hun focus kwijtraken.',
         'Communiceer verandering met reden en tijdlijn. Een zekerzoeker accepteert verandering, maar heeft daar de context bij nodig: waarom nu, wat verandert er, wanneer.',
         'Waardeer betrouwbaarheid zichtbaar. Werk dat altijd op tijd af is, valt niet meer op — terwijl het de basis vormt waarop de rest kan bouwen.',
       ],
       groeier: [
         'Bespreek leerdoelen actief. Een groeier die geen ontwikkelperspectief ziet, wordt onrustig — ook als het werk inhoudelijk goed bevalt.',
-        'Geef uitdagende opdrachten naast routine. Routine voert een groeier prima uit, maar zonder iets om in te bijten verliest hij zijn scherpte.',
-        'Maak groei zichtbaar. Een groeier wil weten of hij vooruit komt — niet uit ijdelheid, maar omdat ontwikkeling voor hem de motivator is.',
+        'Geef uitdagende opdrachten naast routine. Routine voeren groeiers prima uit, maar zonder iets om in te bijten verliezen ze hun scherpte.',
+        'Maak groei zichtbaar. Groeiers willen weten of ze vooruitkomen — niet uit ijdelheid, maar omdat ontwikkeling voor hen de motivator is.',
       ],
       vernieuwer: [
         'Reserveer ruimte voor experiment. Vernieuwers hebben kleine vrijplaatsen nodig waarin nieuwe ideeën mogen mislukken — anders blijven ze hangen in de bestaande routines.',

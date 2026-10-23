@@ -404,7 +404,7 @@ const archetypes = {
       'Vertel me op tijd wat er verandert, ook als het nog niet rond is.',
       'Ik wil dat we het over het team kunnen hebben als het daar schuurt.',
     ],
-    lquote: 'Als je het team als wisselgeld behandelt, verliest deze persoon zijn fundament.',
+    lquote: 'Als je het team als wisselgeld behandelt, valt voor deze persoon het fundament weg.',
     quote: 'Wordt het team als wisselgeld behandeld, dan raak jij je fundament kwijt.',
     mismatch: [
       'Hot-desking en continu wisselende groepen.',
@@ -542,7 +542,7 @@ const archetypes = {
       'Laat me een idee klein uitproberen in plaats van het alleen te bespreken.',
       'Betrek me bij wáár we heen gaan, niet alleen bij hoe we er komen.',
     ],
-    lquote: 'Zonder podium bouwt deze persoon zijn eigen podium — en dat is zelden binnen dezelfde organisatie.',
+    lquote: 'Zonder podium bouwt deze persoon een eigen podium — en dat is zelden binnen dezelfde organisatie.',
     quote: 'Krijg je geen podium, dan bouw je je eigen podium — en dat staat zelden binnen dezelfde organisatie.',
     mismatch: [
       'Omgevingen zonder ruimte voor vernieuwing.',

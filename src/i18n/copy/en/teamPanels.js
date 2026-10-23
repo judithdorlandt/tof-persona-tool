@@ -95,14 +95,14 @@ const teamPanels = {
       before: 'Will not ',
       highlight: 'deliver results',
       after: isOne
-        ? ' if the workspaces he or she needs are not available in sufficient numbers.'
+        ? ' if the workspaces this group needs are not available in sufficient numbers.'
         : ' if the workspaces they need are not available in sufficient numbers.',
     }),
     impactEnergy: (isOne) => ({
       before: 'Will ',
       highlight: 'lose energy',
       after: isOne
-        ? ' coming into the office if it is full of things he or she does not use.'
+        ? ' coming into the office if it is full of things this group does not use.'
         : ' coming into the office if it is full of things they do not use.',
     }),
     restOfTeam: 'Also in the team',

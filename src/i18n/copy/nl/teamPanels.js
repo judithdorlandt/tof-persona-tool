@@ -96,14 +96,14 @@ const teamPanels = {
       before: isOne ? 'Komt ' : 'Komen ',
       highlight: 'niet tot resultaat',
       after: isOne
-        ? ' als de werkplekken die hij of zij nodig heeft er onvoldoende zijn.'
+        ? ' als de werkplekken die deze groep nodig heeft er onvoldoende zijn.'
         : ' als de werkplekken die ze nodig hebben er onvoldoende zijn.',
     }),
     impactEnergy: (isOne) => ({
       before: isOne ? 'Verliest ' : 'Verliezen ',
       highlight: 'energie',
       after: isOne
-        ? ' om te komen werken als het kantoor vol staat met wat hij of zij niet gebruikt.'
+        ? ' om te komen werken als het kantoor vol staat met wat deze groep niet gebruikt.'
         : ' om te komen werken als het kantoor vol staat met wat ze niet gebruiken.',
     }),
     restOfTeam: 'Verder in het team',
