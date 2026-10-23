@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { getMyManagedTeams, getResponsesByTeam } from '../supabase';
-import { grantTeamLevel, LEVEL_INSIGHT, readAfterLogin, clearAfterLogin } from '../utils/access';
+import { grantTeamLevel, levelFromCode, readAfterLogin, clearAfterLogin } from '../utils/access';
 import {
   PageShell,
   HeroBlock,
@@ -64,10 +64,12 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
         const openTeam = afterTeam || (managed.length === 1 ? managed[0] : null);
         if (openTeam) {
           const t = openTeam;
+          // Lokaal alleen wat de code geeft; Teamdynamiek komt uit de rol
+          // (team_managers) en verdwijnt dus vanzelf bij uitloggen.
           grantTeamLevel({
             team: t.team,
             organization: t.organization,
-            level: t.level || LEVEL_INSIGHT,
+            level: levelFromCode(t.level),
             code: t.code,
           });
           if (typeof setSelectedTeam === 'function') {

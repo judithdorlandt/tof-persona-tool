@@ -73,7 +73,12 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
         let cancelled = false;
 
         async function refreshAccesses() {
-            const localAccesses = listTeamAccesses();
+            // Lokaal bewaard niveau telt hooguit als codeniveau (zie
+            // getTeamLevel); Dynamiek komt hieronder uit de rol.
+            const localAccesses = listTeamAccesses().map((a) => ({
+                ...a,
+                level: levelFromCode(a.level),
+            }));
 
             // Niet ingelogd? alleen lokale toegang.
             let dbMemberships = [];
@@ -191,10 +196,11 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
             // DB-only entry? Grant ook localStorage zodat TeamDashboard/TeamDynamics
             // de toegang correct herkent (die componenten lezen access uit localStorage).
             if (entry.fromDB) {
+                // Lokaal alleen wat een code geeft; Dynamiek hangt aan de rol.
                 grantTeamLevel({
                     team: entry.team,
                     organization: entry.organization,
-                    level: entry.level || LEVEL_INSIGHT,
+                    level: levelFromCode(entry.level),
                     code: entry.code,
                 });
             }

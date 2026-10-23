@@ -253,7 +253,11 @@ export function getTeamLevel(team, organization) {
     const list = readAccessList();
     const key = teamKey(team, organization);
     const entry = list.find((e) => teamKey(e.team, e.organization) === key);
-    const stored = entry?.level || null;
+    // Een lokaal bewaarde toegang geeft hooguit wat een code geeft. Oudere
+    // versies schreven hier ook 'dynamics' weg (na inloggen, of uit de oude
+    // Module 2-vlag); dat bleef staan na uitloggen, en dan hield je op een
+    // gedeelde computer Teamdynamiek open. Dynamics hangt aan de rol.
+    const stored = entry?.level ? levelFromCode(entry.level) : null;
 
     // Manager van dit team? Dan minstens Dynamics, ook zonder code.
     if (isManagerOf(team, organization)) {
