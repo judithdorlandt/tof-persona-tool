@@ -48,7 +48,7 @@ export const COPY_NL = {
         subtitle: 'Werkstijlen, patronen en richting',
         kpiLabels: {
             respondents: 'Respondenten',
-            dominantStyle: 'Dominante werkstijl',
+            dominantStyle: 'De grootste groep in de organisatie:',
             // Opdracht L3 (besluit Judith 23 okt): de kern, geen percentage.
             topNeed: 'Wat de organisatie het meest nodig heeft',
             teamsCovered: 'Teams met data',
@@ -73,7 +73,7 @@ export const COPY_NL = {
         // hebben gereageerd. Legenda-omschrijvingen afgeleid van de drijfveren.
         measurement: {
             eyebrow: 'OVER DEZE METING',
-            intro: 'Elke respondent vult een korte vragenlijst in en krijgt één dominante werkstijl. Dit rapport telt die werkstijlen op tot een beeld per team en voor de hele organisatie. De acht werkstijlen:',
+            intro: 'Iedereen vult een korte vragenlijst in en krijgt een eerste, tweede en derde werkstijl. Dit rapport telt de eerste werkstijlen op tot een beeld per team en voor de hele organisatie. De acht werkstijlen:',
             // Keyed op archetype-id; builder koppelt aan ARCHETYPE_NAME.
             legend: {
                 maker: 'maakt graag iets tastbaars af',
@@ -105,13 +105,8 @@ export const COPY_NL = {
         // — die glyphs renderen nooit, ongeacht italic/normaal. Daarom de drempels
         // in woorden i.p.v. wiskundige tekens; leest bovendien prettiger voor een
         // bestuurlijke lezer. (· – é zitten wél in de subset en blijven dus staan.)
-        reliabilityHelp: 'minder dan 5 = laag · 5–9 = midden · 10 of meer = hoog',
-        // Labels achter de betrouwbaarheids-dot per rij (keyed op dot-id).
-        reliabilityLabels: {
-            laag: 'Laag',
-            midden: 'Midden',
-            hoog: 'Hoog',
-        },
+        // Dezelfde schaal als de dashboards (getConfidence, opdracht L4).
+        reliabilityHelp: '5–15 = opkomend patroon · 16–30 = betrouwbaar beeld · meer dan 30 = sterk patroon',
         // Fix #5 page 2: rij-totalen kunnen door afronding op 99–101% uitkomen.
         roundingNote: 'Rij-totalen kunnen door afronding optellen tot 99–101%.',
         // Fix #2 page 2: legenda-uitleg ipv arbitraire kleur.

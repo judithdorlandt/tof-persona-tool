@@ -17,8 +17,11 @@ import {
     getArchetypeName,
     getPersonaDrive,
     PERSONA_COLORS,
-    reliabilityFor,
 } from './constants';
+// Dezelfde functies als de dashboards (opdracht L4): de grootste groep met
+// gelijke stand, en één betrouwbaarheidsschaal.
+import { dominantPersonas } from '../TeamAggregation';
+import { getConfidence } from '../../insights';
 import { getOLCopy } from './copy';
 import { MIN_TEAM_RESPONSES } from '../access';
 import { getCopy } from '../../i18n/copy';
@@ -80,10 +83,10 @@ export function prepareOrganisatieData({
 
     const orgRow = buildOrgRow(aggregate, cd);
     const teamRows = ownTeams
-        .map((t) => buildTeamRow(t, cd))
+        .map((t) => buildTeamRow(t, cd, lang))
         .sort((a, b) => b.n - a.n);
     if (hasRestRow) {
-        teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd));
+        teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd, lang));
     }
 
     // Teams zonder eigen rij in dit overzicht: onder de vijf, nog zonder
@@ -176,7 +179,14 @@ function buildOrgRow(aggregate, cd) {
     return { name: cd.orgRowLabel, n, cells, isOrg: true };
 }
 
-function buildTeamRow(t, cd) {
+// Betrouwbaarheid per rij: getConfidence(), dezelfde schaal als overal
+// (5–15 opkomend, 16–30 betrouwbaar, meer dan 30 sterk).
+function confidenceFor(n, lang) {
+    const c = getConfidence(n, lang);
+    return { id: c.level, label: c.label };
+}
+
+function buildTeamRow(t, cd, lang) {
     const n = t.responseCount || 0;
     const personas = t.aggregate?.personasByPrimary || [];
     const map = new Map(personas.map((p) => [p.id, p]));
@@ -190,7 +200,7 @@ function buildTeamRow(t, cd) {
         name: getTeamName(t, cd),
         n,
         cells,
-        reliability: reliabilityFor(n),
+        reliability: confidenceFor(n, lang),
         isOrg: false,
     };
 }
@@ -198,7 +208,7 @@ function buildTeamRow(t, cd) {
 // De rest-groep: de organisatie min de teams met een eigen rij. Zo zitten
 // kleine teams en niet-gekoppelde profielen er samen in, en sluit de som van
 // de rijen precies aan op het organisatietotaal.
-function buildRestRow(aggregate, ownTeams, n, cd) {
+function buildRestRow(aggregate, ownTeams, n, cd, lang) {
     const counts = {};
     (aggregate?.personasByPrimary || []).forEach((p) => {
         counts[p.id] = (counts[p.id] || 0) + (p.count || 0);
@@ -217,18 +227,22 @@ function buildRestRow(aggregate, ownTeams, n, cd) {
         name: cd.otherTeamsRowLabel(n),
         n,
         cells,
-        reliability: reliabilityFor(n),
+        reliability: confidenceFor(n, lang),
         isOrg: false,
         isOther: true,
     };
 }
 
+// De grootste groep: dominantPersonas(), bij een gelijke stand alle namen
+// ("Maker en Groeier"), zoals Teaminzicht.
 function computeDominantStyle(aggregate, lang) {
-    const top = (aggregate?.personasByPrimary || [])[0];
-    if (!top) return { id: null, name: '—', color: '#999' };
+    const dominant = dominantPersonas(aggregate);
+    if (dominant.length === 0) return { id: null, name: '—', color: '#999' };
+    const top = dominant[0];
+    const names = dominant.map((p) => getArchetypeName(p.id, lang) || p.name || p.id);
     return {
         id: top.id,
-        name: getArchetypeName(top.id, lang) || top.name || top.id,
+        name: getCopy(lang).teamPanels.names.join(names),
         color: PERSONA_COLORS[top.id],
         count: top.count,
     };

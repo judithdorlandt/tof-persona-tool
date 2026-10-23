@@ -17,7 +17,6 @@ import {
 } from './constants';
 import {
     TYPE_V9, COLOR_FAMILIES, SPACING,
-    reliabilityDotFor,
 } from './OL_styles';
 import {
     createCanvas, rect, text, drawWrapped, circle,
@@ -117,9 +116,12 @@ function drawLegendTopRight(svg, y, copy) {
 
 function drawHeatmap(svg, y, data, copy, lang) {
     // Fix #4: team-kolom breder (75mm), font kleiner (12px = 3.18mm)
-    const teamColW = 75;
+    // Betrouwbaarheid toont sinds L4 de labels van getConfidence() ("Opkomend
+    // patroon", "Betrouwbaar beeld"): langer dan Laag/Midden/Hoog, dus een
+    // bredere kolom ten koste van de ruime teamnaamkolom.
+    const teamColW = 60;
     const nColW = 9;
-    const relColW = 22;
+    const relColW = 37;
     const personaAreaW = USABLE_W - teamColW - nColW - relColW;
     const cellW = personaAreaW / ARCHETYPE_ORDER.length;
 
@@ -201,7 +203,7 @@ function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang) 
 function drawDataRow(svg, {
     x, y, h, teamColW, nColW, relColW, cellW, row, isOrg, zebra, copy,
 }) {
-    const lowReliability = !isOrg && row.reliability?.id === 'laag';
+    const lowReliability = !isOrg && row.reliability?.id === 'low';
     const rowOpacity = lowReliability ? 0.65 : 1;
 
     if (zebra) svg.appendChild(rect(x, y, USABLE_W, h - 0.8, '#F2EBE0'));
@@ -237,14 +239,13 @@ function drawDataRow(svg, {
     if (!isOrg && row.reliability) {
         const cx = x + teamColW + nColW + 4;
         const cy = y + h / 2 + 0.4;
-        const dot = reliabilityDotFor(row.n);
         svg.appendChild(circle(cx, cy, 0.7, C.textMuted, {
             opacity: rowOpacity < 1 ? rowOpacity : 1,
         }));
         svg.appendChild(text({
             x: cx + 2.5, y: cy + 1.1,
-            // Het label komt uit copy (OL_styles levert alleen de id + kleur).
-            content: copy?.heatmap?.reliabilityLabels?.[dot.id] || dot.label,
+            // Label uit getConfidence(), zoals de dashboards (opdracht L4).
+            content: row.reliability.label,
             font: 'Inter', weight: 500, size: 3, color: C.textSoft,
             opacity: rowOpacity < 1 ? rowOpacity : null,
         }));

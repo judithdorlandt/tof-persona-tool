@@ -46,7 +46,7 @@ export const COPY_EN = {
         subtitle: 'Working styles, patterns and direction',
         kpiLabels: {
             respondents: 'Respondents',
-            dominantStyle: 'Dominant working style',
+            dominantStyle: 'The largest group in the organisation:',
             topNeed: 'What the organisation needs most',
             teamsCovered: 'Teams with data',
         },
@@ -68,7 +68,7 @@ export const COPY_EN = {
         // Reader's guide that fills the freed-up space when every team responded.
         measurement: {
             eyebrow: 'ABOUT THIS MEASUREMENT',
-            intro: 'Every respondent completes a short questionnaire and receives one dominant working style. This report adds those styles up into a picture per team and for the organisation as a whole. The eight working styles:',
+            intro: 'Everyone completes a short questionnaire and receives a first, second and third working style. This report adds up the first working styles into a picture per team and for the organisation as a whole. The eight working styles:',
             // Keyed on archetype id; the builder pairs it with the persona name.
             legend: {
                 maker: 'likes to finish something tangible',
@@ -97,13 +97,7 @@ export const COPY_EN = {
         orgRowLabel: 'ORGANISATION',
         orgRowReliability: 'n/a',
         // No >= / <= glyphs: the bundled font subsets do not contain them.
-        reliabilityHelp: 'fewer than 5 = low · 5–9 = medium · 10 or more = high',
-        // Labels next to the reliability dot per row (keyed on dot id).
-        reliabilityLabels: {
-            laag: 'Low',
-            midden: 'Medium',
-            hoog: 'High',
-        },
+        reliabilityHelp: '5–15 = emerging pattern · 16–30 = reliable picture · more than 30 = strong pattern',
         roundingNote: 'Rounding means row totals can add up to 99–101%.',
         legend: {
             label: 'COLOUR INTENSITY',

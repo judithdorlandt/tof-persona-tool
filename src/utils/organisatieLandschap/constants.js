@@ -134,21 +134,8 @@ export function getPersonaDrive(id, lang) {
 
 export const PERSONA_DRIVE = PERSONA_DRIVE_BY_LANG.nl;
 
-// ── Betrouwbaarheidsdrempels (lost fout #4 pagina 1 op).
-// n<5 = laag, 5–9 = midden, ≥10 = hoog.
-export const RELIABILITY_THRESHOLDS = { low: 5, mid: 10 };
-
-export const RELIABILITY = {
-    LAAG: { id: 'laag', label: 'Laag', color: COLORS.rose, opacity: 0.6 },
-    MIDDEN: { id: 'midden', label: 'Midden', color: COLORS.ochre, opacity: 0.85 },
-    HOOG: { id: 'hoog', label: 'Hoog', color: COLORS.sage, opacity: 1 },
-};
-
-export function reliabilityFor(n) {
-    if (n < RELIABILITY_THRESHOLDS.low) return RELIABILITY.LAAG;
-    if (n < RELIABILITY_THRESHOLDS.mid) return RELIABILITY.MIDDEN;
-    return RELIABILITY.HOOG;
-}
+// Betrouwbaarheid: sinds opdracht L4 getConfidence() uit src/insights.js,
+// dezelfde schaal als de dashboards (zie organisatieAggregation.js).
 
 // ── Typografie-tokens — consistent over pagina's heen.
 export const TYPE = {

@@ -136,16 +136,3 @@ export const COLOR_FAMILIES = {
         cellZero: '#F0E9DF',
     },
 };
-
-// ── Reliability-dots (fix #3 pagina 3: pillen weg, dot + tekst op baseline).
-export const RELIABILITY_DOT = {
-    hoog: { id: 'hoog', label: 'Hoog', color: COLOR_FAMILIES.accent.rust },
-    midden: { id: 'midden', label: 'Midden', color: '#C7A24A' },
-    laag: { id: 'laag', label: 'Laag', color: COLOR_FAMILIES.accent.frictieSoft },
-};
-
-export function reliabilityDotFor(n) {
-    if (n < 5) return RELIABILITY_DOT.laag;
-    if (n < 10) return RELIABILITY_DOT.midden;
-    return RELIABILITY_DOT.hoog;
-}
