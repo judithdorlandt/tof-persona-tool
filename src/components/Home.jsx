@@ -214,6 +214,7 @@ export default function Home({ setPage }) {
             title={t.offerCard.title}
             text={t.offerCard.text}
             accent="var(--tof-accent-sage)"
+            eyebrowColor="var(--tof-accent-sage-text)"
             onClick={() => setPage('quiz')}
             clickable
           />
@@ -460,6 +461,7 @@ function OfferCard({
   title,
   text,
   accent = 'var(--tof-text)',
+  eyebrowColor,
   onClick,
   clickable = false,
   subtle = false,
@@ -508,7 +510,7 @@ function OfferCard({
           fontSize: 12,
           textTransform: 'uppercase',
           letterSpacing: 1.6,
-          color: accent,
+          color: eyebrowColor || accent,
           fontWeight: 700,
         }}
       >

@@ -113,7 +113,7 @@ function ActionRow({ index, sourceLabel, action, isMobile }) {
                     fontSize: isMobile ? 20 : 28,
                     lineHeight: 1,
                     fontWeight: 500,
-                    color: 'var(--tof-accent-sage)',
+                    color: 'var(--tof-accent-sage-text)',
                     fontVariantNumeric: 'tabular-nums',
                     paddingTop: isMobile ? 0 : 4,
                 }}
@@ -126,7 +126,7 @@ function ActionRow({ index, sourceLabel, action, isMobile }) {
                 <div
                     style={{
                         ...TYPE.eyebrow,
-                        color: 'var(--tof-accent-sage)',
+                        color: 'var(--tof-accent-sage-text)',
                     }}
                 >
                     {sourceLabel}

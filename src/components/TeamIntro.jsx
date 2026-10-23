@@ -557,7 +557,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                                 textTransform: 'uppercase',
                                 letterSpacing: 1.6,
                                 fontWeight: 700,
-                                color: adminMode ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage)',
+                                color: adminMode ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage-text)',
                             }}
                         >
                             {t.title}
@@ -728,7 +728,7 @@ function AccessRow({ entry, isMobile, onOpen }) {
                         textTransform: 'uppercase',
                         letterSpacing: 1.2,
                         fontWeight: 700,
-                        color: isDynamics ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage)',
+                        color: isDynamics ? 'var(--tof-accent-rose)' : 'var(--tof-accent-sage-text)',
                     }}
                 >
                     {isDynamics ? t.levelDynamics : t.levelInsight}
@@ -741,7 +741,7 @@ function AccessRow({ entry, isMobile, onOpen }) {
                     type="button"
                     onClick={() => onOpen('insight')}
                     style={{
-                        background: 'var(--tof-accent-sage)',
+                        background: 'var(--tof-accent-sage-text)',
                         color: '#fff',
                         border: 'none',
                         borderRadius: 10,
@@ -795,6 +795,7 @@ function AccessStrip({
     onApp,
 }) {
     const accent = 'var(--tof-accent-sage)';
+    const accentText = 'var(--tof-accent-sage-text)';
     const routeLabel = { margin: 0, fontSize: 15, fontWeight: 600, lineHeight: 1.4, color: 'var(--tof-text)' };
     const smallNote = { margin: 0, fontSize: 13, lineHeight: 1.6, color: 'var(--tof-text-muted)' };
 
@@ -813,7 +814,7 @@ function AccessStrip({
         }}>
             <div style={{ display: 'grid', gap: 14 }}>
                 <div style={{ display: 'grid', gap: 10 }}>
-                    <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accent }}>
+                    <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accentText }}>
                         {copy.eyebrow}
                     </div>
                     <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 24 : 27, lineHeight: 1.1, color: 'var(--tof-text)' }}>
@@ -892,7 +893,7 @@ function AccessStrip({
                             background: '#EAF0EB',
                             border: `1.5px solid ${accent}`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 12, fontWeight: 700, color: accent,
+                            fontSize: 12, fontWeight: 700, color: accentText,
                             flexShrink: 0, marginTop: 1,
                         }}>✓</div>
                         <span style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--tof-text-soft)' }}>{b}</span>

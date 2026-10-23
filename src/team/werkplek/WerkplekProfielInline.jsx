@@ -33,6 +33,12 @@ const BAND_KLEUR = {
     [BAND.STEUN]: 'var(--tof-accent-sage)',
     [BAND.AANVULLEND]: 'var(--tof-text-muted)',
 };
+// Zelfde, maar voor de letters in het bandlabel.
+const BAND_TEKST = {
+    ...BAND_KLEUR,
+    [BAND.KERN]: 'var(--tof-accent-sage-text)',
+    [BAND.STEUN]: 'var(--tof-accent-sage-text)',
+};
 
 // Naam en "soort plek"-illustratie komen uit de copy (i18n); de logica levert
 // alleen het type-id. Fallback op het label uit werkplekmix.js.
@@ -173,7 +179,7 @@ function SignatureStatement({ type, isMobile }) {
                     fontSize: isMobile ? 32 : 'clamp(32px, 3.6vw, 46px)',
                     lineHeight: 1.0,
                     fontWeight: 500,
-                    color: 'var(--tof-accent-sage)',
+                    color: 'var(--tof-accent-sage-text)',
                     letterSpacing: '-0.01em',
                 }}
             >
@@ -210,7 +216,7 @@ function BandBadge({ band }) {
                 fontWeight: 600,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',
-                color: BAND_KLEUR[band] || 'var(--tof-text-muted)',
+                color: BAND_TEKST[band] || 'var(--tof-text-muted)',
                 border: `1px solid ${BAND_KLEUR[band] || 'var(--tof-border)'}`,
                 borderRadius: 999,
                 padding: '2px 10px',

@@ -56,6 +56,8 @@ import {
 } from '../team/werkplek/werkplekProfielLogic';
 
 const ACCENT = MODULE.insight.accent;
+// Sage voor letters en knoppen (contrast); ACCENT blijft voor randen en vlakken.
+const ACCENT_TEXT = MODULE.insight.text;
 // Eén paneel tegelijk; elke tegel wijst ernaar met aria-controls.
 const PANEL_ID = 'teaminzicht-paneel';
 
@@ -205,7 +207,7 @@ export default function TeamDashboard({
         return (
             <TeamGate
                 count={completeProfiles}
-                accent={ACCENT}
+                accent={ACCENT_TEXT}
                 eyebrow={t.hero.eyebrow}
                 teamName={selectedTeam?.team || ''}
                 code={selectedTeam?.code || ''}
@@ -225,7 +227,7 @@ export default function TeamDashboard({
                 }}
             >
                 <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
-                    <SectionEyebrow color={ACCENT}>
+                    <SectionEyebrow color={ACCENT_TEXT}>
                         {activeTile.eyebrow}
                     </SectionEyebrow>
                     <h2
@@ -283,7 +285,7 @@ export default function TeamDashboard({
                 eyebrow={t.hero.eyebrow}
                 title={t.hero.title}
                 titleAccent={teamName}
-                titleAccentColor={ACCENT}
+                titleAccentColor={ACCENT_TEXT}
                 lead={t.hero.lead}
                 actions={
                     <>
@@ -304,7 +306,7 @@ export default function TeamDashboard({
                                 // Log op de achtergrond — mag stil falen.
                                 logPdfDownload(selectedTeam?.code || null);
                             }}
-                            style={{ background: ACCENT }}
+                            style={{ background: ACCENT_TEXT }}
                         >
                             {t.hero.downloadPdf}
                         </PrimaryButton>
@@ -338,6 +340,7 @@ export default function TeamDashboard({
                             value={tile.buildValue(aggregate, insights)}
                             hint={tile.buildHint(aggregate, insights)}
                             accent={ACCENT}
+                            activeColor={ACCENT_TEXT}
                             isActive={activeId === tile.id}
                             panelId={PANEL_ID}
                             onClick={(e) => handleTileClick(tile.id, e)}

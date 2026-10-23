@@ -6,10 +6,13 @@
 
   --tof-text: #1F1F1F;
   --tof-text-soft: #555555;
-  --tof-text-muted: #7A7A7A;
+  --tof-text-muted: #666666;
 
   --tof-accent-rose: #B05252;
   --tof-accent-sage: #6E8872;
+  /* Sage voor letters en knoppen (5,43 : 1 op wit). Sage zelf blijft voor
+     vlakken, randen en balken. */
+  --tof-accent-sage-text: #56705C;
 
   --tof-rose-soft: #E2C4C4;
   --tof-sage-soft: #C6D9C9;

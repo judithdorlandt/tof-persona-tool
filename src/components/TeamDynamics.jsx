@@ -189,7 +189,7 @@ export default function TeamDynamics({
                             rememberAfterLogin({ page: 'teamdynamics', team, organization });
                             setPage('login');
                         }}
-                        style={{ background: 'var(--tof-accent-sage)' }}
+                        style={{ background: 'var(--tof-accent-sage-text)' }}
                     >
                         {t.noAccess.login}
                     </PrimaryButton>
@@ -228,7 +228,7 @@ export default function TeamDynamics({
                     actions={
                         <PrimaryButton
                             onClick={() => setPage('teamdashboard')}
-                            style={{ background: 'var(--tof-accent-sage)' }}
+                            style={{ background: 'var(--tof-accent-sage-text)' }}
                         >
                             {t.noData.cta}
                         </PrimaryButton>
@@ -1000,7 +1000,7 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
             <LabelGrid labelWidth={140} rowGap={SPACING.lg} style={{ marginTop: SPACING.sm }}>
                 {positiveMatch ? (
                     <LabelRow
-                        label={<SectionEyebrow color="var(--tof-accent-sage)">{t.collaboration.worksWell}</SectionEyebrow>}
+                        label={<SectionEyebrow color="var(--tof-accent-sage-text)">{t.collaboration.worksWell}</SectionEyebrow>}
                     >
                         <div style={{ display: 'grid', gap: SPACING.xs }}>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
@@ -1077,7 +1077,7 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                     <div
                         style={{
                             ...TYPE.eyebrow,
-                            color: 'var(--tof-accent-sage)',
+                            color: 'var(--tof-accent-sage-text)',
                             fontSize: 12,
                         }}
                     >

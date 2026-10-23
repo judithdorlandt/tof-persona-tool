@@ -446,7 +446,9 @@ export function Tile({
     isActive = false,
     onClick,
     panelId,       // id van het paneel dat deze tegel opent (aria-controls)
+    activeColor,   // vlak van de actieve tegel; standaard het accent
 }) {
+    const activeBg = activeColor || accent;
     return (
         <button
             type="button"
@@ -454,11 +456,11 @@ export function Tile({
             aria-expanded={isActive}
             aria-controls={panelId}
             style={{
-                background: isActive ? accent : 'var(--tof-surface)',
+                background: isActive ? activeBg : 'var(--tof-surface)',
                 border: isActive
-                    ? `1px solid ${accent}`
+                    ? `1px solid ${activeBg}`
                     : '1px solid var(--tof-border)',
-                borderTop: `3px solid ${accent}`,
+                borderTop: `3px solid ${isActive ? activeBg : accent}`,
                 borderRadius: RADIUS.lg,
                 padding: '14px 16px',
                 cursor: 'pointer',
@@ -490,7 +492,7 @@ export function Tile({
                     ...TYPE.eyebrow,
                     fontSize: 12,
                     letterSpacing: 1.4,
-                    color: isActive ? 'rgba(255,255,255,0.85)' : 'var(--tof-text-muted)',
+                    color: isActive ? '#FFFFFF' : 'var(--tof-text-muted)',
                 }}
             >
                 {eyebrow}
@@ -516,7 +518,7 @@ export function Tile({
                     style={{
                         fontSize: 12,
                         lineHeight: 1.5,
-                        color: isActive ? 'rgba(255,255,255,0.82)' : 'var(--tof-text-soft)',
+                        color: isActive ? '#FFFFFF' : 'var(--tof-text-soft)',
                     }}
                 >
                     {hint}
@@ -531,7 +533,7 @@ export function Tile({
                     bottom: 12,
                     right: 14,
                     fontSize: 12,
-                    color: isActive ? 'rgba(255,255,255,0.9)' : accent,
+                    color: isActive ? '#FFFFFF' : accent,
                     fontWeight: 700,
                     transform: isActive ? 'rotate(180deg)' : 'rotate(0)',
                     transition: `transform 0.2s ${EASE}`,

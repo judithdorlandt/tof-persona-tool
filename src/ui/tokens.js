@@ -120,6 +120,8 @@ export const MODULE = {
     },
     insight: {
         accent: 'var(--tof-accent-sage)',
+        // Voor letters en knoppen: sage zelf haalt 4,5 : 1 niet.
+        text: 'var(--tof-accent-sage-text)',
         soft: 'var(--tof-sage-soft)',
     },
     dynamics: {

@@ -794,7 +794,7 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
                         textTransform: 'uppercase',
                         letterSpacing: 1.4,
                         fontWeight: 700,
-                        color: 'var(--tof-accent-sage)',
+                        color: 'var(--tof-accent-sage-text)',
                         marginBottom: 4,
                     }}>
                         {t.eyebrow}

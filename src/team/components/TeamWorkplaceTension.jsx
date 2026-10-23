@@ -175,7 +175,7 @@ function DominantHero({ personas, isMobile }) {
                     fontSize: isMobile ? 32 : 'clamp(32px, 3.6vw, 46px)',
                     lineHeight: 1.0,
                     fontWeight: 500,
-                    color: 'var(--tof-accent-sage)',
+                    color: 'var(--tof-accent-sage-text)',
                     letterSpacing: '-0.01em',
                 }}
             >

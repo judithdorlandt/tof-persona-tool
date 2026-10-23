@@ -44,7 +44,7 @@
   padding-left: 16px;
 }
 .heroEyebrow {
-  color: var(--tof-accent-sage);
+  color: var(--tof-accent-sage-text);
   letter-spacing: 2px;
   font-size: 12px;
   text-transform: uppercase;
@@ -67,7 +67,7 @@
   max-width: 520px;
 }
 .heroTitleAccent {
-  color: var(--tof-accent-sage);
+  color: var(--tof-accent-sage-text);
   font-style: italic;
 }
 .heroSubDesktop {
