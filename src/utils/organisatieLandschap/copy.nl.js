@@ -198,8 +198,8 @@ export const COPY_NL = {
         dateLocale: 'nl-NL',
         orgRowLabel: 'ORGANISATIE',
         teamNameFallback: '—',
-        // Teams onder de vijf samen (opdracht L1, akkoord Judith 23 okt).
-        otherTeamsRowLabel: (n) => `Overige teams (samen ${n})`,
+        // Alles zonder eigen rij samen (opdracht L1/L1b, besluit Judith 23 okt).
+        otherTeamsRowLabel: (n) => `Overige (samen ${n})`,
 
         // Werkplektype-labels komen uit de aggregatie in het Nederlands.
         // In NL laten we ze ongemoeid; copy.en.js vertaalt ze.
@@ -252,9 +252,9 @@ export const COPY_NL = {
         },
 
         attention: {
-            noOwnPicture: (x) => (x === 1
-                ? '1 team heeft nog geen eigen beeld: minder dan vijf profielen.'
-                : `${x} teams hebben nog geen eigen beeld: minder dan vijf profielen.`),
+            noOwnRow: (x) => (x === 1
+                ? '1 team staat niet als eigen rij in dit overzicht. Zo blijft niemand herleidbaar. Het telt mee in "Overige" en in het totaal van de organisatie.'
+                : `${x} teams staan niet als eigen rij in dit overzicht. Zo blijft niemand herleidbaar. Ze tellen mee in "Overige" en in het totaal van de organisatie.`),
         },
     },
 

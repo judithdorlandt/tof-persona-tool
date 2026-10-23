@@ -51,13 +51,12 @@ export function prepareOrganisatieData({
     // mee (dat komt uit `aggregate`).
     //
     // Alles zonder eigen rij — kleine teams én profielen die aan geen team
-    // gekoppeld zijn — vormt samen de rest-groep "Overige teams". Die mag
+    // gekoppeld zijn — vormt samen de rest-groep "Overige". Die mag
     // nooit 1 tot 4 profielen groot zijn: dan is hij terug te rekenen als
     // organisatie min de zichtbare teams. Is hij dat toch, dan gaat het
     // kleinste team met een eigen rij er ook in, tot de rest-groep vijf of
     // meer is. Zonder teams met een eigen rij is de rest-groep de hele
     // organisatie, en die is altijd vijf of meer (anders geen rapport).
-    const smallTeams = activeTeams.filter((t) => (t.responseCount || 0) < MIN_TEAM_RESPONSES);
     const ownTeams = activeTeams
         .filter((t) => (t.responseCount || 0) >= MIN_TEAM_RESPONSES)
         .sort((a, b) => (a.responseCount || 0) - (b.responseCount || 0));
@@ -75,9 +74,10 @@ export function prepareOrganisatieData({
         teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd));
     }
 
-    // Teams zonder eigen beeld: onder de vijf, of nog zonder profielen. Alleen
-    // het aantal wordt genoemd, geen namen.
-    const teamsWithoutOwnPicture = smallTeams.length + inactiveTeams.length;
+    // Teams zonder eigen rij in dit overzicht: onder de vijf, nog zonder
+    // profielen, of meegeschoven in de rest-groep. Alleen het aantal wordt
+    // genoemd, geen namen.
+    const teamsWithoutOwnRow = allTeams.length - ownTeams.length;
 
     // Reconciliatie respondenten: het organisatietotaal (aggregate.teamCount)
     // telt álle responses; de teams tellen alleen responses die aan een team
@@ -120,7 +120,7 @@ export function prepareOrganisatieData({
         activeTeamCount: activeTeams.length,
         inactiveTeamCount: inactiveTeams.length,
         inactiveTeams: inactiveTeams.map((t) => getTeamName(t, cd)),
-        teamsWithoutOwnPicture,
+        teamsWithoutOwnRow,
         dominantStyle,
         topNeed,
         workplaceNeeds,
@@ -416,10 +416,10 @@ export function buildEnvironmentDirections(data, copy = getOLCopy('nl')) {
     return out;
 }
 
-// "Teams die ruimte verdienen": alleen hoeveel teams nog geen eigen beeld
-// hebben. Geen teamnamen en geen aantallen per team — samen met de heatmap
-// zou dat een klein team herleidbaar maken.
+// "Teams die ruimte verdienen": alleen hoeveel teams geen eigen rij hebben.
+// Geen teamnamen en geen aantallen per team — samen met de heatmap zou dat
+// een klein team herleidbaar maken.
 export function buildAttentionSummary(data, copy = getOLCopy('nl')) {
-    const x = data.teamsWithoutOwnPicture || 0;
-    return x > 0 ? [copy.data.attention.noOwnPicture(x)] : [];
+    const x = data.teamsWithoutOwnRow || 0;
+    return x > 0 ? [copy.data.attention.noOwnRow(x)] : [];
 }

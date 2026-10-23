@@ -139,7 +139,7 @@ function drawHeatmap(svg, y, data, copy, lang) {
 
     // Row-units: teamrijen (1 elk) + org-totaalrij (1.2× zwaarder). Zo klopt
     // de hoogte-reservering exact. Niet-gekoppelde profielen hebben geen
-    // eigen rij meer: ze zitten in "Overige teams" (zie organisatieAggregation).
+    // eigen rij meer: ze zitten in "Overige" (zie organisatieAggregation).
     const orgUnits = 1.2;
     const units = rows.length + orgUnits;
     const availH = bandBottom - heatmapTop - orgGap;

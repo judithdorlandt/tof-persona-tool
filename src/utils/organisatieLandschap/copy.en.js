@@ -185,7 +185,7 @@ export const COPY_EN = {
         dateLocale: 'en-GB',
         orgRowLabel: 'ORGANISATION',
         teamNameFallback: '—',
-        otherTeamsRowLabel: (n) => `Other teams (together ${n})`,
+        otherTeamsRowLabel: (n) => `Other (together ${n})`,
 
         // Workplace-type labels arrive from the aggregation in Dutch; map them
         // to the agreed English names. Unknown labels pass through unchanged,
@@ -237,9 +237,9 @@ export const COPY_EN = {
         },
 
         attention: {
-            noOwnPicture: (x) => (x === 1
-                ? "1 team doesn't have its own picture yet: fewer than five profiles."
-                : `${x} teams don't have their own picture yet: fewer than five profiles.`),
+            noOwnRow: (x) => (x === 1
+                ? '1 team doesn\'t appear as its own row in this overview. This keeps everyone unidentifiable. It is counted in "Other" and in the organisation total.'
+                : `${x} teams don't appear as their own row in this overview. This keeps everyone unidentifiable. They are counted in "Other" and in the organisation total.`),
         },
     },
 
