@@ -245,6 +245,7 @@ function computeDominantStyle(aggregate, lang) {
         name: getCopy(lang).teamPanels.names.join(names),
         color: PERSONA_COLORS[top.id],
         count: top.count,
+        tie: dominant.length > 1,
     };
 }
 

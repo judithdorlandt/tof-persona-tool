@@ -104,7 +104,7 @@ function drawThreeKpiCards(svg, y, data, copy) {
         x: MARGIN + cardW + gap, y, w: cardW, h: cardH,
         label: copy.cover.kpiLabels.dominantStyle,
         big: data.dominantStyle.name,
-        unit: copy.cover.kpiUnits.dominantStyle(data.dominantStyle.count),
+        unit: copy.cover.kpiUnits.dominantStyle(data.dominantStyle.count, data.dominantStyle.tie),
         accent: SAGE,
     });
     drawKpiCard(svg, {

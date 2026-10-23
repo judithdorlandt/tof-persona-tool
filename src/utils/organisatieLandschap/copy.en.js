@@ -52,7 +52,12 @@ export const COPY_EN = {
         },
         kpiUnits: {
             respondents: (n) => n === 1 ? 'person' : 'people',
-            dominantStyle: (count) => count ? `${count} people primary` : '—',
+            dominantStyle: (count, tie) => {
+                if (!count) return '—';
+                return tie
+                    ? `${count} people each as their first working style`
+                    : `${count} people with this as their first working style`;
+            },
         },
         leadIntro: 'What this report shows',
         leadFallback:

@@ -56,7 +56,13 @@ export const COPY_NL = {
         // Fix #2 cover: schrijf eenheid + referentie volledig uit.
         kpiUnits: {
             respondents: (n) => n === 1 ? 'persoon' : 'personen',
-            dominantStyle: (count) => count ? `${count} mensen primair` : '—',
+            // Besluit Judith 23 okt: geen "primair"; bij gelijke stand "elk".
+            dominantStyle: (count, tie) => {
+                if (!count) return '—';
+                return tie
+                    ? `elk ${count} mensen als eerste werkstijl`
+                    : `${count} mensen met deze eerste werkstijl`;
+            },
         },
         leadIntro: 'Wat zie je in dit rapport',
         leadFallback:
