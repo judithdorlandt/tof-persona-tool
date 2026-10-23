@@ -316,7 +316,7 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
 
 // Voetnootregels — alleen relevante regels, onder→boven gestapeld.
 function buildFootnoteLines(data, copy) {
-    const lines = [`${copy.heatmap.roundingNote} · ${copy.heatmap.reliabilityHelp}`];
+    const lines = [copy.heatmap.reliabilityHelp];
     return lines;
 }
 

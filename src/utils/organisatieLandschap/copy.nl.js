@@ -55,7 +55,6 @@ export const COPY_NL = {
         },
         // Fix #2 cover: schrijf eenheid + referentie volledig uit.
         kpiUnits: {
-            respondents: (n) => n === 1 ? 'persoon' : 'personen',
             // Besluit Judith 23 okt: geen "primair"; bij gelijke stand "elk".
             dominantStyle: (count, tie) => {
                 if (!count) return '—';
@@ -70,10 +69,10 @@ export const COPY_NL = {
         leadOneSentence: (org, dominant, n) =>
             `${org} laat zich in deze meting het sterkst herkennen in ${dominant.toLowerCase()} — op basis van ${n} ${n === 1 ? 'ingevuld profiel' : 'ingevulde profielen'}.`,
         teamsWithoutResponses: {
-            eyebrow: 'TEAMS ZONDER RESPONS',
+            eyebrow: 'TEAMS ZONDER INGEVULDE PROFIELEN',
             empty: 'Alle teams hebben gereageerd.',
             note: (count) =>
-                `${count} ${count === 1 ? 'team heeft' : 'teams hebben'} nog geen respons ingestuurd. Deze ontbreken in de heatmap en patronen.`,
+                `${count} ${count === 1 ? 'team heeft' : 'teams hebben'} nog geen profielen ingebracht. Deze ontbreken in de heatmap en patronen.`,
         },
         // Leeswijzer-blok dat de vrijgekomen ruimte vult wanneer alle teams
         // hebben gereageerd. Legenda-omschrijvingen afgeleid van de drijfveren.
@@ -113,8 +112,6 @@ export const COPY_NL = {
         // bestuurlijke lezer. (· – é zitten wél in de subset en blijven dus staan.)
         // Dezelfde schaal als de dashboards (getConfidence, opdracht L4).
         reliabilityHelp: '5–15 = opkomend patroon · 16–30 = betrouwbaar beeld · meer dan 30 = sterk patroon',
-        // Fix #5 page 2: rij-totalen kunnen door afronding op 99–101% uitkomen.
-        roundingNote: 'Rij-totalen kunnen door afronding optellen tot 99–101%.',
         // Fix #2 page 2: legenda-uitleg ipv arbitraire kleur.
         legend: {
             label: 'KLEURINTENSITEIT',
@@ -218,7 +215,7 @@ export const COPY_NL = {
             twoDrives: (a, b) =>
                 `Twee drijfveren springen eruit: ${a.drive} (${a.label}) en ${b.drive} (${b.label}). Maak ruimte voor beide — onderdruk geen van twee.`,
             oneDrive: (a) =>
-                `De dominante drijfveer is ${a.drive} (${a.label}). Toets in gesprek of teams met andere drijfveren zich nog gezien voelen.`,
+                `De sterkste drijfveer is ${a.drive} (${a.label}). Toets in gesprek of teams met andere drijfveren zich nog gezien voelen.`,
             // Naam + optioneel aandeel, zoals getoond tussen haakjes.
             personaLabel: (name, pct) =>
                 pct != null ? `${name}, ${pct}% primair` : name,

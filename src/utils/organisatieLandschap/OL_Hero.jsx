@@ -97,7 +97,7 @@ function drawThreeKpiCards(svg, y, data, copy) {
         x: MARGIN, y, w: cardW, h: cardH,
         label: copy.cover.kpiLabels.respondents,
         big: String(data.totalRespondents),
-        unit: copy.cover.kpiUnits.respondents(data.totalRespondents),
+        unit: '',
         accent: SAGE,
     });
     drawKpiCard(svg, {

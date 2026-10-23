@@ -51,7 +51,6 @@ export const COPY_EN = {
             teamsCovered: 'Teams with data',
         },
         kpiUnits: {
-            respondents: (n) => n === 1 ? 'person' : 'people',
             dominantStyle: (count, tie) => {
                 if (!count) return '—';
                 return tie
@@ -65,10 +64,10 @@ export const COPY_EN = {
         leadOneSentence: (org, dominant, n) =>
             `In this measurement ${org} recognises itself most strongly in ${dominant.toLowerCase()} — based on ${n} ${n === 1 ? 'completed profile' : 'completed profiles'}.`,
         teamsWithoutResponses: {
-            eyebrow: 'TEAMS WITHOUT RESPONSES',
+            eyebrow: 'TEAMS WITHOUT COMPLETED PROFILES',
             empty: 'Every team has responded.',
             note: (count) =>
-                `${count} ${count === 1 ? 'team has' : 'teams have'} not submitted a response yet. They are missing from the heatmap and the patterns.`,
+                `${count} ${count === 1 ? 'team has' : 'teams have'} no profiles added yet. They are missing from the heatmap and the patterns.`,
         },
         // Reader's guide that fills the freed-up space when every team responded.
         measurement: {
@@ -103,7 +102,6 @@ export const COPY_EN = {
         orgRowReliability: 'n/a',
         // No >= / <= glyphs: the bundled font subsets do not contain them.
         reliabilityHelp: '5–15 = emerging pattern · 16–30 = reliable picture · more than 30 = strong pattern',
-        roundingNote: 'Rounding means row totals can add up to 99–101%.',
         legend: {
             label: 'COLOUR INTENSITY',
             explanation: 'The stronger the colour, the larger the share within the team.',
@@ -199,7 +197,7 @@ export const COPY_EN = {
             twoDrives: (a, b) =>
                 `Two drivers stand out: ${a.drive} (${a.label}) and ${b.drive} (${b.label}). Make room for both — do not suppress either.`,
             oneDrive: (a) =>
-                `The dominant driver is ${a.drive} (${a.label}). Check in conversation whether teams with other drivers still feel seen.`,
+                `The strongest drive is ${a.drive} (${a.label}). Check in conversation whether teams with other drivers still feel seen.`,
             personaLabel: (name, pct) =>
                 pct != null ? `${name}, ${pct}% primary` : name,
             lowReliability: (n) =>
