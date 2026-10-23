@@ -248,7 +248,8 @@ function drawDataRow(svg, {
     }));
 
     // V14: dot uniform muted (label draagt al de betekenis), 4pt diameter (~0.7mm radius).
-    if (!isOrg && row.reliability) {
+    // Ook de organisatierij (redactie punt 21).
+    if (row.reliability) {
         const cx = x + teamColW + nColW + 4;
         const cy = y + h / 2 + 0.4;
         svg.appendChild(circle(cx, cy, 0.7, C.textMuted, {
@@ -260,14 +261,6 @@ function drawDataRow(svg, {
             content: row.reliability.label,
             font: 'Inter', weight: 500, size: 3.18, color: C.textSoft,
             opacity: rowOpacity < 1 ? rowOpacity : null,
-        }));
-    } else if (isOrg) {
-        // Fix #6: 'n.v.t.' i.p.v. zachte em-dash
-        svg.appendChild(text({
-            x: x + teamColW + nColW + relColW / 2, y: y + h / 2 + 1,
-            content: copy.heatmap.orgRowReliability,
-            font: 'Inter', weight: 500, size: 3.18, color: C.textMuted,
-            anchor: 'middle',
         }));
     }
 

@@ -79,7 +79,6 @@ export const COPY_EN = {
             reliability: 'Reliability',
         },
         orgRowLabel: 'ORGANISATION',
-        orgRowReliability: 'n/a',
         // No >= / <= glyphs: the bundled font subsets do not contain them.
         reliabilityHelp: 'Reliability: 5–15 profiles = emerging pattern · 16–30 = reliable picture · more than 30 = strong pattern',
         legend: {

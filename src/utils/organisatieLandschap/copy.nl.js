@@ -88,7 +88,6 @@ export const COPY_NL = {
             reliability: 'Betrouwbaarheid',
         },
         orgRowLabel: 'ORGANISATIE',
-        orgRowReliability: 'n.v.t.',  // fix #6 page 2 — vervangt zachte em-dash
         // De gebundelde Inter/Playfair zijn subsets ZONDER ≥ (U+2265) / ≤ (U+2264)
         // — die glyphs renderen nooit, ongeacht italic/normaal. Daarom de drempels
         // in woorden i.p.v. wiskundige tekens; leest bovendien prettiger voor een

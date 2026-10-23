@@ -81,8 +81,8 @@ const INSIGHT_COPY = {
             two: (driveA, driveB) => `${driveA} en ${driveB} — daar bouwt dit team op.`,
         },
         drives: {
-            maker: 'maken', groeier: 'ontwikkeling', presteerder: 'resultaat',
-            denker: 'diepgang', verbinder: 'verbinding', teamspeler: 'verbondenheid',
+            maker: 'creatie', groeier: 'ontwikkeling', presteerder: 'resultaat',
+            denker: 'diepgang', verbinder: 'verbinding', teamspeler: 'vertrouwen',
             zekerzoeker: 'stabiliteit', vernieuwer: 'vernieuwing',
         },
         leeglopersEyebrow: 'CHECK IN HET KANTOOR',
@@ -127,8 +127,8 @@ const INSIGHT_COPY = {
             two: (driveA, driveB) => `${driveA} and ${driveB} — that is what this team builds on.`,
         },
         drives: {
-            maker: 'making', groeier: 'development', presteerder: 'results',
-            denker: 'depth', verbinder: 'connection', teamspeler: 'togetherness',
+            maker: 'creation', groeier: 'development', presteerder: 'results',
+            denker: 'depth', verbinder: 'connection', teamspeler: 'trust',
             zekerzoeker: 'stability', vernieuwer: 'renewal',
         },
         leeglopersEyebrow: 'CHECK THE OFFICE',

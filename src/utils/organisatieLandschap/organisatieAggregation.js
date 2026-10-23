@@ -81,7 +81,7 @@ export function prepareOrganisatieData({
     // organisatierij er.
     const hasRestRow = ownTeams.length > 0 && restSize() >= MIN_TEAM_RESPONSES;
 
-    const orgRow = buildOrgRow(aggregate, cd);
+    const orgRow = buildOrgRow(aggregate, cd, lang);
     const teamRows = ownTeams
         .map((t) => buildTeamRow(t, cd, lang))
         .sort((a, b) => b.n - a.n);
@@ -167,7 +167,7 @@ function getTeamName(t, cd) {
     return t?.team?.team || cd.teamNameFallback;
 }
 
-function buildOrgRow(aggregate, cd) {
+function buildOrgRow(aggregate, cd, lang) {
     const n = aggregate?.teamCount || 0;
     const personas = aggregate?.personasByPrimary || [];
     const map = new Map(personas.map((p) => [p.id, p]));
@@ -176,7 +176,8 @@ function buildOrgRow(aggregate, cd) {
         if (!p) return { id, pct: null, count: 0 };
         return { id, pct: n > 0 ? Math.round((p.count / n) * 100) : 0, count: p.count || 0 };
     });
-    return { name: cd.orgRowLabel, n, cells, isOrg: true };
+    // Ook de organisatie krijgt een betrouwbaarheidslabel (redactie punt 21).
+    return { name: cd.orgRowLabel, n, cells, isOrg: true, reliability: confidenceFor(n, lang) };
 }
 
 // Betrouwbaarheid per rij: getConfidence(), dezelfde schaal als overal

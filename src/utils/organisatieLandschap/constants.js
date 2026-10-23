@@ -101,22 +101,22 @@ export const ARCHETYPE_NAME = ARCHETYPE_NAME_BY_LANG.nl;
 // Kleine letter: ze worden midden in een zin gebruikt.
 export const PERSONA_DRIVE_BY_LANG = {
     nl: {
-        maker: 'maken',
+        maker: 'creatie',
         groeier: 'ontwikkeling',
         presteerder: 'resultaat',
         denker: 'diepgang',
         verbinder: 'verbinding',
-        teamspeler: 'verbondenheid',
+        teamspeler: 'vertrouwen',
         zekerzoeker: 'stabiliteit',
         vernieuwer: 'vernieuwing',
     },
     en: {
-        maker: 'making',
+        maker: 'creation',
         groeier: 'development',
         presteerder: 'results',
         denker: 'depth',
         verbinder: 'connection',
-        teamspeler: 'togetherness',
+        teamspeler: 'trust',
         zekerzoeker: 'stability',
         vernieuwer: 'renewal',
     },
