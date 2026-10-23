@@ -185,8 +185,8 @@ export const COPY_NL = {
             empty: 'Te weinig data voor onderbouwde keuzes.',
         },
         attention: {
-            title: 'Teams die ruimte verdienen',
-            subtitle: 'Lage respons of weinig zichtbaarheid in de data.',
+            title: 'Teams zonder eigen rij',
+            subtitle: 'Waarom niet elk team apart in het overzicht staat.',
             empty: 'Alle teams hebben voldoende data voor analyse.',
         },
         tagline: 'Een organisatie die zichzelf herkent, beweegt sneller.',
@@ -255,6 +255,10 @@ export const COPY_NL = {
             noOwnRow: (x) => (x === 1
                 ? '1 team staat niet als eigen rij in dit overzicht. Zo blijft niemand herleidbaar. Het telt mee in "Overige" en in het totaal van de organisatie.'
                 : `${x} teams staan niet als eigen rij in dit overzicht. Zo blijft niemand herleidbaar. Ze tellen mee in "Overige" en in het totaal van de organisatie.`),
+            // Zonder rij "Overige" (besluit Judith 23 okt).
+            noOwnRowNoRest: (x) => (x === 1
+                ? '1 team staat niet als eigen rij in dit overzicht. Zo blijft niemand herleidbaar. Het telt mee in het totaal van de organisatie.'
+                : `${x} teams staan niet als eigen rij in dit overzicht. Zo blijft niemand herleidbaar. Ze tellen mee in het totaal van de organisatie.`),
         },
     },
 

@@ -66,11 +66,16 @@ export function prepareOrganisatieData({
         ownTeams.shift();
     }
 
+    // Staat er een rij "Overige"? Zonder teams met een eigen rij niet: die rij
+    // zou dan gelijk zijn aan de organisatie, dus staat alleen de
+    // organisatierij er.
+    const hasRestRow = ownTeams.length > 0 && restSize() >= MIN_TEAM_RESPONSES;
+
     const orgRow = buildOrgRow(aggregate, cd);
     const teamRows = ownTeams
         .map((t) => buildTeamRow(t, cd))
         .sort((a, b) => b.n - a.n);
-    if (ownTeams.length > 0 && restSize() >= MIN_TEAM_RESPONSES) {
+    if (hasRestRow) {
         teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd));
     }
 
@@ -121,6 +126,7 @@ export function prepareOrganisatieData({
         inactiveTeamCount: inactiveTeams.length,
         inactiveTeams: inactiveTeams.map((t) => getTeamName(t, cd)),
         teamsWithoutOwnRow,
+        hasRestRow,
         dominantStyle,
         topNeed,
         workplaceNeeds,
@@ -421,5 +427,7 @@ export function buildEnvironmentDirections(data, copy = getOLCopy('nl')) {
 // een klein team herleidbaar maken.
 export function buildAttentionSummary(data, copy = getOLCopy('nl')) {
     const x = data.teamsWithoutOwnRow || 0;
-    return x > 0 ? [copy.data.attention.noOwnRow(x)] : [];
+    if (x === 0) return [];
+    const ca = copy.data.attention;
+    return [data.hasRestRow ? ca.noOwnRow(x) : ca.noOwnRowNoRest(x)];
 }

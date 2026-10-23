@@ -172,8 +172,8 @@ export const COPY_EN = {
             empty: 'Too little data for well-founded choices.',
         },
         attention: {
-            title: 'Teams that deserve room',
-            subtitle: 'Low response or little visibility in the data.',
+            title: 'Teams without their own row',
+            subtitle: 'Why not every team appears separately in the overview.',
             empty: 'Every team has enough data for analysis.',
         },
         tagline: 'An organisation that recognises itself moves faster.',
@@ -240,6 +240,9 @@ export const COPY_EN = {
             noOwnRow: (x) => (x === 1
                 ? '1 team doesn\'t appear as its own row in this overview. This keeps everyone unidentifiable. It is counted in "Other" and in the organisation total.'
                 : `${x} teams don't appear as their own row in this overview. This keeps everyone unidentifiable. They are counted in "Other" and in the organisation total.`),
+            noOwnRowNoRest: (x) => (x === 1
+                ? '1 team doesn\'t appear as its own row in this overview. This keeps everyone unidentifiable. It is counted in the organisation total.'
+                : `${x} teams don't appear as their own row in this overview. This keeps everyone unidentifiable. They are counted in the organisation total.`),
         },
     },
 
