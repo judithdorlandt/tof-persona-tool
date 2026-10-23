@@ -4,10 +4,20 @@ import './index.css';
 
 import { useAuth } from './auth/AuthContext';
 import { IS_NATIVE, isPageAllowed } from './config/platform';
-import { useLang } from './i18n/LanguageContext';
+import { useCopy, useLang } from './i18n/LanguageContext';
 import { pagePath, resolvePath } from './i18n/routes';
-import { signOut, getMyManagedTeams } from './supabase';
-import { rememberManagedTeams, forgetManagedTeams } from './utils/access';
+import { signOut, getMyManagedTeams, getResponsesByTeam } from './supabase';
+import {
+  rememberManagedTeams,
+  forgetManagedTeams,
+  rememberCurrentTeam,
+  forgetCurrentTeam,
+  getCurrentTeam,
+  findTeamAccess,
+  hasTeamLevel,
+  LEVEL_INSIGHT,
+} from './utils/access';
+import { PageShell } from './ui/AppShell';
 
 import Bijdragen from './components/Bijdragen.jsx';
 import Landing from './components/Landing.jsx';
@@ -42,11 +52,44 @@ import { QUIZTEST_ENABLED } from './experimental/featureFlag';
 import QuizTest from './experimental/quizTest/QuizTest.jsx';
 import QuizInApp from './components/QuizInApp.jsx';
 
+// Pagina's die een gekozen team nodig hebben.
+const TEAM_PAGES = ['teamdashboard', 'teamdynamics', 'teamstrategic', 'teamwerkplekprofiel'];
+
+function sameTeam(a, b) {
+  const norm = (v) => String(v || '').trim().toLowerCase();
+  return norm(a.team) === norm(b.team) && norm(a.organization) === norm(b.organization);
+}
+
+/**
+ * Welk team terugzetten na verversen: het laatst geopende als je daar nog
+ * toegang toe hebt, anders je eigen team als leidinggevende. 'choose' =
+ * leidinggevende van meer teams zonder bewaard team; null = niets te vinden.
+ */
+function teamToRestore(managedTeams = []) {
+  const stored = getCurrentTeam();
+  if (stored && hasTeamLevel(stored.team, stored.organization, LEVEL_INSIGHT)) {
+    const access = findTeamAccess(stored.team, stored.organization);
+    const managed = managedTeams.find((m) => sameTeam(m, stored));
+    return {
+      team: stored.team,
+      organization: stored.organization,
+      code: access?.code || managed?.code || null,
+    };
+  }
+  if (managedTeams.length === 1) {
+    const { team, organization, code } = managedTeams[0];
+    return { team, organization, code };
+  }
+  if (managedTeams.length > 1) return 'choose';
+  return null;
+}
+
 export default function App() {
   const location = useLocation();
   const routerNavigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { lang } = useLang();
+  const { common } = useCopy();
 
   // Page-key + taal komen uit de URL (zie src/i18n/routes.js), zodat
   // deep-links en browser-back/forward in beide talen blijven werken.
@@ -73,32 +116,62 @@ export default function App() {
   }, []);
 
   const [teamResponses, setTeamResponses] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [selectedTeam, setSelectedTeamState] = useState(null);
+
+  // Elk gekozen team wordt onthouden, zodat verversen of een bladwijzer je
+  // terugbrengt (zie rememberCurrentTeam). Een selectie van meerdere teams
+  // uit de TeamSelector is geen team om naar terug te keren.
+  const setSelectedTeam = useCallback((sel) => {
+    setSelectedTeamState(sel);
+    const names = sel?.team_names;
+    if (sel?.team && (!Array.isArray(names) || names.length === 1)) {
+      rememberCurrentTeam(sel);
+    } else {
+      forgetCurrentTeam();
+    }
+  }, []);
 
   // Manager-vlag: is de ingelogde user een team-manager (rij in
   // team_managers)? Wordt eenmalig opgehaald per sessie en gebruikt
   // door Nav om irrelevante items (Home/Intro/Quiz/Resultaat) te
   // verbergen. Dezelfde lijst bepaalt wie Teamdynamiek mag zien, daarom
   // gaat hij ook naar utils/access (die wordt synchroon bevraagd).
+  //
+  // Pas beslissen als de sessie geladen is: bij het verversen is `user`
+  // eerst even null, en dan zou de lijst gewist worden net voordat hij
+  // nodig is. managedTeams is null zolang de rol nog niet bekend is.
   const [isManager, setIsManager] = useState(false);
+  const [managedTeams, setManagedTeams] = useState(null);
   useEffect(() => {
+    if (authLoading) return undefined;
     let cancelled = false;
-    if (!user) { setIsManager(false); forgetManagedTeams(); return; }
+    if (!user) {
+      setIsManager(false);
+      setManagedTeams([]);
+      forgetManagedTeams();
+      return undefined;
+    }
+    setManagedTeams(null);
     (async () => {
       try {
         const managed = await getMyManagedTeams();
         if (cancelled) return;
         setIsManager(managed.length > 0);
         rememberManagedTeams(managed);
+        setManagedTeams(managed);
       } catch (_e) {
-        if (!cancelled) setIsManager(false);
+        if (!cancelled) {
+          setIsManager(false);
+          setManagedTeams([]);
+        }
       }
     })();
     return () => { cancelled = true; };
-  }, [user]);
+  }, [user, authLoading]);
 
   const handleLogout = useCallback(async () => {
     await signOut();
+    forgetCurrentTeam();
     // Naar /login (i.p.v. landing) zodat je direct met een ander
     // account kunt inloggen — handig voor managers die wisselen
     // tussen team-accounts, of voor admins die als manager willen
@@ -116,6 +189,42 @@ export default function App() {
     [routerNavigate, lang]
   );
 
+  // ── Team terugvinden na verversen of via een bladwijzer ──
+  // Op een teampagina zonder gekozen team zoeken we het team op dat je het
+  // laatst opende, mits je er nog toegang toe hebt. Anders: een ingelogde
+  // leidinggevende met één team gaat naar dat team, met meer teams naar de
+  // keuzelijst op /team. Eén poging per bezoek.
+  const needsTeam = !IS_NATIVE && TEAM_PAGES.includes(page) && !selectedTeam;
+  const [teamRestoreTried, setTeamRestoreTried] = useState(false);
+  const restoringTeam = needsTeam && !teamRestoreTried;
+
+  useEffect(() => {
+    if (!restoringTeam) return undefined;
+    if (authLoading || managedTeams === null) return undefined; // rol nog onbekend
+    let cancelled = false;
+    (async () => {
+      const target = teamToRestore(managedTeams);
+      if (target === 'choose') {
+        setTeamRestoreTried(true);
+        navigate('team');
+        return;
+      }
+      if (target) {
+        let responses = [];
+        try {
+          responses = await getResponsesByTeam(target.team, target.organization, target.code);
+        } catch (_e) {
+          responses = [];
+        }
+        if (cancelled) return;
+        setTeamResponses(responses || []);
+        setSelectedTeam(target);
+      }
+      if (!cancelled) setTeamRestoreTried(true);
+    })();
+    return () => { cancelled = true; };
+  }, [restoringTeam, authLoading, managedTeams, navigate, setSelectedTeam]);
+
   // Scroll naar boven bij route-wissel — premium gevoel,
   // anders blijft de scrollpositie op de vorige pagina hangen.
   useEffect(() => {
@@ -132,6 +241,17 @@ export default function App() {
     // App-modus: alleen stap 1. De cases hieronder blijven staan voor het
     // web; in de app zijn ze onbereikbaar en val je terug op de start.
     if (!isPageAllowed(page)) return startScherm;
+
+    // Nog bezig het team terug te vinden: niet even "0 van de vijf" tonen.
+    if (restoringTeam) {
+      return (
+        <PageShell>
+          <p style={{ color: 'var(--tof-text-soft)', fontSize: 15, margin: 0 }}>
+            {common.loading}
+          </p>
+        </PageShell>
+      );
+    }
 
     switch (page) {
       case 'landing':

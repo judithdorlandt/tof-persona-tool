@@ -18,6 +18,7 @@ const MAKER_ACCESS_KEY = 'tof_maker_access';
 const MANAGER_TEAMS_KEY = 'tof_manager_teams';          // teams waar jij manager van bent
 const MODULE2_LEGACY_KEY = 'tof_module2_access';        // legacy: algemeen Module 2 vlag
 const ADMIN_ACCESS_KEY = 'tof_admin_access';            // beheerders-toegang
+const CURRENT_TEAM_KEY = 'tof_current_team';            // laatst geopende team
 
 export const LEVEL_INSIGHT = 'insight';
 export const LEVEL_DYNAMICS = 'dynamics';
@@ -268,6 +269,46 @@ export function hasTeamLevel(team, organization, requiredLevel) {
     const current = getTeamLevel(team, organization);
     if (!current) return false;
     return levelPower(current) >= levelPower(requiredLevel);
+}
+
+/** De bewaarde toegang voor één team, of null. */
+export function findTeamAccess(team, organization) {
+    migrateLegacyIfNeeded();
+    const key = teamKey(team, organization);
+    return readAccessList().find((e) => teamKey(e.team, e.organization) === key) || null;
+}
+
+// =========================
+// HET LAATST GEOPENDE TEAM
+// =========================
+// Het gekozen team leeft in App.js als state en is dus weg na verversen of
+// bij een bladwijzer. Hier staat welk team je het laatst opende, zodat de
+// app je daar terugbrengt. Alleen team en organisatie, nooit de code: die
+// staat al in de toegangslijst, en zonder toegang levert dit niets op.
+// localStorage en niet sessionStorage, want een bladwijzer opent een nieuw
+// tabblad.
+
+export function rememberCurrentTeam({ team, organization } = {}) {
+    if (!team) return;
+    localStorage.setItem(
+        CURRENT_TEAM_KEY,
+        JSON.stringify({ team, organization: organization || '' })
+    );
+}
+
+export function forgetCurrentTeam() {
+    localStorage.removeItem(CURRENT_TEAM_KEY);
+}
+
+export function getCurrentTeam() {
+    const raw = localStorage.getItem(CURRENT_TEAM_KEY);
+    if (!raw) return null;
+    try {
+        const parsed = JSON.parse(raw);
+        return parsed?.team ? parsed : null;
+    } catch {
+        return null;
+    }
 }
 
 /**

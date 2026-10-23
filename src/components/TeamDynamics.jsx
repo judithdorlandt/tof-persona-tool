@@ -77,10 +77,9 @@ export default function TeamDynamics({
     const organization = resolveOrg(selectedTeam);
     const team = resolveTeamKey(selectedTeam);
 
-    const hasAccess = useMemo(
-        () => forceAccess || hasTeamLevel(team, organization, LEVEL_DYNAMICS),
-        [forceAccess, team, organization]
-    );
+    // Bewust geen useMemo: de managerlijst komt na het verversen een tel
+    // later binnen (App.js), en dan moet dit opnieuw uitgerekend worden.
+    const hasAccess = forceAccess || hasTeamLevel(team, organization, LEVEL_DYNAMICS);
 
     const scores = useMemo(() => buildPersonaScores(teamResponses), [teamResponses]);
 
