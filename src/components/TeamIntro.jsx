@@ -44,6 +44,7 @@ import {
     SecondaryButton,
 } from '../ui/AppShell';
 import { useCopy } from '../i18n/LanguageContext';
+import { useAuth } from '../auth/AuthContext';
 
 // Uitleg en aanvraag van TOF Persona Team staan op de verhaalsite.
 const REQUEST_URL = 'https://www.persona-tool.nl/voor-je-team';
@@ -51,7 +52,8 @@ const REQUEST_URL = 'https://www.persona-tool.nl/voor-je-team';
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 
 export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }) {
-    const t = useCopy().teamIntro;
+    const { teamIntro: t, common } = useCopy();
+    const { user, loading: authLoading } = useAuth();
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
 
@@ -62,6 +64,8 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
 
     // Lijst met teams waar deze gebruiker al toegang toe heeft (uit localStorage).
     const [teamAccesses, setTeamAccesses] = useState(() => listTeamAccesses());
+    // Pas na de eerste ronde hieronder weten we of je leidinggevende bent.
+    const [accessesReady, setAccessesReady] = useState(false);
 
 
     // Combineer localStorage-toegang (anonieme code-flow) met DB-memberships
@@ -155,6 +159,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
             });
 
             setTeamAccesses(merged);
+            setAccessesReady(true);
         }
 
         refreshAccesses();
@@ -330,6 +335,19 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
     // We verbergen dan de sales-hero, de drie module-kaarten en het code-invoer-
     // blok, en laten alleen YourAccessPanel zien.
     const isManagerMode = teamAccesses.some((a) => a.fromManager);
+
+    // Ingelogd en de teams nog niet binnen: even niets tonen. Anders zag een
+    // leidinggevende eerst kort het scherm voor bezoekers zonder team (kop +
+    // codeveld), dat daarna verdween zodra zijn teams bekend waren.
+    if (authLoading || (user && !accessesReady)) {
+        return (
+            <PageShell padding={isMobile ? '16px 16px 28px' : '20px 20px 32px'}>
+                <p style={{ color: 'var(--tof-text-soft)', fontSize: 15, margin: 0 }}>
+                    {common.loading}
+                </p>
+            </PageShell>
+        );
+    }
 
     return (
         <PageShell padding={isMobile ? '16px 16px 28px' : '20px 20px 32px'}>
