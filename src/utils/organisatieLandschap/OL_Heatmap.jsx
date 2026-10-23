@@ -19,7 +19,7 @@ import {
     TYPE_V9, COLOR_FAMILIES, SPACING,
 } from './OL_styles';
 import {
-    createCanvas, rect, text, drawWrapped, circle,
+    createCanvas, rect, text, drawWrapped, circle, wrapTextLines,
 } from './svgPrimitives';
 import { drawPageHeader } from './OL_Chrome';
 
@@ -30,7 +30,7 @@ const SAGE = COLOR_FAMILIES.accent.rust;
 // Gedeeld door de tabel-layout (drawHeatmap) en het tekenen (drawHeatmapFootnote)
 // zodat beide exact dezelfde onderkant respecteren → geen overlap mogelijk.
 const FN_LINE_H = 3.8;
-const FN_SIZE = 2.9;
+const FN_SIZE = 3.18;
 // V24: ruimer boven de footer-lijn (PAGE_H-MARGIN+2) zodat de voetnoten
 // het paginanummer/logo nooit raken.
 const FN_BOTTOM_BASELINE = PAGE_H - MARGIN - 6;
@@ -99,18 +99,18 @@ function drawLegendTopRight(svg, y, copy) {
     svg.appendChild(text({
         x: legX, y: legY + 11.5,
         content: copy.heatmap.legend.scaleLow,
-        ...TYPE_V9.footer, size: 2.6,
+        ...TYPE_V9.footer,
     }));
     svg.appendChild(text({
         x: legX + 5 * (sw + 1.5) - 1.5, y: legY + 11.5,
         content: copy.heatmap.legend.scaleHigh,
-        ...TYPE_V9.footer, size: 2.6, anchor: 'end',
+        ...TYPE_V9.footer, anchor: 'end',
     }));
     // Uitleg-regel
     svg.appendChild(text({
         x: legX + (5 * (sw + 1.5)) / 2, y: legY + 17,
         content: copy.heatmap.legend.explanation,
-        ...TYPE_V9.footer, size: 2.5, anchor: 'middle',
+        ...TYPE_V9.footer, anchor: 'middle',
     }));
 }
 
@@ -213,16 +213,22 @@ function drawDataRow(svg, {
         svg.appendChild(rect(x, y, USABLE_W, 0.5, SAGE));
     }
 
-    // Team-naam: body Inter, ORG-totaal in Playfair SemiBold-ish (Regular 12pt voor balans).
+    // Team-naam: body Inter, ORG-totaal in Playfair. Niet afkappen met "…":
+    // een lange naam loopt over meer regels, verticaal gecentreerd (L5).
+    const nameSize = isOrg ? 4.23 : 3.18;
+    const nameLh = isOrg ? 5.8 : 4.4;
+    const nameW = teamColW - (isOrg ? 6 : 4);
+    const nameFont = isOrg ? 'Playfair Display' : 'Inter';
+    const nameLines = Math.max(1, wrapTextLines(row.name, nameW, nameSize, nameFont).length);
     drawWrapped({
-        svg, x: x + (isOrg ? 4 : 2), y: y + h / 2 + 1,
-        maxWidth: teamColW - (isOrg ? 6 : 4),
+        svg, x: x + (isOrg ? 4 : 2), y: y + h / 2 + 1 - ((nameLines - 1) * nameLh) / 2,
+        maxWidth: nameW,
         content: row.name,
-        font: isOrg ? 'Playfair Display' : 'Inter',
-        weight: isOrg ? 500 : 500,
-        size: isOrg ? 4.23 : 3.18,
+        font: nameFont,
+        weight: 500,
+        size: nameSize,
         color: isOrg ? SAGE : C.text,
-        lineHeight: isOrg ? 4.5 : 3.6, maxLines: 1, ellipsis: true,
+        lineHeight: nameLh,
     });
 
     // n
@@ -246,7 +252,7 @@ function drawDataRow(svg, {
             x: cx + 2.5, y: cy + 1.1,
             // Label uit getConfidence(), zoals de dashboards (opdracht L4).
             content: row.reliability.label,
-            font: 'Inter', weight: 500, size: 3, color: C.textSoft,
+            font: 'Inter', weight: 500, size: 3.18, color: C.textSoft,
             opacity: rowOpacity < 1 ? rowOpacity : null,
         }));
     } else if (isOrg) {
@@ -254,7 +260,7 @@ function drawDataRow(svg, {
         svg.appendChild(text({
             x: x + teamColW + nColW + relColW / 2, y: y + h / 2 + 1,
             content: copy.heatmap.orgRowReliability,
-            font: 'Inter', weight: 500, size: 3, color: C.textMuted,
+            font: 'Inter', weight: 500, size: 3.18, color: C.textMuted,
             anchor: 'middle',
         }));
     }
@@ -280,7 +286,7 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
         svg.appendChild(text({
             x: x + w / 2, y: y + h / 2 + 1.2,
             content: '—',
-            font: 'Inter', weight: 500, size: 3, color: C.textMuted,
+            font: 'Inter', weight: 500, size: 3.18, color: C.textMuted,
             anchor: 'middle',
             opacity: opacity != null && opacity < 1 ? opacity : null,
         }));
@@ -302,7 +308,7 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
     svg.appendChild(text({
         x: x + w / 2, y: y + h / 2 + 1.2,
         content: `${pct}`,
-        font: 'Inter', weight: isOrg ? 700 : 600, size: 3.1,
+        font: 'Inter', weight: isOrg ? 700 : 600, size: 3.18,
         color: labelColor, anchor: 'middle',
         opacity: opacity != null && opacity < 1 ? opacity : null,
     }));

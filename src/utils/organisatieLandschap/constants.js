@@ -146,7 +146,7 @@ export const TYPE = {
 
     // Eyebrow & labels (uppercase 11px ≈ 3.1mm)
     eyebrow: {
-        font: 'Inter', weight: 700, size: 3.1,
+        font: 'Inter', weight: 700, size: 3.18,
         color: COLORS.textMuted, letterSpacing: 0.45,
     },
     label: {

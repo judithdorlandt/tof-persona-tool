@@ -146,7 +146,7 @@ function drawBulletList({ svg, x, y, w, floor, eyebrow, subtitle, items, emptyTe
         if (subtitle) svg.appendChild(text({
             x, y: hy + SPACING.md,
             content: subtitle,
-            ...TYPE_V9.bodySoft, size: 3, lineHeight: 4.2,
+            ...TYPE_V9.bodySoft, size: 3.18, lineHeight: 4.45,
         }));
     };
 
@@ -223,7 +223,7 @@ function drawWerkomgevingColumn({ svg, x, y, w, floor, workplace, copy }) {
     svg.appendChild(text({
         x, y: top + SPACING.md,
         content: copy.patronen.cols.vraagt.subtitle,
-        ...TYPE_V9.bodySoft, size: 3, lineHeight: 4.2,
+        ...TYPE_V9.bodySoft, size: 3.18, lineHeight: 4.45,
     }));
     let ly = top + headerOffset;
     if (!workplace?.hasData) return ly;

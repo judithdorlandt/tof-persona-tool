@@ -144,7 +144,7 @@ function drawCard({ svg, x, y, w, h, title, subtitle, items, emptyFallback, acce
         x: x + SPACING.md, y: subtitleY,
         content: subtitle,
         ...TYPE_V9.bodySoft,
-        size: 3, lineHeight: 4,
+        size: 3.18, lineHeight: 4.45,
     }));
 
     // Fix: minimaal 8pt (2.12mm) tussen subtitle baseline en eerste bullet.
@@ -152,11 +152,13 @@ function drawCard({ svg, x, y, w, h, title, subtitle, items, emptyFallback, acce
     // bullet moet dus op subtitleY + 0.6 + SPACING.sm + caps (~2.6) = +5.3.
     let ly = subtitleY + 6;
     if (items.length === 0) {
-        svg.appendChild(text({
-            x: x + SPACING.md, y: ly + 4,
+        // Binnen de kaart afbreken: als één regel liep hij over de rand.
+        drawWrapped({
+            svg, x: x + SPACING.md, y: ly + 4,
+            maxWidth: w - SPACING.md * 2 - 1.4,
             content: emptyFallback,
             ...TYPE_V9.bodyQuiet,
-        }));
+        });
         return;
     }
     // V13: vaste tab-stop — alle bullets en tekst-blokken beginnen op

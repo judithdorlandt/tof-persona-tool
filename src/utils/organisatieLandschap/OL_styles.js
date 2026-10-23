@@ -57,7 +57,7 @@ export const TYPE_V9 = {
     // Eyebrow — Inter SemiBold 8pt uppercase tracked
     eyebrow: {
         font: 'Inter', weight: 600,
-        size: 2.82, lineHeight: 3.95, letterSpacing: 0.45,
+        size: 3.18, lineHeight: 4.45, letterSpacing: 0.45,
         color: '#9A8E82', upper: true,
     },
     // Body — Inter Regular 11pt

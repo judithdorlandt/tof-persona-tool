@@ -37,7 +37,7 @@ const SP = {
 
 // Type-groottes voor cover — v14: Playfair (heading) + Inter (label/meta).
 const SZ = {
-    label: 2.82,         // 8pt — eyebrow (Inter SemiBold uppercase tracked)
+    label: 3.18,         // 9pt — eyebrow (Inter SemiBold uppercase tracked)
     sub: 6.35,           // 18pt — Organisatielandschap (Playfair Italic)
     title: 15.50,        // 44pt — organisatienaam (Playfair Regular)
     meta: 3.18,          // 9pt — datum-regel

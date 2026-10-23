@@ -131,7 +131,7 @@ function drawKpiCard(svg, { x, y, w, h, label, big, unit, accent }) {
     svg.appendChild(text({
         x: x + SPACING.md, y: y + topPad,
         content: String(label).toUpperCase(),
-        font: 'Inter', weight: 600, size: 2.82, color: C.textMuted,
+        font: 'Inter', weight: 600, size: 3.18, color: C.textMuted,
         letterSpacing: 0.45,
     }));
 

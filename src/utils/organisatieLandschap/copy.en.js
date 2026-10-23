@@ -29,7 +29,7 @@ export const COPY_EN = {
         eyebrow: 'MODULE 3 · ORGANISATION LANDSCAPE',
         kicker: 'Organisation landscape',
         meta: (date, respondents, activeTeams, totalTeams) =>
-            `${date}  ·  ${respondents} ${respondents === 1 ? 'respondent' : 'respondents'}  ·  ${activeTeams}/${totalTeams} teams with data`,
+            `${date}  ·  ${respondents} ${respondents === 1 ? 'completed profile' : 'completed profiles'}  ·  ${activeTeams}/${totalTeams} teams with data`,
     },
 
     // ── Page 2 — Key figures (heading + lead eyebrow)
@@ -45,7 +45,7 @@ export const COPY_EN = {
         titlePrefix: '',
         subtitle: 'Working styles, patterns and direction',
         kpiLabels: {
-            respondents: 'Respondents',
+            respondents: 'Completed profiles',
             dominantStyle: 'The largest group in the organisation:',
             topNeed: 'What the organisation needs most',
             teamsCovered: 'Teams with data',
@@ -61,9 +61,9 @@ export const COPY_EN = {
         },
         leadIntro: 'What this report shows',
         leadFallback:
-            'An aggregated view of working styles, tension and workplace needs — built from the individual responses of team members.',
+            'An aggregated view of working styles, tension and workplace needs — built from the completed profiles of team members.',
         leadOneSentence: (org, dominant, n) =>
-            `In this measurement ${org} recognises itself most strongly in ${dominant.toLowerCase()} — based on ${n} ${n === 1 ? 'respondent' : 'respondents'}.`,
+            `In this measurement ${org} recognises itself most strongly in ${dominant.toLowerCase()} — based on ${n} ${n === 1 ? 'completed profile' : 'completed profiles'}.`,
         teamsWithoutResponses: {
             eyebrow: 'TEAMS WITHOUT RESPONSES',
             empty: 'Every team has responded.',
@@ -146,7 +146,7 @@ export const COPY_EN = {
         },
         methodNoteEyebrow: 'METHODOLOGICAL NOTE',
         methodNote:
-            'Data from the persona questionnaire — quantitative, n = number of respondents per category.',
+            'Data from the persona questionnaire — quantitative, n = number of completed profiles per category.',
         qualCaveat:
             'Source: observation and conversations. These signals point, they do not prove — verification in conversation remains necessary.',
     },

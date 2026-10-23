@@ -22,7 +22,7 @@ export const COPY_NL = {
     moduleLabel: 'MODULE 3 · ORGANISATIELANDSCHAP',
 
     // Bestand-suffix
-    fileSuffix: 'organisatie-landschap TOF',
+    fileSuffix: 'organisatielandschap TOF',
 
     // ── Pagina 1 — TOF Brand cover
     brandCover: {
@@ -31,7 +31,7 @@ export const COPY_NL = {
         eyebrow: 'MODULE 3 · ORGANISATIELANDSCHAP',
         kicker: 'Organisatielandschap',
         meta: (date, respondents, activeTeams, totalTeams) =>
-            `${date}  ·  ${respondents} ${respondents === 1 ? 'respondent' : 'respondenten'}  ·  ${activeTeams}/${totalTeams} teams met data`,
+            `${date}  ·  ${respondents} ${respondents === 1 ? 'ingevuld profiel' : 'ingevulde profielen'}  ·  ${activeTeams}/${totalTeams} teams met data`,
     },
 
     // ── Pagina 2 — Kerncijfers (kop + lead-eyebrow)
@@ -47,7 +47,7 @@ export const COPY_NL = {
         titlePrefix: '',
         subtitle: 'Werkstijlen, patronen en richting',
         kpiLabels: {
-            respondents: 'Respondenten',
+            respondents: 'Ingevulde profielen',
             dominantStyle: 'De grootste groep in de organisatie:',
             // Opdracht L3 (besluit Judith 23 okt): de kern, geen percentage.
             topNeed: 'Wat de organisatie het meest nodig heeft',
@@ -66,9 +66,9 @@ export const COPY_NL = {
         },
         leadIntro: 'Wat zie je in dit rapport',
         leadFallback:
-            'Een geaggregeerd beeld van werkstijlen, spanning en werkplekbehoeftes — gebouwd uit de individuele responses van teamleden.',
+            'Een geaggregeerd beeld van werkstijlen, spanning en werkplekbehoeftes — gebouwd uit de ingevulde profielen van teamleden.',
         leadOneSentence: (org, dominant, n) =>
-            `${org} laat zich in deze meting het sterkst herkennen in ${dominant.toLowerCase()} — op basis van ${n} ${n === 1 ? 'respondent' : 'respondenten'}.`,
+            `${org} laat zich in deze meting het sterkst herkennen in ${dominant.toLowerCase()} — op basis van ${n} ${n === 1 ? 'ingevuld profiel' : 'ingevulde profielen'}.`,
         teamsWithoutResponses: {
             eyebrow: 'TEAMS ZONDER RESPONS',
             empty: 'Alle teams hebben gereageerd.',
@@ -162,7 +162,7 @@ export const COPY_NL = {
         methodNoteEyebrow: 'METHODOLOGISCHE NOOT',
         // Kwantitatieve pagina: alleen de meet-herkomst.
         methodNote:
-            'Data uit de persona-vragenlijst — kwantitatief, n = aantal respondenten per categorie.',
+            'Data uit de persona-vragenlijst — kwantitatief, n = aantal ingevulde profielen per categorie.',
         // Kwalitatieve pagina: voorbehoud onderaan.
         qualCaveat:
             'Bron: observatie en gesprekken. Deze signalen duiden, ze bewijzen niet — verificatie in gesprek blijft nodig.',
