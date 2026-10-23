@@ -108,7 +108,8 @@ function drawThreeCards(svg, y, data, copy) {
     const needed = Math.max(...cards.map((c) => measureBulletCardH(c.items, cardW)));
     const cardFloor = PAGE_H - MARGIN - 36;           // vloer boven de sluit-quote
     const maxCardH = cardFloor - y;
-    const cardH = Math.max(62, Math.min(maxCardH, needed));
+    // Op de hoogte van de inhoud, minimaal 40 mm (ronde 2, grafisch punt 13).
+    const cardH = Math.max(40, Math.min(maxCardH, needed));
 
     cards.forEach((c, i) => {
         drawCard({

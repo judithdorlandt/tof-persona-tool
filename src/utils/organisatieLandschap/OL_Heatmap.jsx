@@ -35,23 +35,38 @@ const FN_SIZE = 3.18;
 // het paginanummer/logo nooit raken.
 const FN_BOTTOM_BASELINE = PAGE_H - MARGIN - 6;
 
+// Ronde 2, groep 3 (UX O2, grafisch punt 5 en 6): vaste rijhoogte, hoogstens
+// 12 teams per pagina, daarna een vervolgpagina met dezelfde kop, legenda en
+// kolomkoppen. De ORGANISATIE-rij staat bovenaan elke pagina als
+// vergelijkingsrij, zodat niemand bij veel teams terug hoeft te bladeren.
+const ROWS_PER_PAGE = 12;
+
 export function buildHeatmapSVG({ data, copy, lang = 'nl' }) {
-    const svg = createCanvas();
-    svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
+    // Eén team zonder rest: die rij is gelijk aan de organisatierij, dus
+    // alleen de organisatie tonen (grafisch punt 5a).
+    const rows = data.teamRows.length === 1 && !data.hasRestRow ? [] : data.teamRows;
+    const chunks = [];
+    for (let i = 0; i < rows.length; i += ROWS_PER_PAGE) chunks.push(rows.slice(i, i + ROWS_PER_PAGE));
+    if (chunks.length === 0) chunks.push([]);
 
-    // V12: pageTitle weglaten — anders staat hij identiek aan de H2.
-    let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
+    return chunks.map((chunk) => {
+        const svg = createCanvas();
+        svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
 
-    // V24: legenda uitgelijnd met de titel-bovenkant (hoger), zodat de tabel
-    // eerder kan beginnen. Pre-tabel-gap verkleind van lg → sm.
-    const titleTopY = y;
-    y = drawTitleBlock(svg, y, copy);
-    drawLegendTopRight(svg, titleTopY, copy);
-    y += SPACING.sm;
-    drawHeatmap(svg, y, data, copy, lang);
-    drawHeatmapFootnote(svg, data, copy);
-    // Footer wordt centraal door de orchestrator getekend (dynamische nummering).
-    return svg;
+        // V12: pageTitle weglaten — anders staat hij identiek aan de H2.
+        let y = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
+
+        // V24: legenda uitgelijnd met de titel-bovenkant (hoger), zodat de tabel
+        // eerder kan beginnen.
+        const titleTopY = y;
+        y = drawTitleBlock(svg, y, copy);
+        drawLegendTopRight(svg, titleTopY, copy);
+        y += SPACING.sm;
+        const tableBottom = drawHeatmap(svg, y, chunk, data, copy, lang);
+        drawHeatmapFootnote(svg, tableBottom, data, copy);
+        // Footer wordt centraal door de orchestrator getekend (dynamische nummering).
+        return svg;
+    });
 }
 
 function drawTitleBlock(svg, y, copy) {
@@ -120,58 +135,55 @@ function drawLegendTopRight(svg, y, copy) {
     }));
 }
 
-function drawHeatmap(svg, y, data, copy, lang) {
-    // Fix #4: team-kolom breder (75mm), font kleiner (12px = 3.18mm)
+const ROW_H = 7;          // vaste rijhoogte (grafisch punt 6)
+const ROW_H_TWO = 9;      // teamnaam over twee regels
+const NAME_LH = 4.4;
+const TEAM_COL_W = 60;
+
+// Rijhoogte op maat van de teamnaam: één regel 7 mm, twee regels 9 mm.
+function rowHeightFor(row) {
+    const lines = Math.max(1, wrapTextLines(row.name, TEAM_COL_W - 4, 3.18, 'Inter').length);
+    if (lines <= 1) return ROW_H;
+    if (lines === 2) return ROW_H_TWO;
+    return lines * NAME_LH + 1.4;
+}
+
+function drawHeatmap(svg, y, rows, data, copy, lang) {
     // Betrouwbaarheid toont sinds L4 de labels van getConfidence() ("Opkomend
     // patroon", "Betrouwbaar beeld"): langer dan Laag/Midden/Hoog, dus een
     // bredere kolom ten koste van de ruime teamnaamkolom.
-    const teamColW = 60;
+    const teamColW = TEAM_COL_W;
     const nColW = 9;
     const relColW = 37;
     const personaAreaW = USABLE_W - teamColW - nColW - relColW;
     const cellW = personaAreaW / ARCHETYPE_ORDER.length;
 
     const headerH = 12;
-    const heatmapTop = y + headerH;
-    const rows = data.teamRows;
-    const orgGap = SPACING.md;
-
-    // Het footnote-blok is ONDERAAN verankerd (boven de footer). De tabel-band
-    // loopt tot SPACING.lg bóven dat blok. Daardoor staan de ORGANISATIE-
-    // totaalrij en de voetnoten altijd gescheiden en vrij — ongeacht het aantal
-    // teams of voetnootregels. De rijhoogte schaalt mee zodat alles past.
-    // V24: ruimere scheiding (xl) tussen de ORGANISATIE-totaalrij en het
-    // voetnoot-blok — totaalrij vrij, dan voetnoten, dan footer.
-    const fnLines = buildFootnoteLines(data, copy);
-    const bandBottom = footnoteBlockTop(fnLines.length) - SPACING.xl;
-
-    // Row-units: teamrijen (1 elk) + org-totaalrij (1.2× zwaarder). Zo klopt
-    // de hoogte-reservering exact. Niet-gekoppelde profielen hebben geen
-    // eigen rij meer: ze zitten in "Overige" (zie organisatieAggregation).
-    const orgUnits = 1.2;
-    const units = rows.length + orgUnits;
-    const availH = bandBottom - heatmapTop - orgGap;
-    const rowH = Math.max(5.0, Math.min(11, availH / units));
+    const orgGap = 4.2;
 
     drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang);
 
-    let cursorY = heatmapTop;
-    rows.forEach((row, ri) => {
-        drawDataRow(svg, {
-            x: MARGIN, y: cursorY, h: rowH,
-            teamColW, nColW, relColW, cellW,
-            row, isOrg: false, zebra: ri % 2 === 0, copy,
-        });
-        cursorY += rowH;
-    });
-
-    // Org-rij — totaalrij krijgt eigen sage-band in drawDataRow.
-    cursorY += orgGap;
+    // ORGANISATIE-rij bovenaan als vergelijkingsrij.
+    let cursorY = y + headerH;
+    const orgH = ROW_H * 1.2;
     drawDataRow(svg, {
-        x: MARGIN, y: cursorY, h: rowH * 1.2,
+        x: MARGIN, y: cursorY, h: orgH,
         teamColW, nColW, relColW, cellW,
         row: data.orgRow, isOrg: true, zebra: false, copy,
     });
+    cursorY += orgH;
+    if (rows.length > 0) cursorY += orgGap;
+
+    rows.forEach((row, ri) => {
+        const h = rowHeightFor(row);
+        drawDataRow(svg, {
+            x: MARGIN, y: cursorY, h,
+            teamColW, nColW, relColW, cellW,
+            row, isOrg: false, zebra: ri % 2 === 0, copy,
+        });
+        cursorY += h;
+    });
+    return cursorY;
 }
 
 function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang) {
@@ -319,22 +331,21 @@ function buildFootnoteLines(data, copy) {
     return lines;
 }
 
-// Visuele bovenkant van het footnote-blok bij `noteLines` regels — de tabel-band
-// stopt hierboven zodat tabel en voetnoten elkaar nooit raken.
-function footnoteBlockTop(noteLines) {
-    const topBaseline = FN_BOTTOM_BASELINE - (noteLines - 1) * FN_LINE_H;
-    return topBaseline - FN_SIZE;
-}
-
-function drawHeatmapFootnote(svg, data, copy) {
+// Voetnoot direct onder de tabel (6,35 mm), maar nooit lager dan boven de
+// voetregel (grafisch punt 5b).
+function drawHeatmapFootnote(svg, tableBottom, data, copy) {
     // Geen ≥/≤ in de strings — de gebundelde font-subsets missen die glyphs.
     // NIET italic: er is geen Inter-italic geregistreerd (zou terugvallen op een
     // WinAnsi-standaardfont). Onderaan verankerd op FN_BOTTOM_BASELINE; regels
     // stapelen van onder naar boven.
     const lines = buildFootnoteLines(data, copy);
+    const firstBaseline = Math.min(
+        tableBottom + 6.35,
+        FN_BOTTOM_BASELINE - (lines.length - 1) * FN_LINE_H,
+    );
     lines.forEach((content, i) => {
         svg.appendChild(text({
-            x: MARGIN, y: FN_BOTTOM_BASELINE - i * FN_LINE_H,
+            x: MARGIN, y: firstBaseline + i * FN_LINE_H,
             content,
             font: 'Inter', weight: 400, size: FN_SIZE, color: C.textMuted,
             letterSpacing: 0,
