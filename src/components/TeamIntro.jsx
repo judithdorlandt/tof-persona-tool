@@ -63,8 +63,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
     // Lijst met teams waar deze gebruiker al toegang toe heeft (uit localStorage).
     const [teamAccesses, setTeamAccesses] = useState(() => listTeamAccesses());
 
-    // Ingelogde user (null als anoniem). Gebruikt voor de manager-welkomstgroet.
-    const [currentUser, setCurrentUser] = useState(null);
 
     // Combineer localStorage-toegang (anonieme code-flow) met DB-memberships
     // (ingelogde flow). DB-only entries krijgen later automatisch een localStorage
@@ -95,7 +93,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
             }
 
             if (cancelled) return;
-            setCurrentUser(user);
 
             // Merge: localStorage entries hebben priority (ze hebben het juiste
             // level uit het oorspronkelijke code-moment). DB-only entries worden
@@ -333,12 +330,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
     // We verbergen dan de sales-hero, de drie module-kaarten en het code-invoer-
     // blok, en laten alleen YourAccessPanel zien.
     const isManagerMode = teamAccesses.some((a) => a.fromManager);
-    const managerFirstName = (() => {
-        if (!currentUser?.email) return '';
-        const local = currentUser.email.split('@')[0] || '';
-        const first = local.split(/[._-]/)[0] || '';
-        return first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
-    })();
 
     return (
         <PageShell padding={isMobile ? '16px 16px 28px' : '20px 20px 32px'}>
@@ -367,10 +358,10 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                                 lineHeight: 1.2,
                                 color: '#1f1b18',
                             }}>
-                                {managerFirstName
-                                    ? <>{t.managerWelcome.greeting(managerFirstName)}<em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>{t.managerWelcome.greetingHighlight}</em></>
-                                    : <>{t.managerWelcome.titleLead}<em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>{t.managerWelcome.titleHighlight}</em></>
-                                }
+                                {/* Geen naam: er is nergens een voornaam van de
+                                    leidinggevende opgeslagen, en raden uit het
+                                    mailadres gaf "Hoi Judithdorlandt". */}
+                                {t.managerWelcome.titleLead}<em style={{ color: 'var(--tof-accent-rose)', fontStyle: 'italic' }}>{t.managerWelcome.titleHighlight}</em>
                             </h1>
                             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: '#6F6A66', maxWidth: 560 }}>
                                 {t.managerWelcome.lead}

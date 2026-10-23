@@ -37,8 +37,6 @@ const teamIntro = {
 
   managerWelcome: {
     eyebrow: 'Welkom terug',
-    greeting: (name) => `Hoi ${name}, `,
-    greetingHighlight: 'jouw team(s) staan klaar.',
     titleLead: 'Jouw team(s) ',
     titleHighlight: 'staan klaar.',
     lead: 'Klik op een team hieronder om het Teaminzicht-dashboard te openen.',

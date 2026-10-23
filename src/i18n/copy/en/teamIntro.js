@@ -34,8 +34,6 @@ const teamIntro = {
 
   managerWelcome: {
     eyebrow: 'Welcome back',
-    greeting: (name) => `Hi ${name}, `,
-    greetingHighlight: 'your team(s) are ready.',
     titleLead: 'Your team(s) ',
     titleHighlight: 'are ready.',
     lead: 'Select a team below to open its Team Insight dashboard.',
