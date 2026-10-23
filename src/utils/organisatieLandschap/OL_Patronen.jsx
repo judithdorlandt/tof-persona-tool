@@ -60,6 +60,7 @@ function buildQuantPage(data, copy) {
     drawBulletList({
         svg, x: rightX, y, w: rightW, floor,
         eyebrow: copy.patronen.cols.officeCheck.title.toUpperCase(),
+        subtitle: copy.patronen.cols.officeCheck.subtitle,
         items: data.officeCheck,
         bulletColor: ROSE,
     });
@@ -218,6 +219,11 @@ function drawWerkomgevingColumn({ svg, x, y, w, floor, workplace, copy }) {
     svg.appendChild(text({
         x, y: top, content: copy.patronen.cols.vraagt.title.toUpperCase(),
         ...TYPE_V9.eyebrow,
+    }));
+    svg.appendChild(text({
+        x, y: top + SPACING.md,
+        content: copy.patronen.cols.vraagt.subtitle,
+        ...TYPE_V9.bodySoft, size: 3, lineHeight: 4.2,
     }));
     let ly = top + headerOffset;
     if (!workplace?.hasData) return ly;

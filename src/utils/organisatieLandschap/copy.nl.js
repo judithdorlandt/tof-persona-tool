@@ -130,7 +130,7 @@ export const COPY_NL = {
         eyebrow: 'PAGINA 4 — PATRONEN',
         title: 'Patronen in de organisatie',
         subtitle:
-            'Wat de werkomgeving vraagt, en waar de organisatie op leegloopt — gemeten in de data.',
+            'Wat de werkomgeving vraagt, en wat je in het kantoor kunt nagaan.',
         // ── Pagina 5 — Kwalitatief beeld
         qualEyebrow: 'PAGINA 5 — KWALITATIEF BEELD',
         qualTitle: 'Signalen uit observatie en gesprek',
@@ -140,10 +140,12 @@ export const COPY_NL = {
             // Vragen zoals in de team-PDF, geen beweringen over het kantoor.
             officeCheck: {
                 title: 'Check in het kantoor',
+                subtitle: 'Vragen om in het eigen kantoor na te gaan.',
             },
             // Het werkplekprofiel: kern, steun en beperkt nodig, geen percentages.
             vraagt: {
                 title: 'Wat de werkomgeving vraagt',
+                subtitle: 'Van meest naar minder nodig, zonder percentages.',
             },
             werkt: {
                 title: 'Wat werkt goed',
@@ -178,8 +180,8 @@ export const COPY_NL = {
             empty: 'Te weinig data om scherpe richting te geven.',
         },
         environment: {
-            title: 'Voor de werkomgeving (3–5 jaar)',
-            subtitle: 'Waar de werkplek-investeringen het meest renderen.',
+            title: 'Voor de werkomgeving',
+            subtitle: 'Waar het gesprek over de werkplek kan beginnen.',
             empty: 'Te weinig data voor onderbouwde keuzes.',
         },
         attention: {
@@ -224,7 +226,7 @@ export const COPY_NL = {
         },
 
         environment: {
-            notEnoughData: 'Te weinig data om concrete investeringskeuzes te onderbouwen.',
+            notEnoughData: 'Te weinig profielen voor een beeld van de werkplekbehoefte.',
             // Als vraag (besluit Judith 23 okt).
             focusQuestion: (labels) =>
                 `Waar wil de organisatie de komende jaren op inzetten? Begin bij wat het meest nodig is: ${labels}.`,

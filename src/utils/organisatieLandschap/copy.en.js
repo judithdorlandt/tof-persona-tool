@@ -120,7 +120,7 @@ export const COPY_EN = {
         eyebrow: 'PAGE 4 — PATTERNS',
         title: 'Patterns in the organisation',
         subtitle:
-            'What the work environment asks for, and where the organisation drains — measured in the data.',
+            'What the work environment asks for, and what to check in the office.',
         // ── Page 5 — Qualitative picture
         qualEyebrow: 'PAGE 5 — QUALITATIVE PICTURE',
         qualTitle: 'Signals from observation and conversation',
@@ -129,9 +129,11 @@ export const COPY_EN = {
         cols: {
             officeCheck: {
                 title: 'Check the office',
+                subtitle: 'Questions to check in your own office.',
             },
             vraagt: {
                 title: 'What the work environment asks for',
+                subtitle: 'From most to less needed, without percentages.',
             },
             werkt: {
                 title: 'What works well',
@@ -162,8 +164,8 @@ export const COPY_EN = {
             empty: 'Too little data to give sharp direction.',
         },
         environment: {
-            title: 'For the work environment (3–5 years)',
-            subtitle: 'Where workplace investment pays off most.',
+            title: 'For the work environment',
+            subtitle: 'Where the conversation about the workplace can start.',
             empty: 'Too little data for well-founded choices.',
         },
         attention: {
@@ -206,7 +208,7 @@ export const COPY_EN = {
         },
 
         environment: {
-            notEnoughData: 'Too little data to underpin concrete investment choices.',
+            notEnoughData: 'Too few profiles for a picture of workplace needs.',
             focusQuestion: (labels) =>
                 `What does the organisation want to focus on in the coming years? Start with what's needed most: ${labels}.`,
         },
