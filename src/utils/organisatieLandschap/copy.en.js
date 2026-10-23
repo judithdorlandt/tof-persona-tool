@@ -13,23 +13,21 @@
 export const COPY_EN = {
     // ── Shared
     brand: 'TOF · The Office Factory',
-    pillLabel: 'ORGANISATION LANDSCAPE',
     dateLocale: 'en-GB',
 
-    // Module label in the page header (pages 2–5) and on the cover.
-    moduleLabel: 'MODULE 3 · ORGANISATION LANDSCAPE',
+    // Page-header label (pages 2–6). No module number (decision J1).
+    moduleLabel: 'ORGANISATION LANDSCAPE',
 
     // File-name suffix
     fileSuffix: 'organisation landscape TOF',
 
     // ── Page 1 — TOF brand cover
     brandCover: {
-        title: 'The Office Factory',
-        tagline: 'Insight into working style, team dynamics and workplace.',
-        eyebrow: 'MODULE 3 · ORGANISATION LANDSCAPE',
+        tagline: 'Insight into working styles and workplace, across the whole organisation.',
+        eyebrow: 'TOF PERSONA',
         kicker: 'Organisation landscape',
         meta: (date, respondents, activeTeams, totalTeams) =>
-            `${date}  ·  ${respondents} ${respondents === 1 ? 'completed profile' : 'completed profiles'}  ·  ${activeTeams}/${totalTeams} teams with data`,
+            `${date}  ·  ${respondents} ${respondents === 1 ? 'completed profile' : 'completed profiles'}  ·  ${activeTeams} of ${totalTeams} teams with completed profiles`,
     },
 
     // ── Page 2 — Key figures (heading + lead eyebrow)
@@ -40,15 +38,10 @@ export const COPY_EN = {
 
     // ── Page 2 — Organisation landscape cover & summary
     cover: {
-        eyebrow: 'ORGANISATION LANDSCAPE',
-        kicker: 'Report',
-        titlePrefix: '',
-        subtitle: 'Working styles, patterns and direction',
         kpiLabels: {
             respondents: 'Completed profiles',
-            dominantStyle: 'The largest group in the organisation:',
+            dominantStyle: 'The largest group in the organisation',
             topNeed: 'What the organisation needs most',
-            teamsCovered: 'Teams with data',
         },
         kpiUnits: {
             dominantStyle: (count, tie) => {
@@ -58,41 +51,28 @@ export const COPY_EN = {
                     : `${count} people with this as their first working style`;
             },
         },
-        leadIntro: 'What this report shows',
         leadFallback:
             'An aggregated view of working styles, tension and workplace needs — built from the completed profiles of team members.',
-        leadOneSentence: (org, dominant, n) =>
-            `In this measurement ${org} recognises itself most strongly in ${dominant.toLowerCase()} — based on ${n} ${n === 1 ? 'completed profile' : 'completed profiles'}.`,
+        leadOneSentence: (org, names, n, tie) =>
+            `${tie ? `The largest groups in ${org} are` : `The largest group in ${org} is`} ${names} — based on ${n} ${n === 1 ? 'completed profile' : 'completed profiles'}.`,
         teamsWithoutResponses: {
             eyebrow: 'TEAMS WITHOUT COMPLETED PROFILES',
-            empty: 'Every team has responded.',
-            note: (count) =>
-                `${count} ${count === 1 ? 'team has' : 'teams have'} no profiles added yet. They are missing from the heatmap and the patterns.`,
+            note: (count) => (count === 1
+                ? '1 team has no completed profiles yet, so it does not appear in this report.'
+                : `${count} teams have no completed profiles yet, so they do not appear in this report.`),
         },
         // Reader's guide that fills the freed-up space when every team responded.
         measurement: {
             eyebrow: 'ABOUT THIS MEASUREMENT',
             intro: 'Everyone completes a short questionnaire and receives a first, second and third working style. This report adds up the first working styles into a picture per team and for the organisation as a whole. The eight working styles:',
-            // Keyed on archetype id; the builder pairs it with the persona name.
-            legend: {
-                maker: 'likes to finish something tangible',
-                groeier: 'seeks growth and new skills',
-                presteerder: 'steers on goals and results',
-                denker: 'seeks calm, depth and concentration',
-                verbinder: 'brings people and collaboration together',
-                teamspeler: 'values a reliable, close-knit team',
-                zekerzoeker: 'likes structure and certainty',
-                vernieuwer: 'invents new routes and ideas',
-            },
         },
     },
 
     // ── Page 3 — Working style per team (heatmap)
     heatmap: {
-        eyebrow: 'PAGE 2 — WORKING STYLE PER TEAM',
         title: 'Working style per team',
         subtitle:
-            'How working styles are spread within each team, plus the organisation as a whole.',
+            'Per team, the share of each first working style in percent, plus the organisation as a whole.',
         cols: {
             team: 'Team',
             n: 'n',
@@ -101,25 +81,22 @@ export const COPY_EN = {
         orgRowLabel: 'ORGANISATION',
         orgRowReliability: 'n/a',
         // No >= / <= glyphs: the bundled font subsets do not contain them.
-        reliabilityHelp: '5–15 = emerging pattern · 16–30 = reliable picture · more than 30 = strong pattern',
+        reliabilityHelp: 'Reliability: 5–15 profiles = emerging pattern · 16–30 = reliable picture · more than 30 = strong pattern',
         legend: {
             label: 'COLOUR INTENSITY',
             explanation: 'The stronger the colour, the larger the share within the team.',
             scaleLow: '0%',
             scaleHigh: '100%',
-            cellZero: 'Measured 0%',
-            cellEmpty: 'Not present',
+            cellEmpty: 'Empty cell: no one with this as their first working style.',
         },
     },
 
     // ── Page 4 — Organisation-wide patterns (quantitative)
     patronen: {
-        eyebrow: 'PAGE 4 — PATTERNS',
-        title: 'Patterns in the organisation',
+        title: 'Workplace needs of the organisation',
         subtitle:
             'What the work environment asks for, and what to check in the office.',
         // ── Page 5 — Qualitative picture
-        qualEyebrow: 'PAGE 5 — QUALITATIVE PICTURE',
         qualTitle: 'Signals from observation and conversation',
         qualSubtitle:
             'What works well and where the tension sits — gathered from observation and conversations.',
@@ -130,7 +107,7 @@ export const COPY_EN = {
             },
             vraagt: {
                 title: 'What the work environment asks for',
-                subtitle: 'From most to less needed, without percentages.',
+                subtitle: 'From most to least emphasis: how central a space is to the work, not how many spaces are needed.',
             },
             werkt: {
                 title: 'What works well',
@@ -144,31 +121,30 @@ export const COPY_EN = {
         },
         methodNoteEyebrow: 'METHODOLOGICAL NOTE',
         methodNote:
-            'Data from the persona questionnaire — quantitative, n = number of completed profiles per category.',
+            'Based on the first working styles from the completed questionnaires. The workplace profile follows from those working styles and says nothing about the current office.',
         qualCaveat:
             'Source: observation and conversations. These signals point, they do not prove — verification in conversation remains necessary.',
     },
 
     // ── Page 6 — Interpretation & direction
     duiding: {
-        eyebrow: 'PAGE 4 — INTERPRETATION',
         pageTitle: 'Interpretation',
         title: 'What this means',
         subtitle: 'Direction for leadership and the work environment.',
         leadership: {
             title: 'For leadership',
             subtitle: 'What deserves attention in conversation with teams.',
-            empty: 'Too little data to give sharp direction.',
+            empty: 'Too few completed profiles to give direction.',
         },
         environment: {
             title: 'For the work environment',
             subtitle: 'Where the conversation about the workplace can start.',
-            empty: 'Too little data for well-founded choices.',
+            empty: 'Too few completed profiles for a picture of the workplace.',
         },
         attention: {
             title: 'Teams without their own row',
             subtitle: 'Why not every team appears separately in the overview.',
-            empty: 'Every team has enough data for analysis.',
+            empty: 'Every team has its own row in the overview.',
         },
         tagline: 'An organisation that recognises itself moves faster.',
     },
@@ -188,20 +164,15 @@ export const COPY_EN = {
 
         signature: {
             none: 'An organisation in motion.',
-            one: (drive) => `${drive} — that is what this organisation builds on.`,
-            two: (driveA, driveB) =>
-                `${driveA} and ${driveB} — that is what this organisation builds on.`,
+            one: (drive) => `${drive} is the strongest driver in this measurement.`,
+            more: (drives) => `${drives} are the strongest drivers in this measurement.`,
         },
 
         leadership: {
-            twoDrives: (a, b) =>
-                `Two drivers stand out: ${a.drive} (${a.label}) and ${b.drive} (${b.label}). Make room for both — do not suppress either.`,
-            oneDrive: (a) =>
-                `The strongest drive is ${a.drive} (${a.label}). Check in conversation whether teams with other drivers still feel seen.`,
-            personaLabel: (name, pct) =>
-                pct != null ? `${name}, ${pct}% primary` : name,
-            lowReliability: (n) =>
-                `${n} teams have too few responses for firm conclusions. Explore in conversation before you set policy.`,
+            twoDrives: (names, drives) =>
+                `The largest groups are ${names}, driven by ${drives}. Ask teams whether there is room for that, and what it asks of the other working styles.`,
+            oneDrive: (name, drive) =>
+                `The largest group is ${name}, driven by ${drive}. Check in conversation whether people with other working styles feel seen too.`,
         },
 
         environment: {

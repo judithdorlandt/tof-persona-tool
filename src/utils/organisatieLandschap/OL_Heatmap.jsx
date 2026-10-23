@@ -112,6 +112,12 @@ function drawLegendTopRight(svg, y, copy) {
         content: copy.heatmap.legend.explanation,
         ...TYPE_V9.footer, anchor: 'middle',
     }));
+    // Wat een lege cel betekent (redactie punt 22).
+    svg.appendChild(text({
+        x: PAGE_W - MARGIN, y: legY + 21.5,
+        content: copy.heatmap.legend.cellEmpty,
+        ...TYPE_V9.footer, anchor: 'end',
+    }));
 }
 
 function drawHeatmap(svg, y, data, copy, lang) {

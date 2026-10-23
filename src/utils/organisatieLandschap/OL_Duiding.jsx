@@ -194,7 +194,8 @@ function drawClosingZone(svg, data, copy) {
     ));
     svg.appendChild(text({
         x: PAGE_W / 2, y: quoteY,
-        content: `"${copy.duiding.tagline}"`,
+        // Slotzin van The Office Factory, zonder aanhalingstekens (besluit J4).
+        content: copy.duiding.tagline,
         font: 'Playfair Display', weight: 400, size: quoteFontSize,
         color: C.textSoft, italic: true, anchor: 'middle',
     }));

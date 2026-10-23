@@ -20,6 +20,7 @@ import {
 import { COLOR_FAMILIES, TYPE_V9, SPACING } from './OL_styles';
 import { createCanvas, rect, text, drawWrapped, circle, wrapTextLines } from './svgPrimitives';
 import { drawPageHeader } from './OL_Chrome';
+import { getArchetypes } from '../../i18n/archetypes';
 
 const C = COLOR_FAMILIES.neutral;
 const SAGE = COLOR_FAMILIES.accent.rust;
@@ -78,6 +79,7 @@ function drawLead(svg, y, data, copy) {
     const leadText = data.totalRespondents > 0 && data.dominantStyle.name !== '—'
         ? copy.cover.leadOneSentence(
             data.organizationName, data.dominantStyle.name, data.totalRespondents,
+            data.dominantStyle.tie,
         )
         : copy.cover.leadFallback;
     // V12: duidende intro, geen quote → Inter regular ~16pt, niet Playfair italic.
@@ -268,6 +270,7 @@ function drawTeamsBanner(svg, y, bannerH, data, copy) {
 // acht werkstijlen (één regel elk). Vult de ruimte tot net boven de footer.
 function drawMeasurementBlock(svg, y, bottomLimit, data, copy, lang) {
     const m = copy.cover.measurement;
+    const keywords = Object.fromEntries(getArchetypes(lang).map((p) => [p.id, p.kw]));
     const blockH = bottomLimit - y;
 
     svg.appendChild(rect(MARGIN, y, USABLE_W, blockH, C.surface, {
@@ -330,7 +333,9 @@ function drawMeasurementBlock(svg, y, bottomLimit, data, copy, lang) {
         desc.setAttribute('font-weight', 400);
         desc.setAttribute('font-size', 3.2);
         desc.setAttribute('fill', C.textSoft);
-        desc.textContent = '— ' + m.legend[id];
+        // Trefwoorden uit de app (archetypes `kw`), zodat het rapport
+        // hetzelfde zegt als de app (redactie punt 12).
+        desc.textContent = '— ' + (keywords[id] || []).join(', ');
         row.appendChild(desc);
         svg.appendChild(row);
     });

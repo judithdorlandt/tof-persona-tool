@@ -120,7 +120,6 @@ export function prepareOrganisatieData({
         .map((o) => sanitizeUserText(o.content || ''))
         .filter(Boolean);
 
-    const lowReliabilityTeams = teamRows.filter((r) => r.reliability.id === 'laag');
 
     return {
         lang,
@@ -145,22 +144,22 @@ export function prepareOrganisatieData({
         werktGoedObservations,
         teamRows,
         orgRow,
-        lowReliabilityTeams,
         // Voor duiding: dominante persona's organisatiebreed (top 2).
         // pct + count erbij zodat de drijfveer-conclusie navolgbaar is tegen
         // de organisatie-rij in de heatmap.
-        topPersonas: (aggregate?.personasByPrimary || []).slice(0, 2).map((p) => ({
+        // De grootste groep(en), net als de tegel: dominantPersonas() met
+        // gelijke stand (redactie punt 8 en 9). Voor leiderschap en slotregel.
+        dominantGroups: dominantPersonas(aggregate).map((p) => ({
             id: p.id,
             // Bewust de canonieke naam uit constants (taalvast), niet p.name —
             // die komt uit de generieke aggregatie en kan NL zijn.
             name: getArchetypeName(p.id, lang) || p.name || p.id,
             drive: getPersonaDrive(p.id, lang) || (p.name || '').toLowerCase(),
             color: PERSONA_COLORS[p.id],
-            pct: Number.isFinite(p.countPercentage) ? p.countPercentage : null,
-            count: p.count || 0,
         })),
         // Voor signature/quote.
         signatureSentence: buildSignatureSentence(aggregate, cd, lang),
+        joinNames: (list) => getCopy(lang).teamPanels.names.join(list),
     };
 }
 
@@ -288,15 +287,14 @@ function computeOfficeCheck(insights, cd) {
     return out;
 }
 
+// Slotregel: beschrijven, niet beweren (redactie punt 9, besluit J3). De
+// drijfveer van de grootste groep(en), bij gelijke stand allemaal.
 function buildSignatureSentence(aggregate, cd, lang) {
-    const top = aggregate?.personasByPrimary || [];
+    const top = dominantPersonas(aggregate);
     if (top.length === 0) return cd.signature.none;
-    const drive1 = getPersonaDrive(top[0].id, lang) || (top[0].name || '').toLowerCase();
-    if (top.length === 1) {
-        return cd.signature.one(capitalize(drive1));
-    }
-    const drive2 = getPersonaDrive(top[1].id, lang) || (top[1].name || '').toLowerCase();
-    return cd.signature.two(capitalize(drive1), drive2);
+    const drives = top.map((p) => getPersonaDrive(p.id, lang) || (p.name || '').toLowerCase());
+    if (drives.length === 1) return cd.signature.one(capitalize(drives[0]));
+    return cd.signature.more(capitalize(getCopy(lang).teamPanels.names.join(drives)));
 }
 
 function capitalize(s) {
@@ -329,20 +327,13 @@ export function sanitizeUserText(s) {
 
 export function buildLeadershipDirections(data, copy = getOLCopy('nl')) {
     const cl = copy.data.leadership;
-    const out = [];
-    const withLabel = (p) => ({
-        drive: p.drive,
-        label: cl.personaLabel(p.name, p.pct != null ? p.pct : null),
-    });
-    if (data.topPersonas?.length >= 2) {
-        out.push(cl.twoDrives(withLabel(data.topPersonas[0]), withLabel(data.topPersonas[1])));
-    } else if (data.topPersonas?.length === 1) {
-        out.push(cl.oneDrive(withLabel(data.topPersonas[0])));
-    }
-    if (data.lowReliabilityTeams?.length >= 3) {
-        out.push(cl.lowReliability(data.lowReliabilityTeams.length));
-    }
-    return out;
+    const groups = data.dominantGroups || [];
+    if (groups.length === 0) return [];
+    if (groups.length === 1) return [cl.oneDrive(groups[0].name, groups[0].drive)];
+    return [cl.twoDrives(
+        data.joinNames(groups.map((g) => g.name)),
+        data.joinNames(groups.map((g) => g.drive)),
+    )];
 }
 
 // Werkomgeving als vraag, niet als investeringsadvies (besluit Judith 23 okt).
