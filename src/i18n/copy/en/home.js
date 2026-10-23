@@ -27,7 +27,7 @@ const home = {
     logoAlt: 'TOF logo',
     body: 'TOF Persona was developed by The Office Factory, which looks at workplace, digital tools and behaviour as one whole.',
     website: 'Visit tof.services →',
-    contact: 'Contact',
+    contact: 'Book a conversation',
     privacy:
       '🔒 Data is used anonymously for analysis and is never shared with third parties. Your name is optional.',
     // App mode: nothing goes to a server, so the web sentence is untrue there.

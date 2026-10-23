@@ -45,6 +45,7 @@ import {
 } from '../ui/AppShell';
 import { useCopy } from '../i18n/LanguageContext';
 import { useAuth } from '../auth/AuthContext';
+import { BOOKING_URL } from '../config/contact';
 
 // Uitleg en aanvraag van TOF Persona Team staan op de verhaalsite.
 const REQUEST_URL = 'https://www.persona-tool.nl/voor-je-team';
@@ -492,7 +493,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                     <SecondaryButton onClick={() => setPage('home')}>{t.footer.backHome}</SecondaryButton>
                     <button
                         type="button"
-                        onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
+                        onClick={() => window.open(BOOKING_URL, '_blank', 'noopener,noreferrer')}
                         style={{
                             background: 'transparent',
                             border: 'none',
@@ -660,7 +661,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                 >
                     {t.upgradeLead}{' '}
                     <a
-                        href="https://www.tof.services/contact"
+                        href={BOOKING_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{

@@ -30,6 +30,7 @@ import {
 import { SPACING, TYPE } from '../ui/tokens';
 import { getStrategicKompas } from '../utils/strategicKompas';
 import { useCopy, useLang } from '../i18n/LanguageContext';
+import { BOOKING_URL } from '../config/contact';
 
 const ACCENT = 'var(--tof-accent-rose)';
 const SOFT = '#F4DFDF';
@@ -57,7 +58,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                     actions={
                         <>
                             <PrimaryButton
-                                onClick={() => window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')}
+                                onClick={() => window.open(BOOKING_URL, '_blank', 'noopener,noreferrer')}
                                 style={{ background: ACCENT, borderColor: ACCENT }}
                             >
                                 {t.empty.cta}

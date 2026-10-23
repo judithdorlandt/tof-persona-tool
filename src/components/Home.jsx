@@ -9,6 +9,7 @@ import {
 } from '../ui/AppShell';
 import { useCopy } from '../i18n/LanguageContext';
 import { IS_NATIVE } from '../config/platform';
+import { BOOKING_URL } from '../config/contact';
 
 export default function Home({ setPage }) {
   const { home: t } = useCopy();
@@ -314,7 +315,7 @@ export default function Home({ setPage }) {
                 type="button"
                 onClick={() =>
                   window.open(
-                    'https://www.tof.services/contact',
+                    BOOKING_URL,
                     '_blank',
                     'noopener,noreferrer'
                   )

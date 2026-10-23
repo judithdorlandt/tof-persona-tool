@@ -13,6 +13,7 @@
  */
 import React, { useEffect, useRef } from 'react';
 import { useCopy } from '../i18n/LanguageContext';
+import { BOOKING_URL } from '../config/contact';
 
 // Welke module-kaart als "huidige" wordt uitgelicht (index in copy.stack).
 const CURRENT_STACK_INDEX = 3;
@@ -42,7 +43,7 @@ export default function StrategischKompas({ setPage }) {
     }, []);
 
     const goPlanGesprek = () => {
-        window.open('https://zeeg.me/judith-tof/30min', '_blank', 'noopener');
+        window.open(BOOKING_URL, '_blank', 'noopener');
     };
 
     return (

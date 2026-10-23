@@ -27,7 +27,7 @@ const home = {
     logoAlt: 'TOF logo',
     body: 'TOF Persona is ontwikkeld door The Office Factory, die werkomgeving, digitale middelen en gedrag in samenhang bekijkt.',
     website: 'Ga naar website →',
-    contact: 'Contact',
+    contact: 'Plan een gesprek',
     privacy:
       '🔒 Data wordt anoniem gebruikt voor analyse en niet gedeeld met derden. Naam is optioneel.',
     // App-modus: er gaat niets naar een server, dus de webzin klopt daar niet.
