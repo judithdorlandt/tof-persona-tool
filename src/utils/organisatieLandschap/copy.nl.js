@@ -101,11 +101,6 @@ export const COPY_NL = {
         },
         orgRowLabel: 'ORGANISATIE',
         orgRowReliability: 'n.v.t.',  // fix #6 page 2 — vervangt zachte em-dash
-        // Respondenten zonder team-koppeling — expliciet zichtbaar zodat het
-        // organisatietotaal en de som van de teamrijen op elkaar aansluiten.
-        unlinkedRowLabel: 'Niet aan een team gekoppeld',
-        unlinkedNote: (n) =>
-            `${n} ${n === 1 ? 'respondent telt' : 'respondenten tellen'} mee in het organisatietotaal, maar ${n === 1 ? 'is' : 'zijn'} niet aan een specifiek team gekoppeld. Daardoor sluit de som van de teamrijen aan op het totaal.`,
         // De gebundelde Inter/Playfair zijn subsets ZONDER ≥ (U+2265) / ≤ (U+2264)
         // — die glyphs renderen nooit, ongeacht italic/normaal. Daarom de drempels
         // in woorden i.p.v. wiskundige tekens; leest bovendien prettiger voor een

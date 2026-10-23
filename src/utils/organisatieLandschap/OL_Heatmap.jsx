@@ -124,7 +124,6 @@ function drawHeatmap(svg, y, data, copy, lang) {
     const cellW = personaAreaW / ARCHETYPE_ORDER.length;
 
     const headerH = 12;
-    const hasUnlinked = data.unlinkedRespondents > 0;
     const heatmapTop = y + headerH;
     const rows = data.teamRows;
     const orgGap = SPACING.md;
@@ -138,12 +137,12 @@ function drawHeatmap(svg, y, data, copy, lang) {
     const fnLines = buildFootnoteLines(data, copy);
     const bandBottom = footnoteBlockTop(fnLines.length) - SPACING.xl;
 
-    // Row-units: teamrijen (1 elk) + optionele niet-gekoppeld-rij (1) +
-    // org-totaalrij (1.2× zwaarder). Zo klopt de hoogte-reservering exact.
+    // Row-units: teamrijen (1 elk) + org-totaalrij (1.2× zwaarder). Zo klopt
+    // de hoogte-reservering exact. Niet-gekoppelde profielen hebben geen
+    // eigen rij meer: ze zitten in "Overige teams" (zie organisatieAggregation).
     const orgUnits = 1.2;
-    const units = rows.length + (hasUnlinked ? 1 : 0) + orgUnits;
-    const gapCount = (hasUnlinked ? 1 : 0) + 1;      // gap vóór unlinked + vóór org
-    const availH = bandBottom - heatmapTop - orgGap * gapCount;
+    const units = rows.length + orgUnits;
+    const availH = bandBottom - heatmapTop - orgGap;
     const rowH = Math.max(5.0, Math.min(11, availH / units));
 
     drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang);
@@ -157,25 +156,6 @@ function drawHeatmap(svg, y, data, copy, lang) {
         });
         cursorY += rowH;
     });
-
-    // Niet-gekoppelde respondenten — expliciete reconciliatie-rij zodat de som
-    // van de teamrijen aansluit op het organisatietotaal.
-    if (hasUnlinked) {
-        cursorY += orgGap;
-        drawDataRow(svg, {
-            x: MARGIN, y: cursorY, h: rowH,
-            teamColW, nColW, relColW, cellW,
-            row: {
-                name: copy.heatmap.unlinkedRowLabel,
-                n: data.unlinkedRespondents,
-                cells: data.orgRow.cells.map((c) => ({ ...c, pct: null })),
-                reliability: null,
-                isOrg: false,
-            },
-            isOrg: false, zebra: false, isUnlinked: true, copy,
-        });
-        cursorY += rowH;
-    }
 
     // Org-rij — totaalrij krijgt eigen sage-band in drawDataRow.
     cursorY += orgGap;
@@ -219,16 +199,12 @@ function drawColumnHeaders(svg, y, teamColW, nColW, relColW, cellW, copy, lang) 
 }
 
 function drawDataRow(svg, {
-    x, y, h, teamColW, nColW, relColW, cellW, row, isOrg, zebra, isUnlinked, copy,
+    x, y, h, teamColW, nColW, relColW, cellW, row, isOrg, zebra, copy,
 }) {
-    const lowReliability = !isOrg && !isUnlinked && row.reliability?.id === 'laag';
+    const lowReliability = !isOrg && row.reliability?.id === 'laag';
     const rowOpacity = lowReliability ? 0.65 : 1;
 
     if (zebra) svg.appendChild(rect(x, y, USABLE_W, h - 0.8, '#F2EBE0'));
-    if (isUnlinked) {
-        // Subtiele neutrale band — reconciliatie-rij, geen team.
-        svg.appendChild(rect(x, y, USABLE_W, h - 0.8, C.cellZero, { opacity: 0.5 }));
-    }
     if (isOrg) {
         // Echte totaalrij: 1.5pt sage bovenrand + 8% sage achtergrond + bold body.
         svg.appendChild(rect(x, y, USABLE_W, h - 0.8, SAGE, { opacity: 0.08 }));
@@ -243,8 +219,7 @@ function drawDataRow(svg, {
         font: isOrg ? 'Playfair Display' : 'Inter',
         weight: isOrg ? 500 : 500,
         size: isOrg ? 4.23 : 3.18,
-        color: isOrg ? SAGE : (isUnlinked ? C.textMuted : C.text),
-        italic: isUnlinked,
+        color: isOrg ? SAGE : C.text,
         lineHeight: isOrg ? 4.5 : 3.6, maxLines: 1, ellipsis: true,
     });
 
@@ -253,13 +228,13 @@ function drawDataRow(svg, {
         x: x + teamColW + nColW / 2, y: y + h / 2 + 1,
         content: String(row.n),
         font: 'Inter', weight: isOrg ? 700 : 500, size: 3.3,
-        color: isOrg ? SAGE : (isUnlinked ? C.textMuted : C.textSoft),
+        color: isOrg ? SAGE : C.textSoft,
         anchor: 'middle',
         opacity: rowOpacity < 1 ? rowOpacity : null,
     }));
 
     // V14: dot uniform muted (label draagt al de betekenis), 4pt diameter (~0.7mm radius).
-    if (!isOrg && !isUnlinked && row.reliability) {
+    if (!isOrg && row.reliability) {
         const cx = x + teamColW + nColW + 4;
         const cy = y + h / 2 + 0.4;
         const dot = reliabilityDotFor(row.n);
@@ -335,9 +310,6 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, opacity, lowReliability 
 // Voetnootregels — alleen relevante regels, onder→boven gestapeld.
 function buildFootnoteLines(data, copy) {
     const lines = [`${copy.heatmap.roundingNote} · ${copy.heatmap.reliabilityHelp}`];
-    if (data.unlinkedRespondents > 0) {
-        lines.push(copy.heatmap.unlinkedNote(data.unlinkedRespondents));
-    }
     return lines;
 }
 

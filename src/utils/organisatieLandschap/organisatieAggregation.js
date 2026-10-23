@@ -47,19 +47,32 @@ export function prepareOrganisatieData({
 
     // Drempel van vijf, ook hier (zie utils/access.js): een team onder de vijf
     // krijgt geen eigen rij en nergens een eigen cijfer, anders is een uitslag
-    // herleidbaar tot een persoon. Die teams komen samen in één rij "Overige
-    // teams", maar alleen als ze samen ook vijf of meer profielen hebben. In
-    // het organisatietotaal tellen ze altijd mee (dat komt uit `aggregate`).
-    const ownTeams = activeTeams.filter((t) => (t.responseCount || 0) >= MIN_TEAM_RESPONSES);
+    // herleidbaar tot een persoon. In het organisatietotaal tellen ze altijd
+    // mee (dat komt uit `aggregate`).
+    //
+    // Alles zonder eigen rij — kleine teams én profielen die aan geen team
+    // gekoppeld zijn — vormt samen de rest-groep "Overige teams". Die mag
+    // nooit 1 tot 4 profielen groot zijn: dan is hij terug te rekenen als
+    // organisatie min de zichtbare teams. Is hij dat toch, dan gaat het
+    // kleinste team met een eigen rij er ook in, tot de rest-groep vijf of
+    // meer is. Zonder teams met een eigen rij is de rest-groep de hele
+    // organisatie, en die is altijd vijf of meer (anders geen rapport).
     const smallTeams = activeTeams.filter((t) => (t.responseCount || 0) < MIN_TEAM_RESPONSES);
-    const smallTotal = smallTeams.reduce((s, t) => s + (t.responseCount || 0), 0);
+    const ownTeams = activeTeams
+        .filter((t) => (t.responseCount || 0) >= MIN_TEAM_RESPONSES)
+        .sort((a, b) => (a.responseCount || 0) - (b.responseCount || 0));
+    const restSize = () =>
+        totalRespondents - ownTeams.reduce((s, t) => s + (t.responseCount || 0), 0);
+    while (ownTeams.length > 0 && restSize() > 0 && restSize() < MIN_TEAM_RESPONSES) {
+        ownTeams.shift();
+    }
 
     const orgRow = buildOrgRow(aggregate, cd);
     const teamRows = ownTeams
         .map((t) => buildTeamRow(t, cd))
         .sort((a, b) => b.n - a.n);
-    if (smallTotal >= MIN_TEAM_RESPONSES) {
-        teamRows.push(buildOtherTeamsRow(smallTeams, smallTotal, cd));
+    if (ownTeams.length > 0 && restSize() >= MIN_TEAM_RESPONSES) {
+        teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd));
     }
 
     // Teams zonder eigen beeld: onder de vijf, of nog zonder profielen. Alleen
@@ -171,17 +184,21 @@ function buildTeamRow(t, cd) {
     };
 }
 
-// Teams onder de vijf samen: de primaire werkstijlen opgeteld, dan pas in
-// procenten. Zo is geen enkel klein team terug te lezen.
-function buildOtherTeamsRow(teams, n, cd) {
+// De rest-groep: de organisatie min de teams met een eigen rij. Zo zitten
+// kleine teams en niet-gekoppelde profielen er samen in, en sluit de som van
+// de rijen precies aan op het organisatietotaal.
+function buildRestRow(aggregate, ownTeams, n, cd) {
     const counts = {};
-    teams.forEach((t) => {
+    (aggregate?.personasByPrimary || []).forEach((p) => {
+        counts[p.id] = (counts[p.id] || 0) + (p.count || 0);
+    });
+    ownTeams.forEach((t) => {
         (t.aggregate?.personasByPrimary || []).forEach((p) => {
-            counts[p.id] = (counts[p.id] || 0) + (p.count || 0);
+            counts[p.id] = (counts[p.id] || 0) - (p.count || 0);
         });
     });
     const cells = ARCHETYPE_ORDER.map((id) => {
-        const count = counts[id] || 0;
+        const count = Math.max(0, counts[id] || 0);
         if (count === 0) return { id, pct: null, count: 0 };
         return { id, pct: Math.round((count / n) * 100), count };
     });
