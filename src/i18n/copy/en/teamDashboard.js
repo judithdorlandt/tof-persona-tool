@@ -86,12 +86,8 @@ const teamDashboard = {
       cta: 'Go to Team Dynamics →',
     },
     locked: {
-      eyebrow: 'Want to look deeper?',
-      titleBefore: 'Team Dynamics shows you',
-      titleEmphasis: 'why',
-      titleAfter: 'these patterns appear.',
-      lead: 'Tensions between working styles, what they mean for leadership, and the choice between pace and reflection — in one deeper dashboard for whoever leads the team.',
-      plan: 'Book a conversation',
+      body: "Your manager also sees Team Dynamics: what this team's mix asks of the person leading it. It doesn't show who has which working style either.",
+      login: 'Are you the manager? Log in →',
     },
   },
 };

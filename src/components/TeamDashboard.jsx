@@ -42,6 +42,7 @@ import {
     MIN_TEAM_RESPONSES,
     countCompleteProfiles,
     namesByPersona,
+    rememberAfterLogin,
 } from '../utils/access';
 import { logPdfDownload } from '../supabase';
 import TeamGate from './TeamGate';
@@ -342,6 +343,8 @@ export default function TeamDashboard({
                 hasDynamicsAccess={hasDynamicsAccess}
                 setPage={setPage}
                 t={t.bridge}
+                team={team}
+                organization={organization}
             />
         </PageShell>
     );
@@ -429,7 +432,7 @@ function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
 // DYNAMICS BRIDGE
 // =========================
 
-function DynamicsBridge({ hasDynamicsAccess, setPage, t }) {
+function DynamicsBridge({ hasDynamicsAccess, setPage, t, team, organization }) {
     if (hasDynamicsAccess) {
         return (
             <InteractiveRow
@@ -454,47 +457,37 @@ function DynamicsBridge({ hasDynamicsAccess, setPage, t }) {
         );
     }
 
+    // Teamlid, of leidinggevende die nog niet is ingelogd: één rustige
+    // alinea en een inloglink die na de inloglink terugbrengt op
+    // Teamdynamiek van dit team (dezelfde route als op Teamdynamiek zelf).
     return (
-        <div
-            style={{
-                background: 'linear-gradient(135deg, #FDF6F6 0%, #F7F0ED 100%)',
-                border: '1px solid rgba(176,82,82,0.14)',
-                borderRadius: RADIUS.lg,
-                padding: '18px 20px',
-                display: 'grid',
-                gap: SPACING.md,
-            }}
-        >
-            <SectionEyebrow color="var(--tof-accent-rose)">
-                {t.locked.eyebrow}
-            </SectionEyebrow>
-
-            <h3
-                style={{
-                    ...TYPE.subhead,
-                    color: 'var(--tof-text)',
-                }}
-            >
-                {t.locked.titleBefore}{' '}
-                <em style={{ color: 'var(--tof-accent-rose)' }}>{t.locked.titleEmphasis}</em>{' '}
-                {t.locked.titleAfter}
-            </h3>
-
-            <p style={{ ...TYPE.body, maxWidth: 620 }}>
-                {t.locked.lead}
+        <div style={{ display: 'grid', gap: SPACING.sm, maxWidth: 680, padding: '4px 2px' }}>
+            <p style={{ ...TYPE.body, margin: 0, color: 'var(--tof-text-soft)' }}>
+                {t.locked.body}
             </p>
-
-            {/* Geen ontgrendelknop meer: Teamdynamiek komt niet uit een code
-                maar uit de rol. Wie dit wil, voert een gesprek. */}
-            <div style={{ display: 'flex', gap: SPACING.sm + 2, flexWrap: 'wrap' }}>
-                <SecondaryButton
-                    onClick={() =>
-                        window.open('https://www.tof.services/contact', '_blank', 'noopener,noreferrer')
-                    }
+            <p style={{ margin: 0 }}>
+                <button
+                    type="button"
+                    onClick={() => {
+                        rememberAfterLogin({ page: 'teamdynamics', team, organization });
+                        setPage('login');
+                    }}
+                    style={{
+                        background: 'transparent',
+                        border: 'none',
+                        padding: 0,
+                        color: 'var(--tof-accent-rose)',
+                        fontFamily: 'var(--tof-font-body)',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                        textUnderlineOffset: 3,
+                    }}
                 >
-                    {t.locked.plan}
-                </SecondaryButton>
-            </div>
+                    {t.locked.login}
+                </button>
+            </p>
         </div>
     );
 }

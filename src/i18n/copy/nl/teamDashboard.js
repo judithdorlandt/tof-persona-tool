@@ -103,14 +103,12 @@ const teamDashboard = {
       lead: 'Zie de onderliggende patronen: waarom deze samenstelling werkt of schuurt.',
       cta: 'Naar Teamdynamiek →',
     },
+    // Voor wie geen Teamdynamiek ziet: teamlid, of leidinggevende die nog
+    // niet is ingelogd (opdracht D, besluit Judith 23 okt 2026: variant A
+    // met inloglink). Geen aanprijzing, geen knop naar een gesprek.
     locked: {
-      eyebrow: 'Dieper kijken?',
-      // De kop wordt opgebouwd als: before + <em>emphasis</em> + after.
-      titleBefore: 'Teamdynamiek laat zien',
-      titleEmphasis: 'waarom',
-      titleAfter: 'deze patronen ontstaan.',
-      lead: 'Spanningsvelden tussen werkstijlen, leiderschapsimplicaties en de keuze tussen tempo en reflectie — in één verdiept dashboard voor wie het team leidt.',
-      plan: 'Plan een gesprek',
+      body: 'Je leidinggevende ziet daarnaast Teamdynamiek: wat de samenstelling van dit team vraagt van leidinggeven. Ook daarin staat niet wie welke werkstijl heeft.',
+      login: 'Ben jij de leidinggevende? Log in →',
     },
   },
 };
