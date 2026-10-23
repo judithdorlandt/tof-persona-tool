@@ -58,21 +58,15 @@ const PERSONA_COLORS = TOF_PERSONA_COLORS;
 // Alle zichtbare tekst staat hier; de teken-functies hardcoden niets.
 // Font-subsets missen >= en <=; gebruik die glyphs nooit. · – — é mogen wel.
 //
-// `isOrg` bepaalt of we het over "de organisatie" of "het team" hebben; de
-// formatters krijgen die boolean mee zodat beide varianten in copy staan.
 const INSIGHT_COPY = {
     nl: {
-        fileSuffix: (isOrg) => (isOrg ? 'organisatie-inzicht' : 'teaminzicht'),
-        pill: (isOrg) => (isOrg ? 'ORGANISATIE-INZICHT' : 'TEAMINZICHT'),
-        heroTitle: (isOrg) => (isOrg
-            ? 'Dominante werkstijl in de organisatie:'
-            : 'De grootste groep in dit team:'),
-        headlineFallback: (isOrg, persona) =>
-            `${isOrg ? 'De organisatie' : 'Het team'} werkt vanuit ${persona.toLowerCase()}.`,
+        fileSuffix: 'teaminzicht',
+        pill: 'TEAMINZICHT',
+        heroTitle: 'De grootste groep in dit team:',
+        headlineFallback: (persona) => `Het team werkt vanuit ${persona.toLowerCase()}.`,
         responses: (n) => `${n} ${n === 1 ? 'ingevuld profiel' : 'ingevulde profielen'}`,
-        reliability: { low: 'Indicatief', mid: 'Groeiend', high: 'Sterk beeld' },
-        // Teamvariant: één schaal met Teamdynamiek (besluit 6, 22 okt 2026),
-        // per niveau uit getConfidence() in src/insights.js.
+        // Eén schaal met Teamdynamiek (besluit 6, 22 okt 2026), per niveau
+        // uit getConfidence() in src/insights.js.
         confidence: {
             low: 'Eerste signalen',
             emerging: 'Opkomend patroon',
@@ -80,48 +74,26 @@ const INSIGHT_COPY = {
             strong: 'Sterk patroon',
         },
         distributionEyebrow: 'VERDELING',
-        mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATIE-MIX' : 'JOUW TEAM-MIX'),
-        personCount: (n) => `${n} ${n === 1 ? 'persoon' : 'mensen'}`,
-        signatureEyebrow: (isOrg) => (isOrg
-            ? 'WAT DEZE ORGANISATIE IN BEWEGING BRENGT'
-            : 'WAT DIT TEAM IN BEWEGING BRENGT'),
+        signatureEyebrow: 'WAT DIT TEAM IN BEWEGING BRENGT',
         signature: {
-            none: (isOrg) => `${isOrg ? 'Een organisatie' : 'Een team'} in beweging.`,
-            one: (isOrg, drive) =>
-                `${drive} — daar bouwt ${isOrg ? 'deze organisatie' : 'dit team'} op.`,
-            two: (isOrg, driveA, driveB) =>
-                `${driveA} en ${driveB} — daar bouwt ${isOrg ? 'deze organisatie' : 'dit team'} op.`,
+            none: 'Een team in beweging.',
+            one: (drive) => `${drive} — daar bouwt dit team op.`,
+            two: (driveA, driveB) => `${driveA} en ${driveB} — daar bouwt dit team op.`,
         },
         drives: {
             maker: 'maken', groeier: 'ontwikkeling', presteerder: 'resultaat',
             denker: 'diepgang', verbinder: 'verbinding', teamspeler: 'verbondenheid',
             zekerzoeker: 'stabiliteit', vernieuwer: 'vernieuwing',
         },
-        leeglopersEyebrow: (isOrg) => (isOrg
-            ? 'WAAR DE ORGANISATIE OP LEEGLOOPT'
-            : 'CHECK IN HET KANTOOR'),
+        leeglopersEyebrow: 'CHECK IN HET KANTOOR',
         leeglopers: {
-            // Teamvariant: een vraag, geen bewering — de tool kent het kantoor niet.
-            tooLittle: (label, isOrg) => (isOrg ? `Te weinig ${label}` : `Zijn er genoeg ${label}?`),
-            tooMuch: (label, isOrg) => (isOrg ? `Te veel ${label}` : `Worden de ${label} echt gebruikt?`),
-            tension: (label) => `Spanning tussen ${label}`,
-            tensionPairs: {
-                tempoZorgvuldigheid: 'tempo en zorgvuldigheid',
-                resultaatVerbinding: 'resultaat en verbinding',
-                vrijheidZekerheid: 'vrijheid en zekerheid',
-                vernieuwingContinuiteit: 'vernieuwing en continuïteit',
-                ontwikkelingStabiliteit: 'ontwikkeling en stabiliteit',
-                loyaliteitAutonomie: 'loyaliteit en autonomie',
-            },
-            fallback: (isOrg) => (isOrg
-                ? 'Werkplek die niet aansluit bij behoefte van de organisatie'
-                : 'Werkplek die niet aansluit bij teambehoefte'),
+            // Een vraag, geen bewering — de tool kent het kantoor niet.
+            tooLittle: (label) => `Zijn er genoeg ${label}?`,
+            tooMuch: (label) => `Worden de ${label} echt gebruikt?`,
         },
         seeBack: 'ZIE ACHTERKANT',
         workplacePill: 'WERKPLEK',
-        workplaceTitle: (isOrg) => (isOrg
-            ? 'Wat deze organisatie vraagt van de werkomgeving'
-            : 'Wat dit team vraagt van de werkomgeving'),
+        workplaceTitle: 'Wat dit team vraagt van de werkomgeving',
         workplaceEyebrow: 'WERKPLEKBEHOEFTE',
         actionsEyebrow: (n) => `${n === 1 ? 'EÉN ACTIE' : n + ' ACTIES'} VOOR MORGEN`,
         sourceLabels: {
@@ -133,21 +105,14 @@ const INSIGHT_COPY = {
             reflectie: 'ZELF AAN DE SLAG',
         },
         sourceFallback: 'REFLECTIE',
-        footerQuote: '"Een organisatie die zichzelf herkent, beweegt sneller."',
-        footerTagline: (isOrg) => (isOrg
-            ? 'Helping organisations understand their workplace through insight, design and movement.'
-            : 'TOF Persona · The Office Factory'),
+        footerTagline: 'TOF Persona · The Office Factory',
     },
     en: {
-        fileSuffix: (isOrg) => (isOrg ? 'organisation insight' : 'team insight'),
-        pill: (isOrg) => (isOrg ? 'ORGANISATION INSIGHT' : 'TEAM INSIGHT'),
-        heroTitle: (isOrg) => (isOrg
-            ? 'Dominant working style in the organisation:'
-            : 'The largest group in this team:'),
-        headlineFallback: (isOrg, persona) =>
-            `${isOrg ? 'The organisation' : 'The team'} works from ${persona.toLowerCase()}.`,
+        fileSuffix: 'team insight',
+        pill: 'TEAM INSIGHT',
+        heroTitle: 'The largest group in this team:',
+        headlineFallback: (persona) => `The team works from ${persona.toLowerCase()}.`,
         responses: (n) => `${n} completed ${n === 1 ? 'profile' : 'profiles'}`,
-        reliability: { low: 'Indicative', mid: 'Growing', high: 'Strong picture' },
         confidence: {
             low: 'First signals',
             emerging: 'Emerging pattern',
@@ -155,47 +120,25 @@ const INSIGHT_COPY = {
             strong: 'Strong pattern',
         },
         distributionEyebrow: 'BREAKDOWN',
-        mixEyebrow: (isOrg) => (isOrg ? 'ORGANISATION MIX' : 'YOUR TEAM MIX'),
-        personCount: (n) => `${n} ${n === 1 ? 'person' : 'people'}`,
-        signatureEyebrow: (isOrg) => (isOrg
-            ? 'WHAT GETS THIS ORGANISATION MOVING'
-            : 'WHAT GETS THIS TEAM MOVING'),
+        signatureEyebrow: 'WHAT GETS THIS TEAM MOVING',
         signature: {
-            none: (isOrg) => `${isOrg ? 'An organisation' : 'A team'} in motion.`,
-            one: (isOrg, drive) =>
-                `${drive} — that is what ${isOrg ? 'this organisation' : 'this team'} builds on.`,
-            two: (isOrg, driveA, driveB) =>
-                `${driveA} and ${driveB} — that is what ${isOrg ? 'this organisation' : 'this team'} builds on.`,
+            none: 'A team in motion.',
+            one: (drive) => `${drive} — that is what this team builds on.`,
+            two: (driveA, driveB) => `${driveA} and ${driveB} — that is what this team builds on.`,
         },
         drives: {
             maker: 'making', groeier: 'development', presteerder: 'results',
             denker: 'depth', verbinder: 'connection', teamspeler: 'togetherness',
             zekerzoeker: 'stability', vernieuwer: 'renewal',
         },
-        leeglopersEyebrow: (isOrg) => (isOrg
-            ? 'WHERE THE ORGANISATION DRAINS'
-            : 'CHECK THE OFFICE'),
+        leeglopersEyebrow: 'CHECK THE OFFICE',
         leeglopers: {
-            tooLittle: (label, isOrg) => (isOrg ? `Too little ${label}` : `Are there enough ${label}?`),
-            tooMuch: (label, isOrg) => (isOrg ? `Too much ${label}` : `Are the ${label} actually used?`),
-            tension: (label) => `Tension between ${label}`,
-            tensionPairs: {
-                tempoZorgvuldigheid: 'pace and care',
-                resultaatVerbinding: 'results and connection',
-                vrijheidZekerheid: 'freedom and certainty',
-                vernieuwingContinuiteit: 'renewal and continuity',
-                ontwikkelingStabiliteit: 'development and stability',
-                loyaliteitAutonomie: 'loyalty and autonomy',
-            },
-            fallback: (isOrg) => (isOrg
-                ? 'A workplace that does not match what the organisation needs'
-                : 'A workplace that does not match what the team needs'),
+            tooLittle: (label) => `Are there enough ${label}?`,
+            tooMuch: (label) => `Are the ${label} actually used?`,
         },
         seeBack: 'SEE REVERSE',
         workplacePill: 'WORKPLACE',
-        workplaceTitle: (isOrg) => (isOrg
-            ? 'What this organisation asks of the work environment'
-            : 'What this team asks of the work environment'),
+        workplaceTitle: 'What this team asks of the work environment',
         workplaceEyebrow: 'WORKPLACE NEED',
         actionsEyebrow: (n) => `${n === 1 ? 'ONE ACTION' : n + ' ACTIONS'} FOR TOMORROW`,
         sourceLabels: {
@@ -207,10 +150,7 @@ const INSIGHT_COPY = {
             reflectie: 'GET STARTED YOURSELF',
         },
         sourceFallback: 'REFLECTION',
-        footerQuote: '"An organisation that recognises itself moves faster."',
-        footerTagline: (isOrg) => (isOrg
-            ? 'Helping organisations understand their workplace through insight, design and movement.'
-            : 'TOF Persona · The Office Factory'),
+        footerTagline: 'TOF Persona · The Office Factory',
     },
 };
 
@@ -227,12 +167,11 @@ export async function generateTeamInsightPDF({
     insights,
     teamName = 'Team',
     organization = '',
-    mode = 'team', // 'team' | 'organization'
     lang = 'nl',
 }) {
     const c = getInsightCopy(lang);
-    const svgVoorkant = buildVoorkantSVG({ aggregate, insights, teamName, organization, mode, c, lang });
-    const svgAchterkant = buildAchterkantSVG({ aggregate, insights, teamName, organization, mode, c, lang });
+    const svgVoorkant = buildVoorkantSVG({ aggregate, insights, teamName, organization, c, lang });
+    const svgAchterkant = buildAchterkantSVG({ aggregate, insights, c, lang });
 
     document.body.appendChild(svgVoorkant);
     document.body.appendChild(svgAchterkant);
@@ -268,8 +207,7 @@ export async function generateTeamInsightPDF({
             .replace(/[^\w\s-]/g, '')
             .trim()
             .slice(0, 50);
-        const suffix = c.fileSuffix(mode === 'organization');
-        const fileName = `${safeName} - ${suffix} TOF.pdf`;
+        const fileName = `${safeName} - ${c.fileSuffix} TOF.pdf`;
         pdf.save(fileName);
     } finally {
         document.body.removeChild(svgVoorkant);
@@ -281,23 +219,23 @@ export async function generateTeamInsightPDF({
 // SVG BUILDER — VOORKANT
 // =========================
 
-function buildVoorkantSVG({ aggregate, insights, teamName, organization, mode = 'team', c, lang }) {
+function buildVoorkantSVG({ aggregate, insights, teamName, organization, c, lang }) {
     const svg = createSVGCanvas();
     svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
     let y = MARGIN;
 
-    y = drawHeader({ svg, y, teamName, organization, aggregate, mode, c, lang });
+    y = drawHeader({ svg, y, teamName, organization, c, lang });
     y += 12;
-    y = drawHero({ svg, y, aggregate, insights, mode, c, lang });
+    y = drawHero({ svg, y, aggregate, insights, c, lang });
     y += 12;
     y = drawDivider({ svg, y });
     y += 10;
-    y = drawDistributionAndMix({ svg, y, aggregate, mode, c, lang });
+    y = drawDistribution({ svg, y, aggregate, lang, c });
     y += 10;
     y = drawDivider({ svg, y });
     y += 10;
-    drawSignature({ svg, y, aggregate, insights, mode, c, lang });
+    drawSignature({ svg, y, aggregate, c, lang });
 
     drawFooterHint({ svg, c });
 
@@ -308,21 +246,19 @@ function buildVoorkantSVG({ aggregate, insights, teamName, organization, mode = 
 // SVG BUILDER — ACHTERKANT
 // =========================
 
-function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode = 'team', c, lang }) {
+function buildAchterkantSVG({ aggregate, insights, c, lang }) {
     const svg = createSVGCanvas();
     svg.appendChild(createRect(0, 0, PAGE_W, PAGE_H, COLOR.bg));
 
     let y = MARGIN;
 
-    y = drawAchterkantHeader({ svg, y, mode, c });
+    y = drawAchterkantHeader({ svg, y, c });
     y += 10;
-    y = drawAchterkantTitle({ svg, y, mode, c });
+    y = drawAchterkantTitle({ svg, y, c });
     y += 8;
-    // Teamvariant: minder witruimte rond de scheidingslijnen en "Check in het
-    // kantoor", zodat er na de ruimere regelafstand nog vijf acties passen.
-    // De organisatievariant houdt zijn oude maten.
-    const isOrg = mode === 'organization';
-    const blokRuimte = isOrg ? 8 : 5;
+    // Weinig witruimte rond de scheidingslijnen en "Check in het kantoor",
+    // zodat er na de ruimere regelafstand nog vijf acties passen.
+    const blokRuimte = 5;
 
     y = drawWorkplaceCompact({ svg, y, aggregate, c, lang });
     y += blokRuimte;
@@ -332,13 +268,13 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
     // hoort thematisch bij de werkplekbehoefte (vraag → spanning → actie)
     // en vult de voorheen lege onderhelft van pagina 2, terwijl pagina 1
     // lucht krijgt onder de team-mix.
-    y = drawLeeglopers({ svg, y, insights, mode, c });
+    y = drawLeeglopers({ svg, y, insights, c });
     y += blokRuimte;
     y = drawDivider({ svg, y });
     y += blokRuimte;
-    drawQuickWinsCompact({ svg, y, insights, mode, c });
+    drawQuickWinsCompact({ svg, y, insights, c });
 
-    drawAchterkantFooter({ svg, mode, c });
+    drawAchterkantFooter({ svg, c });
 
     return svg;
 }
@@ -347,8 +283,8 @@ function buildAchterkantSVG({ aggregate, insights, teamName, organization, mode 
 // SECTIES — VOORKANT
 // =========================
 
-function drawHeader({ svg, y, teamName, organization, aggregate, mode = 'team', c = getInsightCopy('nl'), lang = 'nl' }) {
-    const pillW = mode === 'organization' ? 110 : 80;
+function drawHeader({ svg, y, teamName, organization, c = getInsightCopy('nl'), lang = 'nl' }) {
+    const pillW = 80;
     const pillH = 12;
     const pillY = y;
 
@@ -362,7 +298,7 @@ function drawHeader({ svg, y, teamName, organization, aggregate, mode = 'team', 
     svg.appendChild(createText({
         x: MARGIN + 11,
         y: pillY + pillH / 2 + 2,
-        text: c.pill(mode === 'organization'),
+        text: c.pill,
         font: 'Inter',
         weight: 700,
         size: 5.2,
@@ -402,15 +338,13 @@ function drawHeader({ svg, y, teamName, organization, aggregate, mode = 'team', 
     return metaY;
 }
 
-function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCopy('nl'), lang = 'nl' }) {
-    const isOrg = mode === 'organization';
+function drawHero({ svg, y, aggregate, insights, c = getInsightCopy('nl'), lang = 'nl' }) {
     // Gebruik personasByPrimary (= sortering op aantal mensen primair),
     // niet sortedPersonas (= gewogen energie-sortering). Anders kan de
     // "dominante werkstijl" iets anders aanwijzen dan het hoogste
     // percentage in de verdelingstabel — dat leest als bug.
-    // Teamvariant: de dominant-functie (besluit 4) — bij een gelijke stand
-    // beide namen. De organisatievariant houdt de eerste.
-    const dominant = isOrg ? [] : dominantPersonas(aggregate);
+    // De dominant-functie (besluit 4) — bij een gelijke stand beide namen.
+    const dominant = dominantPersonas(aggregate);
     const top = dominant[0] || aggregate?.personasByPrimary?.[0] || aggregate?.sortedPersonas?.[0];
     if (!top) return y;
 
@@ -429,7 +363,7 @@ function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCo
     svg.appendChild(createText({
         x: MARGIN,
         y: titleY,
-        text: c.heroTitle(isOrg),
+        text: c.heroTitle,
         font: 'Playfair Display',
         weight: 500,
         size: fontSize,
@@ -449,7 +383,7 @@ function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCo
     }));
 
     const subY = line2Y + 14;
-    const headline = insights?.headline || c.headlineFallback(isOrg, topName);
+    const headline = insights?.headline || c.headlineFallback(topName);
     drawWrappedText({
         svg,
         x: MARGIN,
@@ -465,7 +399,7 @@ function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCo
 
     const headlineLines = wrapText(headline, PAGE_W - MARGIN * 2, 6.4, 'Inter');
     const metaY = subY + headlineLines.length * 8.8 + 6;
-    const reliability = buildReliabilityLabel(teamCount, c, isOrg);
+    const reliability = buildReliabilityLabel(teamCount, c);
     const metaLine = `${c.responses(teamCount)}${reliability ? ' · ' + reliability : ''}`;
     svg.appendChild(createText({
         x: MARGIN,
@@ -480,35 +414,16 @@ function drawHero({ svg, y, aggregate, insights, mode = 'team', c = getInsightCo
     return metaY;
 }
 
-function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsightCopy('nl'), lang = 'nl' }) {
-    const isOrg = mode === 'organization';
-    // Org-mode heeft veel meer regels → kleinere tekst zodat het past.
-    const nameFontSize = isOrg ? 4 : 5.2;
-    const nameLineH = isOrg ? 5 : 7;
-    const totalWidth = PAGE_W - MARGIN * 2;
-    const gap = 24;
-    // Teamvariant heeft geen mix-kolom: de verdeling krijgt de volle breedte.
-    const colWidth = isOrg ? (totalWidth - gap) / 2 : totalWidth;
+function drawDistribution({ svg, y, aggregate, c = getInsightCopy('nl'), lang = 'nl' }) {
+    // De verdeling over de volle breedte. Geen aantallen mensen per
+    // werkstijl: in een team wijst "1 persoon" iemand aan.
+    const colWidth = PAGE_W - MARGIN * 2;
     const colLeftX = MARGIN;
-    const colRightX = MARGIN + colWidth + gap;
 
     svg.appendChild(createText({
         x: colLeftX,
         y: y + 6,
         text: c.distributionEyebrow,
-        font: 'Inter',
-        weight: 700,
-        size: 4.8,
-        color: COLOR.textMuted,
-        letterSpacing: 0.8,
-    }));
-
-    // De mix met aantallen mensen alleen in de organisatievariant: binnen een
-    // team wijst "1 persoon" iemand aan.
-    if (isOrg) svg.appendChild(createText({
-        x: colRightX,
-        y: y + 6,
-        text: c.mixEyebrow(isOrg),
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -565,71 +480,14 @@ function drawDistributionAndMix({ svg, y, aggregate, mode = 'team', c = getInsig
         lineY += lineHeight;
     });
 
-    if (!isOrg) return lineY;
-
-    // Alle primair-aanwezige archetypes tonen, gesorteerd op aantal
-    // mensen primair (= personasByPrimary). Eerder werd sortedPersonas
-    // (energie) gebruikt — daardoor stond bv. Denker met 1 persoon
-    // boven Groeier met 4 als hun energie hoger lag. Verwarrend.
-    const topPresent = aggregate?.personasByPrimary || [];
-
-    // Bij >4 archetypes splitsen we de rechter kolom in twee sub-kolommen,
-    // anders loopt de mix-kolom veel verder naar beneden dan de verdeling
-    // en krijg je een onevenwichtige pagina ("halve pagina"-effect).
-    const useTwoSubCols = topPresent.length > 4;
-    const subGap = useTwoSubCols ? 14 : 0;
-    const subColWidth = useTwoSubCols ? (colWidth - subGap) / 2 : colWidth;
-    const subColRightX = colRightX + subColWidth + subGap;
-    const splitIdx = useTwoSubCols
-        ? Math.ceil(topPresent.length / 2)
-        : topPresent.length;
-
-    let mixY1 = y + 16;
-    let mixY2 = y + 16;
-
-    topPresent.forEach((p, idx) => {
-        const color = PERSONA_COLORS[p.id];
-        const inLeftSubCol = idx < splitIdx;
-        const xPos = inLeftSubCol ? colRightX : subColRightX;
-        const curY = inLeftSubCol ? mixY1 : mixY2;
-
-        svg.appendChild(createText({
-            x: xPos,
-            y: curY,
-            text: getArchetypeName(p.id, lang) || p.name,
-            font: 'Playfair Display',
-            weight: 500,
-            size: 7.2,
-            color: color,
-        }));
-
-        // Geen namen: alleen de werkstijl en het aantal mensen erachter.
-        // Zie utils/access.js onder "NAMEN IN HET TEAMBEELD".
-        const countText = c.personCount(p.count);
-        svg.appendChild(createText({
-            x: xPos,
-            y: curY + 8,
-            text: countText,
-            font: 'Inter',
-            weight: 400,
-            size: nameFontSize,
-            color: COLOR.textSoft,
-        }));
-
-        const advance = 8 + nameLineH + 6;
-        if (inLeftSubCol) mixY1 += advance;
-        else mixY2 += advance;
-    });
-
-    return Math.max(lineY, mixY1, mixY2);
+    return lineY;
 }
 
-function drawSignature({ svg, y, aggregate, insights, mode = 'team', c = getInsightCopy('nl'), lang = 'nl' }) {
-    const isOrg = mode === 'organization';
+function drawSignature({ svg, y, aggregate, c = getInsightCopy('nl'), lang = 'nl' }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 6,
-        text: c.signatureEyebrow(isOrg),
+        text: c.signatureEyebrow,
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -637,7 +495,7 @@ function drawSignature({ svg, y, aggregate, insights, mode = 'team', c = getInsi
         letterSpacing: 0.8,
     }));
 
-    const signatureSentence = buildSignatureSentence(aggregate, mode, c, lang);
+    const signatureSentence = buildSignatureSentence(aggregate, c, lang);
 
     svg.appendChild(createText({
         x: MARGIN,
@@ -653,17 +511,16 @@ function drawSignature({ svg, y, aggregate, insights, mode = 'team', c = getInsi
     return y + 18 + 12;
 }
 
-function buildSignatureSentence(aggregate, mode = 'team', c = getInsightCopy('nl'), lang = 'nl') {
+function buildSignatureSentence(aggregate, c = getInsightCopy('nl'), lang = 'nl') {
     // Volg dezelfde sortering als hero en mix: aantal mensen primair,
     // niet gewogen energie. Zo blijft het hele PDF-verhaal coherent.
     const top = aggregate?.personasByPrimary || [];
-    const isOrg = mode === 'organization';
     const driveFor = (p) =>
         c.drives[p.id] || String(getArchetypeName(p.id, lang) || p.name || '').toLowerCase();
 
-    if (top.length === 0) return c.signature.none(isOrg);
-    if (top.length === 1) return c.signature.one(isOrg, capitalize(driveFor(top[0])));
-    return c.signature.two(isOrg, capitalize(driveFor(top[0])), driveFor(top[1]));
+    if (top.length === 0) return c.signature.none;
+    if (top.length === 1) return c.signature.one(capitalize(driveFor(top[0])));
+    return c.signature.two(capitalize(driveFor(top[0])), driveFor(top[1]));
 }
 
 function capitalize(s) {
@@ -671,11 +528,11 @@ function capitalize(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function drawLeeglopers({ svg, y, insights, mode = 'team', c = getInsightCopy('nl') }) {
+function drawLeeglopers({ svg, y, insights, c = getInsightCopy('nl') }) {
     svg.appendChild(createText({
         x: MARGIN,
         y: y + 6,
-        text: c.leeglopersEyebrow(mode === 'organization'),
+        text: c.leeglopersEyebrow,
         font: 'Inter',
         weight: 700,
         size: 4.8,
@@ -683,10 +540,9 @@ function drawLeeglopers({ svg, y, insights, mode = 'team', c = getInsightCopy('n
         letterSpacing: 0.8,
     }));
 
-    const leeglopers = buildLeeglopers(insights, mode, c);
-    const isOrg = mode === 'organization';
+    const leeglopers = buildLeeglopers(insights, c);
 
-    let lineY = y + (isOrg ? 16 : 15);
+    let lineY = y + 15;
     leeglopers.forEach((tekst) => {
         svg.appendChild(createCircle(MARGIN + 2, lineY - 2, 1, COLOR.rose));
 
@@ -703,8 +559,8 @@ function drawLeeglopers({ svg, y, insights, mode = 'team', c = getInsightCopy('n
         lineY += 9;
     });
 
-    // Teamvariant: minder lucht onder de laatste regel.
-    return isOrg ? lineY : lineY - 4;
+    // Weinig lucht onder de laatste regel.
+    return lineY - 4;
 }
 
 function drawFooterHint({ svg, c = getInsightCopy('nl') }) {
@@ -725,10 +581,9 @@ function drawFooterHint({ svg, c = getInsightCopy('nl') }) {
 // SECTIES — ACHTERKANT
 // =========================
 
-function drawAchterkantHeader({ svg, y, mode = 'team', c = INSIGHT_COPY.nl }) {
-    // Even breed als de pil op de voorkant (drawHeader), sinds de tekst
-    // daar "WERKPLEK" is in plaats van "JOUW IDEALE WERKPLEKMIX".
-    const pillW = mode === 'organization' ? 110 : 80;
+function drawAchterkantHeader({ svg, y, c = INSIGHT_COPY.nl }) {
+    // Even breed als de pil op de voorkant (drawHeader).
+    const pillW = 80;
     const pillH = 12;
 
     const pill = createRect(MARGIN, y, pillW, pillH, COLOR.sage);
@@ -754,12 +609,12 @@ function drawAchterkantHeader({ svg, y, mode = 'team', c = INSIGHT_COPY.nl }) {
     return y + pillH;
 }
 
-function drawAchterkantTitle({ svg, y, mode = 'team', c = INSIGHT_COPY.nl }) {
+function drawAchterkantTitle({ svg, y, c = INSIGHT_COPY.nl }) {
     const titleY = y + 16;
     svg.appendChild(createText({
         x: MARGIN,
         y: titleY,
-        text: c.workplaceTitle(mode === 'organization'),
+        text: c.workplaceTitle,
         font: 'Playfair Display',
         weight: 500,
         size: 12,
@@ -931,9 +786,9 @@ function drawWorkplaceCompact({ svg, y, aggregate, c = INSIGHT_COPY.nl, lang = '
 // organisatievariant tonen ze allemaal.
 const MAX_TEAM_ACTIONS = 5;
 
-function drawQuickWinsCompact({ svg, y, insights, mode = 'team', c = INSIGHT_COPY.nl }) {
+function drawQuickWinsCompact({ svg, y, insights, c = INSIGHT_COPY.nl }) {
     const allWins = insights?.quickWins || [];
-    const wins = mode === 'organization' ? allWins : allWins.slice(0, MAX_TEAM_ACTIONS);
+    const wins = allWins.slice(0, MAX_TEAM_ACTIONS);
     if (wins.length === 0) return y;
 
     svg.appendChild(createText({
@@ -997,29 +852,10 @@ function drawQuickWinsCompact({ svg, y, insights, mode = 'team', c = INSIGHT_COP
     return lineY;
 }
 
-function drawAchterkantFooter({ svg, mode = 'team', c = INSIGHT_COPY.nl }) {
-    // Footer compacter en lager geplaatst zodat hij niet overlapt met de
-    // quick-wins erboven. Blok loopt van quote (PAGE_H-40) tot tagline
-    // (PAGE_H-14), dus ~26mm hoog met nog 14mm marge tot de onderrand.
-    const isOrg = mode === 'organization';
-    // Teamvariant: 6 mm lager (geen quote erboven), meer ruimte voor de acties.
-    const footerY = PAGE_H - (isOrg ? 40 : 34);
-
-    // Quote alleen in het organisatie-rapport; in de team-insight PDF
-    // liep hij door de quick-wins-tekst erboven heen.
-    if (isOrg) {
-        svg.appendChild(createText({
-            x: PAGE_W / 2,
-            y: footerY,
-            text: c.footerQuote,
-            font: 'Playfair Display',
-            weight: 500,
-            size: 6.4,
-            color: COLOR.textSoft,
-            anchor: 'middle',
-            italic: true,
-        }));
-    }
+function drawAchterkantFooter({ svg, c = INSIGHT_COPY.nl }) {
+    // Beeldmerk en slotregel onderaan, laag genoeg om de acties erboven
+    // de ruimte te laten.
+    const footerY = PAGE_H - 34;
 
     const logoSize = 13;
     drawTOFMark(svg, PAGE_W / 2 - logoSize / 2, footerY + 7, logoSize);
@@ -1027,7 +863,7 @@ function drawAchterkantFooter({ svg, mode = 'team', c = INSIGHT_COPY.nl }) {
     svg.appendChild(createText({
         x: PAGE_W / 2,
         y: footerY + 26,
-        text: c.footerTagline(isOrg),
+        text: c.footerTagline,
         font: 'Inter',
         weight: 400,
         size: 4.6,
@@ -1040,52 +876,23 @@ function drawAchterkantFooter({ svg, mode = 'team', c = INSIGHT_COPY.nl }) {
 // LEEGLOPER LOGICA
 // =========================
 
-function buildLeeglopers(insights, mode = 'team', c = INSIGHT_COPY.nl) {
+function buildLeeglopers(insights, c = INSIGHT_COPY.nl) {
+    // Alleen de twee vragen. Geen spanningsregel (eigen paren die
+    // Teamdynamiek tegenspreken, en die horen bij het deel voor de
+    // leidinggevende) en geen opvulregel (ook een bewering over het kantoor).
     const t = insights?.workplaceTension || {};
     const lg = c.leeglopers;
-    const isOrg = mode === 'organization';
     const out = [];
 
     if (t.underserved && t.underserved.length > 0) {
-        out.push(lg.tooLittle(t.underserved[0].label.toLowerCase(), isOrg));
+        out.push(lg.tooLittle(t.underserved[0].label.toLowerCase()));
     }
 
     if (t.oversupplied && t.oversupplied.length > 0) {
-        out.push(lg.tooMuch(t.oversupplied[0].label.toLowerCase(), isOrg));
+        out.push(lg.tooMuch(t.oversupplied[0].label.toLowerCase()));
     }
 
-    // Teamvariant: alleen de twee vragen. Geen spanningsregel (eigen paren die
-    // Teamdynamiek tegenspreken, en die horen bij het deel voor de
-    // leidinggevende) en geen opvulregel (ook een bewering over het kantoor).
-    if (!isOrg) return out;
-
-    const personas = [
-        ...(t.impactSummary?.dominant || []),
-        ...(t.impactSummary?.middle || []),
-    ];
-    const personaIds = personas.map((p) => p.id);
-
-    const TENSION_PAIRS = [
-        ['presteerder', 'denker', 'tempoZorgvuldigheid'],
-        ['presteerder', 'verbinder', 'resultaatVerbinding'],
-        ['maker', 'zekerzoeker', 'vrijheidZekerheid'],
-        ['vernieuwer', 'zekerzoeker', 'vernieuwingContinuiteit'],
-        ['groeier', 'zekerzoeker', 'ontwikkelingStabiliteit'],
-        ['teamspeler', 'maker', 'loyaliteitAutonomie'],
-    ];
-
-    for (const [a, b, pairKey] of TENSION_PAIRS) {
-        if (personaIds.includes(a) && personaIds.includes(b)) {
-            out.push(lg.tension(lg.tensionPairs[pairKey]));
-            break;
-        }
-    }
-
-    while (out.length < 3) {
-        out.push(lg.fallback(mode === 'organization'));
-    }
-
-    return out.slice(0, 3);
+    return out;
 }
 
 // =========================
@@ -1205,35 +1012,15 @@ function wrapText(text, maxWidth, fontSize, font) {
 // HELPERS
 // =========================
 
-// Teamvariant: de schaal van getConfidence() (5–15 opkomend, 16–30
-// betrouwbaar, meer dan 30 sterk). De organisatievariant houdt zijn oude
-// drempels tot daar apart over besloten is.
-function buildReliabilityLabel(count, c = INSIGHT_COPY.nl, isOrg = false) {
+// De schaal van getConfidence() (5–15 opkomend, 16–30 betrouwbaar, meer
+// dan 30 sterk), dezelfde als op het scherm en in Teamdynamiek.
+function buildReliabilityLabel(count, c = INSIGHT_COPY.nl) {
     if (count === null || count === undefined) return '';
-    if (!isOrg) return c.confidence[getConfidence(count).level] || '';
-    if (count < 3) return c.reliability.low;
-    if (count < 6) return c.reliability.mid;
-    return c.reliability.high;
+    return c.confidence[getConfidence(count).level] || '';
 }
 
 // =========================
-// SHARED EXPORTS — voor organizationInsightPDF.js etc.
+// GEDEELD — het beeldmerk wordt ook gebruikt door het Organisatielandschap
+// (organisatieLandschap/OL_Cover.jsx en OL_Chrome.jsx).
 // =========================
-export {
-    PAGE_W as PDF_PAGE_W,
-    PAGE_H as PDF_PAGE_H,
-    MARGIN as PDF_MARGIN,
-    COLOR as PDF_COLOR,
-    PERSONA_COLORS as PDF_PERSONA_COLORS,
-    createSVGCanvas,
-    createRect,
-    createCircle,
-    createText,
-    drawTOFMark,
-    drawWrappedText,
-    wrapText,
-    buildReliabilityLabel,
-    drawDivider,
-    drawAchterkantHeader,
-    buildLeeglopers,
-};
+export { drawTOFMark };
