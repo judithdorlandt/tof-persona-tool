@@ -9,6 +9,12 @@
  */
 
 // ── A4 landscape — vaste oriëntatie voor alle 4 pagina's
+// Drempel voor het Organisatielandschap: elke rij met percentages (team,
+// "Overige", organisatie) pas vanaf 10 ingevulde profielen. Hoger dan de 5
+// van Teaminzicht, omdat dit rapport buiten het team gaat (besluit Judith,
+// 23 okt 2026). Bij teams van 6 is 17% precies één persoon.
+export const MIN_ROW_PROFILES = 10;
+
 export const PAGE_W = 297;
 export const PAGE_H = 210;
 

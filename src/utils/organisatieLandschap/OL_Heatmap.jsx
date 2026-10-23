@@ -60,11 +60,14 @@ export function buildHeatmapSVG({ data, copy, lang = 'nl' }) {
         const headerBaseline = Math.max(subBottom + RHYTHM.subToContent, legendBottom + 7);
         const tableY = headerBaseline - HEADER_BASELINE;
 
-        // Rijen tot 12 per pagina, of minder als ze anders over de voetnoot lopen.
+        // Hoogstens 12 per pagina, gelijk verdeeld over de pagina's (25 wordt
+        // 9/8/8, niet 12/12/1), en minder als ze anders over de voetnoot lopen.
+        const remaining = rows.length - next;
+        const perPage = Math.ceil(remaining / Math.max(1, Math.ceil(remaining / ROWS_PER_PAGE)));
         const floor = FN_BOTTOM_BASELINE - 6.35;
         let bottom = tableY + HEADER_H + ORG_H + ORG_GAP;
         const chunk = [];
-        while (next < rows.length && chunk.length < ROWS_PER_PAGE) {
+        while (next < rows.length && chunk.length < perPage) {
             const h = rowHeightFor(rows[next]);
             if (chunk.length > 0 && bottom + h > floor) break;
             chunk.push(rows[next]);

@@ -173,11 +173,11 @@ export const COPY_EN = {
 
         attention: {
             noOwnRow: (x) => (x === 1
-                ? '1 team doesn\'t appear as its own row in this overview. This way no group of fewer than five profiles is shown separately. It is counted in “Other” and in the organisation total.'
-                : `${x} teams don't appear as their own row in this overview. This way no group of fewer than five profiles is shown separately. They are counted in “Other” and in the organisation total.`),
+                ? '1 team doesn\'t appear as its own row in this overview. This way no group of fewer than ten profiles is shown separately. It is counted in “Other” and in the organisation total.'
+                : `${x} teams don't appear as their own row in this overview. This way no group of fewer than ten profiles is shown separately. They are counted in “Other” and in the organisation total.`),
             noOwnRowNoRest: (x) => (x === 1
-                ? '1 team doesn\'t appear as its own row in this overview. This way no group of fewer than five profiles is shown separately. It is counted in the organisation total.'
-                : `${x} teams don't appear as their own row in this overview. This way no group of fewer than five profiles is shown separately. They are counted in the organisation total.`),
+                ? '1 team doesn\'t appear as its own row in this overview. This way no group of fewer than ten profiles is shown separately. It is counted in the organisation total.'
+                : `${x} teams don't appear as their own row in this overview. This way no group of fewer than ten profiles is shown separately. They are counted in the organisation total.`),
         },
     },
 

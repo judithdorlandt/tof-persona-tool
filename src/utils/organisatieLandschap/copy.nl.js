@@ -200,12 +200,12 @@ export const COPY_NL = {
 
         attention: {
             noOwnRow: (x) => (x === 1
-                ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Het telt mee in “Overige” en in het totaal van de organisatie.'
-                : `${x} teams staan niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Ze tellen mee in “Overige” en in het totaal van de organisatie.`),
+                ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan tien profielen apart in beeld. Het telt mee in “Overige” en in het totaal van de organisatie.'
+                : `${x} teams staan niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan tien profielen apart in beeld. Ze tellen mee in “Overige” en in het totaal van de organisatie.`),
             // Zonder rij "Overige" (besluit Judith 23 okt).
             noOwnRowNoRest: (x) => (x === 1
-                ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Het telt mee in het totaal van de organisatie.'
-                : `${x} teams staan niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan vijf profielen apart in beeld. Ze tellen mee in het totaal van de organisatie.`),
+                ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan tien profielen apart in beeld. Het telt mee in het totaal van de organisatie.'
+                : `${x} teams staan niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan tien profielen apart in beeld. Ze tellen mee in het totaal van de organisatie.`),
         },
     },
 

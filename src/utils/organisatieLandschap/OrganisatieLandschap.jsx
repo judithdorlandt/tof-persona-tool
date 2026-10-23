@@ -15,7 +15,7 @@ import { setupTofFonts } from '../tofPdfBrand';
 import { PAGE_W, PAGE_H } from './constants';
 import { getOLCopy } from './copy';
 import { prepareOrganisatieData } from './organisatieAggregation';
-import { MIN_TEAM_RESPONSES } from '../access';
+import { MIN_ROW_PROFILES } from './constants';
 
 import { buildCoverSVG } from './OL_Cover';
 import { buildHeroSVG } from './OL_Hero';
@@ -32,10 +32,10 @@ export async function generateOrganisatieLandschapPDF({
     observations = [],
     lang = 'nl',
 }) {
-    // Onder de vijf profielen voor de hele organisatie maken we geen rapport:
+    // Onder de tien profielen voor de hele organisatie maken we geen rapport:
     // dan is elk cijfer herleidbaar tot een persoon. /admin toont de knop dan
     // ook niet; dit is de vangrail voor andere aanroepers.
-    if ((aggregate?.teamCount || 0) < MIN_TEAM_RESPONSES) return false;
+    if ((aggregate?.teamCount || 0) < MIN_ROW_PROFILES) return false;
 
     // Taal wordt één keer opgelost en daarna overal doorgegeven — noch de
     // aggregatie noch de pagina-builders importeren zelf een copy-bestand.

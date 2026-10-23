@@ -14,6 +14,7 @@
 
 import {
     ARCHETYPE_ORDER,
+    MIN_ROW_PROFILES,
     getArchetypeName,
     getPersonaDrive,
     PERSONA_COLORS,
@@ -23,7 +24,6 @@ import {
 import { dominantPersonas } from '../TeamAggregation';
 import { getConfidence } from '../../insights';
 import { getOLCopy } from './copy';
-import { MIN_TEAM_RESPONSES } from '../access';
 import { getCopy } from '../../i18n/copy';
 import { formatPdfDate } from '../tofPdfBrand';
 // Werkplek: hetzelfde werkplekprofiel als Teaminzicht (opdracht L3, besluit
@@ -56,31 +56,31 @@ export function prepareOrganisatieData({
 
     const totalRespondents = aggregate?.teamCount || 0;
 
-    // Drempel van vijf, ook hier (zie utils/access.js): een team onder de vijf
+    // Drempel van tien (MIN_ROW_PROFILES, constants.js): een team onder de tien
     // krijgt geen eigen rij en nergens een eigen cijfer, anders is een uitslag
     // herleidbaar tot een persoon. In het organisatietotaal tellen ze altijd
     // mee (dat komt uit `aggregate`).
     //
     // Alles zonder eigen rij — kleine teams én profielen die aan geen team
     // gekoppeld zijn — vormt samen de rest-groep "Overige". Die mag
-    // nooit 1 tot 4 profielen groot zijn: dan is hij terug te rekenen als
+    // nooit 1 tot 9 profielen groot zijn: dan is hij terug te rekenen als
     // organisatie min de zichtbare teams. Is hij dat toch, dan gaat het
-    // kleinste team met een eigen rij er ook in, tot de rest-groep vijf of
+    // kleinste team met een eigen rij er ook in, tot de rest-groep tien of
     // meer is. Zonder teams met een eigen rij is de rest-groep de hele
-    // organisatie, en die is altijd vijf of meer (anders geen rapport).
+    // organisatie, en die is altijd tien of meer (anders geen rapport).
     const ownTeams = activeTeams
-        .filter((t) => (t.responseCount || 0) >= MIN_TEAM_RESPONSES)
+        .filter((t) => (t.responseCount || 0) >= MIN_ROW_PROFILES)
         .sort((a, b) => (a.responseCount || 0) - (b.responseCount || 0));
     const restSize = () =>
         totalRespondents - ownTeams.reduce((s, t) => s + (t.responseCount || 0), 0);
-    while (ownTeams.length > 0 && restSize() > 0 && restSize() < MIN_TEAM_RESPONSES) {
+    while (ownTeams.length > 0 && restSize() > 0 && restSize() < MIN_ROW_PROFILES) {
         ownTeams.shift();
     }
 
     // Staat er een rij "Overige"? Zonder teams met een eigen rij niet: die rij
     // zou dan gelijk zijn aan de organisatie, dus staat alleen de
     // organisatierij er.
-    const hasRestRow = ownTeams.length > 0 && restSize() >= MIN_TEAM_RESPONSES;
+    const hasRestRow = ownTeams.length > 0 && restSize() >= MIN_ROW_PROFILES;
 
     const orgRow = buildOrgRow(aggregate, cd, lang);
     const teamRows = ownTeams
@@ -90,7 +90,7 @@ export function prepareOrganisatieData({
         teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd, lang));
     }
 
-    // Teams zonder eigen rij in dit overzicht: onder de vijf, of meegeschoven
+    // Teams zonder eigen rij in dit overzicht: onder de tien, of meegeschoven
     // in de rest-groep. Alleen teams mét profielen (redactie punt 2, voorstel
     // A): teams zonder profielen tellen nergens mee en staan al op p2. Alleen
     // het aantal wordt genoemd, geen namen.

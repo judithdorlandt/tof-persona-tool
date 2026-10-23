@@ -51,7 +51,7 @@ import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 
 import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
-import { MIN_TEAM_RESPONSES } from '../utils/access';
+import { MIN_ROW_PROFILES } from '../utils/organisatieLandschap/constants';
 import { buildTiles } from './TeamDashboard.jsx';
 import TeamDynamics from './TeamDynamics.jsx';
 import { useCopy, useLang } from '../i18n/LanguageContext';
@@ -1208,9 +1208,9 @@ function OrganizationDetail({
                 titleAccentColor={moduleAccent}
                 lead={t.lead(org.teamCount, responses.length)}
                 actions={
-                    // Onder de vijf profielen voor de hele organisatie geen
-                    // rapport (drempel, utils/access.js): dan geen knop.
-                    moduleSel === 'insight' && responses.length >= MIN_TEAM_RESPONSES ? (
+                    // Onder de tien profielen voor de hele organisatie geen
+                    // rapport (MIN_ROW_PROFILES): dan geen knop.
+                    moduleSel === 'insight' && responses.length >= MIN_ROW_PROFILES ? (
                         <PrimaryButton
                             onClick={async () => {
                                 // Dynamisch: jsPDF (~0,5 MB) blijft zo uit de
