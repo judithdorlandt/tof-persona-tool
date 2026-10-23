@@ -270,7 +270,7 @@ export default function QuizAanmelding({ organisatie = '', onSubmit }) {
       padding: '28px 28px 32px',
     },
     eyebrow: {
-      fontSize: 11,
+      fontSize: 12,
       textTransform: 'uppercase',
       letterSpacing: 1.5,
       fontWeight: 600,

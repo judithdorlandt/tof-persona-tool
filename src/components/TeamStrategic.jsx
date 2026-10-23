@@ -138,7 +138,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                         <div style={{
                             ...TYPE.eyebrow,
                             color: 'var(--tof-text-muted)',
-                            fontSize: 10,
+                            fontSize: 12,
                             marginBottom: 6,
                         }}>
                             {t.overlay.ambitionLabel}
@@ -166,7 +166,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                     <div style={{
                         ...TYPE.eyebrow,
                         color: ACCENT,
-                        fontSize: 10,
+                        fontSize: 12,
                         marginBottom: 6,
                     }}>
                         {t.overlay.dominantLabel}
@@ -180,7 +180,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                                 ...TYPE.eyebrow,
                                 color: ACCENT,
                                 minWidth: 24,
-                                fontSize: 11,
+                                fontSize: 12,
                             }}>
                                 {String(i + 1).padStart(2, '0')}
                             </span>
@@ -218,7 +218,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                             <div style={{
                                 ...TYPE.eyebrow,
                                 color: ACCENT,
-                                fontSize: 10,
+                                fontSize: 12,
                             }}>
                                 {c.axis}
                             </div>
@@ -267,7 +267,7 @@ export default function TeamStrategic({ setPage, selectedTeam }) {
                             <div style={{
                                 ...TYPE.eyebrow,
                                 color: ACCENT,
-                                fontSize: 11,
+                                fontSize: 12,
                             }}>
                                 {m.moment}
                             </div>
@@ -297,7 +297,7 @@ function Chip({ children }) {
             border: '1px solid var(--tof-border)',
             borderRadius: 999,
             padding: '6px 12px',
-            fontSize: 11,
+            fontSize: 12,
             color: 'var(--tof-text-muted)',
             letterSpacing: 0.6,
             fontWeight: 600,
@@ -323,7 +323,7 @@ function TrendBar({ trend }) {
             <span style={{
                 ...TYPE.eyebrow,
                 color: ACCENT,
-                fontSize: 11,
+                fontSize: 12,
             }}>
                 {trend.id}
             </span>

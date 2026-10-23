@@ -108,7 +108,7 @@ function Card({ children, isMobile }) {
 
 function Eyebrow({ children }) {
     return (
-        <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 700, color: PALETTE.accent }}>
+        <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 700, color: PALETTE.accent }}>
             {children}
         </div>
     );
@@ -219,7 +219,7 @@ function OptionButton({ option, order, onClick, isMobile }) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: isMobile ? 11 : 12,
+                        fontSize: 12,
                         fontWeight: 700,
                         flexShrink: 0,
                     }}
@@ -516,7 +516,7 @@ export default function QuizTest({ setPage }) {
                     <div style={{ flex: 1, height: 5, background: '#e6dfd8', borderRadius: 999, overflow: 'hidden' }}>
                         <div style={{ width: `${progress}%`, height: '100%', background: PALETTE.accent, borderRadius: 999, transition: 'width .3s' }} />
                     </div>
-                    <span style={{ color: '#999', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5, whiteSpace: 'nowrap', fontWeight: 600 }}>
+                    <span style={{ color: '#999', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.5, whiteSpace: 'nowrap', fontWeight: 600 }}>
                         {basisStep + 1} / {BASIS_VRAGEN.length}
                     </span>
                 </div>

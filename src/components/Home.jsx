@@ -330,7 +330,7 @@ export default function Home({ setPage }) {
           <p
             style={{
               margin: 0,
-              fontSize: 11,
+              fontSize: 12,
               lineHeight: 1.6,
               color: 'var(--tof-text-muted)',
             }}
@@ -369,7 +369,7 @@ export default function Home({ setPage }) {
           >
             <div
               style={{
-                fontSize: 11,
+                fontSize: 12,
                 textTransform: 'uppercase',
                 letterSpacing: 1.8,
                 color: 'var(--tof-text-muted)',
@@ -505,7 +505,7 @@ function OfferCard({
     >
       <div
         style={{
-          fontSize: 11,
+          fontSize: 12,
           textTransform: 'uppercase',
           letterSpacing: 1.6,
           color: accent,
@@ -580,7 +580,7 @@ function GreenTeamCard({ copy, onClick }) {
         style={{
           position: 'relative',
           zIndex: 1,
-          fontSize: 11,
+          fontSize: 12,
           textTransform: 'uppercase',
           letterSpacing: 1.6,
           color: '#EDE5D8',

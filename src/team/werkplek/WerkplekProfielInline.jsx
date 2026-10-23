@@ -206,7 +206,7 @@ function BandBadge({ band }) {
         <span
             style={{
                 fontFamily: 'var(--tof-font-body)',
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: 600,
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase',

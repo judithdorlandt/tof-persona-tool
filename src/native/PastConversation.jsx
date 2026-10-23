@@ -77,7 +77,7 @@ export default function PastConversation({
             <div style={{ display: 'grid', gap: 6 }}>
                 <span
                     style={{
-                        fontSize: 11,
+                        fontSize: 12,
                         letterSpacing: 1.4,
                         textTransform: 'uppercase',
                         fontWeight: 700,

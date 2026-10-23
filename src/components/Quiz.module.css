@@ -76,7 +76,7 @@
 .heroEyebrow {
   color: var(--tof-accent-rose);
   letter-spacing: 2px;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   font-weight: 700;
   margin-bottom: 10px;
@@ -126,7 +126,7 @@
 }
 
 .sectionLabel {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;

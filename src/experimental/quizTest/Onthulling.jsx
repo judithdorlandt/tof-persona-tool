@@ -104,7 +104,7 @@ export default function Onthulling({ archetypes, primaryId, onDone, isMobile, ey
                             animation: 'tofNaamIn .55s cubic-bezier(.2,1.3,.4,1)',
                         }}
                     >
-                        <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, color: SOFT }}>
+                        <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, color: SOFT }}>
                             {eyebrow}
                         </div>
                         <div

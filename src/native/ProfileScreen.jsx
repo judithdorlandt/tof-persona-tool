@@ -93,7 +93,7 @@ export default function ProfileScreen({
                                 color: getReadableTextOnColor(primaryColor),
                                 borderRadius: 20,
                                 padding: '5px 12px',
-                                fontSize: 9,
+                                fontSize: 12,
                                 fontWeight: 600,
                                 letterSpacing: '2.5px',
                                 textTransform: 'uppercase',
@@ -319,7 +319,7 @@ export default function ProfileScreen({
 
                                         <span
                                             style={{
-                                                fontSize: 11,
+                                                fontSize: 12,
                                                 fontWeight: 600,
                                                 color: primaryColor,
                                                 background: `${primaryColor}14`,
@@ -484,7 +484,7 @@ export default function ProfileScreen({
 }
 
 const LABEL = {
-    fontSize: 11,
+    fontSize: 12,
     letterSpacing: 1.6,
     textTransform: 'uppercase',
     color: 'var(--tof-text-muted)',

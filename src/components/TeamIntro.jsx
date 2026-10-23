@@ -366,7 +366,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                     }}>
                         <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'var(--tof-accent-rose)', borderRadius: '4px 0 0 4px' }} />
                         <div style={{ paddingLeft: isMobile ? 8 : 16, display: 'grid', gap: 8 }}>
-                            <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>
+                            <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 12, textTransform: 'uppercase', fontWeight: 700 }}>
                                 {t.managerWelcome.eyebrow}
                             </div>
                             <h1 style={{
@@ -403,7 +403,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                 }}>
                     <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'var(--tof-accent-rose)', borderRadius: '4px 0 0 4px' }} />
                     <div style={{ paddingLeft: isMobile ? 8 : 16, display: 'grid', gap: isMobile ? 12 : 14 }}>
-                        <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 11, textTransform: 'uppercase', fontWeight: 700 }}>
+                        <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 12, textTransform: 'uppercase', fontWeight: 700 }}>
                             {t.hero.eyebrow}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
@@ -553,7 +553,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 8,
-                                fontSize: 11,
+                                fontSize: 12,
                                 textTransform: 'uppercase',
                                 letterSpacing: 1.6,
                                 fontWeight: 700,
@@ -563,7 +563,7 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                             {t.title}
                             {adminMode && (
                                 <span style={{
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     letterSpacing: 1.2,
                                     padding: '2px 8px',
                                     background: 'var(--tof-accent-rose)',
@@ -724,7 +724,7 @@ function AccessRow({ entry, isMobile, onOpen }) {
 
                 <div
                     style={{
-                        fontSize: 11,
+                        fontSize: 12,
                         textTransform: 'uppercase',
                         letterSpacing: 1.2,
                         fontWeight: 700,
@@ -813,7 +813,7 @@ function AccessStrip({
         }}>
             <div style={{ display: 'grid', gap: 14 }}>
                 <div style={{ display: 'grid', gap: 10 }}>
-                    <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accent }}>
+                    <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accent }}>
                         {copy.eyebrow}
                     </div>
                     <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 24 : 27, lineHeight: 1.1, color: 'var(--tof-text)' }}>
@@ -892,7 +892,7 @@ function AccessStrip({
                             background: '#EAF0EB',
                             border: `1.5px solid ${accent}`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 10, fontWeight: 700, color: accent,
+                            fontSize: 12, fontWeight: 700, color: accent,
                             flexShrink: 0, marginTop: 1,
                         }}>✓</div>
                         <span style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--tof-text-soft)' }}>{b}</span>

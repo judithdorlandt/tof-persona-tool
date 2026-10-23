@@ -26,7 +26,7 @@ const COLOR_MAP = {
 };
 
 const INFO_LABEL_STYLE = {
-    fontSize: 11,
+    fontSize: 12,
     letterSpacing: 1.6,
     textTransform: 'uppercase',
     color: 'var(--tof-text-muted)',
@@ -158,7 +158,7 @@ export default function ResultsProfileCard({
                                     }}
                                 >
                                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff', opacity: 0.7, flexShrink: 0 }} />
-                                    <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: '#fff', lineHeight: 1 }}>
+                                    <span style={{ fontSize: 12, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: '#fff', lineHeight: 1 }}>
                                         {t.badge}
                                     </span>
                                 </div>
@@ -437,7 +437,7 @@ export default function ResultsProfileCard({
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                         <div
                                                             style={{
-                                                                fontSize: 11,
+                                                                fontSize: 12,
                                                                 color: primaryColor,
                                                                 background: '#F4EDE6',
                                                                 borderRadius: 999,
@@ -491,7 +491,7 @@ export default function ResultsProfileCard({
                                             >
                                                 <div
                                                     style={{
-                                                        fontSize: 11,
+                                                        fontSize: 12,
                                                         letterSpacing: 1.3,
                                                         textTransform: 'uppercase',
                                                         color: primaryColor,

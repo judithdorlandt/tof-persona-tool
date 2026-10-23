@@ -339,7 +339,7 @@ function BandBadge({ band }) {
                 border: `1px solid ${s.badgeBorder}`,
                 borderRadius: RADIUS.pill,
                 padding: '3px 11px',
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 letterSpacing: 1,
@@ -360,7 +360,7 @@ function SoortPlekRegel({ tekst }) {
             <span
                 style={{
                     ...TYPE.eyebrow,
-                    fontSize: 9,
+                    fontSize: 12,
                     letterSpacing: 1.2,
                     color: 'var(--tof-text-muted)',
                 }}

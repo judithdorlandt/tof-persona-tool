@@ -91,7 +91,7 @@ export const TYPE = {
     },
     eyebrow: {
         fontFamily: 'var(--tof-font-body)',
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: 700,
         textTransform: 'uppercase',
         letterSpacing: 1.8,

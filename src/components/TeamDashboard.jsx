@@ -412,7 +412,7 @@ function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
                 border: '1px solid var(--tof-border)',
                 borderRadius: RADIUS.pill,
                 padding: '4px 12px',
-                fontSize: 11,
+                fontSize: 12,
             }}
         >
             <span
@@ -430,7 +430,7 @@ function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: 0.6,
-                    fontSize: 10,
+                    fontSize: 12,
                 }}
             >
                 {label}

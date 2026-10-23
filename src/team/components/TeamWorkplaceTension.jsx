@@ -299,7 +299,7 @@ function PersonaCard({ persona }) {
                 {persona.isMinority ? (
                     <span
                         style={{
-                            fontSize: 10,
+                            fontSize: 12,
                             textTransform: 'uppercase',
                             letterSpacing: 1.2,
                             fontWeight: 700,

@@ -91,7 +91,7 @@ const TAB = {
     justifyItems: 'center',
     gap: 6,
     padding: '10px 4px 12px',
-    fontSize: 11,
+    fontSize: 12,
     letterSpacing: 0.2,
     lineHeight: 1.2,
     // Apples richtlijn voor raakvlakken is 44 px; met de inset erbij haalt
@@ -115,7 +115,7 @@ const BADGE = {
     borderRadius: 999,
     background: 'var(--tof-accent-rose)',
     color: '#FFFFFF',
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 700,
     lineHeight: '16px',
     textAlign: 'center',

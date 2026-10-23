@@ -347,7 +347,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                     textAlign: 'center',
                 }}>
                     <div style={{
-                        fontSize: 11,
+                        fontSize: 12,
                         textTransform: 'uppercase',
                         letterSpacing: 1.6,
                         fontWeight: 700,
@@ -427,7 +427,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                         <div style={{
                             color: 'var(--tof-accent-rose)',
                             letterSpacing: 2,
-                            fontSize: 11,
+                            fontSize: 12,
                             textTransform: 'uppercase',
                             fontWeight: 700,
                         }}>
@@ -517,7 +517,7 @@ function AdminLogin() {
     };
     const labelStyle = {
         display: 'block',
-        fontSize: 11,
+        fontSize: 12,
         textTransform: 'uppercase',
         letterSpacing: 1.2,
         fontWeight: 700,
@@ -550,7 +550,7 @@ function AdminLogin() {
                 borderRadius: 14,
             }}>
                 <div style={{
-                    fontSize: 11,
+                    fontSize: 12,
                     textTransform: 'uppercase',
                     letterSpacing: 1.6,
                     fontWeight: 700,
@@ -633,7 +633,7 @@ function CreateTeamCard({
     };
     const labelStyle = {
         display: 'block',
-        fontSize: 11,
+        fontSize: 12,
         textTransform: 'uppercase',
         letterSpacing: 1.2,
         fontWeight: 700,
@@ -651,7 +651,7 @@ function CreateTeamCard({
             gap: 16,
         }}>
             <div style={{
-                fontSize: 11,
+                fontSize: 12,
                 textTransform: 'uppercase',
                 letterSpacing: 1.4,
                 fontWeight: 700,
@@ -790,7 +790,7 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
                 <div>
                     <div style={{
-                        fontSize: 11,
+                        fontSize: 12,
                         textTransform: 'uppercase',
                         letterSpacing: 1.4,
                         fontWeight: 700,
@@ -826,7 +826,7 @@ function JustCreatedCard({ isMobile, info, onDismiss }) {
                 flexWrap: 'wrap',
             }}>
                 <div>
-                    <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.4, color: 'var(--tof-text-muted)' }}>
+                    <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.4, color: 'var(--tof-text-muted)' }}>
                         {t.codeLabel}
                     </div>
                     <div style={{
@@ -899,7 +899,7 @@ function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSel
             gap: 14,
         }}>
             <div style={{
-                fontSize: 11,
+                fontSize: 12,
                 textTransform: 'uppercase',
                 letterSpacing: 1.4,
                 fontWeight: 700,
@@ -1334,7 +1334,7 @@ function OrganizationDetail({
                     <SectionCard padding={isMobile ? '20px 22px' : '24px 28px'}>
                         <div style={{ display: 'grid', gap: 14 }}>
                             <div style={{
-                                fontSize: 11,
+                                fontSize: 12,
                                 textTransform: 'uppercase',
                                 letterSpacing: 1.4,
                                 fontWeight: 700,
@@ -1376,7 +1376,7 @@ function OrganizationDetail({
                                                     {s.team.team || t.empty}
                                                 </div>
                                                 <div style={{
-                                                    fontSize: 11,
+                                                    fontSize: 12,
                                                     color: 'var(--tof-text-muted)',
                                                     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
                                                     letterSpacing: 0.5,
@@ -1544,7 +1544,7 @@ function BestuurderPlaceholder({ isMobile, orgName }) {
             gap: 8,
         }}>
             <div style={{
-                fontSize: 11,
+                fontSize: 12,
                 textTransform: 'uppercase',
                 letterSpacing: 1.4,
                 fontWeight: 700,
@@ -1611,7 +1611,7 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
         }}>
             <div>
                 <div style={{
-                    fontSize: 11,
+                    fontSize: 12,
                     textTransform: 'uppercase',
                     letterSpacing: 1.4,
                     fontWeight: 700,
@@ -1642,7 +1642,7 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
                     }}>
                         <div>
                             <div style={{
-                                fontSize: 11,
+                                fontSize: 12,
                                 textTransform: 'uppercase',
                                 letterSpacing: 1.2,
                                 fontWeight: 700,
@@ -1762,7 +1762,7 @@ function ManagersSection({
     };
     const labelStyle = {
         display: 'block',
-        fontSize: 11,
+        fontSize: 12,
         textTransform: 'uppercase',
         letterSpacing: 1.2,
         fontWeight: 700,
@@ -1782,7 +1782,7 @@ function ManagersSection({
             gap: 16,
         }}>
             <div style={{
-                fontSize: 11,
+                fontSize: 12,
                 textTransform: 'uppercase',
                 letterSpacing: 1.4,
                 fontWeight: 700,
@@ -1851,7 +1851,7 @@ function ManagersSection({
 
             {/* Lijst gekoppelde managers */}
             <div style={{
-                fontSize: 11,
+                fontSize: 12,
                 textTransform: 'uppercase',
                 letterSpacing: 1.4,
                 fontWeight: 700,
@@ -1944,7 +1944,7 @@ function ManagerRow({ isMobile, manager, busy, onRemove }) {
                 {manager.team || t.noTeam}
             </div>
             <div style={{
-                fontSize: 11,
+                fontSize: 12,
                 color: 'var(--tof-text-muted)',
                 fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
                 letterSpacing: 0.5,
@@ -1957,7 +1957,7 @@ function ManagerRow({ isMobile, manager, busy, onRemove }) {
                 </SecondaryButton>
                 {linkMessage && (
                     <span style={{
-                        fontSize: 11,
+                        fontSize: 12,
                         color: linkStatus === 'error'
                             ? 'var(--tof-accent-rose)'
                             : 'var(--tof-text-muted)',

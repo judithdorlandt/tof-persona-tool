@@ -38,7 +38,7 @@ export default function ResultsDownloadCard({
                 flexWrap: 'wrap',
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, color: 'rgba(255,255,255,0.65)' }}>
+                    <span style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, color: 'rgba(255,255,255,0.65)' }}>
                         {t.eyebrow}
                     </span>
                     <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)', display: 'inline-block' }} />
@@ -46,7 +46,7 @@ export default function ResultsDownloadCard({
                         {primary?.name}
                     </span>
                 </div>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', fontWeight: 600 }}>
                     {t.format}
                 </span>
             </div>
@@ -65,7 +65,7 @@ export default function ResultsDownloadCard({
                 }}>
                     {/* Wat er in zit */}
                     <div style={{ display: 'grid', gap: 10 }}>
-                        <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
+                        <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
                             {t.includesLabel}
                         </div>
                         <div style={{ display: 'grid', gap: 7 }}>
@@ -76,7 +76,7 @@ export default function ResultsDownloadCard({
                                         background: `${primaryColor}18`,
                                         border: `1.5px solid ${primaryColor}50`,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: 9, fontWeight: 700, color: primaryColor,
+                                        fontSize: 12, fontWeight: 700, color: primaryColor,
                                         flexShrink: 0, marginTop: 1,
                                     }}>✓</div>
                                     <span style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--tof-text-soft)' }}>{item}</span>
@@ -95,7 +95,7 @@ export default function ResultsDownloadCard({
                         gap: 8,
                         alignContent: 'start',
                     }}>
-                        <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
+                        <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.6, fontWeight: 700, color: 'var(--tof-text-muted)' }}>
                             {t.howToLabel}
                         </div>
                         <p style={{ margin: 0, fontSize: 13, lineHeight: 1.72, color: 'var(--tof-text-soft)' }}>

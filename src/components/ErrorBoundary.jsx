@@ -69,7 +69,7 @@ export default class ErrorBoundary extends React.Component {
       textAlign: 'left',
     };
     const eye = {
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 1.8,
       textTransform: 'uppercase',
       color: '#7A7A7A',

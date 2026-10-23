@@ -488,7 +488,7 @@ export function Tile({
             <div
                 style={{
                     ...TYPE.eyebrow,
-                    fontSize: 10,
+                    fontSize: 12,
                     letterSpacing: 1.4,
                     color: isActive ? 'rgba(255,255,255,0.85)' : 'var(--tof-text-muted)',
                 }}
@@ -530,7 +530,7 @@ export function Tile({
                     position: 'absolute',
                     bottom: 12,
                     right: 14,
-                    fontSize: 11,
+                    fontSize: 12,
                     color: isActive ? 'rgba(255,255,255,0.9)' : accent,
                     fontWeight: 700,
                     transform: isActive ? 'rotate(180deg)' : 'rotate(0)',

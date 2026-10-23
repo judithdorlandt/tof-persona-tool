@@ -59,7 +59,7 @@ export default function StrategischKompas({ setPage }) {
               .sk-container { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
               .sk-section { padding: 96px 0; border-bottom: 1px solid rgba(31,31,31,0.06); }
               .sk-eye {
-                font-size: 11px; font-weight: 700; letter-spacing: 1.6px;
+                font-size: 12px; font-weight: 700; letter-spacing: 1.6px;
                 color: var(--tof-accent-rose); text-transform: uppercase;
                 margin-bottom: 24px;
               }
@@ -119,7 +119,7 @@ export default function StrategischKompas({ setPage }) {
               .sk-compare > div { padding: 20px 16px; border-bottom: 1px solid var(--tof-border); }
               .sk-compare-label {
                 font-weight: 600; color: var(--tof-text-muted);
-                font-size: 11px; letter-spacing: 0.6px; text-transform: uppercase;
+                font-size: 12px; letter-spacing: 0.6px; text-transform: uppercase;
               }
               .sk-compare-head {
                 font-family: var(--tof-font-heading);
@@ -174,7 +174,7 @@ export default function StrategischKompas({ setPage }) {
                 color: var(--tof-text);
               }
               .sk-step-meta {
-                font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+                font-size: 12px; font-weight: 600; letter-spacing: 0.8px;
                 color: var(--tof-text-muted); text-transform: uppercase; margin-top: 6px;
               }
               .sk-step-body { font-size: 16px; line-height: 1.65; color: var(--tof-text-soft); }
@@ -199,7 +199,7 @@ export default function StrategischKompas({ setPage }) {
                 font-family: var(--tof-font-heading);
                 font-size: 14px; font-weight: 500; color: var(--tof-text);
               }
-              .sk-chapter-num { color: var(--tof-text-muted); font-size: 11px; letter-spacing: 0.4px; }
+              .sk-chapter-num { color: var(--tof-text-muted); font-size: 12px; letter-spacing: 0.4px; }
               .sk-deliver-list { list-style: none; padding: 0; margin: 0; }
               .sk-deliver-list li {
                 position: relative; padding: 12px 0 12px 32px;

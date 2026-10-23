@@ -204,7 +204,7 @@ export default function Library() {
                                                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
                                                         {persona.kw.map((kw) => (
                                                             <span key={kw} style={{
-                                                                fontSize: 11,
+                                                                fontSize: 12,
                                                                 color: accent,
                                                                 background: soft,
                                                                 borderRadius: 999,
@@ -260,7 +260,7 @@ export default function Library() {
                                                 padding: '14px 14px 12px',
                                                 borderLeft: `4px solid ${accent}`,
                                             }}>
-                                                <div style={{ fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--tof-text-muted)', fontWeight: 700, marginBottom: 10 }}>
+                                                <div style={{ fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--tof-text-muted)', fontWeight: 700, marginBottom: 10 }}>
                                                     {t.bricksTitle}
                                                 </div>
 
@@ -281,7 +281,7 @@ export default function Library() {
                                                         }}>
                                                             <span>{item.label}</span>
                                                             <span style={{
-                                                                fontSize: 10,
+                                                                fontSize: 12,
                                                                 opacity: 0.75,
                                                                 fontVariantNumeric: 'tabular-nums',
                                                             }}>
@@ -331,7 +331,7 @@ export default function Library() {
                                                     padding: '12px 14px',
                                                     borderLeft: `4px solid ${accent}`,
                                                 }}>
-                                                    <div style={{ fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--tof-text-muted)', fontWeight: 700, marginBottom: 8 }}>
+                                                    <div style={{ fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--tof-text-muted)', fontWeight: 700, marginBottom: 8 }}>
                                                         {t.leadershipTitle}
                                                     </div>
                                                     <div style={{ display: 'grid', gap: 6 }}>
@@ -342,7 +342,7 @@ export default function Library() {
                                                                     background: soft,
                                                                     border: `1.5px solid ${accent}`,
                                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                                    fontSize: 9, fontWeight: 700, color: accent,
+                                                                    fontSize: 12, fontWeight: 700, color: accent,
                                                                     flexShrink: 0, marginTop: 1,
                                                                 }}>✓</div>
                                                                 <span style={{ fontSize: 13, lineHeight: 1.6, color: '#4D433D' }}>{item}</span>
@@ -390,7 +390,7 @@ function InfoBlock({ accent, label, children }) {
             borderLeft: `4px solid ${accent}`,
         }}>
             <div style={{
-                fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase',
+                fontSize: 12, letterSpacing: 1.5, textTransform: 'uppercase',
                 color: 'var(--tof-text-muted)', fontWeight: 700, marginBottom: 5,
             }}>
                 {label}

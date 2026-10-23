@@ -558,7 +558,7 @@ function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
                 border: '1px solid var(--tof-border)',
                 borderRadius: RADIUS.pill,
                 padding: '4px 12px',
-                fontSize: 11,
+                fontSize: 12,
             }}
         >
             <span
@@ -576,7 +576,7 @@ function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: 0.6,
-                    fontSize: 10,
+                    fontSize: 12,
                 }}
             >
                 {label}
@@ -727,7 +727,7 @@ function DynamicsAxis({ axis, isFirst }) {
                 {imbalance ? (
                     <span
                         style={{
-                            fontSize: 10,
+                            fontSize: 12,
                             fontWeight: 700,
                             color: ACCENT,
                             textTransform: 'uppercase',
@@ -1038,7 +1038,7 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                         style={{
                             ...TYPE.eyebrow,
                             color: 'var(--tof-accent-sage)',
-                            fontSize: 10,
+                            fontSize: 12,
                         }}
                     >
                         {t.collaboration.strongWith(positiveMatch.name.toLowerCase())}
@@ -1056,7 +1056,7 @@ function CompactCollaborationRow({ archetype, data, presentMap }) {
                         style={{
                             ...TYPE.eyebrow,
                             color: ACCENT,
-                            fontSize: 10,
+                            fontSize: 12,
                         }}
                     >
                         {t.collaboration.attentionWith(tensionMatch.name.toLowerCase())}
