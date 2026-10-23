@@ -24,8 +24,9 @@ import {
     SectionEyebrow,
     TileGrid,
     Tile,
+    keepTileInView,
 } from '../ui/AppShell';
-import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
+import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow } from '../ui/tokens';
 
 import { useArchetypes } from '../i18n/archetypes';
 import { useCopy, useLang } from '../i18n/LanguageContext';
@@ -73,6 +74,7 @@ export default function TeamDynamics({
     const { lang } = useLang();
     const { teamDynamics: t } = useCopy();
     const ARCHETYPES = useArchetypes();
+    const isNarrow = useIsNarrow();
 
     const teamName = resolveTeamName(selectedTeam, lang);
     const organization = resolveOrg(selectedTeam);
@@ -329,79 +331,85 @@ export default function TeamDynamics({
 
     const activeTile = TILES.find((tile) => tile.id === activeId);
 
-    function handleTileClick(id) {
+    function handleTileClick(id, event) {
         setActiveId((prev) => (prev === id ? null : id));
+        if (isNarrow) keepTileInView(event.currentTarget);
     }
 
     // ── DASHBOARD ────────────────────────────────────────────
+    const detailPanel = activeTile ? (
+        <SectionCard accent={ACCENT} padding={0}>
+            <div
+                style={{
+                    padding: '22px 22px 8px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: SPACING.md,
+                }}
+            >
+                <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
+                    <SectionEyebrow color={ACCENT}>
+                        {activeTile.eyebrow}
+                    </SectionEyebrow>
+                    <h2 style={{ ...TYPE.heading, fontSize: 24 }}>
+                        {activeTile.detailTitle}
+                    </h2>
+                    {activeTile.detailLead ? (
+                        <p style={{ ...TYPE.body, maxWidth: 620 }}>
+                            {activeTile.detailLead}
+                        </p>
+                    ) : null}
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => setActiveId(null)}
+                    style={{
+                        background: 'transparent',
+                        border: '1px solid var(--tof-border)',
+                        borderRadius: RADIUS.pill,
+                        padding: '4px 12px',
+                        fontSize: 12,
+                        color: 'var(--tof-text-muted)',
+                        cursor: 'pointer',
+                        fontFamily: 'var(--tof-font-body)',
+                        fontWeight: 500,
+                        flexShrink: 0,
+                    }}
+                >
+                    {t.close}
+                </button>
+            </div>
+
+            <div style={{ padding: '0 22px 22px' }}>
+                {activeTile.render()}
+            </div>
+        </SectionCard>
+    ) : null;
+
     const tilesAndDetail = (
         <>
-            {/* TILES */}
-            <TileGrid columns={4}>
+            {/* TILES — op een telefoon één kolom, met het paneel direct
+                onder de getikte tegel */}
+            <TileGrid columns={4} stackOnNarrow>
                 {TILES.map((tile) => (
-                    <Tile
-                        key={tile.id}
-                        eyebrow={tile.eyebrow}
-                        value={tile.value}
-                        hint={tile.hint}
-                        accent={ACCENT}
-                        isActive={activeId === tile.id}
-                        onClick={() => handleTileClick(tile.id)}
-                    />
+                    <React.Fragment key={tile.id}>
+                        <Tile
+                            eyebrow={tile.eyebrow}
+                            value={tile.value}
+                            hint={tile.hint}
+                            accent={ACCENT}
+                            isActive={activeId === tile.id}
+                            onClick={(e) => handleTileClick(tile.id, e)}
+                        />
+                        {isNarrow && activeId === tile.id ? detailPanel : null}
+                    </React.Fragment>
                 ))}
             </TileGrid>
 
             {/* DETAIL */}
-            {activeTile ? (
-                <SectionCard accent={ACCENT} padding={0}>
-                    <div
-                        style={{
-                            padding: '22px 22px 8px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                            gap: SPACING.md,
-                        }}
-                    >
-                        <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
-                            <SectionEyebrow color={ACCENT}>
-                                {activeTile.eyebrow}
-                            </SectionEyebrow>
-                            <h2 style={{ ...TYPE.heading, fontSize: 24 }}>
-                                {activeTile.detailTitle}
-                            </h2>
-                            {activeTile.detailLead ? (
-                                <p style={{ ...TYPE.body, maxWidth: 620 }}>
-                                    {activeTile.detailLead}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={() => setActiveId(null)}
-                            style={{
-                                background: 'transparent',
-                                border: '1px solid var(--tof-border)',
-                                borderRadius: RADIUS.pill,
-                                padding: '4px 12px',
-                                fontSize: 12,
-                                color: 'var(--tof-text-muted)',
-                                cursor: 'pointer',
-                                fontFamily: 'var(--tof-font-body)',
-                                fontWeight: 500,
-                                flexShrink: 0,
-                            }}
-                        >
-                            {t.close}
-                        </button>
-                    </div>
-
-                    <div style={{ padding: '0 22px 22px' }}>
-                        {activeTile.render()}
-                    </div>
-                </SectionCard>
-            ) : null}
+            {!isNarrow ? detailPanel : null}
         </>
     );
 
@@ -605,6 +613,39 @@ function SubsectionHeading({ eyebrow, lead, color }) {
     );
 }
 
+// Label naast de tekst (desktop) of erboven (telefoon). Op desktop is elke
+// LabelRow `display: contents`, zodat label en tekst gewoon de twee kolommen
+// van het raster vullen — precies zoals het was.
+function LabelGrid({ labelWidth, rowGap, alignItems, style = {}, children }) {
+    const isNarrow = useIsNarrow();
+    return (
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: isNarrow
+                    ? 'minmax(0, 1fr)'
+                    : `minmax(${labelWidth}px, max-content) 1fr`,
+                columnGap: SPACING.lg,
+                rowGap: isNarrow ? SPACING.md : rowGap,
+                alignItems: isNarrow ? undefined : alignItems,
+                ...style,
+            }}
+        >
+            {children}
+        </div>
+    );
+}
+
+function LabelRow({ label, children }) {
+    const isNarrow = useIsNarrow();
+    return (
+        <div style={isNarrow ? { display: 'grid', gap: SPACING.xs } : { display: 'contents' }}>
+            {label}
+            {children}
+        </div>
+    );
+}
+
 function EmptyLine({ children }) {
     return (
         <p style={{ ...TYPE.body, fontSize: 14, color: 'var(--tof-text-soft)' }}>
@@ -653,6 +694,7 @@ function DynamicsPanel({ dynamicsAxes, missingCritical }) {
 
 function DynamicsAxis({ axis, isFirst }) {
     const { lang } = useLang();
+    const isNarrow = useIsNarrow();
     const { teamDynamics: t } = useCopy();
     const { lPct, rPct, imbalanced: imbalance } = axis;
     const description = describeAxis(axis, lang);
@@ -726,8 +768,10 @@ function DynamicsAxis({ axis, isFirst }) {
                 style={{
                     ...TYPE.body,
                     fontSize: 13,
-                    paddingLeft: 80,
-                    paddingRight: 8,
+                    // Op desktop lijnt de leeszin uit met de balk; op een
+                    // telefoon kost die inspringing te veel regelbreedte.
+                    paddingLeft: isNarrow ? 0 : 80,
+                    paddingRight: isNarrow ? 0 : 8,
                 }}
             >
                 {description}
@@ -737,12 +781,14 @@ function DynamicsAxis({ axis, isFirst }) {
 }
 
 function MissingPersonaRow({ name, description, color }) {
+    const isNarrow = useIsNarrow();
     return (
         <div
             style={{
                 display: 'grid',
-                gridTemplateColumns: 'minmax(140px, max-content) 1fr',
+                gridTemplateColumns: isNarrow ? 'minmax(0, 1fr)' : 'minmax(140px, max-content) 1fr',
                 columnGap: SPACING.lg,
+                rowGap: SPACING.xs,
                 alignItems: 'baseline',
                 borderLeft: `3px solid ${color}`,
                 paddingLeft: SPACING.md,
@@ -823,7 +869,9 @@ function CollaborationPanel({ sorted, totalScore, dominantIds = [] }) {
                     <div
                         style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+                            // min(): smaller dan 420 px wordt het één kolom
+                            // in plaats van opzij schuiven.
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(min(420px, 100%), 1fr))',
                             gap: SPACING.xl,
                             marginTop: SPACING.lg,
                         }}
@@ -905,18 +953,11 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
                 </p>
             ) : null}
 
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'minmax(140px, max-content) 1fr',
-                    columnGap: SPACING.lg,
-                    rowGap: SPACING.lg,
-                    marginTop: SPACING.sm,
-                }}
-            >
+            <LabelGrid labelWidth={140} rowGap={SPACING.lg} style={{ marginTop: SPACING.sm }}>
                 {positiveMatch ? (
-                    <>
-                        <SectionEyebrow color="var(--tof-accent-sage)">{t.collaboration.worksWell}</SectionEyebrow>
+                    <LabelRow
+                        label={<SectionEyebrow color="var(--tof-accent-sage)">{t.collaboration.worksWell}</SectionEyebrow>}
+                    >
                         <div style={{ display: 'grid', gap: SPACING.xs }}>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
                                 {positiveText}
@@ -925,12 +966,13 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
                                 {capitalize(buildSynergyReason(archetype.id, positiveMatch.id, lang))}.
                             </p>
                         </div>
-                    </>
+                    </LabelRow>
                 ) : null}
 
                 {tensionMatch ? (
-                    <>
-                        <SectionEyebrow color="var(--tof-accent-rose)">{t.collaboration.attentionFor}</SectionEyebrow>
+                    <LabelRow
+                        label={<SectionEyebrow color="var(--tof-accent-rose)">{t.collaboration.attentionFor}</SectionEyebrow>}
+                    >
                         <div style={{ display: 'grid', gap: SPACING.xs }}>
                             <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
                                 {tensionText}
@@ -939,9 +981,9 @@ function DominantCollaborationBlock({ archetype, data, presentMap }) {
                                 {capitalize(buildAttentionReason(archetype.id, tensionMatch.id, lang))}.
                             </p>
                         </div>
-                    </>
+                    </LabelRow>
                 ) : null}
-            </div>
+            </LabelGrid>
         </div>
     );
 }
@@ -1181,23 +1223,17 @@ function TensionRow({ tension, scores, totalScore, isOpen, isFirst, onToggle }) 
                             {tension.desc}
                         </p>
 
-                        <div
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'minmax(160px, max-content) 1fr',
-                                columnGap: SPACING.lg,
-                                rowGap: SPACING.sm,
-                                alignItems: 'baseline',
-                            }}
-                        >
-                            <SectionEyebrow>{t.tensions.risk}</SectionEyebrow>
-                            <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>{tension.risk}</p>
+                        <LabelGrid labelWidth={160} rowGap={SPACING.sm} alignItems="baseline">
+                            <LabelRow label={<SectionEyebrow>{t.tensions.risk}</SectionEyebrow>}>
+                                <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>{tension.risk}</p>
+                            </LabelRow>
 
-                            <SectionEyebrow color={ACCENT}>{t.tensions.advice}</SectionEyebrow>
-                            <p style={{ ...TYPE.body, fontSize: 14, margin: 0, color: 'var(--tof-text)' }}>
-                                {tension.leadership}
-                            </p>
-                        </div>
+                            <LabelRow label={<SectionEyebrow color={ACCENT}>{t.tensions.advice}</SectionEyebrow>}>
+                                <p style={{ ...TYPE.body, fontSize: 14, margin: 0, color: 'var(--tof-text)' }}>
+                                    {tension.leadership}
+                                </p>
+                            </LabelRow>
+                        </LabelGrid>
                     </div>
                 ) : null}
             </button>

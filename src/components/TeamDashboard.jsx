@@ -24,8 +24,9 @@ import {
     InteractiveRow,
     TileGrid,
     Tile,
+    keepTileInView,
 } from '../ui/AppShell';
-import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
+import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow } from '../ui/tokens';
 
 import TeamPersonaDistribution from '../team/components/TeamPersonaDistribution';
 import TeamWorkplaceTension from '../team/components/TeamWorkplaceTension';
@@ -154,6 +155,7 @@ export default function TeamDashboard({
     const [activeId, setActiveId] = useState('personas');
     const { lang } = useLang();
     const { teamDashboard: t, common, workplaceProfile } = useCopy();
+    const isNarrow = useIsNarrow();
 
     const aggregate = useMemo(
         () => buildTeamAggregate(teamResponses, lang),
@@ -187,8 +189,9 @@ export default function TeamDashboard({
 
     const activeTile = tiles.find((tile) => tile.id === activeId);
 
-    function handleTileClick(id) {
+    function handleTileClick(id, event) {
         setActiveId((prev) => (prev === id ? null : id));
+        if (isNarrow) keepTileInView(event.currentTarget);
     }
 
     // ── DREMPEL ──
@@ -207,6 +210,67 @@ export default function TeamDashboard({
             />
         );
     }
+
+    const detailPanel = activeTile ? (
+        <SectionCard accent={ACCENT} padding={0}>
+            <div
+                style={{
+                    padding: '22px 22px 8px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    gap: SPACING.md,
+                }}
+            >
+                <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
+                    <SectionEyebrow color={ACCENT}>
+                        {activeTile.eyebrow}
+                    </SectionEyebrow>
+                    <h2
+                        style={{
+                            ...TYPE.heading,
+                            fontSize: 24,
+                        }}
+                    >
+                        {activeTile.detailTitle}
+                    </h2>
+                    {activeTile.detailLead(aggregate, insights) ? (
+                        <p
+                            style={{
+                                ...TYPE.body,
+                                maxWidth: 620,
+                            }}
+                        >
+                            {activeTile.detailLead(aggregate, insights)}
+                        </p>
+                    ) : null}
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => setActiveId(null)}
+                    style={{
+                        background: 'transparent',
+                        border: '1px solid var(--tof-border)',
+                        borderRadius: RADIUS.pill,
+                        padding: '4px 12px',
+                        fontSize: 12,
+                        color: 'var(--tof-text-muted)',
+                        cursor: 'pointer',
+                        fontFamily: 'var(--tof-font-body)',
+                        fontWeight: 500,
+                        flexShrink: 0,
+                    }}
+                >
+                    {t.close}
+                </button>
+            </div>
+
+            <div style={{ padding: '0 22px 22px' }}>
+                {activeTile.render(aggregate, insights)}
+            </div>
+        </SectionCard>
+    ) : null;
 
     return (
         <PageShell compact>
@@ -261,82 +325,26 @@ export default function TeamDashboard({
                 labels={t.chips}
             />
 
-            {/* ── TILE GRID ── vier compacte tegels ── */}
-            <TileGrid columns={4}>
+            {/* ── TILE GRID ── vier compacte tegels; op een telefoon één
+                kolom met het paneel direct onder de getikte tegel ── */}
+            <TileGrid columns={4} stackOnNarrow>
                 {tiles.map((tile) => (
-                    <Tile
-                        key={tile.id}
-                        eyebrow={tile.eyebrow}
-                        value={tile.buildValue(aggregate, insights)}
-                        hint={tile.buildHint(aggregate, insights)}
-                        accent={ACCENT}
-                        isActive={activeId === tile.id}
-                        onClick={() => handleTileClick(tile.id)}
-                    />
+                    <React.Fragment key={tile.id}>
+                        <Tile
+                            eyebrow={tile.eyebrow}
+                            value={tile.buildValue(aggregate, insights)}
+                            hint={tile.buildHint(aggregate, insights)}
+                            accent={ACCENT}
+                            isActive={activeId === tile.id}
+                            onClick={(e) => handleTileClick(tile.id, e)}
+                        />
+                        {isNarrow && activeId === tile.id ? detailPanel : null}
+                    </React.Fragment>
                 ))}
             </TileGrid>
 
             {/* ── DETAIL PANEL ── opent onder de tegels ── */}
-            {activeTile ? (
-                <SectionCard accent={ACCENT} padding={0}>
-                    <div
-                        style={{
-                            padding: '22px 22px 8px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                            gap: SPACING.md,
-                        }}
-                    >
-                        <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
-                            <SectionEyebrow color={ACCENT}>
-                                {activeTile.eyebrow}
-                            </SectionEyebrow>
-                            <h2
-                                style={{
-                                    ...TYPE.heading,
-                                    fontSize: 24,
-                                }}
-                            >
-                                {activeTile.detailTitle}
-                            </h2>
-                            {activeTile.detailLead(aggregate, insights) ? (
-                                <p
-                                    style={{
-                                        ...TYPE.body,
-                                        maxWidth: 620,
-                                    }}
-                                >
-                                    {activeTile.detailLead(aggregate, insights)}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={() => setActiveId(null)}
-                            style={{
-                                background: 'transparent',
-                                border: '1px solid var(--tof-border)',
-                                borderRadius: RADIUS.pill,
-                                padding: '4px 12px',
-                                fontSize: 12,
-                                color: 'var(--tof-text-muted)',
-                                cursor: 'pointer',
-                                fontFamily: 'var(--tof-font-body)',
-                                fontWeight: 500,
-                                flexShrink: 0,
-                            }}
-                        >
-                            {t.close}
-                        </button>
-                    </div>
-
-                    <div style={{ padding: '0 22px 22px' }}>
-                        {activeTile.render(aggregate, insights)}
-                    </div>
-                </SectionCard>
-            ) : null}
+            {!isNarrow ? detailPanel : null}
 
             {/* ── CROSS-LINK NAAR MODULE 2 ── */}
             <DynamicsBridge

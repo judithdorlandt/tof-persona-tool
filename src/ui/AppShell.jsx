@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import { SPACING, RADIUS, TYPE, SHADOW, EASE, useIsMobile } from './tokens';
+import { SPACING, RADIUS, TYPE, SHADOW, EASE, useIsMobile, useIsNarrow } from './tokens';
 import { useCopy } from '../i18n/LanguageContext';
 
 // =========================
@@ -71,6 +71,7 @@ export function HeroBlock({
     compact = false,
 }) {
     const accentColor = titleAccentColor || 'var(--tof-accent-rose)';
+    const isNarrow = useIsNarrow();
 
     const titleStyle = compact
         ? {
@@ -131,7 +132,11 @@ export function HeroBlock({
                                 color: accentColor,
                                 fontFamily: 'inherit',
                                 fontStyle: 'italic',
-                                whiteSpace: 'nowrap',
+                                // Op een telefoon mag een lange naam (team,
+                                // organisatie) afbreken; anders schuift de
+                                // pagina opzij.
+                                whiteSpace: isNarrow ? 'normal' : 'nowrap',
+                                overflowWrap: 'break-word',
                             }}
                         >
                             {titleAccent}
@@ -405,18 +410,24 @@ export function CollapsibleCard({
 // Dashboard-navigatie: compacte klikbare tegel, eentje actief tegelijk.
 // Gebruikt in Team Insight en Team Dynamics om tussen detail-blokken te
 // schakelen zonder lange scroll.
+//
+// stackOnNarrow: onder 600 px één kolom, zodat het paneel direct onder de
+// getikte tegel kan staan (de pagina zet het daar zelf neer).
 
-export function TileGrid({ children, columns = 4, gap }) {
+export function TileGrid({ children, columns = 4, gap, stackOnNarrow = false }) {
     const isMobile = useIsMobile();
+    const isNarrow = useIsNarrow();
     const resolvedGap = gap !== undefined ? gap : SPACING.md;
 
     return (
         <div
             style={{
                 display: 'grid',
-                gridTemplateColumns: isMobile
-                    ? 'repeat(2, minmax(0, 1fr))'
-                    : `repeat(${columns}, minmax(0, 1fr))`,
+                gridTemplateColumns: stackOnNarrow && isNarrow
+                    ? 'minmax(0, 1fr)'
+                    : isMobile
+                        ? 'repeat(2, minmax(0, 1fr))'
+                        : `repeat(${columns}, minmax(0, 1fr))`,
                 gap: resolvedGap,
             }}
         >
@@ -487,6 +498,9 @@ export function Tile({
                     lineHeight: 1.15,
                     fontWeight: 500,
                     color: isActive ? '#fff' : 'var(--tof-text)',
+                    // Een lang woord ("Concentratieplekken") breekt af in
+                    // plaats van uit de tegel te steken.
+                    overflowWrap: 'anywhere',
                 }}
             >
                 {value}
@@ -521,6 +535,21 @@ export function Tile({
             </div>
         </button>
     );
+}
+
+/**
+ * keepTileInView — voor de tegels in één kolom (telefoon). Sluit een paneel
+ * boven de getikte tegel, dan schuift die tegel omhoog uit beeld; dit zet hem
+ * na het openen terug net onder de vaste navigatiebalk.
+ */
+const NAV_OFFSET = 96;
+
+export function keepTileInView(el) {
+    if (!el) return;
+    requestAnimationFrame(() => {
+        const top = el.getBoundingClientRect().top;
+        if (top < NAV_OFFSET) window.scrollBy(0, top - NAV_OFFSET);
+    });
 }
 
 // =========================

@@ -147,6 +147,9 @@ export const EASE = 'var(--tof-ease)';
 // BREAKPOINTS
 // =========================
 export const BREAKPOINT_MOBILE = 900;
+// Telefoon: hieronder staan de dashboardtegels in één kolom en komen labels
+// boven de tekst in plaats van ernaast.
+export const BREAKPOINT_NARROW = 600;
 
 /**
  * Gebruik:
@@ -155,15 +158,23 @@ export const BREAKPOINT_MOBILE = 900;
  */
 
 export function useIsMobile() {
-    const [isMobile, setIsMobile] = useState(
-        typeof window !== 'undefined' ? window.innerWidth < BREAKPOINT_MOBILE : false
+    return useIsBelow(BREAKPOINT_MOBILE);
+}
+
+export function useIsNarrow() {
+    return useIsBelow(BREAKPOINT_NARROW);
+}
+
+function useIsBelow(breakpoint) {
+    const [isBelow, setIsBelow] = useState(
+        typeof window !== 'undefined' ? window.innerWidth < breakpoint : false
     );
 
     useEffect(() => {
-        const onResize = () => setIsMobile(window.innerWidth < BREAKPOINT_MOBILE);
+        const onResize = () => setIsBelow(window.innerWidth < breakpoint);
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
-    }, []);
+    }, [breakpoint]);
 
-    return isMobile;
+    return isBelow;
 }
