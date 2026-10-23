@@ -55,16 +55,12 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
 
-    // Eén gezamenlijke modal-state — het "requiredLevel" bepaalt wat geaccepteerd wordt
-    const [accessModal, setAccessModal] = useState(null);
-    // accessModal: null | { requiredLevel: 'insight' | 'dynamics', destination: 'teamdashboard' | 'teamdynamics' }
-
+    // Het codeveld staat direct op de pagina (route 1), niet meer in een venster.
     const [accessInput, setAccessInput] = useState('');
     const [accessError, setAccessError] = useState('');
     const [accessLoading, setAccessLoading] = useState(false);
 
     // Lijst met teams waar deze gebruiker al toegang toe heeft (uit localStorage).
-    // Herladen wanneer de modal sluit, want na een succesvolle code-invoer is er iets bijgekomen.
     const [teamAccesses, setTeamAccesses] = useState(() => listTeamAccesses());
 
     // Ingelogde user (null als anoniem). Gebruikt voor de manager-welkomstgroet.
@@ -74,8 +70,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
     // (ingelogde flow). DB-only entries krijgen later automatisch een localStorage
     // grant op het moment dat de user op het team klikt (zie openExistingTeam).
     useEffect(() => {
-        if (accessModal) return; // modal open → niet refreshen tijdens invoer
-
         let cancelled = false;
 
         async function refreshAccesses() {
@@ -163,7 +157,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
 
         refreshAccesses();
         return () => { cancelled = true; };
-    }, [accessModal]);
+    }, []);
 
     const makerMode = isMakerAccess();
 
@@ -187,26 +181,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
             openExistingTeam(managerTeams[0]);
         }
     }, [teamAccesses]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    function openAccessModal(mode) {
-        // mode: 'insight' | 'dynamics' | 'any'
-        // 'any' = centrale code-invoer, modal accepteert beide en stuurt naar juiste dashboard
-        if (mode === 'dynamics') {
-            setAccessModal({ requiredLevel: LEVEL_DYNAMICS, destination: 'teamdynamics' });
-        } else if (mode === 'any') {
-            setAccessModal({ requiredLevel: null, destination: null });
-        } else {
-            setAccessModal({ requiredLevel: LEVEL_INSIGHT, destination: 'teamdashboard' });
-        }
-        setAccessInput('');
-        setAccessError('');
-    }
-
-    function closeAccessModal() {
-        setAccessModal(null);
-        setAccessInput('');
-        setAccessError('');
-    }
 
     // Open een team dat al eerder is ontgrendeld — zonder opnieuw een code in te voeren.
     // Laadt de responses opnieuw (die kunnen gegroeid zijn sinds laatste bezoek).
@@ -250,9 +224,11 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
         }
     }
 
-    // ── Niveau-gebaseerde toegangsflow ─────────────────────────────────────────
+    // ── Toegang met een code ───────────────────────────────────────────────────
+    // Eén veld voor iedereen: een beheerderscode gaat naar de teamselector, een
+    // teamcode naar het teambeeld (of Teamdynamiek als je dat team leidt).
     const handleAccessSubmit = async () => {
-        if (!accessModal) return;
+        if (accessLoading) return;
         const cleanedInput = accessInput.trim();
         if (!cleanedInput) {
             setAccessError(t.errors.empty);
@@ -263,20 +239,15 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
         setAccessError('');
 
         try {
-            // Bij 'any'-mode (centrale code-invoer) eerst proberen als admin-code.
-            // Zo kan de beheerder dezelfde knop gebruiken als gewone gebruikers.
-            const isAnyMode = accessModal.requiredLevel === null;
-
-            if (isAnyMode) {
-                const adminResult = await validateAdminCode(cleanedInput);
-                if (adminResult) {
-                    grantAdminAccess();
-                    closeAccessModal();
-                    // Beheerder gaat naar teamselector om uit alle teams te kiezen
-                    setPage('teamselector');
-                    setAccessLoading(false);
-                    return;
-                }
+            // Eerst proberen als admin-code, zodat de beheerder hetzelfde veld
+            // gebruikt als ieder ander.
+            const adminResult = await validateAdminCode(cleanedInput);
+            if (adminResult) {
+                grantAdminAccess();
+                // Beheerder gaat naar teamselector om uit alle teams te kiezen
+                setPage('teamselector');
+                setAccessLoading(false);
+                return;
             }
 
             const accessResult = await validateTeamAccessCode(cleanedInput);
@@ -289,14 +260,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
             const codeLevel = accessResult.level || LEVEL_INSIGHT;
 
             // De code geeft het teambeeld; Teamdynamiek hangt aan de rol.
-            // Vraagt iemand om Module 2 zonder manager te zijn van dít team,
-            // dan is een code niet het antwoord.
             const isManager = isManagerOf(accessResult.team, accessResult.organization);
-            if (accessModal.requiredLevel === LEVEL_DYNAMICS && !isManager) {
-                setAccessError(t.errors.managerOnly);
-                setAccessLoading(false);
-                return;
-            }
 
             // Code geldig — niveau opslaan via het nieuwe access-model.
             grantTeamLevel({
@@ -340,18 +304,13 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                 setTeamResponses(responses || []);
             }
 
-            closeAccessModal();
-
-            // Destination: bij 'any' mode → op basis van wat de code ontgrendelt.
-            // Bij specifieke mode → vooraf bepaalde destination.
-            // Strategic-codes routeren altijd naar het Strategisch Kompas, ook
-            // bij een specifieke modal — die kennen we (nog) niet voor Module 3.
+            // Strategic-codes gaan naar het Strategisch Kompas; verder bepaalt
+            // de rol of je op Teaminzicht of Teamdynamiek uitkomt.
             let destination;
             if (codeLevel === LEVEL_STRATEGIC) {
                 destination = 'teamstrategic';
             } else {
-                destination = accessModal.destination
-                    || (isManager ? 'teamdynamics' : 'teamdashboard');
+                destination = isManager ? 'teamdynamics' : 'teamdashboard';
             }
             setPage(destination);
         } catch (err) {
@@ -470,7 +429,12 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                 <AccessStrip
                     copy={t.entry}
                     isMobile={isMobile}
-                    onCode={() => openAccessModal('any')}
+                    codeInput={accessInput}
+                    onCodeInput={(value) => { setAccessInput(value); setAccessError(''); }}
+                    codeError={accessError}
+                    codeLoading={accessLoading}
+                    onSubmitCode={handleAccessSubmit}
+                    onLogin={() => setPage('login')}
                     onApp={() => setPage('quiz')}
                 />
                 </>
@@ -482,7 +446,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                 {/* Manager-mode (auto-koppeling via team_managers) toont */}
                 {/* alleen YourAccessPanel — geen sales-hero, geen module-kaarten, */}
                 {/* geen code-invoer-blok. */}
-                {(teamAccesses.length > 0 || isAdminAccess()) ? (
+                {(teamAccesses.length > 0 || isAdminAccess()) && (
                     <>
                         <YourAccessPanel
                             teamAccesses={teamAccesses}
@@ -499,8 +463,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                             }}
                         />
                     </>
-                ) : (
-                    <MagicLinkRequestBlock isMobile={isMobile} />
                 )}
 
                 {/* ── FOOTER NAVIGATIE ────────────────────────────────── */}
@@ -535,71 +497,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
 
             </div>
 
-            {/* ── GEZAMENLIJKE TOEGANGSMODAL ──────────────────────── */}
-            {accessModal && (
-                <AccessModal
-                    requiredLevel={accessModal.requiredLevel}
-                    accessInput={accessInput}
-                    setAccessInput={setAccessInput}
-                    accessError={accessError}
-                    accessLoading={accessLoading}
-                    onSubmit={handleAccessSubmit}
-                    onClose={closeAccessModal}
-                />
-            )}
         </PageShell>
-    );
-}
-
-// ─── MAGIC-LINK REQUEST BLOCK ────────────────────────────────────────────────
-// Voor nieuwe gebruikers zonder toegang: vraag een magic-link aan via /login.
-// Vervangt de oude code-invoer flow (codes lopen nu via magic-link login).
-
-function MagicLinkRequestBlock({ isMobile }) {
-    const t = useCopy().teamIntro.magicLink;
-
-    return (
-        <div
-            style={{
-                background: 'var(--tof-surface)',
-                border: '1px solid var(--tof-border)',
-                borderLeft: '3px solid var(--tof-accent-rose)',
-                borderRadius: 14,
-                padding: isMobile ? '14px 16px' : '16px 22px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 16,
-                flexWrap: 'wrap',
-            }}
-        >
-            <div style={{ display: 'grid', gap: 4, minWidth: 220 }}>
-                <div
-                    style={{
-                        fontSize: 11,
-                        textTransform: 'uppercase',
-                        letterSpacing: 1.6,
-                        fontWeight: 700,
-                        color: 'var(--tof-accent-rose)',
-                    }}
-                >
-                    {t.eyebrow}
-                </div>
-                <p
-                    style={{
-                        margin: 0,
-                        fontSize: 14,
-                        lineHeight: 1.6,
-                        color: 'var(--tof-text-soft)',
-                    }}
-                >
-                    {t.body}
-                </p>
-            </div>
-            <PrimaryButton onClick={() => { window.location.href = '/login'; }}>
-                {t.cta}
-            </PrimaryButton>
-        </div>
     );
 }
 
@@ -865,122 +763,24 @@ function AccessRow({ entry, isMobile, onOpen }) {
     );
 }
 
-// ─── TOEGANGSMODAL ─────────────────────────────────────────────────────────────
+// ─── TOEGANG: TWEE ROUTES ─────────────────────────────────────────────────────
+// Wie ben je? Een teamlid opent het teambeeld met de code, een leidinggevende
+// logt in (opdracht C2). Het codeveld staat direct in beeld, zonder venster.
 
-function AccessModal({
-    requiredLevel,
-    accessInput,
-    setAccessInput,
-    accessError,
-    accessLoading,
-    onSubmit,
-    onClose,
+function AccessStrip({
+    copy,
+    isMobile,
+    codeInput,
+    onCodeInput,
+    codeError,
+    codeLoading,
+    onSubmitCode,
+    onLogin,
+    onApp,
 }) {
-    const t = useCopy().teamIntro.modal;
-
-    const isDynamics = requiredLevel === LEVEL_DYNAMICS;
-    const isAny = requiredLevel === null || requiredLevel === undefined;
-
-    let variant, accentColor;
-
-    if (isAny) {
-        variant = t.any;
-        accentColor = 'var(--tof-text)';
-    } else if (isDynamics) {
-        variant = t.dynamics;
-        accentColor = 'var(--tof-accent-rose)';
-    } else {
-        variant = t.insight;
-        accentColor = 'var(--tof-accent-sage)';
-    }
-
-    const { eyebrow, title, lead } = variant;
-
-    return (
-        <div style={{
-            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.28)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            zIndex: 1000, padding: 16,
-        }}>
-            <div style={{
-                background: '#fff', borderRadius: 18, padding: 26,
-                width: '100%', maxWidth: 380,
-                display: 'grid', gap: 14,
-                boxShadow: '0 24px 64px rgba(0,0,0,0.14)',
-                border: '1px solid #E5D9CD',
-            }}>
-                <div style={{
-                    fontSize: 11,
-                    textTransform: 'uppercase',
-                    letterSpacing: 1.6,
-                    color: accentColor,
-                    fontWeight: 700,
-                }}>
-                    {eyebrow}
-                </div>
-
-                <div style={{
-                    fontFamily: 'var(--tof-font-heading)',
-                    fontSize: 22, lineHeight: 1.15,
-                    color: 'var(--tof-text)',
-                }}>
-                    {title}
-                </div>
-
-                <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: 'var(--tof-text-soft)' }}>
-                    {lead}
-                </p>
-
-                <input
-                    value={accessInput}
-                    onChange={(e) => setAccessInput(e.target.value)}
-                    placeholder={t.placeholder}
-                    autoFocus
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !accessLoading) onSubmit();
-                    }}
-                    style={{
-                        padding: '10px 13px', borderRadius: 10,
-                        border: `1px solid ${accessError ? 'var(--tof-accent-rose)' : '#E5D9CD'}`,
-                        fontSize: 14, outline: 'none',
-                        fontFamily: 'var(--tof-font-body)',
-                    }}
-                />
-
-                {accessError && (
-                    <p style={{ margin: 0, fontSize: 13, color: 'var(--tof-accent-rose)', lineHeight: 1.5 }}>
-                        {accessError}
-                    </p>
-                )}
-
-                <div style={{ display: 'flex', gap: 10 }}>
-                    <PrimaryButton
-                        onClick={onSubmit}
-                        style={{
-                            flex: 1,
-                            background: accentColor,
-                        }}
-                    >
-                        {accessLoading ? t.busy : t.submit}
-                    </PrimaryButton>
-                    <SecondaryButton onClick={onClose}>
-                        {t.close}
-                    </SecondaryButton>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ─── MODULE KAART ─────────────────────────────────────────────────────────────
-
-// ─── MODULE 1 · DE APP ────────────────────────────────────────────────────────
-// Volle breedte, altijd open, geen prijs. Hij verkoopt niet — hij vult. Het
-// codeveld is hier het werkpaard: wie de app al heeft, hoeft niets uit te
-// rollen om met een team te beginnen.
-
-function AccessStrip({ copy, isMobile, onCode, onApp }) {
     const accent = 'var(--tof-accent-sage)';
+    const routeLabel = { margin: 0, fontSize: 15, fontWeight: 600, lineHeight: 1.4, color: 'var(--tof-text)' };
+    const smallNote = { margin: 0, fontSize: 13, lineHeight: 1.6, color: 'var(--tof-text-muted)' };
 
     return (
         <div style={{
@@ -995,18 +795,69 @@ function AccessStrip({ copy, isMobile, onCode, onApp }) {
             gap: isMobile ? 18 : 32,
             alignItems: 'start',
         }}>
-            <div style={{ display: 'grid', gap: 10 }}>
-                <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accent }}>
-                    {copy.eyebrow}
+            <div style={{ display: 'grid', gap: 14 }}>
+                <div style={{ display: 'grid', gap: 10 }}>
+                    <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 700, color: accent }}>
+                        {copy.eyebrow}
+                    </div>
+                    <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 24 : 27, lineHeight: 1.1, color: 'var(--tof-text)' }}>
+                        {copy.title}
+                    </h2>
                 </div>
-                <h2 style={{ margin: 0, fontFamily: 'var(--tof-font-heading)', fontSize: isMobile ? 24 : 27, lineHeight: 1.1, color: 'var(--tof-text)' }}>
-                    {copy.title}
-                </h2>
-                <p style={{ margin: 0, fontSize: isMobile ? 14 : 15, lineHeight: 1.6, color: 'var(--tof-text-soft)' }}>
-                    {copy.hook}
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', marginTop: 4 }}>
-                    <PrimaryButton onClick={onCode}>{copy.cta}</PrimaryButton>
+
+                {/* Route 1 — teamlid */}
+                <form
+                    onSubmit={(e) => { e.preventDefault(); onSubmitCode(); }}
+                    style={{ display: 'grid', gap: 8 }}
+                >
+                    <label htmlFor="team-code" style={routeLabel}>{copy.codeRoute.label}</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+                        <input
+                            id="team-code"
+                            value={codeInput}
+                            onChange={(e) => onCodeInput(e.target.value)}
+                            placeholder={copy.codeRoute.placeholder}
+                            autoComplete="off"
+                            autoCapitalize="characters"
+                            spellCheck={false}
+                            style={{
+                                flex: '1 1 180px',
+                                minWidth: 0,
+                                padding: '11px 13px',
+                                borderRadius: 10,
+                                border: `1px solid ${codeError ? 'var(--tof-accent-rose)' : '#E5D9CD'}`,
+                                fontSize: 15,
+                                outline: 'none',
+                                fontFamily: 'var(--tof-font-body)',
+                                background: '#fff',
+                            }}
+                        />
+                        <PrimaryButton type="submit" disabled={codeLoading}>
+                            {codeLoading ? copy.codeRoute.busy : copy.codeRoute.submit}
+                        </PrimaryButton>
+                    </div>
+                    {codeError && (
+                        <p role="alert" style={{ margin: 0, fontSize: 13, color: 'var(--tof-accent-rose)', lineHeight: 1.5 }}>
+                            {codeError}
+                        </p>
+                    )}
+                    <p style={smallNote}>{copy.codeRoute.noCode}</p>
+                </form>
+
+                <div style={{ height: 1, background: 'var(--tof-border)' }} />
+
+                {/* Route 2 — leidinggevende */}
+                <div style={{ display: 'grid', gap: 8 }}>
+                    <p style={routeLabel}>{copy.managerRoute.label}</p>
+                    <div>
+                        <SecondaryButton onClick={onLogin}>{copy.managerRoute.cta}</SecondaryButton>
+                    </div>
+                    <p style={smallNote}>{copy.managerRoute.note}</p>
+                </div>
+
+                <div style={{ height: 1, background: 'var(--tof-border)' }} />
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
                     <SecondaryButton onClick={onApp}>{copy.appCta}</SecondaryButton>
                 </div>
                 <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: 'var(--tof-text-muted)' }}>

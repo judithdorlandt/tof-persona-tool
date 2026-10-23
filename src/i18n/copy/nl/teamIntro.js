@@ -1,6 +1,6 @@
 /**
  * teamIntro — alle teksten van TeamIntro.jsx: de toegang tot /team (hero en
- * toegangsstrook), de manager-welkom, het toegangspaneel en de toegangsmodal.
+ * toegangsstrook met twee routes), de manager-welkom en het toegangspaneel.
  *
  * Sinds 21 okt 2026 geen verkoopintro met module-kaarten meer; die uitleg
  * staat op www.persona-tool.nl/voor-je-team.
@@ -11,14 +11,25 @@ const teamIntro = {
   entry: {
     eyebrow: 'Toegang',
     title: 'Naar je teambeeld',
-    hook: 'Met de teamcode van je team open je het teambeeld. Leid je het team, log dan hieronder in met je mailadres.',
     bullets: [
       'Teamlid: met de teamcode zie je Teaminzicht, zonder namen (tenzij je team samen anders afspreekt) en vanaf vijf profielen',
       'Leidinggevende: log in met het mailadres dat aan je team gekoppeld is. Daar staat ook Teamdynamiek',
       'Minder dan vijf mensen in je team? Neem contact op met TOF om samen te kijken hoe het teambeeld toch kan, met oog voor privacy',
       'Nog geen profiel? Doe de test in de app en breng je profiel daarna in bij je team',
     ],
-    cta: 'Ik heb een teamcode',
+    // Twee routes naast elkaar (opdracht C2, akkoord Judith 23 okt 2026).
+    codeRoute: {
+      label: 'Ik heb een teamcode',
+      placeholder: 'Voer code in',
+      submit: 'Naar het teambeeld',
+      busy: 'Bezig…',
+      noCode: 'Geen teamcode? Vraag hem aan je leidinggevende.',
+    },
+    managerRoute: {
+      label: 'Ik ben de leidinggevende',
+      cta: 'Inloggen',
+      note: 'Je krijgt een inloglink op het mailadres dat aan je team gekoppeld is.',
+    },
     appCta: 'Doe de test in de app →',
     requestLead: 'Nog geen team?',
     requestLink: 'Vraag TOF Persona Team aan →',
@@ -43,12 +54,6 @@ const teamIntro = {
     makerMode: 'Maker mode actief',
   },
 
-  magicLink: {
-    eyebrow: 'Leid je een team? Log in met je mailadres',
-    body:
-      'Inloggen kan met het mailadres dat aan je team gekoppeld is. Nog geen team? Vraag een teamcode aan op www.persona-tool.nl.',
-    cta: 'Naar inloggen →',
-  },
 
   access: {
     title: 'Jouw toegang',
@@ -69,27 +74,6 @@ const teamIntro = {
     openDynamics: 'Dynamiek →',
   },
 
-  modal: {
-    any: {
-      eyebrow: 'Toegangscode',
-      title: 'Voer je toegangscode in',
-      lead: 'We herkennen zelf of je toegang hebt tot Teaminzicht of Teamdynamiek — je komt automatisch op het juiste dashboard.',
-    },
-    dynamics: {
-      eyebrow: 'TOF Persona Team',
-      title: 'Toegangscode Teamdynamiek',
-      lead: 'Voer je toegangscode voor Teamdynamiek in. Deze code geeft ook toegang tot Teaminzicht.',
-    },
-    insight: {
-      eyebrow: 'TOF Persona Team',
-      title: 'Toegangscode Teaminzicht',
-      lead: 'Voer je toegangscode voor Teaminzicht in.',
-    },
-    placeholder: 'Voer code in',
-    busy: 'Bezig…',
-    submit: 'Ga verder',
-    close: 'Sluiten',
-  },
 
   errors: {
     empty: 'Voer eerst een toegangscode in.',

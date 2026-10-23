@@ -192,8 +192,8 @@ export default function App() {
   // ── Team terugvinden na verversen of via een bladwijzer ──
   // Op een teampagina zonder gekozen team zoeken we het team op dat je het
   // laatst opende, mits je er nog toegang toe hebt. Anders: een ingelogde
-  // leidinggevende met één team gaat naar dat team, met meer teams naar de
-  // keuzelijst op /team. Eén poging per bezoek.
+  // leidinggevende met één team gaat naar dat team; verder naar /team. Eén
+  // poging per bezoek.
   const needsTeam = !IS_NATIVE && TEAM_PAGES.includes(page) && !selectedTeam;
   const [teamRestoreTried, setTeamRestoreTried] = useState(false);
   const restoringTeam = needsTeam && !teamRestoreTried;
@@ -204,23 +204,25 @@ export default function App() {
     let cancelled = false;
     (async () => {
       const target = teamToRestore(managedTeams);
-      if (target === 'choose') {
+      // Niets terug te vinden, of meer teams om uit te kiezen: naar /team,
+      // waar je met je code of als leidinggevende verder kunt (opdracht C2).
+      // Anders stond hier het wachtscherm met "0 van de vijf", en dat leest
+      // als: je team is leeg.
+      if (!target || target === 'choose') {
         setTeamRestoreTried(true);
         navigate('team');
         return;
       }
-      if (target) {
-        let responses = [];
-        try {
-          responses = await getResponsesByTeam(target.team, target.organization, target.code);
-        } catch (_e) {
-          responses = [];
-        }
-        if (cancelled) return;
-        setTeamResponses(responses || []);
-        setSelectedTeam(target);
+      let responses = [];
+      try {
+        responses = await getResponsesByTeam(target.team, target.organization, target.code);
+      } catch (_e) {
+        responses = [];
       }
-      if (!cancelled) setTeamRestoreTried(true);
+      if (cancelled) return;
+      setTeamResponses(responses || []);
+      setSelectedTeam(target);
+      setTeamRestoreTried(true);
     })();
     return () => { cancelled = true; };
   }, [restoringTeam, authLoading, managedTeams, navigate, setSelectedTeam]);

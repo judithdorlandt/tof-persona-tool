@@ -7,15 +7,26 @@ const teamIntro = {
   // site; here only: who are you and how do you reach your team picture.
   entry: {
     eyebrow: 'Access',
-    title: 'To your team picture',
-    hook: 'Open the team picture with your team code. Leading the team? Then log in below with your email.',
+    title: 'Open your team picture',
     bullets: [
       'Team member: the team code shows you Team Insight, without names (unless your team agrees otherwise) and from five profiles',
       'Team lead: log in with the email address linked to your team. Team Dynamics is there too',
       'Fewer than five people in your team? Contact TOF to look together at how the team picture can still work, with privacy in mind',
       'No profile yet? Take the test in the app and add your profile to your team afterwards',
     ],
-    cta: 'I have a team code',
+    // Two routes side by side (assignment C2, approved by Judith 23 Oct 2026).
+    codeRoute: {
+      label: 'I have a team code',
+      placeholder: 'Enter code',
+      submit: 'Go to the team picture',
+      busy: 'Working…',
+      noCode: 'No team code? Ask your manager for it.',
+    },
+    managerRoute: {
+      label: "I'm the manager",
+      cta: 'Log in',
+      note: "You'll get a login link sent to the email address linked to your team.",
+    },
     appCta: 'Take the test in the app →',
     requestLead: 'No team yet?',
     requestLink: 'Request TOF Persona Team →',
@@ -40,12 +51,6 @@ const teamIntro = {
     makerMode: 'Maker mode active',
   },
 
-  magicLink: {
-    eyebrow: 'Leading a team? Log in with your email',
-    body:
-      'Log in with the email address linked to your team. No team yet? Request a team code at www.persona-tool.nl.',
-    cta: 'Go to sign in →',
-  },
 
   access: {
     title: 'Your access',
@@ -64,27 +69,6 @@ const teamIntro = {
     openDynamics: 'Dynamics →',
   },
 
-  modal: {
-    any: {
-      eyebrow: 'Access code',
-      title: 'Enter your access code',
-      lead: 'We recognise whether you have access to Team Insight or Team Dynamics — you will land on the right dashboard automatically.',
-    },
-    dynamics: {
-      eyebrow: 'TOF Persona Team',
-      title: 'Team Dynamics access code',
-      lead: 'Enter your access code for Team Dynamics. This code also gives you access to Team Insight.',
-    },
-    insight: {
-      eyebrow: 'TOF Persona Team',
-      title: 'Team Insight access code',
-      lead: 'Enter your access code for Team Insight.',
-    },
-    placeholder: 'Enter code',
-    busy: 'Working…',
-    submit: 'Continue',
-    close: 'Close',
-  },
 
   errors: {
     empty: 'Please enter an access code first.',
