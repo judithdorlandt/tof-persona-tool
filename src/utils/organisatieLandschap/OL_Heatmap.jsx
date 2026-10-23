@@ -111,7 +111,7 @@ function drawLegendTopRight(svg, y, copy) {
     svg.appendChild(text({
         x: legX + (5 * (sw + 1.5)) / 2, y: legY + 17,
         content: copy.heatmap.legend.explanation,
-        ...TYPE_V9.footer, size: 2.5, italic: true, anchor: 'middle',
+        ...TYPE_V9.footer, size: 2.5, anchor: 'middle',
     }));
 }
 
@@ -254,7 +254,7 @@ function drawDataRow(svg, {
             x: x + teamColW + nColW + relColW / 2, y: y + h / 2 + 1,
             content: copy.heatmap.orgRowReliability,
             font: 'Inter', weight: 500, size: 3, color: C.textMuted,
-            anchor: 'middle', italic: true,
+            anchor: 'middle',
         }));
     }
 

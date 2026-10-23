@@ -231,7 +231,7 @@ function drawTeamsBanner(svg, y, data, copy) {
             maxWidth: USABLE_W - SPACING.md * 2,
             content: data.inactiveTeams.join(' · '),
             font: 'Inter', weight: 400, size: 3.2, color: C.textSoft,
-            italic: true, lineHeight: 4.6, maxLines: 2,
+            lineHeight: 4.6, maxLines: 2,
         });
     }
 }

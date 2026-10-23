@@ -65,10 +65,17 @@ export const TYPE_V9 = {
         font: 'Inter', weight: 400,
         size: 3.88, lineHeight: 6.60, color: '#1F1F1F',
     },
-    // Body soft (subtitels, intro's) — Inter Regular Italic 12pt, textSoft
+    // Body soft (ondertitels) — Playfair Italic 12pt, textSoft. Niet Inter
+    // cursief: daar is geen lettertypebestand voor, en dan valt de PDF terug
+    // op Times (opdracht L2, besluit Judith 23 okt 2026).
     bodySoft: {
-        font: 'Inter', weight: 400,
+        font: 'Playfair Display', weight: 400,
         size: 4.23, lineHeight: 6.35, color: '#4D433D', italic: true,
+    },
+    // Rustige tekst die geen ondertitel is (lege staat) — Inter Regular.
+    bodyQuiet: {
+        font: 'Inter', weight: 400,
+        size: 3.88, lineHeight: 5.6, color: '#4D433D',
     },
     // KPI-getal (103, Verbinder als naam) — Playfair Regular 36pt
     bigNumber: {
@@ -94,10 +101,11 @@ export const TYPE_V9 = {
         font: 'Playfair Display', weight: 400,
         size: 5.65, lineHeight: 7.76, color: '#4D433D', italic: true,
     },
-    // Signatuurregel op cover — Inter Regular Italic 9pt textMuted
+    // Signatuurregel op cover — Inter Regular 9pt textMuted (niet cursief,
+    // zie bodySoft)
     tagline: {
         font: 'Inter', weight: 400,
-        size: 3.18, lineHeight: 4.45, color: '#9A8E82', italic: true,
+        size: 3.18, lineHeight: 4.45, color: '#9A8E82',
     },
 };
 

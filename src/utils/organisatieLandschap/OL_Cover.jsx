@@ -116,14 +116,15 @@ export function buildCoverSVG({ data, copy }) {
         color: C.textMuted, anchor: 'middle',
     }));
 
-    // ── Slotsignatuur — Inter Italic 9pt textMuted, ~25mm boven onderrand.
+    // ── Slotsignatuur — Inter Regular 9pt textMuted, ~25mm boven onderrand.
+    // Niet cursief: zonder cursieve Inter valt de PDF terug op Times.
     // Verbindt elk rapport met de TOF-propositie.
     const taglineY = PAGE_H - 25;
     svg.appendChild(text({
         x: cx, y: taglineY,
         content: copy.brandCover.tagline,
         font: 'Inter', weight: 400, size: SZ.tagline,
-        color: C.textMuted, italic: true, anchor: 'middle',
+        color: C.textMuted, anchor: 'middle',
     }));
 
     return svg;

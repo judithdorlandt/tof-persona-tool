@@ -156,7 +156,7 @@ function drawBulletList({ svg, x, y, w, floor, eyebrow, subtitle, items, emptyTe
         svg.appendChild(text({
             x, y: y + headerOffset,
             content: emptyText || '—',
-            ...TYPE_V9.bodySoft, italic: true,
+            ...TYPE_V9.bodyQuiet,
         }));
         return y + headerOffset + SPACING.sm;
     }

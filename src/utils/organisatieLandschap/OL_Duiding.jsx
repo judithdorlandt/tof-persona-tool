@@ -155,7 +155,7 @@ function drawCard({ svg, x, y, w, h, title, subtitle, items, emptyFallback, acce
         svg.appendChild(text({
             x: x + SPACING.md, y: ly + 4,
             content: emptyFallback,
-            ...TYPE_V9.bodySoft,
+            ...TYPE_V9.bodyQuiet,
         }));
         return;
     }
