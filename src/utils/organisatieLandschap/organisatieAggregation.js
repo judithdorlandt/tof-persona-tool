@@ -8,8 +8,8 @@
  *  - Fout #4 pagina 1: betrouwbaarheidscategorie per team al voorbereid.
  *  - Fout #1 pagina 1 (cellen): verschil tussen "0% gemeten" en "niet aanwezig"
  *    wordt hier expliciet in de matrix gezet als null vs 0.
- *  - Fout #2 pagina 2 (schaal): workplaceNeeds genormaliseerd naar 0–100 voor
- *    weergave op échte schaal.
+ *  - Werkplek volgt sinds opdracht L3 (23 okt 2026) het werkplekprofiel, net
+ *    als Teaminzicht: kern, steun en beperkt nodig, zonder percentages.
  */
 
 import {
@@ -20,8 +20,15 @@ import {
     reliabilityFor,
 } from './constants';
 import { getOLCopy } from './copy';
-import { getArchetypes } from '../../i18n/archetypes';
 import { MIN_TEAM_RESPONSES } from '../access';
+import { getCopy } from '../../i18n/copy';
+// Werkplek: hetzelfde werkplekprofiel als Teaminzicht (opdracht L3, besluit
+// Judith 23 okt 2026) — kern, steun en beperkt nodig, zonder percentages.
+import {
+    aantallenUitAggregate,
+    buildWerkplekProfiel,
+    BAND,
+} from '../../team/werkplek/werkplekProfielLogic';
 
 /**
  * Hoofd-entry — verwerkt input van Admin tot stabiele dataset voor pagina's.
@@ -96,9 +103,8 @@ export function prepareOrganisatieData({
     const overlapRespondents = Math.max(0, linkedRespondents - totalRespondents);
 
     const dominantStyle = computeDominantStyle(aggregate, lang);
-    const topNeed = computeTopWorkplaceNeed(aggregate, cd);
-    const workplaceNeeds = computeWorkplaceNeeds(aggregate, cd, 5);
-    const leeglopers = computeLeeglopers(insights, cd, aggregate);
+    const workplace = computeWorkplace(aggregate, insights, lang);
+    const officeCheck = computeOfficeCheck(insights, cd);
 
     const leegloperObservations = (observations || [])
         .filter((o) => o.category === 'leegloper')
@@ -113,6 +119,7 @@ export function prepareOrganisatieData({
     const lowReliabilityTeams = teamRows.filter((r) => r.reliability.id === 'laag');
 
     return {
+        lang,
         organizationName,
         date: new Date().toLocaleDateString(cd.dateLocale, {
             day: 'numeric', month: 'long', year: 'numeric',
@@ -128,10 +135,8 @@ export function prepareOrganisatieData({
         teamsWithoutOwnRow,
         hasRestRow,
         dominantStyle,
-        topNeed,
-        workplaceNeeds,
-        workplaceSpread: computeWorkplaceSpread(workplaceNeeds),
-        leeglopers,
+        workplace,
+        officeCheck,
         leegloperObservations,
         werktGoedObservations,
         teamRows,
@@ -229,112 +234,42 @@ function computeDominantStyle(aggregate, lang) {
     };
 }
 
-// Eén definitie voor "aandeel in voorkeur": het percentage dat de aggregatie al
-// berekent als value / totaal-van-álle-werkplekvoorkeuren (gewogen). We hergebruiken
-// dat hier overal, zodat hetzelfde begrip op pagina 2, 4 en 5 hetzelfde getal toont.
-// (Voorheen normaliseerde pagina 4/5 over alleen de top-5, waardoor "Samenwerkplekken"
-//  als 22% verscheen terwijl pagina 2 het op 14% — aandeel van het geheel — toonde.)
-function pctOfTotal(it) {
-    if (it == null) return 0;
-    if (Number.isFinite(it.percentage)) return Math.round(it.percentage);
-    return 0;
-}
-
-function computeTopWorkplaceNeed(aggregate, cd) {
-    const items = aggregate?.sortedWorkplaceNeeds || [];
-    if (items.length === 0) return { label: '—', value: 0, pct: 0 };
-    const top = items[0];
+// Werkplekprofiel van de hele organisatie — dezelfde rekenwijze en dezelfde
+// woorden als Teaminzicht. Kleine teams tellen mee (het profiel komt uit het
+// organisatie-aggregaat). `needed` volgt Teaminzicht: de kernplekken, of
+// zonder kern het hoogste type.
+function computeWorkplace(aggregate, insights, lang) {
+    const wp = getCopy(lang).workplaceProfile;
+    const label = (t) => wp?.types?.[t.id]?.label || t.label || t.id;
+    const profiel = buildWerkplekProfiel(aantallenUitAggregate(aggregate));
+    const bands = { [BAND.KERN]: [], [BAND.STEUN]: [], [BAND.AANVULLEND]: [] };
+    (profiel.typen || []).forEach((t) => {
+        if (profiel.heeftData) bands[t.band].push(label(t));
+    });
+    const needed = (insights?.workplaceTension?.underserved || []).map((t) => t.label);
     return {
-        label: cd.workplaceLabel(top.label || top.name || '—'),
-        value: Number(top.value || top.count || 0),
-        pct: pctOfTotal(top),
+        hasData: profiel.heeftData,
+        bands,
+        bandLabels: {
+            [BAND.KERN]: wp?.band?.kern?.label || 'Kern',
+            [BAND.STEUN]: wp?.band?.steun?.label || 'Steun',
+            [BAND.AANVULLEND]: wp?.band?.aanvullend?.label || 'Aanvullend',
+        },
+        needed,
+        top: needed[0] || '—',
     };
 }
 
-function computeWorkplaceNeeds(aggregate, cd, take = 5) {
-    const items = (aggregate?.sortedWorkplaceNeeds || []).slice(0, take);
-    return items.map((it) => ({
-        label: cd.workplaceLabel(it.label || it.name || '—'),
-        pct: pctOfTotal(it),
-    }));
-}
-
-// Spreiding over de top-5 — als die klein is, is de behoefte breed en gespreid
-// en is "één type wint" een te stellige lezing.
-function computeWorkplaceSpread(needs) {
-    const pcts = (needs || []).map((n) => n.pct).filter((p) => Number.isFinite(p));
-    if (pcts.length < 2) return { min: 0, max: 0, range: 0, close: false };
-    const min = Math.min(...pcts);
-    const max = Math.max(...pcts);
-    const range = max - min;
-    // ≤5 procentpunt verschil over 5 typen = praktisch gelijk verdeeld.
-    return { min, max, range, close: range <= 5 };
-}
-
-// Spanningsparen zijn taalneutraal: het paar wijst een key aan, de copy
-// levert de formulering ('tempo en zorgvuldigheid' / 'pace and care').
-const TENSION_PAIRS = [
-    ['presteerder', 'denker', 'tempoZorgvuldigheid'],
-    ['presteerder', 'verbinder', 'resultaatVerbinding'],
-    ['maker', 'zekerzoeker', 'vrijheidZekerheid'],
-    ['vernieuwer', 'zekerzoeker', 'vernieuwingContinuiteit'],
-    ['groeier', 'zekerzoeker', 'ontwikkelingStabiliteit'],
-    ['teamspeler', 'maker', 'loyaliteitAutonomie'],
-];
-
-// Bewust op het OUDE werkplekmodel (sortedWorkplaceNeeds, % t.o.v. het
-// gemiddelde). Teaminzicht volgt sinds 22 okt 2026 het werkplekprofiel; het
-// organisatielandschap nog niet — dat is een apart besluit. Dit zijn de regels
-// die TeamInsights daarvoor gebruikte: tekort = bovengemiddeld én een
-// aanwezige werkstijl met bricksProfile >= 3; te veel = onder 70% van het
-// gemiddelde.
-function oudeWerkplekSpanning(aggregate) {
-    const needs = aggregate?.sortedWorkplaceNeeds || [];
-    if (needs.length === 0) return { under: null, over: null };
-    const averagePct = 100 / needs.length;
-    const present = new Set(
-        (aggregate?.sortedPersonas || []).filter((p) => p.count > 0).map((p) => p.id)
-    );
-    const archetypes = getArchetypes('nl').filter((a) => present.has(a.id));
-    const under = needs
-        .filter((n) => n.percentage >= averagePct)
-        .filter((n) => archetypes.some((a) => (a.bricksProfile?.[n.key] || 0) >= 3))
-        .sort((a, b) => b.percentage - a.percentage)[0] || null;
-    const over = needs
-        .filter((n) => n.percentage < averagePct * 0.7)
-        .sort((a, b) => a.percentage - b.percentage)[0] || null;
-    return { under, over };
-}
-
-function computeLeeglopers(insights, cd, aggregate) {
+// "Check in het kantoor": dezelfde twee vragen als de team-PDF. De tool kent
+// het kantoor niet, dus geen bewering ("te weinig", "te veel") maar een vraag.
+// Geen spanningsregel en geen opvulregel meer.
+function computeOfficeCheck(insights, cd) {
     const t = insights?.workplaceTension || {};
-    const cl = cd.leeglopers;
+    const q = cd.officeCheck;
     const out = [];
-    const { under, over } = oudeWerkplekSpanning(aggregate);
-    if (under) {
-        const label = cd.workplaceLabel(under.label || '').toLowerCase();
-        out.push(sanitizeUserText(cl.tooLittle(label)));
-    }
-    if (over) {
-        const label = cd.workplaceLabel(over.label || '').toLowerCase();
-        out.push(sanitizeUserText(cl.tooMuch(label)));
-    }
-
-    const personas = [
-        ...(t.impactSummary?.dominant || []),
-        ...(t.impactSummary?.middle || []),
-    ].map((p) => p.id);
-
-    for (const [a, b, key] of TENSION_PAIRS) {
-        if (personas.includes(a) && personas.includes(b)) {
-            out.push(cl.tension(cl.tensionPairs[key]));
-            break;
-        }
-    }
-    while (out.length < 3) {
-        out.push(cl.fallback);
-    }
-    return out.slice(0, 3);
+    if (t.underserved?.length > 0) out.push(q.enough(t.underserved[0].label.toLowerCase()));
+    if (t.oversupplied?.length > 0) out.push(q.used(t.oversupplied[0].label.toLowerCase()));
+    return out;
 }
 
 function buildSignatureSentence(aggregate, cd, lang) {
@@ -379,9 +314,6 @@ export function sanitizeUserText(s) {
 export function buildLeadershipDirections(data, copy = getOLCopy('nl')) {
     const cl = copy.data.leadership;
     const out = [];
-    if (data.leeglopers?.length >= 1) {
-        out.push(cl.discuss(data.leeglopers[0].toLowerCase()));
-    }
     const withLabel = (p) => ({
         drive: p.drive,
         label: cl.personaLabel(p.name, p.pct != null ? p.pct : null),
@@ -397,29 +329,13 @@ export function buildLeadershipDirections(data, copy = getOLCopy('nl')) {
     return out;
 }
 
+// Werkomgeving als vraag, niet als investeringsadvies (besluit Judith 23 okt).
 export function buildEnvironmentDirections(data, copy = getOLCopy('nl')) {
     const ce = copy.data.environment;
-    const out = [];
-    const needs = data.workplaceNeeds || [];
-    const spread = data.workplaceSpread || { close: false, min: 0, max: 0 };
-
-    if (needs.length === 0) {
-        out.push(ce.notEnoughData);
-        return out;
-    }
-
-    if (spread.close) {
-        // Behoefte is breed en gespreid — de spreiding zelf is het signaal.
-        const labels = needs.slice(0, 3).map((n) => n.label.toLowerCase()).join(', ');
-        out.push(ce.spreadClose(spread.min, spread.max));
-        out.push(ce.spreadMix(labels));
-    } else {
-        // Wél een duidelijke top — benoem die, met het echte aandeel.
-        needs.slice(0, 3).forEach((n) => {
-            out.push(ce.invest(n.label.toLowerCase(), n.pct));
-        });
-    }
-    return out;
+    const needed = data.workplace?.needed || [];
+    if (!data.workplace?.hasData || needed.length === 0) return [ce.notEnoughData];
+    const labels = getCopy(data.lang || 'nl').teamPanels.names.join(needed.map((l) => l.toLowerCase()));
+    return [ce.focusQuestion(labels)];
 }
 
 // "Teams die ruimte verdienen": alleen hoeveel teams geen eigen rij hebben.

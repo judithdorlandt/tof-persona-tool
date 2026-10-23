@@ -3,9 +3,9 @@
  *
  * V24-herstructurering:
  *  Pagina 4 — Patronen (gemeten):
- *    LINKS  = staafgrafiek "Wat de werkomgeving vraagt" (% direct na de staaf,
- *             eerlijke 0–100 as behouden).
- *    RECHTS = "Waar de organisatie op leegloopt" — rode bullets (data).
+ *    LINKS  = "Wat de werkomgeving vraagt": het werkplekprofiel (kern, steun,
+ *             beperkt nodig), zoals Teaminzicht — geen percentages (L3).
+ *    RECHTS = "Check in het kantoor" — vragen, geen beweringen (L3).
  *    Onder  = korte methodologische noot (alleen kwantitatieve herkomst).
  *
  *  Pagina 5 — Kwalitatief beeld (observatie & gesprek):
@@ -21,7 +21,7 @@
 import { PAGE_W, PAGE_H, MARGIN, USABLE_W } from './constants';
 import { TYPE_V9, COLOR_FAMILIES, SPACING } from './OL_styles';
 import {
-    createCanvas, rect, text, drawWrapped, line, circle, wrapTextLines,
+    createCanvas, rect, text, drawWrapped, circle, wrapTextLines,
 } from './svgPrimitives';
 import { drawPageHeader } from './OL_Chrome';
 
@@ -47,22 +47,20 @@ function buildQuantPage(data, copy) {
     const floor = noteBoxTop - SPACING.md;
 
     const gap = SPACING.xl;
-    const leftW = USABLE_W * 0.50;            // grafiek
-    const rightW = USABLE_W - leftW - gap;     // leegloopt
+    const leftW = USABLE_W * 0.50;            // werkplekprofiel
+    const rightW = USABLE_W - leftW - gap;     // check in het kantoor
     const rightX = MARGIN + leftW + gap;
 
-    // LINKS — staafgrafiek werkomgeving.
+    // LINKS — werkplekprofiel van de organisatie.
     drawWerkomgevingColumn({
-        svg, x: MARGIN, y, w: leftW, floor,
-        needs: data.workplaceNeeds, spread: data.workplaceSpread, copy,
+        svg, x: MARGIN, y, w: leftW, floor, workplace: data.workplace, copy,
     });
 
-    // RECHTS — waar de organisatie op leegloopt (rode bullets).
+    // RECHTS — check in het kantoor (vragen).
     drawBulletList({
         svg, x: rightX, y, w: rightW, floor,
-        eyebrow: copy.patronen.cols.leegloopt.title.toUpperCase(),
-        subtitle: copy.patronen.cols.leegloopt.subtitle,
-        items: data.leeglopers,
+        eyebrow: copy.patronen.cols.officeCheck.title.toUpperCase(),
+        items: data.officeCheck,
         bulletColor: ROSE,
     });
 
@@ -144,7 +142,7 @@ function drawBulletList({ svg, x, y, w, floor, eyebrow, subtitle, items, emptyTe
             x, y: hy, content: eyebrow,
             ...TYPE_V9.eyebrow,
         }));
-        svg.appendChild(text({
+        if (subtitle) svg.appendChild(text({
             x, y: hy + SPACING.md,
             content: subtitle,
             ...TYPE_V9.bodySoft, size: 3, lineHeight: 4.2,
@@ -193,109 +191,64 @@ function drawBulletList({ svg, x, y, w, floor, eyebrow, subtitle, items, emptyTe
     return ly - baseGap;
 }
 
-// ── Staafgrafiek "Wat de werkomgeving vraagt".
-// Eerlijke 0–100 as behouden (verschillen zijn klein), maar het percentage
-// staat direct ná de gevulde staaf voor leesbaarheid.
-function drawWerkomgevingColumn({ svg, x, y, w, floor, needs, spread, copy }) {
-    const PT = 0.353;
-    const barH = 9 * PT;
-    const gapLabelToBar = 4 * PT;
-    const labelSize = 3.7;
-    const rowFixed = labelSize + gapLabelToBar + barH;   // label + staaf, zonder gap
+// ── "Wat de werkomgeving vraagt": het werkplekprofiel per band, zoals het
+// Werkplek-paneel in Teaminzicht. Alleen rangorde en band, geen percentages.
+const BANDS = ['kern', 'steun', 'aanvullend'];
+const KERN_SIZE = 5.2;
+const KERN_LH = 7;
+const ROW_LH = 5.4;
+const BAND_HEAD = SPACING.sm + 3;
 
-    svg.appendChild(text({
-        x, y, content: copy.patronen.cols.vraagt.title.toUpperCase(),
-        ...TYPE_V9.eyebrow,
-    }));
-    svg.appendChild(text({
-        x, y: y + SPACING.sm + 2,
-        content: copy.patronen.cols.vraagt.subtitle,
-        ...TYPE_V9.bodySoft, size: 3, lineHeight: 4.2,
-    }));
-
-    // Extra ruimte tussen kop/subtitel en de eerste staaf (consistent met de
-    // bullet-kolommen) en de staven verticaal verdeeld tot de vloer.
-    const firstLabelY = y + SPACING.md * 2 + SPACING.lg;
-    const n = needs.length;
-    // Ruimte onder de laatste staaf voor as + schaal-label + spread-noot.
-    const axisBlockH = 24;
-    const targetAxisY = (floor || PAGE_H) - axisBlockH;
-    // gap tussen staven zo dat de laatste staaf net boven targetAxisY eindigt.
-    const rawGap = n > 1
-        ? (targetAxisY - 4 * PT - firstLabelY - n * rowFixed) / (n - 1)
-        : 13 * PT;
-    const gapBarToNext = Math.max(13 * PT, Math.min(16, rawGap));
-    const rowAdvance = rowFixed + gapBarToNext;
-
-    let ly = firstLabelY;
-
-    needs.forEach((it) => {
-        // Regel 1: label links.
-        svg.appendChild(text({
-            x, y: ly,
-            content: capitalizeFirst(it.label),
-            font: 'Inter', weight: 500, size: labelSize, color: C.text,
-        }));
-
-        // Regel 2: volledige 0–100 track + gevulde staaf.
-        const barY = ly + gapLabelToBar;
-        svg.appendChild(rect(x, barY, w, barH, C.border));
-        const fillW = it.pct > 0 ? w * (it.pct / 100) : 0;
-        if (fillW > 0) svg.appendChild(rect(x, barY, fillW, barH, SAGE));
-
-        // Percentage direct na de staaf (verticaal gecentreerd op de staaf).
-        const pctBaseline = barY + barH / 2 + 1;
-        const pctText = `${it.pct}%`;
-        const estW = pctText.length * labelSize * 0.55;
-        const afterX = x + fillW + 1.6;
-        if (afterX + estW <= x + w) {
-            // Past rechts van de staaf — buiten, textSoft.
-            svg.appendChild(text({
-                x: afterX, y: pctBaseline,
-                content: pctText,
-                font: 'Inter', weight: 600, size: labelSize, color: C.textSoft,
-            }));
-        } else {
-            // Zou over de rand vallen — zet binnen het uiteinde, wit.
-            svg.appendChild(text({
-                x: x + fillW - 1.6, y: pctBaseline,
-                content: pctText,
-                font: 'Inter', weight: 600, size: labelSize, color: '#FFFFFF',
-                anchor: 'end',
-            }));
-        }
-        ly += rowAdvance;
-    });
-
-    // X-as: 0—50—100 onder alle staven (eerlijke schaal).
-    const axisY = ly - gapBarToNext + 4 * PT;
-    svg.appendChild(line(x, axisY, x + w, axisY, C.textMuted, 0.5));
-    ['0', '50', '100'].forEach((t, i) => {
-        const tx = x + (i / 2) * w;
-        svg.appendChild(line(tx, axisY - 0.8, tx, axisY + 0.8, C.textMuted, 0.5));
-        svg.appendChild(text({
-            x: tx, y: axisY + 4,
-            content: t,
-            font: 'Inter', weight: 500, size: 2.6, color: C.textMuted,
-            anchor: i === 0 ? 'start' : (i === 2 ? 'end' : 'middle'),
-        }));
-    });
-    svg.appendChild(text({
-        x: x + w / 2, y: axisY + 9,
-        content: copy.patronen.cols.vraagt.scaleLabel,
-        font: 'Inter', weight: 400, size: 2.6, color: C.textMuted,
-        anchor: 'middle',
-    }));
-
-    if (spread && spread.close) {
-        drawWrapped({
-            svg, x, y: axisY + 14,
-            maxWidth: w,
-            content: copy.patronen.cols.vraagt.spreadNote,
-            font: 'Inter', weight: 400, size: 2.7, color: C.textMuted,
-            lineHeight: 3.8, maxLines: 2,
+function drawWerkomgevingColumn({ svg, x, y, w, floor, workplace, copy }) {
+    // Net als de kolom rechts als één blok verticaal gecentreerd tot de vloer,
+    // zodat kop en lijst bij elkaar blijven en de pagina niet topzwaar wordt.
+    const headerOffset = SPACING.md * 2 + SPACING.lg;
+    let blockH = headerOffset;
+    if (workplace?.hasData) {
+        BANDS.forEach((band) => {
+            const n = (workplace.bands[band] || []).length;
+            if (n === 0) return;
+            const lh = band === 'kern' ? KERN_LH : ROW_LH;
+            blockH += BAND_HEAD + n * (lh + SPACING.xs + 1) + SPACING.md;
         });
     }
+    const available = (floor || PAGE_H) - y;
+    const top = y + (available > blockH ? (available - blockH) * 0.5 : 0);
+
+    svg.appendChild(text({
+        x, y: top, content: copy.patronen.cols.vraagt.title.toUpperCase(),
+        ...TYPE_V9.eyebrow,
+    }));
+    let ly = top + headerOffset;
+    if (!workplace?.hasData) return ly;
+
+    BANDS.forEach((band) => {
+        const labels = workplace.bands[band] || [];
+        if (labels.length === 0) return;
+        svg.appendChild(text({
+            x, y: ly,
+            content: String(workplace.bandLabels[band]).toUpperCase(),
+            ...TYPE_V9.eyebrow,
+            color: band === 'kern' ? SAGE : C.textMuted,
+        }));
+        ly += BAND_HEAD;
+        labels.forEach((label) => {
+            svg.appendChild(circle(x + 1.3, ly - TYPE_V9.body.size * 0.35, 1.1,
+                band === 'kern' ? SAGE : C.textMuted));
+            const endY = drawWrapped({
+                svg, x: x + 6, y: ly,
+                maxWidth: w - 7,
+                content: label,
+                ...TYPE_V9.body,
+                font: band === 'kern' ? 'Playfair Display' : 'Inter',
+                size: band === 'kern' ? KERN_SIZE : TYPE_V9.body.size,
+                lineHeight: band === 'kern' ? KERN_LH : ROW_LH,
+            });
+            ly = endY + SPACING.xs + 1;
+        });
+        ly += SPACING.md;
+    });
+    return ly;
 }
 
 // Methodologische noot (kwantitatief) in eigen kader onderaan pagina 4.

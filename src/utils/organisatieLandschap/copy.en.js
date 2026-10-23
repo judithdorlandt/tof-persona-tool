@@ -47,13 +47,12 @@ export const COPY_EN = {
         kpiLabels: {
             respondents: 'Respondents',
             dominantStyle: 'Dominant working style',
-            topNeed: 'Biggest workplace need',
+            topNeed: 'What the organisation needs most',
             teamsCovered: 'Teams with data',
         },
         kpiUnits: {
             respondents: (n) => n === 1 ? 'person' : 'people',
             dominantStyle: (count) => count ? `${count} people primary` : '—',
-            topNeed: (pct) => `${pct}% of all workplace preference`,
         },
         leadIntro: 'What this report shows',
         leadFallback:
@@ -128,15 +127,11 @@ export const COPY_EN = {
         qualSubtitle:
             'What works well and where the tension sits — gathered from observation and conversations.',
         cols: {
-            leegloopt: {
-                title: 'Where the organisation drains',
-                subtitle: 'Tension and friction visible in the data.',
+            officeCheck: {
+                title: 'Check the office',
             },
             vraagt: {
                 title: 'What the work environment asks for',
-                subtitle: 'Top 5 workplace types, as a share of all preference.',
-                scaleLabel: 'Share of preference',
-                spreadNote: 'The differences are small: read this as a broad, evenly spread need — no single type wins.',
             },
             werkt: {
                 title: 'What works well',
@@ -187,24 +182,9 @@ export const COPY_EN = {
         teamNameFallback: '—',
         otherTeamsRowLabel: (n) => `Other (together ${n})`,
 
-        // Workplace-type labels arrive from the aggregation in Dutch; map them
-        // to the agreed English names. Unknown labels pass through unchanged,
-        // so an already-translated label is never mangled.
-        workplaceLabel: (label) => WORKPLACE_LABELS_EN[label] || label,
-
-        leeglopers: {
-            tooLittle: (label) => `Too little ${label}`,
-            tooMuch: (label) => `Too much ${label}`,
-            tension: (label) => `Tension between ${label}`,
-            tensionPairs: {
-                tempoZorgvuldigheid: 'pace and care',
-                resultaatVerbinding: 'results and connection',
-                vrijheidZekerheid: 'freedom and certainty',
-                vernieuwingContinuiteit: 'renewal and continuity',
-                ontwikkelingStabiliteit: 'development and stability',
-                loyaliteitAutonomie: 'loyalty and autonomy',
-            },
-            fallback: 'A workplace that does not match what the organisation needs',
+        officeCheck: {
+            enough: (label) => `Are there enough ${label}?`,
+            used: (label) => `Are the ${label} actually used?`,
         },
 
         signature: {
@@ -215,7 +195,6 @@ export const COPY_EN = {
         },
 
         leadership: {
-            discuss: (topic) => `Discuss explicitly: ${topic}.`,
             twoDrives: (a, b) =>
                 `Two drivers stand out: ${a.drive} (${a.label}) and ${b.drive} (${b.label}). Make room for both — do not suppress either.`,
             oneDrive: (a) =>
@@ -228,12 +207,8 @@ export const COPY_EN = {
 
         environment: {
             notEnoughData: 'Too little data to underpin concrete investment choices.',
-            spreadClose: (min, max) =>
-                `The preferences sit close together (${min}–${max}% of the whole). The need is broad: no single workplace type stands out.`,
-            spreadMix: (labels) =>
-                `Invest in a mix of workplaces, not in one type. Mentioned most: ${labels}.`,
-            invest: (label, pct) =>
-                `Invest in ${label} — ${pct}% of all workplace preference sits here.`,
+            focusQuestion: (labels) =>
+                `What does the organisation want to focus on in the coming years? Start with what's needed most: ${labels}.`,
         },
 
         attention: {
@@ -249,19 +224,3 @@ export const COPY_EN = {
     // ── Persona names come from constants.getArchetypeName(id, lang).
 };
 
-// Fixed translations for the nine workplace types. Keys are the Dutch source
-// labels produced by the aggregation; never translate the underlying keys
-// (focus/work/hybride/meeting/project/team/learning/retreat/social).
-const WORKPLACE_LABELS_EN = {
-    'Concentratieplekken': 'Focus spaces',
-    'Standaard werkplekken': 'Standard workstations',
-    'Hybride plekken': 'Hybrid spaces',
-    'Overlegplekken': 'Meeting spaces',
-    'Creatieve plekken': 'Creative spaces',
-    'Samenwerkplekken': 'Collaboration spaces',
-    'Leerplekken': 'Learning spaces',
-    'Rustplekken': 'Retreat spaces',
-    'Informele plekken': 'Informal spaces',
-};
-
-export { WORKPLACE_LABELS_EN };

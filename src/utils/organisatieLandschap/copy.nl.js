@@ -49,14 +49,14 @@ export const COPY_NL = {
         kpiLabels: {
             respondents: 'Respondenten',
             dominantStyle: 'Dominante werkstijl',
-            topNeed: 'Grootste werkplekvraag',
+            // Opdracht L3 (besluit Judith 23 okt): de kern, geen percentage.
+            topNeed: 'Wat de organisatie het meest nodig heeft',
             teamsCovered: 'Teams met data',
         },
         // Fix #2 cover: schrijf eenheid + referentie volledig uit.
         kpiUnits: {
             respondents: (n) => n === 1 ? 'persoon' : 'personen',
             dominantStyle: (count) => count ? `${count} mensen primair` : '—',
-            topNeed: (pct) => `${pct}% van álle werkplek-voorkeur`,
         },
         leadIntro: 'Wat zie je in dit rapport',
         leadFallback:
@@ -137,15 +137,13 @@ export const COPY_NL = {
         qualSubtitle:
             'Wat goed werkt en waar de spanning zit — opgehaald uit observatie en gesprekken.',
         cols: {
-            leegloopt: {
-                title: 'Waar de organisatie op leegloopt',
-                subtitle: 'Spanning en frictie zichtbaar in de data.',
+            // Vragen zoals in de team-PDF, geen beweringen over het kantoor.
+            officeCheck: {
+                title: 'Check in het kantoor',
             },
+            // Het werkplekprofiel: kern, steun en beperkt nodig, geen percentages.
             vraagt: {
                 title: 'Wat de werkomgeving vraagt',
-                subtitle: 'Top-5 werkplek-typen, als aandeel van álle voorkeur.',
-                scaleLabel: 'Aandeel in voorkeur',
-                spreadNote: 'De verschillen zijn klein: lees dit als een brede, gespreide behoefte — geen enkel type wint.',
             },
             werkt: {
                 title: 'Wat werkt goed',
@@ -201,24 +199,9 @@ export const COPY_NL = {
         // Alles zonder eigen rij samen (opdracht L1/L1b, besluit Judith 23 okt).
         otherTeamsRowLabel: (n) => `Overige (samen ${n})`,
 
-        // Werkplektype-labels komen uit de aggregatie in het Nederlands.
-        // In NL laten we ze ongemoeid; copy.en.js vertaalt ze.
-        workplaceLabel: (label) => label,
-
-        leeglopers: {
-            tooLittle: (label) => `Te weinig ${label}`,
-            tooMuch: (label) => `Te veel ${label}`,
-            tension: (label) => `Spanning tussen ${label}`,
-            // Keyed op een taalneutrale id; de logica kiest het paar.
-            tensionPairs: {
-                tempoZorgvuldigheid: 'tempo en zorgvuldigheid',
-                resultaatVerbinding: 'resultaat en verbinding',
-                vrijheidZekerheid: 'vrijheid en zekerheid',
-                vernieuwingContinuiteit: 'vernieuwing en continuïteit',
-                ontwikkelingStabiliteit: 'ontwikkeling en stabiliteit',
-                loyaliteitAutonomie: 'loyaliteit en autonomie',
-            },
-            fallback: 'Werkplek die niet aansluit bij behoefte van de organisatie',
+        officeCheck: {
+            enough: (label) => `Zijn er genoeg ${label}?`,
+            used: (label) => `Worden de ${label} echt gebruikt?`,
         },
 
         signature: {
@@ -229,7 +212,6 @@ export const COPY_NL = {
         },
 
         leadership: {
-            discuss: (topic) => `Bespreek expliciet: ${topic}.`,
             twoDrives: (a, b) =>
                 `Twee drijfveren springen eruit: ${a.drive} (${a.label}) en ${b.drive} (${b.label}). Maak ruimte voor beide — onderdruk geen van twee.`,
             oneDrive: (a) =>
@@ -243,12 +225,9 @@ export const COPY_NL = {
 
         environment: {
             notEnoughData: 'Te weinig data om concrete investeringskeuzes te onderbouwen.',
-            spreadClose: (min, max) =>
-                `De voorkeuren liggen dicht bij elkaar (${min}–${max}% van het geheel). De behoefte is breed: geen enkel werkplektype springt eruit.`,
-            spreadMix: (labels) =>
-                `Investeer in een mix van werkplekken, niet in één type. Het meest genoemd: ${labels}.`,
-            invest: (label, pct) =>
-                `Investeer in ${label} — ${pct}% van álle werkplek-voorkeur ligt hier.`,
+            // Als vraag (besluit Judith 23 okt).
+            focusQuestion: (labels) =>
+                `Waar wil de organisatie de komende jaren op inzetten? Begin bij wat het meest nodig is: ${labels}.`,
         },
 
         attention: {

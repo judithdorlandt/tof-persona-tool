@@ -109,9 +109,10 @@ function drawThreeKpiCards(svg, y, data, copy) {
     });
     drawKpiCard(svg, {
         x: MARGIN + 2 * (cardW + gap), y, w: cardW, h: cardH,
+        // De kern uit het werkplekprofiel, zonder percentage (opdracht L3).
         label: copy.cover.kpiLabels.topNeed,
-        big: data.topNeed.label,
-        unit: copy.cover.kpiUnits.topNeed(data.topNeed.pct),
+        big: data.workplace.top,
+        unit: '',
         accent: SAGE,
     });
     return y + cardH;
@@ -142,7 +143,10 @@ function drawKpiCard(svg, { x, y, w, h, label, big, unit, accent }) {
     const bigSize = fitBigNumberSize(big, availW, defaultBig);
     const bigBaseline = y + topPad + SPACING.sm + bigSize;
 
-    if (bigSize >= 7) {
+    // Eén woord (zoals "Concentratieplekken") nooit midden in het woord
+    // afbreken: dan op één regel, zo groot als past.
+    const singleWord = !/\s/.test(String(big).trim());
+    if (bigSize >= 7 || singleWord) {
         // Past in 1 regel op gepaste grootte.
         svg.appendChild(text({
             x: x + padding, y: bigBaseline,
@@ -162,7 +166,7 @@ function drawKpiCard(svg, { x, y, w, h, label, big, unit, accent }) {
 
     // Eenheid direct onder cijfer (4px / xs spacing) — als cijfer wrapt:
     // unit komt onder de wrap (2 regels = ~9.5mm extra ruimte).
-    const unitOffsetY = bigSize >= 7 ? 0 : 9.5;
+    const unitOffsetY = (bigSize >= 7 || singleWord) ? 0 : 9.5;
     svg.appendChild(text({
         x: x + padding, y: bigBaseline + unitOffsetY + SPACING.xs + TYPE_V9.bigNumberUnit.size,
         content: unit,
