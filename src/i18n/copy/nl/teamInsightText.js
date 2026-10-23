@@ -109,7 +109,7 @@ const teamInsightText = {
   quickWins: {
     // source: 'werkstijlen' — wat de meest voorkomende primaire persona vraagt.
     persona: {
-      maker: (name) => `Plan blokken zonder vergaderingen. ${name}s maken iets af in stilte, niet in onderbrekingen.`,
+      maker: (name) => `Geef richting op hoofdlijnen en vrijheid in de aanpak. ${name}s komen in flow met aaneengesloten tijd om iets te bouwen.`,
       groeier: (name) => `Geef ${name.toLowerCase()}s ruimte om het werk te verteren. Daar groeien ze, niet onder druk.`,
       presteerder: (name) => `Maak voortgang zichtbaar. ${name}s bloeien op duidelijke doelen en mijlpalen.`,
       denker: (name) => `Stuur stukken op tijd rond. ${name}s willen voorbereid aan tafel komen.`,

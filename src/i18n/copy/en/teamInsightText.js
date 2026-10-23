@@ -108,7 +108,7 @@ const teamInsightText = {
   quickWins: {
     // source: 'werkstijlen' — what the most common primary persona asks for.
     persona: {
-      maker: (name) => `Block out time without meetings. ${name}s finish things in quiet, not in interruptions.`,
+      maker: (name) => `Give direction on the big picture and freedom in the approach. ${name}s get into flow with uninterrupted time to build something.`,
       groeier: (name) => `Give ${name.toLowerCase()}s room to digest the work. That is where they grow, not under pressure.`,
       presteerder: (name) => `Make progress visible. ${name}s thrive on clear goals and milestones.`,
       denker: (name) => `Circulate documents in good time. ${name}s want to arrive prepared.`,
