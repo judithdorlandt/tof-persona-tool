@@ -30,11 +30,29 @@ const teamDashboard = {
 
   // Wat er in plaats van het dashboard staat als het team nog te klein is
   // (drempel in utils/access.js, blok in components/TeamGate.jsx).
+  // Ook Teamdynamiek toont dit blok; de teksten staan alleen hier.
+  // Opdracht C4 (akkoord Judith 23 okt 2026). De oude hint "Deel de teamcode
+  // met je collega's" is weg (C6): de kopieerknop vervangt hem.
   gate: {
     title: 'Nog geen teambeeld',
+    titleFor: 'Nog geen teambeeld voor',
     body: 'Het teambeeld verschijnt vanaf vijf ingevulde profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, ook als er geen namen bij staan.',
-    count: (n) => `${n} van de vijf ingevuld`,
-    hint: 'Deel de teamcode met je collega’s. Zodra het vijfde profiel binnen is, staat het beeld er.',
+    count: (n) => `${n} van de vijf ingebracht`,
+    copyMessage: 'Kopieer het bericht voor je team',
+    copied: 'Gekopieerd',
+    // Het bericht dat de knop kopieert. Neutrale stem: ook een teamlid kan
+    // het doorsturen. De laatste zin hangt af van de namenschakelaar.
+    message: ({ team, code, showNames }) => [
+      `Doe je mee met het teambeeld van ${team}? Zo werkt het:`,
+      `1. Open deze link op je telefoon en download de app TOF Persona: https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}`,
+      '2. Doe de test in de app: negen vragen, ongeveer vijf minuten.',
+      `3. Tik onderaan je profiel op 'Profiel inbrengen'. Vul op de website deze teamcode in, tik op 'Code controleren' en daarna op 'Inbrengen': ${code}`,
+      "Pas na 'Inbrengen' telt je profiel mee. Bewaar dit bericht tot dan: de teamcode heb je pas na de test nodig.",
+      "Zodra vijf collega's hun profiel hebben ingebracht, staat het teambeeld klaar. Je opent het op team.persona-tool.nl/team, met dezelfde teamcode.",
+      showNames
+        ? 'Je team heeft afgesproken voornamen te tonen in Teaminzicht. Iedereen in het team ziet dezelfde namen, ook de leidinggevende. Wie het naamveld leeg laat, staat er zonder naam in.'
+        : 'Niemand ziet wie welke werkstijl heeft, ook een leidinggevende niet.',
+    ].join('\n'),
   },
 
   close: 'Sluiten ✕',

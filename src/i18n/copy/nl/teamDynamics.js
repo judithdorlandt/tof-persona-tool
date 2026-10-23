@@ -42,12 +42,6 @@ const teamDynamics = {
 
   // Wat er in plaats van de dynamiek staat als het team nog te klein is
   // (drempel in utils/access.js, blok in components/TeamGate.jsx).
-  gate: {
-    title: 'Nog geen teambeeld',
-    body: 'Het teambeeld verschijnt vanaf vijf ingevulde profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, ook als er geen namen bij staan.',
-    count: (n) => `${n} van de vijf ingevuld`,
-    hint: 'Deel de teamcode met je collega’s. Zodra het vijfde profiel binnen is, staat het beeld er.',
-  },
 
   // Als er geen teamnaam bekend is.
   fallbackTeamName: 'jouw team',

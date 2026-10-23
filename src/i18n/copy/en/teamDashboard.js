@@ -17,11 +17,25 @@ const teamDashboard = {
   },
 
 
+  // Team Dynamics shows this block too; the copy lives only here.
   gate: {
     title: 'No team picture yet',
+    titleFor: 'No team picture yet for',
     body: 'The team picture appears from five completed profiles onwards. Below that it is too easy to work out who answered what, even without names.',
-    count: (n) => `${n} of five completed`,
-    hint: 'Share the team code with your colleagues. The picture appears as soon as the fifth profile comes in.',
+    count: (n) => `${n} of five added`,
+    copyMessage: 'Copy the message for your team',
+    copied: 'Copied',
+    message: ({ team, code, showNames }) => [
+      `${team} is putting together a team picture. Here's how to take part:`,
+      `1. Open this link on your phone and download the TOF Persona app: https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}`,
+      '2. Take the test in the app: nine questions, about five minutes.',
+      `3. Tap 'Add my profile' at the bottom of your profile. The website opens. Enter this team code, tap 'Check code' and then 'Add my profile' again: ${code}`,
+      "Your profile only counts once you've tapped 'Add my profile' on the website. Keep this message until then: you only need the team code after the test.",
+      'Once five colleagues have added their profile, the team picture is ready. You can open it at team.persona-tool.nl/en/team, with the same team code.',
+      showNames
+        ? "Your team has agreed to show first names in Team Insight. Everyone in the team sees the same names, the manager included. If you leave the name field empty, you'll appear without a name."
+        : 'Nobody sees who has which working style, not even a manager.',
+    ].join('\n'),
   },
 
   close: 'Close ✕',

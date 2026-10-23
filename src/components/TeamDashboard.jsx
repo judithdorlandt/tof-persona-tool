@@ -198,10 +198,11 @@ export default function TeamDashboard({
     if (completeProfiles < MIN_TEAM_RESPONSES && !isAdminAccess()) {
         return (
             <TeamGate
-                copy={t.gate}
                 count={completeProfiles}
                 accent={ACCENT}
                 eyebrow={t.hero.eyebrow}
+                teamName={selectedTeam?.team || ''}
+                code={selectedTeam?.code || ''}
             />
         );
     }

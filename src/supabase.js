@@ -762,7 +762,7 @@ export async function validateTeamAccessCode(accessCode) {
       if (!isMissingFunction(rpcErr)) throw rpcErr;
       const { data: direct, error } = await supabase
         .from('team_access_codes')
-        .select('code, level, organization, team')
+        .select('code, level, organization, team, show_names')
         .eq('code', cleanCode)
         .eq('active', true)
         .maybeSingle();
@@ -787,6 +787,9 @@ export async function validateTeamAccessCode(accessCode) {
     return {
       ...data,
       level,
+      // Pas betrouwbaar na supabase/009; daarvoor ontbreekt hij en geldt
+      // de standaard: geen namen.
+      show_names: data.show_names === true,
     };
 
   } catch (err) {

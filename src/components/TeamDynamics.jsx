@@ -248,10 +248,11 @@ export default function TeamDynamics({
     ) {
         return (
             <TeamGate
-                copy={t.gate}
                 count={completeProfiles}
                 accent={ACCENT}
                 eyebrow={t.hero.eyebrow}
+                teamName={selectedTeam?.team || ''}
+                code={selectedTeam?.code || ''}
             />
         );
     }

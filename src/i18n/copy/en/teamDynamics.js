@@ -23,12 +23,6 @@ const teamDynamics = {
     embedded: 'No responses to base Dynamics on.',
   },
 
-  gate: {
-    title: 'No team picture yet',
-    body: 'The team picture appears from five completed profiles onwards. Below that it is too easy to work out who answered what, even without names.',
-    count: (n) => `${n} of five completed`,
-    hint: 'Share the team code with your colleagues. The picture appears as soon as the fifth profile comes in.',
-  },
 
   fallbackTeamName: 'your team',
 
