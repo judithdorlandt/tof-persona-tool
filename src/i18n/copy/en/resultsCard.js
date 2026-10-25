@@ -79,7 +79,7 @@ const resultsCard = {
 
     howToLabel: 'How to use it',
     howToBody:
-      'The card is designed to be shared — with your manager, your team or your organisation. Use it as a conversation starter, or as input for workplace and collaboration agreements.',
+      'The card is designed to be shared — with your manager, your team or whoever you like. Use it as a conversation starter, or as input for workplace and collaboration agreements.',
 
     // Followed by the participant's first name.
     madeForPrefix: 'Made for',
@@ -97,7 +97,7 @@ const resultsCard = {
       : 'persona card TOF.pdf'),
 
     downloadButton: 'Download persona card',
-    availability: 'PDF · free · available right away',
+    availability: 'PDF · ready to download',
 
     allPersonas: 'See all personas',
     retakeTest: 'Take the test again',

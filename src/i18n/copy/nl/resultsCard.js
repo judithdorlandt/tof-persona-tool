@@ -79,7 +79,7 @@ const resultsCard = {
 
     howToLabel: 'Hoe te gebruiken',
     howToBody:
-      'De kaart is ontworpen om te delen — met je manager, je team of je organisatie. Gebruik hem als gespreksstarter of als input voor werkplek- en samenwerkingsafspraken.',
+      'De kaart is ontworpen om te delen — met je leidinggevende, je team of wie je wilt. Gebruik hem als gespreksstarter of als input voor werkplek- en samenwerkingsafspraken.',
 
     // Wordt gevolgd door de voornaam van de deelnemer.
     madeForPrefix: 'Opgemaakt voor',
@@ -97,7 +97,7 @@ const resultsCard = {
       : 'personakaart TOF.pdf'),
 
     downloadButton: 'Download personakaart',
-    availability: 'PDF · gratis · direct beschikbaar',
+    availability: 'PDF · direct beschikbaar',
 
     allPersonas: 'Bekijk alle persona\'s',
     retakeTest: 'Test opnieuw',
