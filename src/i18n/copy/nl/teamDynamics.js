@@ -269,6 +269,32 @@ const teamDynamics = {
       ],
     },
   },
+  // Deelmoment 3 (deelteksten 22 okt 2026; besluit Judith 25 okt: nu al,
+  // zonder te wachten op de gespreksvragen). Alleen voor de leidinggevende.
+  share: {
+    eyebrow: 'Doorvertellen',
+    title: 'Een collega-leidinggevende laten meekijken? Laat het voorbeeldteam zien, niet dit scherm.',
+    // "Er staan geen namen in dit beeld" klopt hier altijd: Teamdynamiek
+    // toont nooit namen, ook niet bij een team met de namenoptie.
+    lead: 'Er staan geen namen in dit beeld, maar wie je team kent, kan er toch mensen in herkennen. Wat je wel kunt navertellen, is wat het gesprek met je team opleverde.',
+    button: 'Tekst kopiëren',
+    copied: 'Gekopieerd. Zet er in je eigen woorden bij hoe het gesprek met je team ging. Dat wil je collega horen.',
+    copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
+    text: `Hoi,
+
+Ik heb met mijn team TOF Persona gedaan. Iedereen vult negen vragen in over de eigen manier van werken. Het team krijgt daarna een gezamenlijk beeld van de werkstijlen en van wat het team van de werkplek vraagt. Ik zie als leidinggevende daarnaast wat dat vraagt van leidinggeven. Wie welke werkstijl heeft, staat er standaard niet in, ook niet voor de leidinggevende, en onder vijf ingevulde profielen is er geen beeld. Daardoor kan iedereen eerlijk invullen.
+
+Mijn eigen teambeeld laat ik je niet zien: jij kent mijn team, dus je zou er mensen in kunnen herkennen. Hoe het eruitziet, zie je aan het voorbeeldteam op www.persona-tool.nl/demo. Wil je het voor je eigen team, dan staat op www.persona-tool.nl/voor-je-team hoe dat gaat.
+
+Groet,`,
+    secondTeam: 'Leid je nog een team? Antwoord op de mail waarin je de teamcode kreeg.',
+  },
+
+  // De sessieregel; de link staat in src/config/contact.js (BOOKING_URL).
+  session: {
+    lead: 'Wil je het beeld samen met je team lezen, met Judith erbij? Begin met een vrijblijvend gesprek van een halfuur.',
+    cta: 'Plan een gesprek',
+  },
 };
 
 export default teamDynamics;

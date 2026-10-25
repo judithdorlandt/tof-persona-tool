@@ -40,6 +40,8 @@ import {
     rememberAfterLogin,
 } from '../utils/access';
 import TeamGate from './TeamGate';
+import ShareNote from './ShareNote';
+import { BOOKING_URL } from '../config/contact';
 import {
     getConfidence,
     getDynamics,
@@ -484,7 +486,58 @@ export default function TeamDynamics({
             />
 
             {tilesAndDetail}
+
+            <ShareBlock t={t} />
         </PageShell>
+    );
+}
+
+// =========================
+// DEELMOMENT 3 — onderaan, alleen voor de leidinggevende
+// =========================
+// Doorvertellen aan een collega-leidinggevende (het voorbeeldteam, niet dit
+// scherm), een tweede eigen team, en los daaronder de sessieregel. Niet in
+// de ingebedde weergave van het organisatie-overzicht (die rendert alleen
+// tilesAndDetail). Komen de gespreksvragen later, dan komen die erboven.
+
+function ShareBlock({ t }) {
+    return (
+        <SectionCard accent={ACCENT}>
+            <ShareNote
+                eyebrow={t.share.eyebrow}
+                title={t.share.title}
+                text={t.share.lead}
+                button={t.share.button}
+                copied={t.share.copied}
+                copyFailed={t.share.copyFailed}
+                getText={() => t.share.text}
+                accent={ACCENT}
+            />
+            <p style={{ ...TYPE.body, margin: 0 }}>{t.share.secondTeam}</p>
+
+            <Divider marginY={0} />
+
+            <div style={{ display: 'grid', gap: SPACING.sm, maxWidth: 680 }}>
+                <p style={{ ...TYPE.body, margin: 0 }}>{t.session.lead}</p>
+                <p style={{ margin: 0 }}>
+                    <a
+                        href={BOOKING_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            color: ACCENT,
+                            fontFamily: 'var(--tof-font-body)',
+                            fontSize: 14,
+                            fontWeight: 600,
+                            textDecoration: 'underline',
+                            textUnderlineOffset: 3,
+                        }}
+                    >
+                        {t.session.cta}
+                    </a>
+                </p>
+            </div>
+        </SectionCard>
     );
 }
 

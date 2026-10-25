@@ -243,6 +243,29 @@ const teamDynamics = {
       ],
     },
   },
+  // Share moment 3. Managers only.
+  share: {
+    eyebrow: 'Telling a colleague',
+    title: 'Want to show a fellow manager? Show them the example team, not this screen.',
+    lead: 'There are no names in this picture, but anyone who knows your team can still pick people out. What you can pass on is what came out of the conversation with your team.',
+    button: 'Copy the note',
+    copied: "Copied. Add a line, in your own words, on how the conversation with your team went. That's the part your colleague will want to hear.",
+    copyFailed: 'Copying did not work. Please try again.',
+    text: `Hi,
+
+I did TOF Persona with my team. Everyone answers nine questions about how they work. The team then gets a shared picture of its working styles and what it needs from the workplace, and I get an extra view of what that means for how I lead. By default it doesn't show who has which working style, not even to the manager, and with fewer than five completed profiles there's no picture at all. That's what lets people answer honestly.
+
+I won't show you my own team's picture: you know my team, so you could pick people out. The example team at www.persona-tool.nl/demo shows what it looks like. If you want it for your own team, www.persona-tool.nl/voor-je-team explains how.
+
+Best,`,
+    secondTeam: 'Leading another team as well? Just reply to the email your team code came with.',
+  },
+
+  // The session line; the link lives in src/config/contact.js (BOOKING_URL).
+  session: {
+    lead: 'Want to go through the picture with your team, with Judith there to guide it? Start with a 30-minute call to see whether this fits.',
+    cta: 'Book a conversation',
+  },
 };
 
 export default teamDynamics;
