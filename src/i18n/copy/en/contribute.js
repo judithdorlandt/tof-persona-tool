@@ -66,6 +66,25 @@ const contribute = {
     cta: 'Go to the team picture',
   },
 
+  // Share moment 1a: pass on your own profile. Only your persona, nothing
+  // about your team.
+  share: {
+    eyebrow: 'Pass it on',
+    title: 'Show it to someone who knows you well.',
+    text: 'Your profile is yours. Want someone who knows you well to take a look? Copy the note below. It says nothing about your team.',
+    button: 'Copy the note',
+    copied: 'Copied. Paste it wherever you like and make it sound like you.',
+    copyFailed: 'Copying did not work. Please try again.',
+    // Without a persona, the second and third sentences drop out.
+    message: (persona) => [
+      `I did TOF Persona: nine questions about how I work.${
+        persona ? ` My main working style came out as ${persona}. Does that sound like me?` : ''
+      } I'm curious what yours would be.`,
+      '',
+      'Look for TOF Persona in the App Store or Google Play. It takes about five minutes, with a short optional follow-up after that.',
+    ].join('\n'),
+  },
+
   empty: {
     eyebrow: 'No profile found',
     title: 'There is no profile in this link.',

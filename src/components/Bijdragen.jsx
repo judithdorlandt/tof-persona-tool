@@ -47,6 +47,7 @@ import {
 } from '../ui/AppShell';
 import { SPACING, TYPE } from '../ui/tokens';
 import { Field, Input } from './StrategischKompasIntake';
+import ShareNote from './ShareNote';
 
 // Twee keer hetzelfde profiel inbrengen levert twee rijen op, en dus een
 // vertekend teambeeld: één persoon die voor twee telt. Deze browser onthoudt
@@ -289,6 +290,19 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
                             {t.done.cta}
                         </PrimaryButton>
                     </div>
+                </SectionCard>
+                {/* Deelmoment 1a: je eigen profiel doorvertellen. De persona
+                    komt uit de link; de hash is weg, het profiel niet. */}
+                <SectionCard accent={accent}>
+                    <ShareNote
+                        eyebrow={t.share.eyebrow}
+                        title={t.share.title}
+                        text={t.share.text}
+                        button={t.share.button}
+                        copied={t.share.copied}
+                        copyFailed={t.share.copyFailed}
+                        getText={() => t.share.message(naamVan(profiel?.primary))}
+                    />
                 </SectionCard>
             </PageShell>
         );

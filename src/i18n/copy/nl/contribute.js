@@ -68,6 +68,25 @@ const contribute = {
     cta: 'Naar het teambeeld',
   },
 
+  // Deelmoment 1a (deelteksten 22 okt 2026; `text` besluit Judith 25 okt):
+  // je eigen profiel doorvertellen. Alleen je persona, niets over je team.
+  share: {
+    eyebrow: 'Doorsturen',
+    title: 'Laat iemand meelezen die je goed kent.',
+    text: 'Je profiel is van jou. Wil je iemand die je goed kent laten meekijken? Kopieer de tekst hieronder. Over je team staat er niets in.',
+    button: 'Tekst kopiëren',
+    copied: 'Gekopieerd. Plak hem waar je wilt en maak er je eigen woorden van.',
+    copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
+    // Zonder persona vervallen de tweede en derde zin.
+    message: (persona) => [
+      `Ik heb TOF Persona gedaan: negen vragen over hoe ik werk.${
+        persona ? ` Ik kom er vooral uit als ${persona}. Herken je me erin?` : ''
+      } Ik ben benieuwd wat het bij jou wordt.`,
+      '',
+      'Zoek op TOF Persona in de App Store of Google Play. Het duurt ongeveer vijf minuten, daarna volgt een korte verdieping als je wilt.',
+    ].join('\n'),
+  },
+
   empty: {
     eyebrow: 'Geen profiel gevonden',
     title: 'Er zit geen profiel in deze link.',
