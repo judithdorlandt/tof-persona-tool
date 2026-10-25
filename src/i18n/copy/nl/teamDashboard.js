@@ -109,8 +109,24 @@ const teamDashboard = {
     // niet is ingelogd (opdracht D, besluit Judith 23 okt 2026: variant A
     // met inloglink). Geen aanprijzing, geen knop naar een gesprek.
     locked: {
-      body: 'Je leidinggevende ziet daarnaast Teamdynamiek: wat de samenstelling van dit team vraagt van leidinggeven. Ook daarin staat niet wie welke werkstijl heeft.',
+      body: 'Je leidinggevende ziet daarnaast Teamdynamiek: wat de samenstelling van dit team vraagt van leidinggeven. Daarin staat niet wie welke werkstijl heeft.',
       login: 'Ben jij de leidinggevende? Log in →',
+      // Deelmoment 2, deel B (deelteksten 22 okt 2026): een tekst voor de
+      // leidinggevende van een ánder team. Niets van het eigen team erin.
+      shareEyebrow: 'Ander team?',
+      shareLead: 'Wil een ander team dit ook? Kopieer de tekst voor hun leidinggevende.',
+      button: 'Tekst kopiëren',
+      copied: 'Gekopieerd. Zet er in je eigen woorden bij wat jou bijbleef. Jullie eigen teambeeld blijft erbuiten.',
+      copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
+      shareText: `Hoi,
+
+In ons team hebben we TOF Persona gedaan. Iedereen vult negen vragen in over de eigen manier van werken. Ik vond het vooral interessant om te zien hoe ik zelf werk, en waarom dat in een team soms schuurt.
+
+Daarna krijgt het team een gezamenlijk beeld: welke werkstijlen er zijn en wat het team van de werkplek vraagt. Wie welke werkstijl heeft, staat er standaard niet in, ook niet voor de leidinggevende. En onder vijf ingevulde profielen is er geen beeld.
+
+Hoe zo'n beeld eruitziet, zie je aan het voorbeeldteam op www.persona-tool.nl/demo. Hoe je het voor een team regelt, staat op www.persona-tool.nl/voor-je-team.
+
+Groet,`,
     },
   },
 };

@@ -47,6 +47,7 @@ import {
 } from '../utils/access';
 import { logPdfDownload } from '../supabase';
 import TeamGate from './TeamGate';
+import ShareNote from './ShareNote';
 
 import WerkplekProfielInline from '../team/werkplek/WerkplekProfielInline';
 import {
@@ -503,6 +504,19 @@ function DynamicsBridge({ hasDynamicsAccess, setPage, t, team, organization }) {
                     {t.locked.login}
                 </button>
             </p>
+
+            {/* Deelmoment 2, deel B: een tekst voor een ánder team. */}
+            <div style={{ borderTop: '1px solid var(--tof-border)', marginTop: SPACING.md, paddingTop: SPACING.lg }}>
+                <ShareNote
+                    eyebrow={t.locked.shareEyebrow}
+                    text={t.locked.shareLead}
+                    button={t.locked.button}
+                    copied={t.locked.copied}
+                    copyFailed={t.locked.copyFailed}
+                    getText={() => t.locked.shareText}
+                    accent={ACCENT_TEXT}
+                />
+            </div>
         </div>
     );
 }

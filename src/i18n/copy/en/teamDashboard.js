@@ -87,8 +87,22 @@ const teamDashboard = {
       cta: 'Go to Team Dynamics →',
     },
     locked: {
-      body: "Your manager also sees Team Dynamics: what this team's mix asks of the person leading it. It doesn't show who has which working style either.",
+      body: "Your manager also sees Team Dynamics: what this team's mix asks of the person leading it. It doesn't show who has which working style.",
       login: 'Are you the manager? Log in →',
+      shareEyebrow: 'Another team?',
+      shareLead: 'Know a team that could use this? Copy a note for whoever leads it.',
+      button: 'Copy the note',
+      copied: "Copied. Add, in your own words, what stayed with you. Your own team's picture stays out of it.",
+      copyFailed: 'Copying did not work. Please try again.',
+      shareText: `Hi,
+
+Our team did TOF Persona. Everyone answers nine questions about how they work. What I found most interesting was seeing how I work, and why that sometimes causes friction in a team.
+
+The team then gets a shared picture: which working styles it has and what it needs from the workplace. By default it doesn't show who has which working style, not even to a manager. And with fewer than five completed profiles, there's no picture at all.
+
+The example team at www.persona-tool.nl/demo shows what it looks like. To set it up for a team, see www.persona-tool.nl/voor-je-team.
+
+Best,`,
     },
   },
 };

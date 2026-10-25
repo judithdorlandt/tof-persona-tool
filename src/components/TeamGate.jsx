@@ -22,30 +22,7 @@ import { PageShell, HeroBlock, SectionCard, SectionEyebrow, PrimaryButton } from
 import { useCopy } from '../i18n/LanguageContext';
 import { MIN_TEAM_RESPONSES } from '../utils/access';
 import { validateTeamAccessCode } from '../supabase';
-
-// Kopiëren met een terugval: navigator.clipboard kan weigeren (geen https,
-// oudere browser, geen toestemming). Dan via een tijdelijk tekstveld.
-async function copyText(text) {
-    try {
-        await navigator.clipboard.writeText(text);
-        return true;
-    } catch (_e) {
-        try {
-            const area = document.createElement('textarea');
-            area.value = text;
-            area.setAttribute('readonly', '');
-            area.style.position = 'fixed';
-            area.style.opacity = '0';
-            document.body.appendChild(area);
-            area.select();
-            const ok = document.execCommand('copy');
-            document.body.removeChild(area);
-            return ok;
-        } catch (_e2) {
-            return false;
-        }
-    }
-}
+import { copyText } from '../utils/copyText';
 
 export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
     const copy = useCopy().teamDashboard.gate;
