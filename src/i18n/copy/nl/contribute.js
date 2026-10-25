@@ -40,7 +40,7 @@ const contribute = {
   name: {
     label: 'Je voornaam',
     hint:
-      'Mag je overslaan. Je voornaam is alleen zichtbaar als je team samen heeft afgesproken namen te tonen. Dan ziet iedereen in het team hem, ook je leidinggevende.',
+      'Mag je overslaan. Gebruikt je team de namenoptie, dan zien je teamleden en je leidinggevende je voornaam bij je werkstijl. Laat je het veld leeg, dan sta je er zonder naam in.',
     placeholder: 'Voornaam',
   },
 
@@ -64,7 +64,7 @@ const contribute = {
     next: 'Het teambeeld is te zien zodra er minstens vijf profielen zijn ingebracht. Je opent het op team.persona-tool.nl/team, met dezelfde teamcode.',
     privacy: 'Niemand ziet wie welke werkstijl heeft, ook een leidinggevende niet.',
     // Alleen als de namenschakelaar van het team aan staat.
-    privacyNames: 'Je team heeft afgesproken voornamen te tonen in Teaminzicht. Iedereen in het team ziet dezelfde namen, ook je leidinggevende.',
+    privacyNames: 'Je team gebruikt de namenoptie. Heb je je voornaam ingevuld, dan kan iedereen in het team hem zien, ook de leidinggevende.',
     cta: 'Naar het teambeeld',
   },
 

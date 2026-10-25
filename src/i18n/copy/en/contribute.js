@@ -40,7 +40,7 @@ const contribute = {
   name: {
     label: 'Your first name',
     hint:
-      'You can skip this. Your first name is only visible if your team has agreed together to show names. Then everyone in the team sees it, your manager included.',
+      "You can skip this. If your team uses the names option, your teammates and your manager see your first name next to your working style. Leave it empty and you're included without a name.",
     placeholder: 'First name',
   },
 
@@ -62,7 +62,7 @@ const contribute = {
       'Once is enough. This browser remembers that you did it, so you cannot accidentally be counted twice.',
     next: 'The team picture is available once at least five profiles have been added. You can open it at team.persona-tool.nl/en/team, with the same team code.',
     privacy: 'Nobody sees who has which working style, not even a manager.',
-    privacyNames: 'Your team has agreed to show first names in Team Insight. Everyone in the team sees the same names, your manager included.',
+    privacyNames: 'Your team uses the names option. If you added your first name, everyone in the team can see it, including the manager.',
     cta: 'Go to the team picture',
   },
 

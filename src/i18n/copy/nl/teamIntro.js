@@ -12,7 +12,7 @@ const teamIntro = {
     eyebrow: 'Toegang',
     title: 'Naar je teambeeld',
     bullets: [
-      'Teamlid: met de teamcode zie je Teaminzicht, zonder namen (tenzij je team samen anders afspreekt) en vanaf vijf profielen',
+      'Teamlid: met de teamcode zie je Teaminzicht, zonder namen, tenzij je team de namenoptie gebruikt, en vanaf vijf profielen',
       'Leidinggevende: log in met het mailadres dat aan je team gekoppeld is. Daar staat ook Teamdynamiek',
       'Minder dan vijf mensen in je team? Neem contact op met TOF om samen te kijken hoe het teambeeld toch kan, met oog voor privacy',
       'Nog geen profiel? Doe de test in de app en breng je profiel daarna in bij je team',

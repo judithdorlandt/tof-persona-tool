@@ -50,7 +50,7 @@ const teamDashboard = {
       "Pas na 'Inbrengen' telt je profiel mee. Bewaar dit bericht tot dan: de teamcode heb je pas na de test nodig.",
       "Zodra vijf collega's hun profiel hebben ingebracht, staat het teambeeld klaar. Je opent het op team.persona-tool.nl/team, met dezelfde teamcode.",
       showNames
-        ? 'Je team heeft afgesproken voornamen te tonen in Teaminzicht. Iedereen in het team ziet dezelfde namen, ook de leidinggevende. Wie het naamveld leeg laat, staat er zonder naam in.'
+        ? 'Je team gebruikt de namenoptie. Iedereen in het team ziet dezelfde namen, ook de leidinggevende. Wie het naamveld leeg laat, staat er zonder naam in.'
         : 'Niemand ziet wie welke werkstijl heeft, ook een leidinggevende niet.',
     ].join('\n'),
   },

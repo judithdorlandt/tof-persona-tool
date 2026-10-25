@@ -33,7 +33,7 @@ const teamDashboard = {
       "Your profile only counts once you've tapped 'Add my profile' on the website. Keep this message until then: you only need the team code after the test.",
       'Once five colleagues have added their profile, the team picture is ready. You can open it at team.persona-tool.nl/en/team, with the same team code.',
       showNames
-        ? "Your team has agreed to show first names in Team Insight. Everyone in the team sees the same names, the manager included. If you leave the name field empty, you'll appear without a name."
+        ? "Your team uses the names option. Everyone in the team sees the same names, the manager included. If you leave the name field empty, you'll appear without a name."
         : 'Nobody sees who has which working style, not even a manager.',
     ].join('\n'),
   },

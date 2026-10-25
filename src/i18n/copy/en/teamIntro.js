@@ -9,7 +9,7 @@ const teamIntro = {
     eyebrow: 'Access',
     title: 'Open your team picture',
     bullets: [
-      'Team member: the team code shows you Team Insight, without names (unless your team agrees otherwise) and from five profiles',
+      'Team member: the team code shows you Team Insight, without names, unless your team uses the names option, and from five profiles',
       'Manager: log in with the email address linked to your team. Team Dynamics is there too',
       'Fewer than five people in your team? Contact TOF to look together at how the team picture can still work, with privacy in mind',
       'No profile yet? Take the test in the app and add your profile to your team afterwards',

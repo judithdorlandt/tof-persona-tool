@@ -84,6 +84,14 @@ export function countCompleteProfiles(responses = []) {
  * Voornamen per primaire werkstijl, of null als er geen enkele naam is
  * (dan staat de schakelaar uit) of als het team onder de drempel zit.
  * → { [personaId]: { names: ['Anna', 'Bram'], unnamed: 1 } }
+ *
+ * Namenregel (besluit Judith K2, 25 okt 2026): ook met de schakelaar aan
+ * alleen namen als iedereen een voornaam heeft, of als de mensen zonder naam
+ * samen minstens vijf zijn. Anders is wie geen naam invulde door wegstrepen
+ * te herkennen. Die vijf is dezelfde grens als de drempel van het teambeeld:
+ * onder vijf ben je herleidbaar. Dezelfde regel staat op de server
+ * (supabase/010_names_rule.sql); deze kant houdt hem ook vast als die nog
+ * niet gedraaid is.
  */
 export function namesByPersona(responses = [], locale = 'nl') {
     if (!Array.isArray(responses)) return null;
@@ -104,6 +112,9 @@ export function namesByPersona(responses = [], locale = 'nl') {
         }
     });
     if (!anyName) return null;
+
+    const unnamed = Object.values(byPersona).reduce((sum, e) => sum + e.unnamed, 0);
+    if (unnamed > 0 && unnamed < MIN_TEAM_RESPONSES) return null;
 
     Object.values(byPersona).forEach((entry) => {
         entry.names.sort((x, y) => x.localeCompare(y, locale, { sensitivity: 'base' }));
