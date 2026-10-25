@@ -163,7 +163,7 @@ export default function ResultsProfileCard({
                                     </span>
                                 </div>
                                 {resultData?.name?.trim() && (
-                                    <span style={{ fontSize: 14, color: '#9A9088', letterSpacing: 0.2 }}>
+                                    <span style={{ fontSize: 14, color: 'var(--tof-text-muted)', letterSpacing: 0.2 }}>
                                         {resultData.name}
                                     </span>
                                 )}

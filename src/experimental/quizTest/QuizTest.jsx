@@ -516,7 +516,7 @@ export default function QuizTest({ setPage }) {
                     <div style={{ flex: 1, height: 5, background: '#e6dfd8', borderRadius: 999, overflow: 'hidden' }}>
                         <div style={{ width: `${progress}%`, height: '100%', background: PALETTE.accent, borderRadius: 999, transition: 'width .3s' }} />
                     </div>
-                    <span style={{ color: '#999', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.5, whiteSpace: 'nowrap', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--tof-text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.5, whiteSpace: 'nowrap', fontWeight: 600 }}>
                         {basisStep + 1} / {BASIS_VRAGEN.length}
                     </span>
                 </div>

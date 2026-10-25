@@ -72,7 +72,7 @@ export default class ErrorBoundary extends React.Component {
       fontSize: 12,
       letterSpacing: 1.8,
       textTransform: 'uppercase',
-      color: '#7A7A7A',
+      color: 'var(--tof-text-muted)',
       fontWeight: 700,
       marginBottom: 14,
     };
