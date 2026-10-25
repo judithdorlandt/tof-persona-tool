@@ -153,6 +153,11 @@ Your team sees Team Insight: which working styles are in the team and what it ne
 Team Dynamics is tied to your login, not to the code. That's why you can share the code with your whole team.
 
 
+TELLING A COLLEAGUE?
+
+If you'd like to show a fellow manager how this works, show them the example team: www.persona-tool.nl/demo. My advice: keep your own team's picture inside the team. Even without names, anyone who knows your team can still pick people out. Knowing it stays inside is what lets your team answer honestly. What you can pass on is how the conversation with your team went.
+
+
 THE INVOICE
 
 You'll receive the invoice separately by email[, with purchase order number …].

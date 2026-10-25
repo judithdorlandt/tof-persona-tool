@@ -164,6 +164,11 @@ Je team ziet Teaminzicht: welke werkstijlen er in het team zitten en wat het tea
 Teamdynamiek hangt aan je inlog en niet aan de code. Daarom kun je de code met je hele team delen.
 
 
+VERTEL JE EROVER?
+
+Wil je een collega-leidinggevende laten zien hoe dit werkt, laat dan het voorbeeldteam zien: www.persona-tool.nl/demo. Mijn advies: houd je eigen teambeeld binnen het team. Ook zonder namen kan wie je team kent er mensen in herkennen. En juist omdat het binnen blijft, kan je team eerlijk invullen. Wat je wel kunt navertellen, is hoe het gesprek met je team ging.
+
+
 DE FACTUUR
 
 De factuur krijg je apart per mail[, met inkoopordernummer …].
