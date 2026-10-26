@@ -21,7 +21,7 @@
 import { PAGE_W, PAGE_H, MARGIN, USABLE_W } from './constants';
 import { TYPE_V9, COLOR_FAMILIES, SPACING, RHYTHM } from './OL_styles';
 import {
-    createCanvas, rect, text, drawWrapped, circle,
+    createCanvas, rect, text, drawWrapped, circle, wrapTextLines,
 } from './svgPrimitives';
 import { drawPageHeader } from './OL_Chrome';
 
@@ -219,10 +219,16 @@ function drawWerkomgevingColumn({ svg, x, y, w, workplace, copy }) {
     return ly;
 }
 
-// Methodologische noot (kwantitatief) in eigen kader onderaan pagina 4.
-// Retourneert de bovenkant van het kader → vloer voor de kolommen.
+// Methodologische noot (kwantitatief) in eigen kader onderaan pagina 4, met
+// daaronder de leesuitleg bij "Wat de werkomgeving vraagt" (toets na bouw,
+// grafisch 1.19). Het kader groeit mee met het aantal regels.
+const NOTE_LH = 4.6;
 function drawMethodNoteFramed(svg, copy) {
-    const boxH = 14;
+    const noteW = USABLE_W - SPACING.md * 2;
+    const paragraphs = [copy.patronen.methodNote, copy.patronen.cols.vraagt.subtitle];
+    const lineCount = paragraphs.reduce(
+        (n, p) => n + Math.max(1, wrapTextLines(p, noteW, 3.18, 'Inter').length), 0);
+    const boxH = SPACING.md + 4 + (lineCount - 1) * NOTE_LH + SPACING.md;
     const boxY = PAGE_H - MARGIN - boxH - 4;
     svg.appendChild(rect(MARGIN, boxY, USABLE_W, boxH, C.surface, {
         stroke: C.border, strokeWidth: 0.4, rx: 1,
@@ -235,12 +241,15 @@ function drawMethodNoteFramed(svg, copy) {
         ...TYPE_V9.eyebrow,
         color: SAGE,
     }));
-    drawWrapped({
-        svg, x: MARGIN + SPACING.md, y: boxY + SPACING.md + 4,
-        maxWidth: USABLE_W - SPACING.md * 2,
-        content: copy.patronen.methodNote,
-        font: 'Inter', weight: 400, size: 3.18, color: C.textSoft,
-        lineHeight: 4.6, maxLines: 2,
+    let ly = boxY + SPACING.md + 4;
+    paragraphs.forEach((content) => {
+        ly = drawWrapped({
+            svg, x: MARGIN + SPACING.md, y: ly,
+            maxWidth: noteW,
+            content,
+            ...TYPE_V9.small,
+            lineHeight: NOTE_LH,
+        });
     });
     return boxY;
 }

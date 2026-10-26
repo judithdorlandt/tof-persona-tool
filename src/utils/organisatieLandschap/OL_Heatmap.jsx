@@ -49,12 +49,13 @@ export function buildHeatmapSVG({ data, copy, lang = 'nl' }) {
     const pages = [];
     let next = 0;
     do {
+        const continued = pages.length > 0;
         const svg = createCanvas();
         svg.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
 
         // V12: pageTitle weglaten — anders staat hij identiek aan de H2.
         const titleTopY = drawPageHeader(svg, { date: data.date, pageTitle: null, copy });
-        const subBottom = drawTitleBlock(svg, titleTopY, copy);
+        const subBottom = drawTitleBlock(svg, titleTopY, copy, continued);
         const legendBottom = drawLegendTopRight(svg, titleTopY, copy);
         // Kolomkoppen 14 mm onder de ondertitel, en altijd onder de legenda.
         const headerBaseline = Math.max(subBottom + RHYTHM.subToContent, legendBottom + 7);
@@ -84,13 +85,13 @@ export function buildHeatmapSVG({ data, copy, lang = 'nl' }) {
 }
 
 // Geeft de basislijn van de laatste ondertitelregel terug.
-function drawTitleBlock(svg, y, copy) {
+function drawTitleBlock(svg, y, copy, continued) {
     // V14: Playfair Regular 28pt — matcht web-app.
     const titleSize = TYPE_V9.h2.size;
     const titleBaseline = y + titleSize;
     svg.appendChild(text({
         x: MARGIN, y: titleBaseline,
-        content: copy.heatmap.title,
+        content: continued ? copy.heatmap.titleContinued : copy.heatmap.title,
         ...TYPE_V9.h2,
     }));
     // Ondertitel tot aan de legenda (66 breed) met 10,6 ruimte (grafisch punt 4).
@@ -139,15 +140,13 @@ function drawLegendTopRight(svg, y, copy) {
         content: copy.heatmap.legend.scaleHigh,
         ...TYPE_V9.footer, anchor: 'end',
     }));
-    // Uitleg-regel, en wat een lege cel betekent (redactie punt 22).
-    let ly = legY + 16.5;
-    [copy.heatmap.legend.explanation, copy.heatmap.legend.cellEmpty].forEach((content) => {
-        ly = drawWrapped({
-            svg, x: right, y: ly, maxWidth: LEGEND_W,
-            content, ...TYPE_V9.small, anchor: 'end',
-        });
+    // Uitleg-regel. Wat "—" betekent staat in de voetnoot, zodat de legenda
+    // kort blijft (toets na bouw, grafisch 1.1).
+    const end = drawWrapped({
+        svg, x: right, y: legY + 16.5, maxWidth: LEGEND_W,
+        content: copy.heatmap.legend.explanation, ...TYPE_V9.small, anchor: 'end',
     });
-    return ly - TYPE_V9.small.lineHeight;
+    return end - TYPE_V9.small.lineHeight;
 }
 
 const ROW_H = 7;          // vaste rijhoogte (grafisch punt 6)
@@ -336,8 +335,7 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, lowReliability }) {
 
 // Voetnootregels — alleen relevante regels, onder→boven gestapeld.
 function buildFootnoteLines(data, copy) {
-    const lines = [copy.heatmap.reliabilityHelp];
-    return lines;
+    return [copy.heatmap.reliabilityHelp, copy.heatmap.legend.cellEmpty];
 }
 
 // Voetnoot direct onder de tabel (6,35 mm), maar nooit lager dan boven de

@@ -79,6 +79,8 @@ export const COPY_NL = {
     // ── Pagina 2 — Werkstijl per team (heatmap)
     heatmap: {
         title: 'Werkstijl per team',
+        // Vervolgpagina's (toets na bouw, redactie punt 4).
+        titleContinued: 'Werkstijl per team (vervolg)',
         subtitle:
             'Per team het aandeel van elke eerste werkstijl, in procenten, plus de organisatie als geheel.',
         cols: {
@@ -91,16 +93,18 @@ export const COPY_NL = {
         // — die glyphs renderen nooit, ongeacht italic/normaal. Daarom de drempels
         // in woorden i.p.v. wiskundige tekens; leest bovendien prettiger voor een
         // bestuurlijke lezer. (· – é zitten wél in de subset en blijven dus staan.)
-        // Dezelfde schaal als de dashboards (getConfidence, opdracht L4).
-        reliabilityHelp: 'Betrouwbaarheid: 5–15 profielen = opkomend patroon · 16–30 = betrouwbaar beeld · meer dan 30 = sterk patroon',
+        // Schaal van getConfidence(), maar vanaf 10: een rij onder de 10 bestaat
+        // in dit rapport niet (toets na bouw, redactie punt 3).
+        reliabilityHelp: 'Betrouwbaarheid: 10–15 profielen = opkomend patroon · 16–30 = betrouwbaar beeld · meer dan 30 = sterk patroon',
         // Fix #2 page 2: legenda-uitleg ipv arbitraire kleur.
         legend: {
             label: 'KLEURINTENSITEIT',
             explanation: 'Hoe sterker de kleur, hoe groter het aandeel binnen het team.',
             scaleLow: '0%',
             scaleHigh: '100%',
-            // Redactie punt 22.
-            cellEmpty: 'Lege cel: niemand met deze eerste werkstijl.',
+            // Toets na bouw, redactie punt 1: de cel toont "—". Staat als tweede
+            // regel van de voetnoot (grafisch 1.1).
+            cellEmpty: 'Streepje (—): niemand met deze eerste werkstijl.',
         },
     },
 
@@ -121,6 +125,9 @@ export const COPY_NL = {
             // Het werkplekprofiel: kern, steun en beperkt nodig, geen percentages.
             vraagt: {
                 title: 'Wat de werkomgeving vraagt',
+                // Terug na de toets (redactie punt 2); staat in de
+                // methodologische noot (grafisch 1.19).
+                subtitle: 'Van meeste naar minste nadruk: hoe centraal een plek is in het werk, niet hoeveel plekken nodig zijn.',
             },
             werkt: {
                 title: 'Wat werkt goed',

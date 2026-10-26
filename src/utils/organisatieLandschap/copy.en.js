@@ -70,6 +70,7 @@ export const COPY_EN = {
     // ── Page 3 — Working style per team (heatmap)
     heatmap: {
         title: 'Working style per team',
+        titleContinued: 'Working style per team (continued)',
         subtitle:
             'Per team, the share of each first working style in percent, plus the organisation as a whole.',
         cols: {
@@ -79,13 +80,13 @@ export const COPY_EN = {
         },
         orgRowLabel: 'ORGANISATION',
         // No >= / <= glyphs: the bundled font subsets do not contain them.
-        reliabilityHelp: 'Reliability: 5–15 profiles = emerging pattern · 16–30 = reliable picture · more than 30 = strong pattern',
+        reliabilityHelp: 'Reliability: 10–15 profiles = emerging pattern · 16–30 = reliable picture · more than 30 = strong pattern',
         legend: {
             label: 'COLOUR INTENSITY',
             explanation: 'The stronger the colour, the larger the share within the team.',
             scaleLow: '0%',
             scaleHigh: '100%',
-            cellEmpty: 'Empty cell: no one with this as their first working style.',
+            cellEmpty: 'Dash (—): no one with this as their first working style.',
         },
     },
 
@@ -104,6 +105,7 @@ export const COPY_EN = {
             },
             vraagt: {
                 title: 'What the work environment asks for',
+                subtitle: 'From most to least emphasis: how central a space is to the work, not how many spaces are needed.',
             },
             werkt: {
                 title: 'What works well',
