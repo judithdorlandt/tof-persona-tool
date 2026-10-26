@@ -14,6 +14,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import {
     PageShell,
     HeroBlock,
@@ -25,6 +26,7 @@ import {
     TileGrid,
     Tile,
     keepTileInView,
+    DetailPanelHeader,
 } from '../ui/AppShell';
 import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow } from '../ui/tokens';
 
@@ -195,8 +197,18 @@ export default function TeamDashboard({
     const activeTile = tiles.find((tile) => tile.id === activeId);
 
     function handleTileClick(id, event) {
+        const opening = activeId !== id;
         setActiveId((prev) => (prev === id ? null : id));
-        if (isNarrow) keepTileInView(event.currentTarget);
+        if (isNarrow) keepTileInView(event.currentTarget, { opening });
+    }
+
+    // Na "Sluiten" verdwijnt de knop; zet de focus terug op de tegel die
+    // open stond, anders valt hij terug naar het begin van de pagina.
+    function closePanel() {
+        const tile = document.querySelector(`[aria-controls="${PANEL_ID}"][aria-expanded="true"]`);
+        // flushSync: het paneel is weg vóórdat de focus verhuist.
+        flushSync(() => setActiveId(null));
+        if (tile) tile.focus();
     }
 
     // ── DREMPEL ──
@@ -218,59 +230,15 @@ export default function TeamDashboard({
 
     const detailPanel = activeTile ? (
         <SectionCard id={PANEL_ID} accent={ACCENT} padding={0}>
-            <div
-                style={{
-                    padding: '22px 22px 8px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: SPACING.md,
-                }}
-            >
-                <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
-                    <SectionEyebrow color={ACCENT_TEXT}>
-                        {activeTile.eyebrow}
-                    </SectionEyebrow>
-                    <h2
-                        style={{
-                            ...TYPE.heading,
-                            fontSize: 24,
-                        }}
-                    >
-                        {activeTile.detailTitle}
-                    </h2>
-                    {activeTile.detailLead(aggregate, insights) ? (
-                        <p
-                            style={{
-                                ...TYPE.body,
-                                maxWidth: 620,
-                            }}
-                        >
-                            {activeTile.detailLead(aggregate, insights)}
-                        </p>
-                    ) : null}
-                </div>
-
-                <button
-                    type="button"
-                    onClick={() => setActiveId(null)}
-                    aria-label={t.closeLabel}
-                    style={{
-                        background: 'transparent',
-                        border: '1px solid var(--tof-border)',
-                        borderRadius: RADIUS.pill,
-                        padding: '4px 12px',
-                        fontSize: 12,
-                        color: 'var(--tof-text-muted)',
-                        cursor: 'pointer',
-                        fontFamily: 'var(--tof-font-body)',
-                        fontWeight: 500,
-                        flexShrink: 0,
-                    }}
-                >
-                    {t.close}
-                </button>
-            </div>
+            <DetailPanelHeader
+                eyebrow={activeTile.eyebrow}
+                eyebrowColor={ACCENT_TEXT}
+                title={activeTile.detailTitle}
+                lead={activeTile.detailLead(aggregate, insights)}
+                closeText={t.close}
+                closeLabel={t.closeLabel}
+                onClose={closePanel}
+            />
 
             <div style={{ padding: '0 22px 22px' }}>
                 {activeTile.render(aggregate, insights)}

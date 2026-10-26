@@ -15,6 +15,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import {
     PageShell,
     HeroBlock,
@@ -25,6 +26,7 @@ import {
     TileGrid,
     Tile,
     keepTileInView,
+    DetailPanelHeader,
 } from '../ui/AppShell';
 import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow } from '../ui/tokens';
 
@@ -336,56 +338,32 @@ export default function TeamDynamics({
     const activeTile = TILES.find((tile) => tile.id === activeId);
 
     function handleTileClick(id, event) {
+        const opening = activeId !== id;
         setActiveId((prev) => (prev === id ? null : id));
-        if (isNarrow) keepTileInView(event.currentTarget);
+        if (isNarrow) keepTileInView(event.currentTarget, { opening });
+    }
+
+    // Na "Sluiten" verdwijnt de knop; zet de focus terug op de tegel die
+    // open stond, anders valt hij terug naar het begin van de pagina.
+    function closePanel() {
+        const tile = document.querySelector(`[aria-controls="${PANEL_ID}"][aria-expanded="true"]`);
+        // flushSync: het paneel is weg vóórdat de focus verhuist.
+        flushSync(() => setActiveId(null));
+        if (tile) tile.focus();
     }
 
     // ── DASHBOARD ────────────────────────────────────────────
     const detailPanel = activeTile ? (
         <SectionCard id={PANEL_ID} accent={ACCENT} padding={0}>
-            <div
-                style={{
-                    padding: '22px 22px 8px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: SPACING.md,
-                }}
-            >
-                <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
-                    <SectionEyebrow color={ACCENT}>
-                        {activeTile.eyebrow}
-                    </SectionEyebrow>
-                    <h2 style={{ ...TYPE.heading, fontSize: 24 }}>
-                        {activeTile.detailTitle}
-                    </h2>
-                    {activeTile.detailLead ? (
-                        <p style={{ ...TYPE.body, maxWidth: 620 }}>
-                            {activeTile.detailLead}
-                        </p>
-                    ) : null}
-                </div>
-
-                <button
-                    type="button"
-                    onClick={() => setActiveId(null)}
-                    aria-label={t.closeLabel}
-                    style={{
-                        background: 'transparent',
-                        border: '1px solid var(--tof-border)',
-                        borderRadius: RADIUS.pill,
-                        padding: '4px 12px',
-                        fontSize: 12,
-                        color: 'var(--tof-text-muted)',
-                        cursor: 'pointer',
-                        fontFamily: 'var(--tof-font-body)',
-                        fontWeight: 500,
-                        flexShrink: 0,
-                    }}
-                >
-                    {t.close}
-                </button>
-            </div>
+            <DetailPanelHeader
+                eyebrow={activeTile.eyebrow}
+                eyebrowColor={ACCENT}
+                title={activeTile.detailTitle}
+                lead={activeTile.detailLead}
+                closeText={t.close}
+                closeLabel={t.closeLabel}
+                onClose={closePanel}
+            />
 
             <div style={{ padding: '0 22px 22px' }}>
                 {activeTile.render()}
@@ -749,6 +727,10 @@ function DynamicsPanel({ dynamicsAxes, missingCritical }) {
     );
 }
 
+// Desktop: labelkolom links en rechts van de asbalk, plus de ruimte ernaast.
+const AXIS_LABEL_W = 140;
+const AXIS_GAP = SPACING.sm + 2;
+
 function DynamicsAxis({ axis, isFirst }) {
     const { lang } = useLang();
     const isNarrow = useIsNarrow();
@@ -805,12 +787,14 @@ function DynamicsAxis({ axis, isFirst }) {
                     <AxisBar lPct={lPct} rPct={rPct} />
                 </div>
             ) : (
-                <div style={{ display: 'flex', alignItems: 'center', gap: SPACING.sm + 2 }}>
-                    <span style={{ minWidth: 72, textAlign: 'right' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: AXIS_GAP }}>
+                    {/* Vaste breedte, zodat de drie balken op dezelfde x
+                        beginnen en eindigen en je ze kunt vergelijken. */}
+                    <span style={{ width: AXIS_LABEL_W, flexShrink: 0, textAlign: 'right' }}>
                         <AxisEnd label={axis.left} pct={lPct} />
                     </span>
                     <AxisBar lPct={lPct} rPct={rPct} />
-                    <span style={{ minWidth: 72 }}>
+                    <span style={{ width: AXIS_LABEL_W, flexShrink: 0 }}>
                         <AxisEnd label={axis.right} pct={rPct} pctFirst />
                     </span>
                 </div>
@@ -820,9 +804,9 @@ function DynamicsAxis({ axis, isFirst }) {
                 style={{
                     ...TYPE.body,
                     fontSize: 13,
-                    // Op desktop lijnt de leeszin uit met de balk; op een
+                    // Op desktop begint de leeszin waar de balk begint; op een
                     // telefoon kost die inspringing te veel regelbreedte.
-                    paddingLeft: isNarrow ? 0 : 80,
+                    paddingLeft: isNarrow ? 0 : AXIS_LABEL_W + AXIS_GAP,
                     paddingRight: isNarrow ? 0 : 8,
                 }}
             >
@@ -867,12 +851,14 @@ function AxisBar({ lPct, rPct }) {
                 display: 'flex',
             }}
         >
-            <div style={{ width: `${lPct}%`, height: '100%', background: 'var(--tof-accent-rose)' }} />
+            {/* flex in plaats van procenten: dan telt de scheiding van 2 px
+                niet op bij de 100%. */}
+            <div style={{ flex: lPct, height: '100%', background: 'var(--tof-accent-rose)' }} />
             {/* Smalle witte scheiding tussen de twee delen. */}
             {lPct > 0 && rPct > 0 ? (
                 <div style={{ width: 2, height: '100%', background: '#FFFFFF', flexShrink: 0 }} />
             ) : null}
-            <div style={{ width: `${rPct}%`, height: '100%', background: 'var(--tof-accent-sage)' }} />
+            <div style={{ flex: rPct, height: '100%', background: 'var(--tof-accent-sage)' }} />
         </div>
     );
 }

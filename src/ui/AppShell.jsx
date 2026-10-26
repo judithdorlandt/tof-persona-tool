@@ -548,16 +548,77 @@ export function Tile({
 /**
  * keepTileInView — voor de tegels in één kolom (telefoon). Sluit een paneel
  * boven de getikte tegel, dan schuift die tegel omhoog uit beeld; dit zet hem
- * na het openen terug net onder de vaste navigatiebalk.
+ * na het openen terug net onder de vaste navigatiebalk. Staat de tegel bij
+ * het openen laag op het scherm, dan zou zijn paneel buiten beeld openen;
+ * dan schuift hij ook omhoog (`opening`).
  */
 const NAV_OFFSET = 96;
+const LOW_ON_SCREEN = 0.6;
 
-export function keepTileInView(el) {
+export function keepTileInView(el, { opening = false } = {}) {
     if (!el) return;
     requestAnimationFrame(() => {
-        const top = el.getBoundingClientRect().top;
-        if (top < NAV_OFFSET) window.scrollBy(0, top - NAV_OFFSET);
+        const { top, bottom } = el.getBoundingClientRect();
+        const tooHigh = top < NAV_OFFSET;
+        const tooLow = opening && bottom > window.innerHeight * LOW_ON_SCREEN;
+        if (tooHigh || tooLow) window.scrollBy(0, top - NAV_OFFSET);
     });
+}
+
+/**
+ * DetailPanelHeader — de kop van het paneel onder de tegels (Teaminzicht en
+ * Teamdynamiek): eyebrow, titel, intro en "Sluiten ✕". Op een telefoon staat
+ * "Sluiten" rechtsboven op de eyebrowregel, zodat titel en intro de volle
+ * breedte houden; ernaast drukte de knop de intro in een smalle kolom.
+ */
+export function DetailPanelHeader({ eyebrow, eyebrowColor, title, lead, closeText, closeLabel, onClose }) {
+    const isNarrow = useIsNarrow();
+
+    const closeButton = (
+        <button
+            type="button"
+            onClick={onClose}
+            aria-label={closeLabel}
+            style={{
+                background: 'transparent',
+                border: '1px solid var(--tof-border)',
+                borderRadius: RADIUS.pill,
+                padding: '4px 12px',
+                fontSize: 12,
+                color: 'var(--tof-text-muted)',
+                cursor: 'pointer',
+                fontFamily: 'var(--tof-font-body)',
+                fontWeight: 500,
+                flexShrink: 0,
+                ...(isNarrow ? { position: 'absolute', top: 20, right: 20 } : {}),
+            }}
+        >
+            {closeText}
+        </button>
+    );
+
+    return (
+        <div
+            style={{
+                padding: '22px 22px 8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                gap: SPACING.md,
+                position: 'relative',
+            }}
+        >
+            <div style={{ display: 'grid', gap: SPACING.sm, flex: 1 }}>
+                <div style={isNarrow ? { paddingRight: 96 } : undefined}>
+                    <SectionEyebrow color={eyebrowColor}>{eyebrow}</SectionEyebrow>
+                </div>
+                <h2 style={{ ...TYPE.heading, fontSize: 24 }}>{title}</h2>
+                {lead ? <p style={{ ...TYPE.body, maxWidth: 620 }}>{lead}</p> : null}
+            </div>
+
+            {closeButton}
+        </div>
+    );
 }
 
 // =========================
