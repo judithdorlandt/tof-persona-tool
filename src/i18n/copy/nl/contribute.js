@@ -68,12 +68,12 @@ const contribute = {
     cta: 'Naar het teambeeld',
   },
 
-  // Deelmoment 1a (deelteksten 22 okt 2026; `text` besluit Judith 25 okt):
+  // Deelmoment 1a (deelteksten 22 okt 2026; `text` besluit Judith 26 okt):
   // je eigen profiel doorvertellen. Alleen je persona, niets over je team.
   share: {
     eyebrow: 'Doorsturen',
     title: 'Laat iemand meelezen die je goed kent.',
-    text: 'Je profiel is van jou. Wil je iemand die je goed kent laten meekijken? Kopieer de tekst hieronder. Over je team staat er niets in.',
+    text: 'Je profiel is van jou. De tekst staat klaar, met jouw persona erin. Kopieer hem en stuur hem naar wie je wilt. Over je team staat er niets in.',
     button: 'Tekst kopiëren',
     copied: 'Gekopieerd. Plak hem waar je wilt en maak er je eigen woorden van.',
     copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',

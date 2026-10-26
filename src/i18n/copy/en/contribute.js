@@ -71,7 +71,7 @@ const contribute = {
   share: {
     eyebrow: 'Pass it on',
     title: 'Show it to someone who knows you well.',
-    text: 'Your profile is yours. Want someone who knows you well to take a look? Copy the note below. It says nothing about your team.',
+    text: 'Your profile is yours. The note is ready, with your persona in it. Copy it and send it to whoever you like. It says nothing about your team.',
     button: 'Copy the note',
     copied: 'Copied. Paste it wherever you like and make it sound like you.',
     copyFailed: 'Copying did not work. Please try again.',
