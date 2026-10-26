@@ -140,7 +140,7 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     const [orgResponseCounts, setOrgResponseCounts] = useState({});
 
     // Organisaties afgeleid uit teams + managers — één entry per unieke
-    // organisation-naam, met team-, response- en manager-tellingen.
+    // organisation-naam, met team- en manager-tellingen (responses: orgResponseCounts).
     const organizations = useMemo(() => {
         const map = new Map();
         (teams || []).forEach((t) => {
@@ -150,14 +150,12 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
                 map.set(org, {
                     name: org,
                     teamCount: 0,
-                    responseCount: 0,
                     managerCount: 0,
                     teams: [],
                 });
             }
             const entry = map.get(org);
             entry.teamCount += 1;
-            entry.responseCount += Number(t.response_count || 0);
             entry.teams.push(t);
         });
         (managers || []).forEach((m) => {
@@ -177,16 +175,16 @@ export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
     // matchende teamcode mist en dubbeltellingen kan bevatten).
     useEffect(() => {
         let cancelled = false;
-        async function loadCounts() {
-            const entries = await Promise.all(
-                organizations.map(async (org) => {
-                    const codes = (org.teams || []).map((t) => t.code).filter(Boolean);
-                    const data = await getResponsesByOrganization(org.name, codes);
-                    return [org.name, (data || []).length];
-                })
-            );
-            if (cancelled) return;
-            setOrgResponseCounts(Object.fromEntries(entries));
+        // Per organisatie bijwerken zodra die binnen is: wachten op alle
+        // organisaties liet lang de som van de teamtellers staan, en die telt
+        // een response die bij twee teams past dubbel (Nijkerk: 269 i.p.v. 268).
+        function loadCounts() {
+            organizations.forEach(async (org) => {
+                const codes = (org.teams || []).map((t) => t.code).filter(Boolean);
+                const data = await getResponsesByOrganization(org.name, codes);
+                if (cancelled) return;
+                setOrgResponseCounts((prev) => ({ ...prev, [org.name]: (data || []).length }));
+            });
         }
         if (organizations.length > 0) loadCounts();
         return () => { cancelled = true; };
@@ -975,7 +973,11 @@ function OrganizationsList({ isMobile, organizations, responseCounts = {}, onSel
                                 {admin.counts.teams(org.teamCount)}
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
-                                {admin.counts.responses(responseCounts[org.name] ?? org.responseCount)}
+                                {/* Pas het gededupliceerde aantal tonen; de som van de
+                                    teamtellers kan een response dubbel tellen. */}
+                                {responseCounts[org.name] != null
+                                    ? admin.counts.responses(responseCounts[org.name])
+                                    : '…'}
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>
                                 {admin.counts.managers(org.managerCount)}
