@@ -559,8 +559,10 @@ function GreenTeamCard({ copy, onClick }) {
         background: 'linear-gradient(135deg, #56705C 0%, #4A6250 100%)',
         borderRadius: 16,
         padding: 22,
-        borderTop: '4px solid #5F7763',
         border: '1px solid rgba(255,255,255,0.08)',
+        // Ná `border`, anders overschrijft die shorthand de bovenrand. Rand =
+        // eindkleur van het verloop, zoals hij altijd bedoeld was.
+        borderTop: '4px solid #4A6250',
         boxShadow: 'var(--tof-shadow)',
         display: 'grid',
         gap: 12,

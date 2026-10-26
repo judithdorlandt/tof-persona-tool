@@ -34,7 +34,9 @@ export default function ShareNote({
         <div style={{ display: 'grid', gap: SPACING.sm, maxWidth: 680 }}>
             {eyebrow ? <SectionEyebrow color={accent}>{eyebrow}</SectionEyebrow> : null}
             {title ? (
-                <h3 style={{ ...TYPE.subhead, fontSize: 20 }}>{title}</h3>
+                // 4 px extra onder de titel: 12 px naar de tekst, de eyebrow
+                // blijft op 8 px van de titel.
+                <h3 style={{ ...TYPE.subhead, fontSize: 20, marginBottom: SPACING.xs }}>{title}</h3>
             ) : null}
             {text ? <p style={{ ...TYPE.body, margin: 0 }}>{text}</p> : null}
             <div style={{ marginTop: SPACING.xs }}>
