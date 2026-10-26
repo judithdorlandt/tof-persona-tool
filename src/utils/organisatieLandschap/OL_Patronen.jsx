@@ -69,7 +69,9 @@ function buildQuantPage(data, copy) {
         svg, x: rightX, y, w: rightW,
         eyebrow: copy.patronen.cols.officeCheck.title.toUpperCase(),
         items: data.officeCheck,
-        bulletColor: ROSE,
+        // Een vraag is geen frictie: neutraal, zoals de steunlijst (grafisch 1.16).
+        bulletColor: C.textSoft,
+        bulletR: 0.9,
     });
 
     return svg;
@@ -138,7 +140,7 @@ function drawTitleBlock(svg, y, title, subtitle) {
 // van de kolom ernaast.
 const HEADER_OFFSET = SPACING.lg + SPACING.sm;   // eyebrow → eerste regel
 
-function drawBulletList({ svg, x, y, eyebrow, items, emptyText, bulletColor, w }) {
+function drawBulletList({ svg, x, y, eyebrow, items, emptyText, bulletColor, bulletR = 1.3, w }) {
     const itemSize = TYPE_V9.body.size;
     const itemLineHeight = 5.2;
     const baseGap = SPACING.md;
@@ -167,7 +169,7 @@ function drawBulletList({ svg, x, y, eyebrow, items, emptyText, bulletColor, w }
     let ly = headerY + headerOffset;
     for (let i = 0; i < items.length; i++) {
         // Optisch gecentreerd op de eerste regel: cap-midden ≈ baseline − size·0.35.
-        svg.appendChild(circle(x + 1.3, ly - itemSize * 0.35, 1.3, bulletColor));
+        svg.appendChild(circle(x + 1.3, ly - itemSize * 0.35, bulletR, bulletColor));
         const endY = drawWrapped({
             svg, x: x + 6, y: ly,
             maxWidth: w - 7,
@@ -268,7 +270,8 @@ function drawCaveat(svg, copy) {
     svg.appendChild(rect(MARGIN, boxY, USABLE_W, boxH, C.surface, {
         stroke: C.border, strokeWidth: 0.4, rx: 1,
     }));
-    svg.appendChild(rect(MARGIN, boxY, USABLE_W, 0.7, ROSE));
+    // Een bronvermelding is geen frictie: sage, zoals de noot op p4.
+    svg.appendChild(rect(MARGIN, boxY, USABLE_W, 0.7, SAGE));
     drawWrapped({
         svg, x: MARGIN + SPACING.md, y: boxY + SPACING.md + 1,
         maxWidth: USABLE_W - SPACING.md * 2,

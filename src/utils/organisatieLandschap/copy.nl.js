@@ -35,7 +35,6 @@ export const COPY_NL = {
     // ── Pagina 2 — Kerncijfers (kop + lead-eyebrow)
     hero: {
         title: 'Kerncijfers',
-        leadEyebrow: 'WAT ZIE JE',
     },
 
     // ── Pagina 2 — Organisatielandschap cover & samenvatting
@@ -153,7 +152,6 @@ export const COPY_NL = {
     // ── Pagina 4 — Duiding & richting
     duiding: {
         // Klein sage label in de paginakop.
-        pageTitle: 'Duiding',
         title: 'Wat dit betekent',
         subtitle: 'Richting voor leiderschap en werkomgeving.',
         leadership: {

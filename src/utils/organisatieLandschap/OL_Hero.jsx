@@ -65,18 +65,13 @@ function drawH2(svg, y, title) {
         content: title,
         ...TYPE_V9.h2,
     }));
-    // B2-fix: de eyebrow "WAT ZIE JE" wordt op de teruggegeven y getekend en
-    // zijn glyphs lopen ~2.8mm omhóóg. De h2-descender zit ~2mm ónder de baseline.
-    // Met +2.12 overlapte de eyebrow de titel. Geef een ruime, schone tussenruimte.
+    // De h2-descender zit ~2mm ónder de baseline; de leadzin komt daar ruim onder.
     return baseline + 6.5;
 }
 
+// Geen eyebrow "WAT ZIE JE" meer (besluit Judith 26 okt, grafisch punt 9):
+// de leadzin staat direct onder de titel.
 function drawLead(svg, y, data, copy) {
-    svg.appendChild(text({
-        x: MARGIN, y,
-        content: copy.hero.leadEyebrow,
-        ...TYPE_V9.eyebrow,
-    }));
     const leadText = data.totalRespondents > 0 && data.dominantStyle.name !== '—'
         ? copy.cover.leadOneSentence(
             data.organizationName, data.dominantStyle.name, data.totalRespondents,
@@ -85,7 +80,7 @@ function drawLead(svg, y, data, copy) {
         : copy.cover.leadFallback;
     // V12: duidende intro, geen quote → Inter regular ~16pt, niet Playfair italic.
     const endY = drawWrapped({
-        svg, x: MARGIN, y: y + SPACING.md + 2,
+        svg, x: MARGIN, y: y + 0.9,
         maxWidth: USABLE_W * 0.82,
         content: leadText,
         font: 'Inter', weight: 400, size: 4.5, color: C.textSoft,
@@ -99,7 +94,10 @@ function drawThreeKpiCards(svg, y, data, copy) {
     const cardW = (USABLE_W - 2 * gap) / 3;
     // Iets hoger dan v14 (38): de pagina was topzwaar. Bescheiden bump houdt
     // de kaarten rustig (geen grote leegte erin) maar geeft het getal meer adem.
-    const cardH = 44;
+    // 34 mm (grafisch punt 8, besluit Judith 26 okt); 44 als een waarde over
+    // twee regels moet.
+    const cardH = [data.dominantStyle.name, data.workplace.top]
+        .some((v) => needsTwoLines(v, cardW - SPACING.md * 2)) ? 44 : 34;
 
     // Eén accent (sage) voor alle drie. Rose alleen als KPI op spanning duidt.
     drawKpiCard(svg, {
@@ -186,6 +184,12 @@ function drawKpiCard(svg, { x, y, w, h, label, big, unit, accent }) {
 }
 
 const KPI_BASELINE = 20;
+
+// Zelfde regel als in drawKpiCard: meer woorden die niet op één regel passen.
+function needsTwoLines(big, availW) {
+    const singleWord = !/\s/.test(String(big).trim());
+    return !singleWord && fitBigNumberSize(big, availW, 12.7) < 7;
+}
 
 function fitBigNumberSize(content, availW, defaultSize) {
     // Playfair Regular caps zijn breed (vooral S in "Samenwerkplekken").

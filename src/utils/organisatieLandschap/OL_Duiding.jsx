@@ -15,7 +15,7 @@ import { TYPE_V9, COLOR_FAMILIES, SPACING, RHYTHM } from './OL_styles';
 import {
     createCanvas, rect, text, drawWrapped, line, circle, wrapTextLines,
 } from './svgPrimitives';
-import { drawPageHeader, CONTENT_TOP } from './OL_Chrome';
+import { drawPageHeader } from './OL_Chrome';
 import {
     buildLeadershipDirections,
     buildEnvironmentDirections,
@@ -30,8 +30,8 @@ export function buildDuidingSVG({ data, copy }) {
     // ── Pagina 1: titel + drie kaarten.
     const svg1 = createCanvas();
     svg1.appendChild(rect(0, 0, PAGE_W, PAGE_H, C.bg));
-    drawPageHeader(svg1, { date: data.date, pageTitle: copy.duiding.pageTitle, copy });
-    let y = CONTENT_TOP;
+    // Geen label "Duiding" meer (besluit Judith 26 okt): zelfde kop als p2–p5.
+    let y = drawPageHeader(svg1, { date: data.date, pageTitle: null, copy });
     y = drawTitleBlock(svg1, y, copy.duiding.title, copy.duiding.subtitle);
     // Eyebrow van de kaarten 14 mm onder de ondertitel (ronde 2, groep 4).
     y += RHYTHM.subToContent - CARD_EYEBROW;

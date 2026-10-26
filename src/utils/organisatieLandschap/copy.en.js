@@ -32,7 +32,6 @@ export const COPY_EN = {
     // ── Page 2 — Key figures (heading + lead eyebrow)
     hero: {
         title: 'Key figures',
-        leadEyebrow: 'WHAT YOU SEE',
     },
 
     // ── Page 2 — Organisation landscape cover & summary
@@ -125,7 +124,6 @@ export const COPY_EN = {
 
     // ── Page 6 — Interpretation & direction
     duiding: {
-        pageTitle: 'Interpretation',
         title: 'What this means',
         subtitle: 'Direction for leadership and the work environment.',
         leadership: {
