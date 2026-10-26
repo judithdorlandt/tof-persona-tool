@@ -73,8 +73,11 @@ export function prepareOrganisatieData({
         .sort((a, b) => (a.responseCount || 0) - (b.responseCount || 0));
     const restSize = () =>
         totalRespondents - ownTeams.reduce((s, t) => s + (t.responseCount || 0), 0);
+    // Teams van tien of meer die zo meeschoven: de kaart op p6 legt dat uit.
+    let shiftedLargeTeams = 0;
     while (ownTeams.length > 0 && restSize() > 0 && restSize() < MIN_ROW_PROFILES) {
         ownTeams.shift();
+        shiftedLargeTeams += 1;
     }
 
     // Staat er een rij "Overige"? Zonder teams met een eigen rij niet: die rij
@@ -139,6 +142,7 @@ export function prepareOrganisatieData({
         inactiveTeams: inactiveTeams.map((t) => getTeamName(t, cd)),
         teamsWithoutOwnRow,
         hasRestRow,
+        shiftedLargeTeams,
         dominantStyle,
         workplace,
         officeCheck,
@@ -356,5 +360,9 @@ export function buildAttentionSummary(data, copy = getOLCopy('nl')) {
     const x = data.teamsWithoutOwnRow || 0;
     if (x === 0) return [];
     const ca = copy.data.attention;
-    return [data.hasRestRow ? ca.noOwnRow(x) : ca.noOwnRowNoRest(x)];
+    if (!data.hasRestRow) return [ca.noOwnRowNoRest(x)];
+    // Is er een team van tien of meer meegeschoven, dan zegt de kaart dat
+    // (tekst redacteur 26 okt, alleen in het meervoud).
+    const shifted = (data.shiftedLargeTeams || 0) > 0 && x > 1;
+    return [shifted ? `${ca.noOwnRow(x)} ${ca.shiftedLarge}` : ca.noOwnRow(x)];
 }
