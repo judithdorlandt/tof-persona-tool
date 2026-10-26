@@ -1398,6 +1398,37 @@ function OrganizationDetail({
                                 {t.teamsHeading(teamSummaries.length)}
                             </div>
 
+                            {/* Responses die op meer dan één team matchten. Ze tellen
+                                nu bij één team (code wint van naam); hier staat
+                                welke, zodat de beheerder ze kan rechtzetten. */}
+                            {teamAssignment.ambiguous.length > 0 && (
+                                <div style={{
+                                    padding: '12px 14px',
+                                    borderRadius: 10,
+                                    background: 'var(--tof-bg)',
+                                    border: '1px solid var(--tof-border)',
+                                    fontSize: 14,
+                                    lineHeight: 1.5,
+                                    color: 'var(--tof-text-soft)',
+                                    display: 'grid',
+                                    gap: 6,
+                                }}>
+                                    <strong style={{ color: 'var(--tof-text)' }}>
+                                        {t.ambiguous.heading(teamAssignment.ambiguous.length)}
+                                    </strong>
+                                    {teamAssignment.ambiguous.map(({ response: r, chosen, others }) => (
+                                        <div key={r.id}>
+                                            {t.ambiguous.line({
+                                                name: r.name || t.ambiguous.anonymous,
+                                                code: r.invite_code || '—',
+                                                teamName: r.team || '—',
+                                                chosen: chosen.team,
+                                                others: others.map((o) => o.team).join(', '),
+                                            })}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                             <div style={{ display: 'grid', gap: 10 }}>
                                 {teamSummaries.map((s) => {

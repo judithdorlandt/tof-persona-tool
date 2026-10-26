@@ -205,6 +205,15 @@ The Office Factory
     loadingResponses: 'Responses laden…',
     closeTile: 'Sluiten ✕',
     teamsHeading: (n) => `Teams in deze organisatie (${n})`,
+    /** Alleen voor de beheerder: responses die op meer dan één team matchten. */
+    ambiguous: {
+      heading: (n) => (n === 1
+        ? '1 ingevuld profiel past bij twee teams'
+        : `${n} ingevulde profielen passen bij meer dan één team`),
+      line: ({ name, code, teamName, chosen, others }) =>
+        `${name} (code ${code}, teamnaam "${teamName}") telt nu bij ${chosen}; paste ook bij ${others}.`,
+      anonymous: 'Zonder naam',
+    },
     viewTeam: 'Bekijk team →',
     viewTeamBusy: '…',
     /** Naamschakelaar per team (show_names). Alleen aan na instemming van het team. */

@@ -191,6 +191,14 @@ The Office Factory
     loadingResponses: 'Loading responses…',
     closeTile: 'Close ✕',
     teamsHeading: (n) => `Teams in this organisation (${n})`,
+    ambiguous: {
+      heading: (n) => (n === 1
+        ? '1 completed profile fits two teams'
+        : `${n} completed profiles fit more than one team`),
+      line: ({ name, code, teamName, chosen, others }) =>
+        `${name} (code ${code}, team name "${teamName}") now counts for ${chosen}; also fitted ${others}.`,
+      anonymous: 'No name',
+    },
     viewTeam: 'View team →',
     viewTeamBusy: '…',
     /** Names switch per team (show_names). Only on once the team has agreed. */
