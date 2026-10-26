@@ -1258,7 +1258,8 @@ function OrganizationDetail({
                     // Onder de tien profielen voor de hele organisatie geen
                     // rapport (MIN_ROW_PROFILES): dan geen knop.
                     moduleSel === 'insight' && responses.length >= MIN_ROW_PROFILES ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        // flex-start: anders rekt de knop mee tot de breedte van de melding.
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
                             <PrimaryButton
                                 onClick={async () => {
                                     // Dynamisch: jsPDF (~0,5 MB) blijft zo uit de
