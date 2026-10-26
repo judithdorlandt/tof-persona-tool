@@ -206,7 +206,8 @@ export function Textarea({ value, onChange, placeholder }) {
                 background: 'var(--tof-surface)',
                 color: 'var(--tof-text)',
                 fontFamily: 'var(--tof-font-body)',
-                fontSize: 15,
+                // 16 px: iOS zoomt in op een veld kleiner dan 16 px.
+                fontSize: 16,
                 lineHeight: 1.6,
                 outline: 'none',
             }}
@@ -230,7 +231,8 @@ export function Input({ value, onChange, placeholder }) {
                 background: 'var(--tof-surface)',
                 color: 'var(--tof-text)',
                 fontFamily: 'var(--tof-font-body)',
-                fontSize: 15,
+                // 16 px: iOS zoomt in op een veld kleiner dan 16 px.
+                fontSize: 16,
                 outline: 'none',
             }}
         />

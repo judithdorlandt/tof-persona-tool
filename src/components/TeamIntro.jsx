@@ -843,7 +843,8 @@ function AccessStrip({
                                 padding: '11px 13px',
                                 borderRadius: 10,
                                 border: `1px solid ${codeError ? 'var(--tof-accent-rose)' : '#E5D9CD'}`,
-                                fontSize: 15,
+                                // 16 px: iOS zoomt in op een veld kleiner dan 16 px.
+                                fontSize: 16,
                                 outline: 'none',
                                 fontFamily: 'var(--tof-font-body)',
                                 background: '#fff',
