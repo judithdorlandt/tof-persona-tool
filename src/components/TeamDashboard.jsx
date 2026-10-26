@@ -28,7 +28,7 @@ import {
     keepTileInView,
     DetailPanelHeader,
 } from '../ui/AppShell';
-import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow } from '../ui/tokens';
+import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow, startsNarrow } from '../ui/tokens';
 
 import TeamPersonaDistribution from '../team/components/TeamPersonaDistribution';
 import TeamWorkplaceTension from '../team/components/TeamWorkplaceTension';
@@ -159,7 +159,9 @@ export default function TeamDashboard({
 }) {
     // Standaard staat de eerste tegel (Werkstijlen) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
-    const [activeId, setActiveId] = useState('personas');
+    // Op een telefoon juist alles dicht (besluit Judith 26 okt): dan zie je
+    // de vier tegels als inhoudsopgave in plaats van één lang paneel.
+    const [activeId, setActiveId] = useState(() => (startsNarrow() ? null : 'personas'));
     const { lang } = useLang();
     const { teamDashboard: t, common, workplaceProfile } = useCopy();
     const isNarrow = useIsNarrow();

@@ -167,6 +167,11 @@ export function useIsNarrow() {
     return useIsBelow(BREAKPOINT_NARROW);
 }
 
+/** Eenmalig, voor een beginwaarde: is het scherm bij het openen smal? */
+export function startsNarrow() {
+    return typeof window !== 'undefined' && window.innerWidth < BREAKPOINT_NARROW;
+}
+
 function useIsBelow(breakpoint) {
     const [isBelow, setIsBelow] = useState(
         typeof window !== 'undefined' ? window.innerWidth < breakpoint : false

@@ -28,7 +28,7 @@ import {
     keepTileInView,
     DetailPanelHeader,
 } from '../ui/AppShell';
-import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow } from '../ui/tokens';
+import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow, startsNarrow } from '../ui/tokens';
 
 import { useArchetypes } from '../i18n/archetypes';
 import { useCopy, useLang } from '../i18n/LanguageContext';
@@ -74,9 +74,11 @@ export default function TeamDynamics({
     // weergaven zoals het organisatie-inzicht.
     forceAccess = false,
 }) {
-    // Standaard staat de eerste tegel (Dynamics) open — zo zien
+    // Standaard staat de eerste tegel (Spanningen) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
-    const [activeId, setActiveId] = useState('tensions');
+    // Op een telefoon juist alles dicht (besluit Judith 26 okt), zie
+    // TeamDashboard.
+    const [activeId, setActiveId] = useState(() => (startsNarrow() ? null : 'tensions'));
     const { lang } = useLang();
     const { teamDynamics: t } = useCopy();
     const ARCHETYPES = useArchetypes();
