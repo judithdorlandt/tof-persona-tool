@@ -187,8 +187,9 @@ export function SectionCard({
                 background: 'var(--tof-surface)',
                 borderRadius: RADIUS.xl,
                 padding: resolvedPadding,
-                borderTop: `4px solid ${accent}`,
                 border: '1px solid var(--tof-border)',
+                // Ná `border`, anders overschrijft die shorthand de accentrand.
+                borderTop: `4px solid ${accent}`,
                 boxShadow: SHADOW.soft,
                 display: 'grid',
                 gap: SPACING.lg,

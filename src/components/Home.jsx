@@ -482,8 +482,9 @@ function OfferCard({
         background: subtle ? '#FBF8F4' : 'var(--tof-surface)',
         borderRadius: 16,
         padding: 22,
-        borderTop: `4px solid ${accent}`,
         border: '1px solid var(--tof-border)',
+        // Ná `border`, anders overschrijft die shorthand de accentrand.
+        borderTop: `4px solid ${accent}`,
         display: 'grid',
         gridTemplateRows: 'auto auto 1fr',
         gap: 10,
