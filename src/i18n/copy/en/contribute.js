@@ -40,7 +40,7 @@ const contribute = {
   name: {
     label: 'Your first name',
     hint:
-      "You can skip this. If your team uses the names option, your teammates and your manager see your first name next to your working style. Leave it empty and you're included without a name.",
+      "You can skip this. If your team uses the names option, your teammates and your manager can see your first name next to your working style. Leave it empty and you're included without a name.",
     placeholder: 'First name',
   },
 

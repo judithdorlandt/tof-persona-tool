@@ -40,7 +40,7 @@ const contribute = {
   name: {
     label: 'Je voornaam',
     hint:
-      'Mag je overslaan. Gebruikt je team de namenoptie, dan zien je teamleden en je leidinggevende je voornaam bij je werkstijl. Laat je het veld leeg, dan sta je er zonder naam in.',
+      'Mag je overslaan. Gebruikt je team de namenoptie, dan kunnen je teamleden en je leidinggevende je voornaam bij je werkstijl zien. Laat je het veld leeg, dan sta je er zonder naam in.',
     placeholder: 'Voornaam',
   },
 
