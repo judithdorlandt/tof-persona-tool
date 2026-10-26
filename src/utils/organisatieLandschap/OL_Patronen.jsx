@@ -30,7 +30,13 @@ const SAGE = COLOR_FAMILIES.accent.rust;     // groen — positief
 const ROSE = COLOR_FAMILIES.accent.frictie;  // rood — aandacht
 
 export function buildPatronenSVG({ data, copy }) {
-    return [buildQuantPage(data, copy), buildQualPage(data, copy)];
+    // Zonder signalen uit observatie en gesprek valt p5 weg (besluit J2);
+    // /admin meldt dat vóór het downloaden.
+    const hasSignals = (data.werktGoedObservations || []).length > 0
+        || (data.leegloperObservations || []).length > 0;
+    return hasSignals
+        ? [buildQuantPage(data, copy), buildQualPage(data, copy)]
+        : [buildQuantPage(data, copy)];
 }
 
 // ── PAGINA 4 — kwantitatief: grafiek (links) + leegloopt (rechts).

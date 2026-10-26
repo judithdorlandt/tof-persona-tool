@@ -187,6 +187,7 @@ The Office Factory
     lead: (teamCount, responseCount) =>
       `Aggregated across ${counts.teams(teamCount)} and ${counts.responses(responseCount)}.`,
     downloadPdf: 'Download as PDF',
+    noSignalsNote: "You haven't added any signals from observation and conversation yet. Without them, that page is left out.",
     loadingResponses: 'Loading responses…',
     closeTile: 'Close ✕',
     teamsHeading: (n) => `Teams in this organisation (${n})`,

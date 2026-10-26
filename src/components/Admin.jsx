@@ -1211,31 +1211,39 @@ function OrganizationDetail({
                     // Onder de tien profielen voor de hele organisatie geen
                     // rapport (MIN_ROW_PROFILES): dan geen knop.
                     moduleSel === 'insight' && responses.length >= MIN_ROW_PROFILES ? (
-                        <PrimaryButton
-                            onClick={async () => {
-                                // Dynamisch: jsPDF (~0,5 MB) blijft zo uit de
-                                // hoofdbundel en laadt pas bij de download.
-                                const {
-                                    generateOrganisatieLandschapPDF:
-                                        generateOrganizationInsightPDF,
-                                } = await import(
-                                    '../utils/organisatieLandschap/OrganisatieLandschap'
-                                );
-                                generateOrganizationInsightPDF({
-                                    aggregate,
-                                    insights,
-                                    teamSummaries,
-                                    organizationName: org.name,
-                                    observations,
-                                    lang,
-                                });
-                                // Log op de achtergrond — mag stil falen.
-                                logPdfDownload(`admin-rapport-${org.name}`);
-                            }}
-                            style={{ background: INSIGHT_ACCENT }}
-                        >
-                            {t.downloadPdf}
-                        </PrimaryButton>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <PrimaryButton
+                                onClick={async () => {
+                                    // Dynamisch: jsPDF (~0,5 MB) blijft zo uit de
+                                    // hoofdbundel en laadt pas bij de download.
+                                    const {
+                                        generateOrganisatieLandschapPDF:
+                                            generateOrganizationInsightPDF,
+                                    } = await import(
+                                        '../utils/organisatieLandschap/OrganisatieLandschap'
+                                    );
+                                    generateOrganizationInsightPDF({
+                                        aggregate,
+                                        insights,
+                                        teamSummaries,
+                                        organizationName: org.name,
+                                        observations,
+                                        lang,
+                                    });
+                                    // Log op de achtergrond — mag stil falen.
+                                    logPdfDownload(`admin-rapport-${org.name}`);
+                                }}
+                                style={{ background: INSIGHT_ACCENT }}
+                            >
+                                {t.downloadPdf}
+                            </PrimaryButton>
+                            {/* Besluit J2: zonder signalen valt p5 weg; downloaden mag. */}
+                            {!observations.some((o) => o.category === 'leegloper' || o.category === 'werkt_goed') && (
+                                <p style={{ margin: 0, maxWidth: 360, fontSize: 14, lineHeight: 1.45, color: 'var(--tof-text-soft)' }}>
+                                    {t.noSignalsNote}
+                                </p>
+                            )}
+                        </div>
                     ) : null
                 }
             />

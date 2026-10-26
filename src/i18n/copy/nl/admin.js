@@ -200,6 +200,8 @@ The Office Factory
     lead: (teamCount, responseCount) =>
       `Geaggregeerd over ${counts.teams(teamCount)} en ${counts.responses(responseCount)}.`,
     downloadPdf: 'Download als PDF',
+    /** Besluit J2: zonder signalen valt p5 van het Organisatielandschap weg. */
+    noSignalsNote: 'Je hebt nog geen signalen uit observatie en gesprek ingevuld. Zonder signalen valt die pagina weg.',
     loadingResponses: 'Responses laden…',
     closeTile: 'Sluiten ✕',
     teamsHeading: (n) => `Teams in deze organisatie (${n})`,
