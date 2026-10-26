@@ -554,7 +554,9 @@ function GreenTeamCard({ copy, onClick }) {
         if (e.key === 'Enter' || e.key === ' ') onClick?.();
       }}
       style={{
-        background: 'linear-gradient(135deg, #6E8872 0%, #5F7763 100%)',
+        // Donkerder dan sage (besluit Judith 25 okt): de lichte tekst haalt zo
+        // overal minstens 4,91 : 1.
+        background: 'linear-gradient(135deg, #56705C 0%, #4A6250 100%)',
         borderRadius: 16,
         padding: 22,
         borderTop: '4px solid #5F7763',
@@ -585,7 +587,7 @@ function GreenTeamCard({ copy, onClick }) {
           fontSize: 12,
           textTransform: 'uppercase',
           letterSpacing: 1.6,
-          color: '#EDE5D8',
+          color: '#F7F3EE',
           fontWeight: 700,
         }}
       >
