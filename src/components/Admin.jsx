@@ -84,6 +84,26 @@ function responseMatchesTeam(r, t) {
     return false;
 }
 
+// Wijst elke response aan precies één team toe, zodat niemand dubbel telt.
+// Een match op teamcode wint van een match op naam. Matcht een response op
+// meer dan één team, dan staat hij ook in `ambiguous`, zodat de beheerder hem
+// kan rechtzetten (bij Gemeente Nijkerk telde één response bij twee teams).
+function assignResponsesToTeams(responses, teams) {
+    const byTeam = new Map(teams.map((t) => [t, []]));
+    const ambiguous = [];
+    responses.forEach((r) => {
+        const matches = teams.filter((t) => responseMatchesTeam(r, t));
+        if (matches.length === 0) return;
+        const rCode = normKey(r.invite_code);
+        const chosen = matches.find((t) => rCode && normKey(t.code) === rCode) || matches[0];
+        byTeam.get(chosen).push(r);
+        if (matches.length > 1) {
+            ambiguous.push({ response: r, chosen, others: matches.filter((t) => t !== chosen) });
+        }
+    });
+    return { byTeam, ambiguous };
+}
+
 // ─── HOOFDCOMPONENT ─────────────────────────────────────────────────────────
 
 export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
@@ -1066,9 +1086,14 @@ function OrganizationDetail({
     const insights = useMemo(() => buildTeamInsights(aggregate, lang), [aggregate, lang]);
 
     // Per-team aggregaten voor vergelijkings-blok.
+    const teamAssignment = useMemo(
+        () => assignResponsesToTeams(responses, org?.teams || []),
+        [org, responses],
+    );
+
     const teamSummaries = useMemo(() => {
         return (org?.teams || []).map((teamRow) => {
-            const forTeam = responses.filter((r) => responseMatchesTeam(r, teamRow));
+            const forTeam = teamAssignment.byTeam.get(teamRow) || [];
             const agg = buildTeamAggregate(forTeam, lang);
             const top = dominantPersonas(agg)[0];
             return {
@@ -1079,7 +1104,7 @@ function OrganizationDetail({
                 aggregate: agg,
             };
         }).sort((a, b) => b.responseCount - a.responseCount);
-    }, [org, responses, lang, t.empty]);
+    }, [org, teamAssignment, lang, t.empty]);
 
     // ── TIJDELIJKE DIAGNOSE: welke responses koppelen NIET aan een team?
     // Toont per niet-gematchte response waarom de match faalt, zodat de
@@ -1372,6 +1397,7 @@ function OrganizationDetail({
                             }}>
                                 {t.teamsHeading(teamSummaries.length)}
                             </div>
+
 
                             <div style={{ display: 'grid', gap: 10 }}>
                                 {teamSummaries.map((s) => {
