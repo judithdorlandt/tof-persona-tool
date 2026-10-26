@@ -210,9 +210,15 @@ The Office Factory
     /** Naamschakelaar per team (show_names). Alleen aan na instemming van het team. */
     names: {
       off: 'Namen: uit · aanzetten',
-      on: 'Namen: aan · uitzetten',
+      // De echte stand: met de schakelaar aan staan de namen alleen in beeld
+      // als de namenregel het toelaat (utils/access.js, namesVisibility).
+      on: 'Namen: aan, in beeld · uitzetten',
+      onHidden: 'Namen: aan, niet in beeld · uitzetten',
+      hiddenWhy: (zonder, totaal) =>
+        `Zonder naam: ${zonder} van de ${totaal} profielen. Namen komen in beeld als iedereen een naam heeft, of als minstens vijf mensen er geen hebben.`,
+      hiddenTooFew: 'Namen komen in beeld vanaf vijf ingebrachte profielen.',
       confirmOn: (team) =>
-        `Heeft ${team} samen ingestemd met namen in het teambeeld?\n\nDan zien alle teamleden én de leidinggevende de voornamen in Teaminzicht, ook de namen die al zijn ingevuld.`,
+        `Heeft ${team} samen ingestemd met namen in het teambeeld?\n\nDan kunnen alle teamleden én de leidinggevende de voornamen in Teaminzicht zien, ook de namen die al zijn ingevuld. Ze staan alleen in beeld als niemand zonder naam herkenbaar is: iedereen heeft een naam, of minstens vijf mensen hebben er geen.`,
       failed: (msg) => `Opslaan lukte niet.${msg ? ` ${msg}` : ''}`,
     },
     empty: '—',

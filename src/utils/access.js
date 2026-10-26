@@ -98,7 +98,6 @@ export function namesByPersona(responses = [], locale = 'nl') {
     if (countCompleteProfiles(responses) < MIN_TEAM_RESPONSES) return null;
 
     const byPersona = {};
-    let anyName = false;
     responses.forEach((r) => {
         const primary = r?.primary_archetype || r?.primary;
         if (!primary) return;
@@ -106,20 +105,43 @@ export function namesByPersona(responses = [], locale = 'nl') {
         const name = String(r?.name || '').trim();
         if (name) {
             entry.names.push(name);
-            anyName = true;
         } else {
             entry.unnamed += 1;
         }
     });
-    if (!anyName) return null;
-
-    const unnamed = Object.values(byPersona).reduce((sum, e) => sum + e.unnamed, 0);
-    if (unnamed > 0 && unnamed < MIN_TEAM_RESPONSES) return null;
+    if (namesVisibility(responses).state !== 'visible') return null;
 
     Object.values(byPersona).forEach((entry) => {
         entry.names.sort((x, y) => x.localeCompare(y, locale, { sensitivity: 'base' }));
     });
     return byPersona;
+}
+
+/**
+ * Staan de namen in beeld, en zo niet, waarom? Dezelfde regel als
+ * namesByPersona, voor wie alleen de stand nodig heeft (/admin). Werkt ook
+ * op rijen zonder naam maar met `has_name` (getResponsesByOrganization geeft
+ * de beheerder alleen dát door, niet de naam zelf).
+ * → { state, profiles, unnamed }, state:
+ *   'visible' — namen in beeld;
+ *   'tooFew'  — minder dan vijf profielen, geen teambeeld;
+ *   'none'    — niemand heeft een naam ingevuld;
+ *   'rule'    — 1 tot 4 mensen zonder naam: door wegstrepen herkenbaar.
+ */
+export function namesVisibility(responses = []) {
+    const rows = Array.isArray(responses) ? responses : [];
+    const profiles = rows.filter((r) => r?.primary_archetype || r?.primary);
+    const named = profiles.filter(
+        (r) => r?.has_name === true || String(r?.name || '').trim() !== ''
+    ).length;
+    const unnamed = profiles.length - named;
+
+    let state = 'visible';
+    if (profiles.length < MIN_TEAM_RESPONSES) state = 'tooFew';
+    else if (named === 0) state = 'none';
+    else if (unnamed > 0 && unnamed < MIN_TEAM_RESPONSES) state = 'rule';
+
+    return { state, profiles: profiles.length, unnamed };
 }
 
 // =========================

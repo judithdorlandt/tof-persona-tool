@@ -51,6 +51,7 @@ import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 
 import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
+import { namesVisibility } from '../utils/access';
 import { MIN_ROW_PROFILES } from '../utils/organisatieLandschap/constants';
 import { buildTiles } from './TeamDashboard.jsx';
 import TeamDynamics from './TeamDynamics.jsx';
@@ -1135,6 +1136,27 @@ function OrganizationDetail({
             : !!teamRow.show_names;
     }
 
+    // De echte stand van de namen (besluit Judith 26 okt): met de schakelaar
+    // aan staan ze alleen in beeld als de namenregel het toelaat. De rijen
+    // hebben geen namen, alleen has_name (getResponsesByOrganization).
+    function namesLabel(summary) {
+        if (!showsNames(summary.team)) return t.names.off;
+        return namesVisibility(summary.responses).state === 'visible'
+            ? t.names.on
+            : t.names.onHidden;
+    }
+
+    // Uitleg onder de schakelaar, alleen als hij aan staat en de namen niet
+    // in beeld zijn. Niemand een naam ('none'): geen uitleg, want de regel
+    // houdt ze dan niet tegen; er is gewoon niets te tonen.
+    function namesNote(summary) {
+        if (!showsNames(summary.team)) return null;
+        const { state, profiles, unnamed } = namesVisibility(summary.responses);
+        if (state === 'tooFew') return t.names.hiddenTooFew;
+        if (state === 'rule') return t.names.hiddenWhy(unnamed, profiles);
+        return null;
+    }
+
     async function handleToggleNames(teamRow) {
         if (namesBusyCode) return;
         const next = !showsNames(teamRow);
@@ -1412,8 +1434,13 @@ function OrganizationDetail({
                                                             textUnderlineOffset: 2,
                                                         }}
                                                     >
-                                                        {showsNames(s.team) ? t.names.on : t.names.off}
+                                                        {namesLabel(s)}
                                                     </button>
+                                                ) : null}
+                                                {s.team.code && namesNote(s) ? (
+                                                    <div style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--tof-text-muted)', maxWidth: 360 }}>
+                                                        {namesNote(s)}
+                                                    </div>
                                                 ) : null}
                                             </div>
                                             <div style={{ fontSize: 13, color: 'var(--tof-text-muted)' }}>

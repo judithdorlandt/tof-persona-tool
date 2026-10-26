@@ -196,9 +196,13 @@ The Office Factory
     /** Names switch per team (show_names). Only on once the team has agreed. */
     names: {
       off: 'Names: off · turn on',
-      on: 'Names: on · turn off',
+      on: 'Names: on, showing · turn off',
+      onHidden: 'Names: on, not showing · turn off',
+      hiddenWhy: (without, total) =>
+        `Without a name: ${without} of ${total} profiles. Names show once everyone has one, or once at least five people don't.`,
+      hiddenTooFew: 'Names show once five profiles have been added.',
       confirmOn: (team) =>
-        `Has ${team} agreed together to show names in the team picture?\n\nEveryone in the team and the manager will then see first names in Team Insight, including names already entered.`,
+        `Has ${team} agreed together to show names in the team picture?\n\nEveryone in the team and the manager can then see first names in Team Insight, including names already entered. They only show when no one without a name can be identified: everyone has a name, or at least five people don't.`,
       failed: (msg) => `Couldn't save.${msg ? ` ${msg}` : ''}`,
     },
     empty: '—',

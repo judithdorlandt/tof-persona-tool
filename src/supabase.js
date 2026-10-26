@@ -505,6 +505,14 @@ function withoutName(row) {
   return row && row.name != null ? { ...row, name: null } : row;
 }
 
+// Voor /admin (getResponsesByOrganization): de naam gaat eruit, alleen of er
+// één is blijft over. Zo kan de beheerder zien of de namen van een team in
+// beeld staan (namesVisibility), zonder de namen zelf te krijgen.
+function withNameFlag(row) {
+  if (!row) return row;
+  return { ...withoutName(row), has_name: String(row.name || '').trim() !== '' };
+}
+
 export async function getResponsesByTeam(team, organization = null, code = null) {
 
   if (!ensureSupabase()) return [];
@@ -683,7 +691,7 @@ export async function getResponsesByOrganization(organization, codes = []) {
 
           seen.add(r.id);
 
-          results.push(withoutName(r));
+          results.push(withNameFlag(r));
 
         }
 
@@ -711,7 +719,7 @@ export async function getResponsesByOrganization(organization, codes = []) {
 
           seen.add(r.id);
 
-          results.push(withoutName(r));
+          results.push(withNameFlag(r));
 
         }
 
