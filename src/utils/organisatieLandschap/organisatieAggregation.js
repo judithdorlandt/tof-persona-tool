@@ -83,9 +83,11 @@ export function prepareOrganisatieData({
     const hasRestRow = ownTeams.length > 0 && restSize() >= MIN_ROW_PROFILES;
 
     const orgRow = buildOrgRow(aggregate, cd, lang);
+    // Op naam, zodat een lezer een team snel terugvindt (besluit Judith 26
+    // okt); "Overige" blijft onderaan.
     const teamRows = ownTeams
         .map((t) => buildTeamRow(t, cd, lang))
-        .sort((a, b) => b.n - a.n);
+        .sort((a, b) => String(a.name).localeCompare(String(b.name), lang, { numeric: true }));
     if (hasRestRow) {
         teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd, lang));
     }
