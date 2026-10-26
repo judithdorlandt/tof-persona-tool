@@ -27,6 +27,7 @@ import { drawPageHeader } from './OL_Chrome';
 
 const C = COLOR_FAMILIES.neutral;
 const SAGE = COLOR_FAMILIES.accent.rust;     // groen — positief
+const SAGE_TEXT = COLOR_FAMILIES.accent.rustText;
 const ROSE = COLOR_FAMILIES.accent.frictie;  // rood — aandacht
 
 export function buildPatronenSVG({ data, copy }) {
@@ -203,7 +204,7 @@ function drawWerkomgevingColumn({ svg, x, y, w, workplace, copy }) {
             x, y: ly,
             content: String(workplace.bandLabels[band]).toUpperCase(),
             ...TYPE_V9.eyebrow,
-            color: band === 'kern' ? SAGE : C.textSoft,
+            color: band === 'kern' ? SAGE_TEXT : C.textSoft,
         }));
         ly += BAND_HEAD;
         labels.forEach((label) => {
@@ -245,7 +246,7 @@ function drawMethodNoteFramed(svg, copy) {
         x: MARGIN + SPACING.md, y: boxY + SPACING.sm + 2,
         content: copy.patronen.methodNoteEyebrow,
         ...TYPE_V9.eyebrow,
-        color: SAGE,
+        color: SAGE_TEXT,
     }));
     let ly = boxY + SPACING.md + 4;
     paragraphs.forEach((content) => {

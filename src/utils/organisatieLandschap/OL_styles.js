@@ -129,7 +129,10 @@ export const COLOR_FAMILIES = {
     accent: {
         // Voor inhoudelijke signalering.
         frictie: '#B05252',   // rose — frictie/spanning
-        rust: '#7F9A8A',      // sage — positief/rust
+        rust: '#7F9A8A',      // sage — positief/rust (vlakken, balken, randen)
+        // Sage voor tekst: #7F9A8A haalt ±3 : 1 en valt in print weg. Dezelfde
+        // tekst-sage als in de app (besluit Judith 26 okt).
+        rustText: '#56705C',
         // Soft varianten voor lichte signalering.
         frictieSoft: '#D08C8C',
     },

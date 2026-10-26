@@ -46,7 +46,7 @@ export function drawPageHeader(svg, { date, pageTitle, copy = getOLCopy('nl') })
         svg.appendChild(text({
             x: MARGIN, y: lineY + 5,
             content: pageTitle,
-            font: 'Inter', weight: 600, size: 3.4, color: COLOR_FAMILIES.accent.rust,
+            font: 'Inter', weight: 600, size: 3.4, color: COLOR_FAMILIES.accent.rustText,
             letterSpacing: 0.4,
         }));
         return lineY + 5 + SPACING.md;

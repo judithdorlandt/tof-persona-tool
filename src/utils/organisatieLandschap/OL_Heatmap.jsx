@@ -25,6 +25,7 @@ import { drawPageHeader } from './OL_Chrome';
 
 const C = COLOR_FAMILIES.neutral;
 const SAGE = COLOR_FAMILIES.accent.rust;
+const SAGE_TEXT = COLOR_FAMILIES.accent.rustText;
 
 // Voetnoot-geometrie — onderaan verankerd, boven de footer-lijn (PAGE_H-MARGIN+2).
 // Gedeeld door de tabel-layout (drawHeatmap) en het tekenen (drawHeatmapFootnote)
@@ -262,7 +263,7 @@ function drawDataRow(svg, {
         font: nameFont,
         weight: 500,
         size: nameSize,
-        color: isOrg ? SAGE : C.text,
+        color: isOrg ? SAGE_TEXT : C.text,
         lineHeight: nameLh,
     });
 
@@ -271,7 +272,7 @@ function drawDataRow(svg, {
         x: x + teamColW + nColW / 2, y: y + h / 2 + 1,
         content: String(row.n),
         font: 'Inter', weight: isOrg ? 700 : 500, size: 3.3,
-        color: isOrg ? SAGE : C.textSoft,
+        color: isOrg ? SAGE_TEXT : C.textSoft,
         anchor: 'middle',
     }));
 

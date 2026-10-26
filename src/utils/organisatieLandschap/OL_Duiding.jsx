@@ -113,7 +113,7 @@ function drawThreeCards(svg, y, data, copy) {
         drawCard({
             svg, x: MARGIN + i * (cardW + gap), y, w: cardW, h: cardH,
             ...c,
-            accent: COLOR_FAMILIES.accent.rust,
+            accent: COLOR_FAMILIES.accent.rustText,
             bulletColor: COLOR_FAMILIES.accent.rust,
         });
     });
