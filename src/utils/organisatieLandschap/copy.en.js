@@ -88,6 +88,7 @@ export const COPY_EN = {
             scaleHigh: '100%',
             cellEmpty: 'Dash (—): no one with this as their first working style.',
         },
+        notEveryTeam: 'Not every team has its own row here. For the reason, see “Teams without their own row” on the last page.',
     },
 
     // ── Page 4 — Organisation-wide patterns (quantitative)

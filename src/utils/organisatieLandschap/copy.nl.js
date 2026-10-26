@@ -106,6 +106,9 @@ export const COPY_NL = {
             // regel van de voetnoot (grafisch 1.1).
             cellEmpty: 'Streepje (—): niemand met deze eerste werkstijl.',
         },
+        // Alleen als de kaart "Teams zonder eigen rij" op p6 er ook is
+        // (besluit Judith 26 okt, tekst redacteur).
+        notEveryTeam: 'Niet elk team staat hier als eigen rij. Waarom: zie “Teams zonder eigen rij” op de laatste pagina.',
     },
 
     // ── Pagina 4 — Patronen organisatiebreed (kwantitatief)

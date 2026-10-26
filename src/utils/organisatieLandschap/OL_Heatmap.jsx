@@ -335,7 +335,9 @@ function drawCell(svg, { x, y, w, h, pct, color, isOrg, lowReliability }) {
 
 // Voetnootregels — alleen relevante regels, onder→boven gestapeld.
 function buildFootnoteLines(data, copy) {
-    return [copy.heatmap.reliabilityHelp, copy.heatmap.legend.cellEmpty];
+    const lines = [copy.heatmap.reliabilityHelp, copy.heatmap.legend.cellEmpty];
+    if ((data.teamsWithoutOwnRow || 0) > 0) lines.unshift(copy.heatmap.notEveryTeam);
+    return lines;
 }
 
 // Voetnoot direct onder de tabel (6,35 mm), maar nooit lager dan boven de
