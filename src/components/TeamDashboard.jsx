@@ -28,7 +28,7 @@ import {
     keepTileInView,
     DetailPanelHeader,
 } from '../ui/AppShell';
-import { SPACING, TYPE, RADIUS, MODULE, useIsNarrow, startsNarrow } from '../ui/tokens';
+import { SPACING, TYPE, MODULE, useIsNarrow, startsNarrow } from '../ui/tokens';
 
 import TeamPersonaDistribution from '../team/components/TeamPersonaDistribution';
 import TeamWorkplaceTension from '../team/components/TeamWorkplaceTension';
@@ -371,52 +371,28 @@ function SignatureBlock({ quote, accent, teamCount, organization, dominantPerson
                 </p>
             ) : null}
 
-            <div style={{ display: 'flex', gap: SPACING.sm, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', columnGap: SPACING.lg, rowGap: SPACING.xs }}>
                 <MetaChip label={labels.responses} value={teamCount} />
                 {organization ? <MetaChip label={labels.organisation} value={organization} /> : null}
-                {dominantPersona ? <MetaChip label={labels.dominant} value={dominantPersona} accent={accent} /> : null}
-                {reliability ? <MetaChip label={labels.reliability} value={reliability} /> : null}
+                {dominantPersona ? <MetaChip label={labels.dominant} value={dominantPersona} /> : null}
+                {reliability ? <MetaChip value={reliability} /> : null}
             </div>
         </div>
     );
 }
 
-function MetaChip({ label, value, accent = 'var(--tof-text-muted)' }) {
+// Eén paar in de metaregel onder de quote (A5.12): geen pil, rand of
+// bolletje meer, want het is geen knop. Label in gewone letters, waarde vet;
+// zonder label staat alleen de waarde (Betrouwbaarheid, tekst redacteur).
+// Elk paar is één flex-item: het gaat als geheel naar de volgende regel, en
+// breekt alleen binnen zichzelf af als het breder is dan de regel (een
+// lange organisatienaam op 375 px).
+function MetaChip({ label, value }) {
     return (
-        <div
-            style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'var(--tof-surface)',
-                border: '1px solid var(--tof-border)',
-                borderRadius: RADIUS.pill,
-                padding: '4px 12px',
-                fontSize: 12,
-            }}
-        >
-            <span
-                style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: RADIUS.pill,
-                    background: accent,
-                    flexShrink: 0,
-                }}
-            />
-            <span
-                style={{
-                    color: 'var(--tof-text-muted)',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: 0.6,
-                    fontSize: 12,
-                }}
-            >
-                {label}
-            </span>
+        <span style={{ ...TYPE.bodySmall, maxWidth: '100%', overflowWrap: 'anywhere' }}>
+            {label ? <span style={{ color: 'var(--tof-text-soft)' }}>{label} </span> : null}
             <span style={{ color: 'var(--tof-text)', fontWeight: 600 }}>{value}</span>
-        </div>
+        </span>
     );
 }
 
