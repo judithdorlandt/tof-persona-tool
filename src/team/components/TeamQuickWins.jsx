@@ -42,32 +42,9 @@ export default function TeamQuickWins({ insights }) {
                 gap: isMobile ? SPACING.lg : SPACING.xl,
             }}
         >
-            {/* Header — eyebrow links, context rechts */}
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    justifyContent: 'space-between',
-                    gap: SPACING.md,
-                    flexWrap: 'wrap',
-                    paddingBottom: SPACING.sm,
-                    borderBottom: '1px solid var(--tof-border)',
-                }}
-            >
-                <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                    {t.countLabel(items.length)}
-                </div>
-                <div
-                    style={{
-                        fontFamily: 'var(--tof-font-body)',
-                        fontSize: 12,
-                        color: 'var(--tof-text-muted)',
-                    }}
-                >
-                    {t.note}
-                </div>
-            </div>
-
+            {/* Geen eigen kop meer: de paneelkop en de lead zeggen al wat dit
+                is, en tegel, kop en eyebrow zeiden drie keer "voor morgen"
+                (A5.6). countLabel en note staan nog in de copy. */}
             {/* Acties — leesbaar verticaal ritme */}
             <div
                 style={{
