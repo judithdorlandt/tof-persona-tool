@@ -115,22 +115,28 @@ export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'n
         {
             id: 'tension',
             eyebrow: t.tiles.tension.eyebrow,
+            // Aansluiting werkplek (besluit 1, 27 okt): de vraag naar de
+            // eerste kernplek, met in de hint wat beperkt nodig is.
             buildValue: (aggregate, insights) => {
                 const tension = insights?.workplaceTension;
-                if (!tension?.impactSummary) return t.empty;
-                return t.tiles.tension.value(
-                    tension.kernCount || 0,
-                    tension.oversupplied?.length || 0
-                );
+                const first = tension?.underserved?.[0];
+                if (!tension?.impactSummary || !first) return t.empty;
+                return t.tiles.tension.value(first.label);
             },
-            buildHint: () => t.tiles.tension.hint,
+            buildHint: (aggregate, insights) => {
+                const beperkt = insights?.workplaceTension?.oversupplied || [];
+                return t.tiles.tension.hint(beperkt[0]?.label || null, beperkt.length - 1);
+            },
             detailTitle: t.tiles.tension.detailTitle,
             detailLead: (aggregate, insights) => {
                 const tension = insights?.workplaceTension;
                 if (!tension?.impactSummary) return '';
+                const labels = (list) => (list || []).map((w) => w.label);
+                const kernen = (tension.kernCount || 0) > 0 ? labels(tension.underserved) : [];
                 return t.tiles.tension.lead(
-                    tension.kernCount || 0,
-                    tension.oversupplied?.length || 0
+                    kernen,
+                    tension.underserved?.[0]?.label || '',
+                    labels(tension.oversupplied)
                 );
             },
             render: (aggregate, insights) => <TeamWorkplaceTension insights={insights} />,

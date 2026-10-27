@@ -1,3 +1,10 @@
+// Spaces as running text: "Focus spaces, collaboration spaces and quiet
+// spaces". Only the first capitalised (start of the sentence).
+function list(labels) {
+  const l = labels.map((x, i) => (i === 0 ? x : x.toLowerCase()));
+  return l.length <= 1 ? (l[0] || '') : `${l.slice(0, -1).join(', ')} and ${l[l.length - 1]}`;
+}
+
 const teamDashboard = {
   hero: {
     eyebrow: '01 — Team Insight',
@@ -54,21 +61,21 @@ const teamDashboard = {
       hint: 'What this team asks for',
       detailTitle: 'What this team asks of the workplace',
     },
+    // Workplace fit. See the NL file for the arguments.
     tension: {
-      eyebrow: 'Tension',
-      hint: 'Where things may rub',
-      detailTitle: 'Where need and supply may rub',
-      // `kern` = number of core spaces, `beperkt` = number needed only now and then.
-      value: (kern, beperkt) => {
-        const k = kern > 0 ? `${kern} core` : 'no core';
-        return beperkt > 0 ? `${k} · ${beperkt} occasional` : k;
-      },
-      lead: (kern, beperkt) => {
-        const k = kern > 0
-          ? `${kern} core space${kern > 1 ? 's' : ''} this team really needs`
-          : 'No clear core space';
-        if (beperkt === 0) return `${k}.`;
-        return `${k}, ${beperkt} needed only now and then.`;
+      eyebrow: 'Workplace fit',
+      detailTitle: 'Does the workplace fit this team?',
+      value: (first) => `Enough ${first.toLowerCase()}?`,
+      hint: (beperkt, extra) => (beperkt
+        ? `Needed only now and then: ${beperkt.toLowerCase()}${extra > 0 ? ` +${extra}` : ''}`
+        : 'Needed only now and then: none'),
+      lead: (kernen, hoogste, beperkt) => {
+        const eerste = kernen.length > 0
+          ? `${list(kernen)} are core for this team.`
+          : `This team has no clear core space. The most in demand are ${hoogste.toLowerCase()}.`;
+        return beperkt.length > 0
+          ? `${eerste} ${list(beperkt)} are needed only now and then.`
+          : eerste;
       },
     },
     quickwins: {

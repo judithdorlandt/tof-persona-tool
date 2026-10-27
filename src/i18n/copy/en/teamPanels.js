@@ -143,7 +143,7 @@ const teamPanels = {
     sources: {
       werkstijlen: 'From working styles',
       werkplek: 'From workplace',
-      spanning: 'From tension',
+      spanning: 'From workplace fit',
       minderheid: 'From the minority',
       ontbrekend: 'From what is missing',
       reflectie: 'Reflection',

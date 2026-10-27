@@ -144,7 +144,7 @@ const teamPanels = {
     sources: {
       werkstijlen: 'Uit werkstijlen',
       werkplek: 'Uit werkplek',
-      spanning: 'Uit spanning',
+      spanning: 'Uit aansluiting werkplek',
       minderheid: 'Uit minderheid',
       ontbrekend: 'Uit ontbrekend',
       reflectie: 'Reflectie',

@@ -8,6 +8,14 @@
  * Deze namespace wordt ook gebruikt door het organisatie-overzicht in
  * Admin.jsx, dat dezelfde tegels hergebruikt.
  */
+
+// Plekken als lopende tekst: "Concentratieplekken, samenwerkplekken en
+// rustplekken". Alleen de eerste met hoofdletter (begin van de zin).
+function lijst(labels) {
+  const l = labels.map((x, i) => (i === 0 ? x : x.toLowerCase()));
+  return l.length <= 1 ? (l[0] || '') : `${l.slice(0, -1).join(', ')} en ${l[l.length - 1]}`;
+}
+
 const teamDashboard = {
   hero: {
     eyebrow: '01 — Teaminzicht',
@@ -73,21 +81,27 @@ const teamDashboard = {
       hint: 'Wat vraagt dit team',
       detailTitle: 'Wat vraagt dit team van de werkplek',
     },
+    // Aansluiting werkplek (besluit 1, 27 okt; tekst redacteur). De tegel
+    // stelt de vraag die het paneel ("Check in je kantoor") uitwerkt.
+    // `first` = de eerste kernplek (zonder kern het hoogste type),
+    // `beperkt` = de plek die het minst nodig is, `extra` = aantal andere
+    // plekken in beperkt nodig. Labels zoals ze in het profiel heten.
     tension: {
-      eyebrow: 'Spanning',
-      hint: 'Waar het kan botsen',
-      detailTitle: 'Waar behoefte en aanbod kunnen botsen',
-      // `kern` = aantal kernplekken, `beperkt` = aantal plekken in "beperkt nodig".
-      value: (kern, beperkt) => {
-        const k = kern > 0 ? `${kern} kern` : 'geen kern';
-        return beperkt > 0 ? `${k} · ${beperkt} beperkt` : k;
-      },
-      lead: (kern, beperkt) => {
-        const k = kern > 0
-          ? `${kern} kernplek${kern > 1 ? 'ken' : ''} die dit team echt nodig heeft`
-          : 'Geen uitgesproken kernplek';
-        if (beperkt === 0) return `${k}.`;
-        return `${k}, ${beperkt} plek${beperkt > 1 ? 'ken' : ''} die beperkt nodig ${beperkt > 1 ? 'zijn' : 'is'}.`;
+      eyebrow: 'Aansluiting werkplek',
+      detailTitle: 'Sluit de werkplek aan bij dit team?',
+      value: (first) => `Genoeg ${first.toLowerCase()}?`,
+      hint: (beperkt, extra) => (beperkt
+        ? `Beperkt nodig: ${beperkt.toLowerCase()}${extra > 0 ? ` +${extra}` : ''}`
+        : 'Beperkt nodig: geen'),
+      // `kernen` = labels van de kernplekken ([] zonder kern), `hoogste` =
+      // het meest gevraagde type, `beperkt` = labels in beperkt nodig.
+      lead: (kernen, hoogste, beperkt) => {
+        const eerste = kernen.length > 0
+          ? `${lijst(kernen)} zijn de kern voor dit team.`
+          : `Dit team heeft geen uitgesproken kernplek. Het meest gevraagd zijn ${hoogste.toLowerCase()}.`;
+        return beperkt.length > 0
+          ? `${eerste} ${lijst(beperkt)} zijn beperkt nodig.`
+          : eerste;
       },
     },
     quickwins: {
