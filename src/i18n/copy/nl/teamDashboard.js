@@ -123,6 +123,8 @@ const teamDashboard = {
     // niet is ingelogd (opdracht D, besluit Judith 23 okt 2026: variant A
     // met inloglink). Geen aanprijzing, geen knop naar een gesprek.
     locked: {
+      // Besluit 4, 27 okt: waar dit beeld voor is, voor wie niet is ingelogd.
+      discuss: 'Dit beeld is bedoeld om samen in je team te bespreken: wat herken je, en wat niet?',
       body: 'Je leidinggevende ziet daarnaast Teamdynamiek: wat de samenstelling van dit team vraagt van leidinggeven. Daarin staat niet wie welke werkstijl heeft.',
       login: 'Ben jij de leidinggevende? Log in →',
       // Deelmoment 2, deel B (deelteksten 22 okt 2026): een tekst voor de

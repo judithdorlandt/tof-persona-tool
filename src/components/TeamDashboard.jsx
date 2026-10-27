@@ -454,6 +454,9 @@ function DynamicsBridge({ hasDynamicsAccess, setPage, t, team, organization }) {
     // Teamdynamiek van dit team (dezelfde route als op Teamdynamiek zelf).
     return (
         <div style={{ display: 'grid', gap: SPACING.sm, maxWidth: 680, padding: '4px 2px' }}>
+            <p style={{ ...TYPE.body, margin: 0, color: 'var(--tof-text)' }}>
+                {t.locked.discuss}
+            </p>
             <p style={{ ...TYPE.body, margin: 0, color: 'var(--tof-text-soft)' }}>
                 {t.locked.body}
             </p>

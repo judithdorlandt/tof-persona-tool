@@ -94,6 +94,7 @@ const teamDashboard = {
       cta: 'Go to Team Dynamics →',
     },
     locked: {
+      discuss: "This picture is meant for your team to talk through together: what do you recognise, and what don't you?",
       body: "Your manager also sees Team Dynamics: what this team's mix asks of the person leading it. It doesn't show who has which working style.",
       login: 'Are you the manager? Log in →',
       shareEyebrow: 'Another team?',
