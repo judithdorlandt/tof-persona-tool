@@ -384,7 +384,9 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
             {/* 2 — naar welk team. De code wordt gecontroleerd zodat je de
                 organisatie en het team ziet voordat je iets verstuurt. */}
             <SectionCard accent={accent}>
-                <Field label={t.code.label} hint={t.code.hint}>
+                {/* De uitleg hoort bij het lege veld; na de controle staat
+                    er het team, en dan is hij overbodig (A1.4). */}
+                <Field label={t.code.label} hint={access ? undefined : t.code.hint}>
                     {access ? (
                         <div style={{ display: 'grid', gap: SPACING.xs + 2 }}>
                             <span style={{ ...TYPE.bodySmall, color: 'var(--tof-text-muted)' }}>
