@@ -234,31 +234,58 @@ function BandBadge({ band }) {
 
 function SecondaryList({ items, isMobile }) {
     const { workplaceProfile: COPY } = useCopy();
+    // Kernplekken houden hun eigen label. De steunplekken krijgen één
+    // tussenkop met de korte uitleg van de band, in plaats van bij elke plek
+    // "STEUN" zonder uitleg (A5.9), zoals in de Teaminzicht-PDF.
+    const kern = items.filter((item) => item.band === BAND.KERN);
+    const steun = items.filter((item) => item.band === BAND.STEUN);
+
+    const grid = (list, withBadge) => (
+        <div
+            style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile
+                    ? '1fr'
+                    : 'repeat(2, minmax(0, 1fr))',
+                gap: isMobile ? SPACING.md : SPACING.lg,
+                columnGap: isMobile ? SPACING.md : SPACING.xl,
+            }}
+        >
+            {list.map((item) => (
+                <SecondaryItem key={item.id} type={item} withBadge={withBadge} />
+            ))}
+        </div>
+    );
+
     return (
         <div style={{ display: 'grid', gap: SPACING.md }}>
             <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
                 {COPY.ui.overzichtKop}
             </div>
 
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: isMobile
-                        ? '1fr'
-                        : 'repeat(2, minmax(0, 1fr))',
-                    gap: isMobile ? SPACING.md : SPACING.lg,
-                    columnGap: isMobile ? SPACING.md : SPACING.xl,
-                }}
-            >
-                {items.map((item) => (
-                    <SecondaryItem key={item.id} type={item} />
-                ))}
-            </div>
+            {kern.length > 0 ? grid(kern, true) : null}
+
+            {steun.length > 0 ? (
+                <>
+                    <div
+                        style={{
+                            fontFamily: 'var(--tof-font-body)',
+                            fontSize: 13,
+                            fontWeight: 600,
+                            color: BAND_TEKST[BAND.STEUN],
+                            marginTop: kern.length > 0 ? SPACING.sm : 0,
+                        }}
+                    >
+                        {COPY.band.steun.kort}
+                    </div>
+                    {grid(steun, false)}
+                </>
+            ) : null}
         </div>
     );
 }
 
-function SecondaryItem({ type }) {
+function SecondaryItem({ type, withBadge = true }) {
     const { workplaceProfile: COPY } = useCopy();
     const tc = typeCopy(COPY, type);
     return (
@@ -290,7 +317,7 @@ function SecondaryItem({ type }) {
                 >
                     {tc.label}
                 </h4>
-                <BandBadge band={type.band} />
+                {withBadge ? <BandBadge band={type.band} /> : null}
             </div>
 
             {COPY.gebruik[type.id] ? (
