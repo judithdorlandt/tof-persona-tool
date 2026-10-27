@@ -191,7 +191,10 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
         // het teaminzicht op filtert.
         try {
             await saveResponse({
-                name: naam.trim(),
+                // Alleen een naam als de namenoptie van het team aan staat
+                // (besluit Judith 27 okt). Anders gaat er geen naam mee, ook
+                // niet als de optie later alsnog aangaat.
+                name: access.show_names ? naam.trim() : '',
                 org: access.organization,
                 dept: access.team,
                 team: access.team,
@@ -415,8 +418,10 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
                     )}
                 </Field>
 
-                {/* De naam blijft optioneel, net als in de vragenlijst op het web. */}
-                {access && !alIngebracht ? (
+                {/* De naam blijft optioneel, en wordt alleen gevraagd als de
+                    namenoptie van het team aan staat (besluit Judith 27 okt):
+                    anders kan een teamlid de uitleg niet plaatsen. */}
+                {access && access.show_names && !alIngebracht ? (
                     <Field label={t.name.label} hint={t.name.hint}>
                         <Input
                             value={naam}
