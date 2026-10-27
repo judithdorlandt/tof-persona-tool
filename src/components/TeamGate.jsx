@@ -20,9 +20,13 @@
 import React, { useEffect, useState } from 'react';
 import { PageShell, HeroBlock, SectionCard, SectionEyebrow, PrimaryButton } from '../ui/AppShell';
 import { useCopy } from '../i18n/LanguageContext';
+import { TYPE, SPACING } from '../ui/tokens';
 import { MIN_TEAM_RESPONSES } from '../utils/access';
 import { validateTeamAccessCode } from '../supabase';
 import { copyText } from '../utils/copyText';
+
+// Het voorbeeldteam staat op de verhaalsite, niet in de app.
+const EXAMPLE_URL = 'https://www.persona-tool.nl/demo';
 
 export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
     const copy = useCopy().teamDashboard.gate;
@@ -81,14 +85,31 @@ export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
 
                 {/* Zonder code (oude toegang) valt er niets te delen. */}
                 {code && teamName ? (
-                    <div style={{ marginTop: 16 }} aria-live="polite">
-                        <PrimaryButton onClick={handleCopy} style={{ background: accent }}>
-                            {status === 'ok' ? copy.copied
-                                : status === 'failed' ? copy.copyFailed
-                                : copy.copyMessage}
-                        </PrimaryButton>
+                    <div style={{ marginTop: 16, display: 'grid', gap: SPACING.md, justifyItems: 'start' }}>
+                        <p style={{ ...TYPE.body, color: 'var(--tof-text)' }}>{copy.recipients}</p>
+                        <div aria-live="polite">
+                            <PrimaryButton onClick={handleCopy} style={{ background: accent }}>
+                                {status === 'ok' ? copy.copied
+                                    : status === 'failed' ? copy.copyFailed
+                                    : copy.copyMessage}
+                            </PrimaryButton>
+                        </div>
+                        <p style={TYPE.bodySmall}>{copy.return}</p>
                     </div>
                 ) : null}
+
+                <p style={TYPE.bodySmall}>
+                    {copy.example.before}
+                    <a
+                        href={EXAMPLE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: accent, fontWeight: 600, textDecoration: 'underline' }}
+                    >
+                        {copy.example.link}
+                    </a>
+                    {copy.example.after}
+                </p>
             </SectionCard>
         </PageShell>
     );

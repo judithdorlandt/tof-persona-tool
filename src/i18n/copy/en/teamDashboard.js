@@ -33,6 +33,13 @@ const teamDashboard = {
     copyMessage: 'Copy the message for your team',
     copied: 'Copied',
     copyFailed: 'Copying did not work. Please try again.',
+    recipients: 'Send the message to your team. It has the link to the app and the team code. Anyone in the team can pass it on.',
+    return: "Come back later at team.persona-tool.nl/en/team. In this browser you won't need to enter the team code again.",
+    example: {
+      before: '',
+      link: 'The example team',
+      after: ' shows what a team picture looks like.',
+    },
     message: ({ team, code, showNames }) => [
       `${team} is putting together a team picture. Here's how to take part:`,
       `1. Open this link on your phone and download the TOF Persona app: https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}`,

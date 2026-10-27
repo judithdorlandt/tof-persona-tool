@@ -49,6 +49,15 @@ const teamDashboard = {
     copyMessage: 'Kopieer het bericht voor je team',
     copied: 'Gekopieerd',
     copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
+    // Rond de knop (besluit 2, akkoord Judith 27 okt 2026). Zonder teamcode
+    // staat er geen knop, en vallen recipients en return ook weg.
+    recipients: 'Stuur het bericht naar je team. Daarin staan de link naar de app en de teamcode. Iedereen in het team mag het doorsturen.',
+    return: 'Kom later terug op team.persona-tool.nl/team. In deze browser hoef je de teamcode niet opnieuw in te vullen.',
+    example: {
+      before: 'Hoe een teambeeld eruitziet, zie je aan ',
+      link: 'het voorbeeldteam',
+      after: '.',
+    },
     // Het bericht dat de knop kopieert. Neutrale stem: ook een teamlid kan
     // het doorsturen. De laatste zin hangt af van de namenschakelaar.
     message: ({ team, code, showNames }) => [
