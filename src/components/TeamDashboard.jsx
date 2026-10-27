@@ -162,6 +162,7 @@ export default function TeamDashboard({
     teamResponses = [],
     selectedTeam,
     setPage,
+    loadFailed = false,
 }) {
     // Standaard staat de eerste tegel (Werkstijlen) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
@@ -231,6 +232,7 @@ export default function TeamDashboard({
         return (
             <TeamGate
                 count={completeProfiles}
+                loadFailed={loadFailed}
                 accent={ACCENT_TEXT}
                 eyebrow={t.hero.eyebrow}
                 teamName={selectedTeam?.team || ''}

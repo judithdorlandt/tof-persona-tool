@@ -49,6 +49,11 @@ const teamDashboard = {
     copyMessage: 'Kopieer het bericht voor je team',
     copied: 'Gekopieerd',
     copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
+    // TIJDELIJK (E1.7): ophalen van de profielen lukte niet. Tekst van de
+    // redacteur, wacht nog op akkoord Judith. Ook de kop voor deze stand
+    // (titleForLoadFailed, titleLoadFailed) wacht; zonder die sleutels
+    // blijft de gewone kop staan.
+    loadFailed: 'Het lukte niet om het aantal ingebrachte profielen op te halen. Probeer het later opnieuw.',
     // Rond de knop (besluit 2, akkoord Judith 27 okt 2026). Zonder teamcode
     // staat er geen knop, en vallen recipients en return ook weg.
     recipients: 'Stuur het bericht naar je team. Daarin staan de link naar de app en de teamcode. Iedereen in het team mag het doorsturen.',

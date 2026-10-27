@@ -220,7 +220,8 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
 
             const responses = await getResponsesByTeam(entry.team, entry.organization, entry.code);
             if (typeof setTeamResponses === 'function') {
-                setTeamResponses(responses || []);
+                // null = ophalen lukte niet; App onthoudt dat (E1.7).
+                setTeamResponses(responses);
             }
 
             // targetLevel = 'insight' | 'dynamics' | undefined
@@ -312,7 +313,8 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                 accessResult.code
             );
             if (typeof setTeamResponses === 'function') {
-                setTeamResponses(responses || []);
+                // null = ophalen lukte niet; App onthoudt dat (E1.7).
+                setTeamResponses(responses);
             }
 
             // Strategic-codes gaan naar het Strategisch Kompas; verder bepaalt

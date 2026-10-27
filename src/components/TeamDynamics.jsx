@@ -73,6 +73,8 @@ export default function TeamDynamics({
     // Wanneer true: skip de hasTeamLevel-check. Bedoeld voor admin-vlakke
     // weergaven zoals het organisatie-inzicht.
     forceAccess = false,
+    // Ophalen van de profielen lukte niet (E1.7): het wachtscherm zegt dat.
+    loadFailed = false,
 }) {
     // Standaard staat de eerste tegel (Spanningen) open — zo zien
     // gebruikers meteen dat de tegels uitklapbare detail-panelen zijn.
@@ -261,6 +263,7 @@ export default function TeamDynamics({
         return (
             <TeamGate
                 count={completeProfiles}
+                loadFailed={loadFailed}
                 accent={ACCENT}
                 eyebrow={t.hero.eyebrow}
                 teamName={selectedTeam?.team || ''}

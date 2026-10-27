@@ -513,9 +513,11 @@ function withNameFlag(row) {
   return { ...withoutName(row), has_name: String(row.name || '').trim() !== '' };
 }
 
+// Geeft null als het ophalen niet lukte, zodat het wachtscherm "nul" kan
+// onderscheiden van "niet gelukt" (E1.7, 27 okt 2026). [] = echt geen rijen.
 export async function getResponsesByTeam(team, organization = null, code = null) {
 
-  if (!ensureSupabase()) return [];
+  if (!ensureSupabase()) return null;
 
   try {
 
@@ -634,7 +636,7 @@ export async function getResponsesByTeam(team, organization = null, code = null)
 
     console.error('❌ Fetch team responses error:', err?.message || err);
 
-    return [];
+    return null;
 
   }
 

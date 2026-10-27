@@ -115,7 +115,14 @@ export default function App() {
     return subscribe(() => setNativeEntry(getCurrentEntry()));
   }, []);
 
-  const [teamResponses, setTeamResponses] = useState([]);
+  const [teamResponses, setTeamResponsesState] = useState([]);
+  // null van getResponsesByTeam = ophalen lukte niet. Het wachtscherm toont
+  // dan geen "0 van de 5" (E1.7, 27 okt 2026).
+  const [teamLoadFailed, setTeamLoadFailed] = useState(false);
+  const setTeamResponses = useCallback((responses) => {
+    setTeamLoadFailed(responses === null);
+    setTeamResponsesState(Array.isArray(responses) ? responses : []);
+  }, []);
   const [selectedTeam, setSelectedTeamState] = useState(null);
 
   // Elk gekozen team wordt onthouden, zodat verversen of een bladwijzer je
@@ -213,19 +220,19 @@ export default function App() {
         navigate('team');
         return;
       }
-      let responses = [];
+      let responses = null;
       try {
         responses = await getResponsesByTeam(target.team, target.organization, target.code);
       } catch (_e) {
-        responses = [];
+        responses = null;
       }
       if (cancelled) return;
-      setTeamResponses(responses || []);
+      setTeamResponses(responses);
       setSelectedTeam(target);
       setTeamRestoreTried(true);
     })();
     return () => { cancelled = true; };
-  }, [restoringTeam, authLoading, managedTeams, navigate, setSelectedTeam]);
+  }, [restoringTeam, authLoading, managedTeams, navigate, setSelectedTeam, setTeamResponses]);
 
   // Scroll naar boven bij route-wissel — premium gevoel,
   // anders blijft de scrollpositie op de vorige pagina hangen.
@@ -334,6 +341,7 @@ export default function App() {
           <TeamDashboard
             setPage={navigate}
             teamResponses={teamResponses}
+            loadFailed={teamLoadFailed}
             selectedTeam={selectedTeam}
           />
         );
@@ -343,6 +351,7 @@ export default function App() {
           <TeamDynamics
             setPage={navigate}
             teamResponses={teamResponses}
+            loadFailed={teamLoadFailed}
             selectedTeam={selectedTeam}
           />
         );

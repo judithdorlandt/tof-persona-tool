@@ -255,13 +255,14 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
             level: LEVEL_INSIGHT,
             code: access.code,
         });
-        let responses = [];
+        // null = ophalen lukte niet; App onthoudt dat (E1.7).
+        let responses = null;
         try {
             responses = await getResponsesByTeam(access.team, access.organization, access.code);
         } catch (_e) {
-            responses = [];
+            responses = null;
         }
-        if (typeof setTeamResponses === 'function') setTeamResponses(responses || []);
+        if (typeof setTeamResponses === 'function') setTeamResponses(responses);
         if (typeof setSelectedTeam === 'function') {
             setSelectedTeam({ team: access.team, organization: access.organization, code: access.code });
         }

@@ -28,7 +28,7 @@ import { copyText } from '../utils/copyText';
 // Het voorbeeldteam staat op de verhaalsite, niet in de app.
 const EXAMPLE_URL = 'https://www.persona-tool.nl/demo';
 
-export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
+export default function TeamGate({ count, loadFailed = false, accent, eyebrow, teamName, code }) {
     const copy = useCopy().teamDashboard.gate;
     const [showNames, setShowNames] = useState(false);
     const [status, setStatus] = useState(null); // null | 'ok' | 'failed'
@@ -52,36 +52,56 @@ export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
 
     const filled = Math.min(count, MIN_TEAM_RESPONSES);
 
+    // Bij een mislukt ophalen weet de app niet of het team onder de vijf zit.
+    // Een eigen kop is nog niet akkoord; tot die er is, de gewone kop.
+    function headTitle() {
+        if (loadFailed && copy.titleForLoadFailed) {
+            return teamName ? copy.titleForLoadFailed : copy.titleLoadFailed;
+        }
+        return teamName ? copy.titleFor : copy.title;
+    }
+
     return (
         <PageShell compact>
             <HeroBlock
                 compact
                 eyebrow={eyebrow}
-                title={teamName ? copy.titleFor : copy.title}
+                title={headTitle()}
                 titleAccent={teamName || undefined}
                 titleAccentColor={accent}
                 lead={copy.body}
             />
 
             <SectionCard accent={accent}>
-                <SectionEyebrow color={accent}>{copy.count(count)}</SectionEyebrow>
-                <div
-                    aria-hidden="true"
-                    style={{ display: 'flex', gap: 8, margin: '4px 0 0' }}
-                >
-                    {Array.from({ length: MIN_TEAM_RESPONSES }, (_, i) => (
-                        <span
-                            key={i}
-                            style={{
-                                width: 28,
-                                height: 28,
-                                borderRadius: 6,
-                                border: `1.5px solid ${accent}`,
-                                background: i < filled ? accent : 'transparent',
-                            }}
-                        />
-                    ))}
-                </div>
+                {/* Ophalen lukte niet (E1.7): geen telling en geen vakjes, want
+                    "0 van de vijf" zou lezen als een leeg team. Een stand,
+                    geen alarm: role="status". */}
+                {loadFailed ? (
+                    <p role="status" style={{ ...TYPE.body, color: 'var(--tof-text)' }}>
+                        {copy.loadFailed}
+                    </p>
+                ) : (
+                    <>
+                        <SectionEyebrow color={accent}>{copy.count(count)}</SectionEyebrow>
+                        <div
+                            aria-hidden="true"
+                            style={{ display: 'flex', gap: 8, margin: '4px 0 0' }}
+                        >
+                            {Array.from({ length: MIN_TEAM_RESPONSES }, (_, i) => (
+                                <span
+                                    key={i}
+                                    style={{
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: 6,
+                                        border: `1.5px solid ${accent}`,
+                                        background: i < filled ? accent : 'transparent',
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
 
                 {/* Zonder code (oude toegang) valt er niets te delen. */}
                 {code && teamName ? (

@@ -77,11 +77,12 @@ export default function AuthCallback({ setPage, setSelectedTeam, setTeamResponse
           }
           try {
             const responses = await getResponsesByTeam(t.team, t.organization, t.code);
+            // null = ophalen lukte niet; App onthoudt dat (E1.7).
             if (typeof setTeamResponses === 'function') {
-              setTeamResponses(responses || []);
+              setTeamResponses(responses);
             }
           } catch (_e) {
-            if (typeof setTeamResponses === 'function') setTeamResponses([]);
+            if (typeof setTeamResponses === 'function') setTeamResponses(null);
           }
           if (cancelled) return;
           // Teamdynamiek hangt aan de rol, niet aan het niveau van de code
