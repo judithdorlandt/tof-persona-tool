@@ -11,7 +11,7 @@ const contribute = {
   title: 'Add your profile',
   titleAccent: 'to your team',
   intro:
-    'Your profile comes from the app and sits in the link that brought you here — nobody else has seen it yet. Below you can see exactly what travels. It only goes to your team once you click add.',
+    "Your profile comes from the app and sits in the link that brought you here — nobody else has seen it yet. Below you can see exactly what travels. Enter your team code, tap 'Check code' and then 'Add my profile'. Only then does it go to your team.",
 
   payload: {
     heading: 'What travels',

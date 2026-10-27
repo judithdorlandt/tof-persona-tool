@@ -11,7 +11,7 @@ const contribute = {
   title: 'Breng je profiel in',
   titleAccent: 'bij je team',
   intro:
-    'Je profiel komt uit de app en staat in de link waarmee je hier bent gekomen — het is nog niemand anders onder ogen gekomen. Hieronder zie je precies wat er meegaat. Pas als je op inbrengen klikt, gaat het naar je team.',
+    "Je profiel komt uit de app en staat in de link waarmee je hier bent gekomen — het is nog niemand anders onder ogen gekomen. Hieronder zie je precies wat er meegaat. Vul je teamcode in, tik op 'Code controleren' en daarna op 'Inbrengen'. Pas dan gaat het naar je team.",
 
   payload: {
     heading: 'Dit gaat mee',
