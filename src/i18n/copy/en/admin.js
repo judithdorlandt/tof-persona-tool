@@ -11,6 +11,7 @@
 const counts = {
   teams: (n) => `${n} ${n === 1 ? 'team' : 'teams'}`,
   responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
+  profiles: (n) => `${n} ${n === 1 ? 'profile' : 'profiles'}`,
   managers: (n) => `${n} ${n === 1 ? 'manager' : 'managers'}`,
 };
 
@@ -183,10 +184,10 @@ The Office Factory
   detail: {
     back: '← Back to Admin',
     eyebrow: 'TOF — ADMIN · ORGANISATION',
-    title: 'Organisation insight for',
+    title: 'Organisation landscape for',
     lead: (teamCount, responseCount) =>
-      `Aggregated across ${counts.teams(teamCount)} and ${counts.responses(responseCount)}.`,
-    downloadPdf: 'Download as PDF',
+      `Across ${counts.teams(teamCount)} and ${counts.profiles(responseCount)}.`,
+    downloadPdf: 'Download Organisation landscape',
     noSignalsNote: "You haven't added any signals from observation and conversation yet. Without them, that page is left out.",
     ownRows: (x, y) => {
       if (y === 1) return 'There is one team. The table shows only the organisation row.';
@@ -234,7 +235,7 @@ The Office Factory
 
   observations: {
     eyebrow: 'Your own observations — added per organisation',
-    lead: 'Alongside the data-driven insights from the persona responses, you can add your own observations here. They appear in the organisation PDF.',
+    lead: 'What you add here goes on a separate page in the Organisation landscape, under the headings below.',
     // Keys are database values of the `category` column — do not translate.
     categories: {
       leegloper: {

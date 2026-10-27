@@ -14,6 +14,7 @@
 const counts = {
   teams: (n) => `${n} ${n === 1 ? 'team' : 'teams'}`,
   responses: (n) => `${n} ${n === 1 ? 'response' : 'responses'}`,
+  profiles: (n) => `${n} ${n === 1 ? 'profiel' : 'profielen'}`,
   managers: (n) => `${n} ${n === 1 ? 'manager' : 'managers'}`,
 };
 
@@ -196,10 +197,10 @@ The Office Factory
   detail: {
     back: '← Terug naar Admin',
     eyebrow: 'TOF — ADMIN · ORGANISATIE',
-    title: 'Organisatie-inzicht voor',
+    title: 'Organisatielandschap voor',
     lead: (teamCount, responseCount) =>
-      `Geaggregeerd over ${counts.teams(teamCount)} en ${counts.responses(responseCount)}.`,
-    downloadPdf: 'Download als PDF',
+      `Over ${counts.teams(teamCount)} en ${counts.profiles(responseCount)}.`,
+    downloadPdf: 'Download Organisatielandschap',
     /** Besluit J2: zonder signalen valt p5 van het Organisatielandschap weg. */
     noSignalsNote: 'Je hebt nog geen signalen uit observatie en gesprek ingevuld. Zonder signalen valt die pagina weg.',
     // Besluit 8, 27 okt (tekst redacteur): hoeveel teams een eigen rij
@@ -257,7 +258,7 @@ The Office Factory
   /** Handmatige observaties die in de organisatie-PDF landen. */
   observations: {
     eyebrow: 'Eigen observaties — handmatig per organisatie',
-    lead: 'Naast de data-driven inzichten uit de persona-responses kun je hier zelf observaties toevoegen die in de organisatie-PDF verschijnen.',
+    lead: 'Wat je hier invult, komt op een eigen pagina in het Organisatielandschap, onder de kopjes hieronder.',
     // Sleutels = databasewaarden van de kolom `category`; niet vertalen.
     categories: {
       leegloper: {
