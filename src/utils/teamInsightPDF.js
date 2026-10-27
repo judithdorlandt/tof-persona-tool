@@ -104,7 +104,7 @@ const INSIGHT_COPY = {
             ontbrekend: 'WELKE WERKSTIJL ONTBREEKT',
             reflectie: 'ZELF AAN DE SLAG',
         },
-        sourceFallback: 'REFLECTIE',
+        sourceFallback: 'ZELF AAN DE SLAG',
         footerTagline: 'TOF Persona · The Office Factory',
     },
     en: {
@@ -149,7 +149,7 @@ const INSIGHT_COPY = {
             ontbrekend: 'WHICH WORKING STYLE IS MISSING',
             reflectie: 'GET STARTED YOURSELF',
         },
-        sourceFallback: 'REFLECTION',
+        sourceFallback: 'GET STARTED YOURSELF',
         footerTagline: 'TOF Persona · The Office Factory',
     },
 };

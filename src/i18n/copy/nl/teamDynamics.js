@@ -219,7 +219,7 @@ const teamDynamics = {
       collaboration: 'Uit samenwerking',
       tension: 'Uit spanningen',
       missing: 'Uit blinde vlek',
-      fallback: 'Reflectie',
+      fallback: 'Zelf aan de slag',
     },
     // `persona` komt al in kleine letters binnen, `action` al met kleine
     // beginletter — de UI doet die bewerking.

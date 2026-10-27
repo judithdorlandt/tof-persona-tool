@@ -194,7 +194,7 @@ const teamDynamics = {
       collaboration: 'From collaboration',
       tension: 'From tensions',
       missing: 'From a blind spot',
-      fallback: 'Reflection',
+      fallback: 'Get started yourself',
     },
     forPersona: (persona, action) => `For the ${persona}: ${action}`,
     axisAction: (dominant, recessive) =>
