@@ -188,6 +188,14 @@ The Office Factory
       `Aggregated across ${counts.teams(teamCount)} and ${counts.responses(responseCount)}.`,
     downloadPdf: 'Download as PDF',
     noSignalsNote: "You haven't added any signals from observation and conversation yet. Without them, that page is left out.",
+    ownRows: (x, y) => {
+      if (y === 1) return 'There is one team. The table shows only the organisation row.';
+      if (x === 0) return `None of the ${y} teams gets its own row.`;
+      if (x === 1) return `1 of ${y} teams gets its own row.`;
+      return `${x} of ${y} teams get their own row.`;
+    },
+    belowThreshold: (n) =>
+      `The Organisation landscape is available from ten profiles. Below that it is too easy to work out who answered what, and this report goes beyond the teams. This organisation has ${n} so far.`,
     loadingResponses: 'Loading responses…',
     closeTile: 'Close ✕',
     teamsHeading: (n) => `Teams in this organisation (${n})`,

@@ -202,6 +202,18 @@ The Office Factory
     downloadPdf: 'Download als PDF',
     /** Besluit J2: zonder signalen valt p5 van het Organisatielandschap weg. */
     noSignalsNote: 'Je hebt nog geen signalen uit observatie en gesprek ingevuld. Zonder signalen valt die pagina weg.',
+    // Besluit 8, 27 okt (tekst redacteur): hoeveel teams een eigen rij
+    // krijgen. x = teamrijen die de generator echt tekent, y = teams met
+    // profielen.
+    ownRows: (x, y) => {
+      if (y === 1) return 'Er is één team. De tabel toont alleen de rij van de organisatie.';
+      if (x === 0) return `Geen van de ${y} teams krijgt een eigen rij.`;
+      if (x === 1) return `1 van ${y} teams krijgt een eigen rij.`;
+      return `${x} van ${y} teams krijgen een eigen rij.`;
+    },
+    // Onder de tien profielen: in plaats van de knop.
+    belowThreshold: (n) =>
+      `Het Organisatielandschap komt er vanaf tien profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, en dit rapport gaat buiten de teams. Deze organisatie heeft er nu ${n}.`,
     loadingResponses: 'Responses laden…',
     closeTile: 'Sluiten ✕',
     teamsHeading: (n) => `Teams in deze organisatie (${n})`,

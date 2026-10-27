@@ -53,6 +53,7 @@ import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/Te
 import { buildTeamInsights } from '../utils/TeamInsights';
 import { namesVisibility } from '../utils/access';
 import { MIN_ROW_PROFILES } from '../utils/organisatieLandschap/constants';
+import { prepareOrganisatieData } from '../utils/organisatieLandschap/organisatieAggregation';
 import { buildTiles } from './TeamDashboard.jsx';
 import TeamDynamics from './TeamDynamics.jsx';
 import { useCopy, useLang } from '../i18n/LanguageContext';
@@ -1108,6 +1109,25 @@ function OrganizationDetail({
         }).sort((a, b) => b.responseCount - a.responseCount);
     }, [org, teamAssignment, lang, t.empty]);
 
+    // Hoeveel teams een eigen rij krijgen in het Organisatielandschap (besluit
+    // 8, 27 okt). Dezelfde berekening als de generator, zodat de regel en het
+    // rapport niet uit elkaar kunnen lopen: x = teamrijen zonder "Overige",
+    // y = teams met profielen.
+    const ownRowCounts = useMemo(() => {
+        if ((aggregate?.teamCount || 0) < MIN_ROW_PROFILES) return null;
+        const data = prepareOrganisatieData({
+            aggregate,
+            insights,
+            teamSummaries,
+            organizationName: org?.name,
+            lang,
+        });
+        return {
+            x: data.teamRows.length - (data.hasRestRow ? 1 : 0),
+            y: data.activeTeamCount,
+        };
+    }, [aggregate, insights, teamSummaries, org, lang]);
+
     // ── TIJDELIJKE DIAGNOSE: welke responses koppelen NIET aan een team?
     // Toont per niet-gematchte response waarom de match faalt, zodat de
     // "X niet aan een team gekoppeld" in het rapport te verklaren is.
@@ -1290,6 +1310,11 @@ function OrganizationDetail({
                             >
                                 {t.downloadPdf}
                             </PrimaryButton>
+                            {ownRowCounts && ownRowCounts.y > 0 ? (
+                                <p style={{ margin: 0, maxWidth: 360, fontSize: 14, lineHeight: 1.45, color: 'var(--tof-text-soft)' }}>
+                                    {t.ownRows(ownRowCounts.x, ownRowCounts.y)}
+                                </p>
+                            ) : null}
                             {/* Besluit J2: zonder signalen valt p5 weg; downloaden mag. */}
                             {!observations.some((o) => o.category === 'leegloper' || o.category === 'werkt_goed') && (
                                 <p style={{ margin: 0, maxWidth: 360, fontSize: 14, lineHeight: 1.45, color: 'var(--tof-text-soft)' }}>
@@ -1297,6 +1322,11 @@ function OrganizationDetail({
                                 </p>
                             )}
                         </div>
+                    ) : !loadingResponses ? (
+                        // Onder de tien: uitleg in plaats van de knop (besluit 8).
+                        <p style={{ margin: 0, maxWidth: 360, fontSize: 14, lineHeight: 1.45, color: 'var(--tof-text-soft)' }}>
+                            {t.belowThreshold(aggregate?.teamCount || 0)}
+                        </p>
                     ) : null
                 }
             />
