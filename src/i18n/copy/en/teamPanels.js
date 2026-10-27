@@ -147,7 +147,7 @@ const teamPanels = {
       spanning: 'From workplace fit',
       minderheid: 'From the minority',
       ontbrekend: 'From what is missing',
-      reflectie: 'Reflection',
+      reflectie: 'Get started yourself',
     },
   },
 

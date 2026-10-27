@@ -152,7 +152,7 @@ const teamPanels = {
       spanning: 'Uit aansluiting werkplek',
       minderheid: 'Uit minderheid',
       ontbrekend: 'Uit ontbrekend',
-      reflectie: 'Reflectie',
+      reflectie: 'Zelf aan de slag',
     },
   },
 
