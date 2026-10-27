@@ -264,6 +264,7 @@ export default function TeamDashboard({
                 titleAccent={teamName}
                 titleAccentColor={ACCENT_TEXT}
                 lead={t.hero.lead}
+                actionsBelowOnNarrow
                 actions={
                     <>
                         <PrimaryButton

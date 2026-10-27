@@ -67,11 +67,26 @@ export function HeroBlock({
     titleAccentColor,
     lead,
     actions,
+    // Op een smal scherm de knoppen onder de lead, zodat je eerst leest waar
+    // je bent (E2.3, 27 okt 2026). Alleen waar de aanroeper erom vraagt.
+    actionsBelowOnNarrow = false,
     maxWidth = 760,
     compact = false,
 }) {
     const accentColor = titleAccentColor || 'var(--tof-accent-rose)';
     const isNarrow = useIsNarrow();
+    const actionsBelow = actionsBelowOnNarrow && isNarrow;
+    const actionsRow = actions ? (
+        <div
+            style={{
+                display: 'flex',
+                gap: SPACING.sm + 2,
+                flexWrap: 'wrap',
+            }}
+        >
+            {actions}
+        </div>
+    ) : null;
 
     const titleStyle = compact
         ? {
@@ -89,7 +104,7 @@ export function HeroBlock({
             }}
         >
             {/* TOP ROW: eyebrow links + actions rechts */}
-            {(eyebrow || actions) ? (
+            {(eyebrow || (actions && !actionsBelow)) ? (
                 <div
                     style={{
                         display: 'flex',
@@ -105,17 +120,7 @@ export function HeroBlock({
                         </div>
                     ) : <div />}
 
-                    {actions ? (
-                        <div
-                            style={{
-                                display: 'flex',
-                                gap: SPACING.sm + 2,
-                                flexWrap: 'wrap',
-                            }}
-                        >
-                            {actions}
-                        </div>
-                    ) : null}
+                    {actionsBelow ? null : actionsRow}
                 </div>
             ) : null}
 
@@ -158,6 +163,8 @@ export function HeroBlock({
                     {lead}
                 </p>
             ) : null}
+
+            {actionsBelow ? actionsRow : null}
         </div>
     );
 }
