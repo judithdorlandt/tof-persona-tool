@@ -57,7 +57,10 @@ const contribute = {
     eyebrow: 'Gelukt',
     title: 'Je profiel staat erbij.',
     body: (team) =>
-      `Je persona is toegevoegd aan ${team}. Vanaf nu telt hij mee in het teambeeld — en in het beeld van de hele organisatie. Je kunt dit venster sluiten en terug naar de app.`,
+      `Je persona is toegevoegd aan ${team}. Vanaf nu telt hij mee in het teambeeld.`,
+    // Onder de knop "Naar het teambeeld" (besluit Judith 27 okt): wie deze
+    // zin eerst las, sloot het venster en miste de knop.
+    close: 'Je kunt dit venster sluiten en terug naar de app.',
     once:
       'Eén keer is genoeg. Deze browser onthoudt dat je het hebt gedaan, dus je kunt niet per ongeluk dubbel meetellen.',
     // Waar en wanneer het teambeeld komt (opdracht C5, akkoord Judith 23 okt).

@@ -293,6 +293,9 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
                             {t.done.cta}
                         </PrimaryButton>
                     </div>
+                    <p style={{ ...TYPE.bodySmall, color: 'var(--tof-text-muted)', margin: 0 }}>
+                        {t.done.close}
+                    </p>
                 </SectionCard>
                 {/* Deelmoment 1a: je eigen profiel doorvertellen. De persona
                     komt uit de link; de hash is weg, het profiel niet. */}
