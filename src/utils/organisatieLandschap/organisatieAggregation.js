@@ -276,7 +276,9 @@ function computeWorkplace(aggregate, insights, lang) {
         bandLabels: {
             [BAND.KERN]: wp?.band?.kern?.label || 'Kern',
             [BAND.STEUN]: wp?.band?.steun?.label || 'Steun',
-            [BAND.AANVULLEND]: wp?.band?.aanvullend?.label || 'Aanvullend',
+            // Band 3 heet overal "Beperkt nodig", zoals op het scherm en in de
+            // Teaminzicht-PDF (besluit Judith 27 okt): de `kort` van die band.
+            [BAND.AANVULLEND]: wp?.band?.aanvullend?.kort || 'Beperkt nodig',
         },
         needed,
         top: needed[0] || '—',
