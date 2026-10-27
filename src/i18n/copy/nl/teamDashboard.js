@@ -29,7 +29,7 @@ const teamDashboard = {
   fallbackTeamName: 'jouw team',
 
   chips: {
-    responses: 'Ingevuld',
+    responses: 'Ingebracht',
     organisation: 'Organisatie',
     dominant: 'Dominant',
     reliability: 'Betrouwbaarheid',

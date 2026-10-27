@@ -17,7 +17,7 @@ const teamDashboard = {
   fallbackTeamName: 'your team',
 
   chips: {
-    responses: 'Completed',
+    responses: 'Profiles added',
     organisation: 'Organisation',
     dominant: 'Dominant',
     reliability: 'Reliability',

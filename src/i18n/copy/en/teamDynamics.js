@@ -31,7 +31,7 @@ const teamDynamics = {
   closeLabel: 'Close panel',
 
   chips: {
-    responses: 'Completed',
+    responses: 'Profiles added',
     organisation: 'Organisation',
     dominant: 'Dominant',
     tensions: 'Tensions',

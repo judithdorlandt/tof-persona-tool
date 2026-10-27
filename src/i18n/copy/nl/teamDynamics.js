@@ -54,7 +54,7 @@ const teamDynamics = {
   closeLabel: 'Paneel sluiten',
 
   chips: {
-    responses: 'Ingevuld',
+    responses: 'Ingebracht',
     organisation: 'Organisatie',
     dominant: 'Dominant',
     tensions: 'Spanningen',
