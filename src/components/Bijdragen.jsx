@@ -405,19 +405,27 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
                             </button>
                         </div>
                     ) : (
-                        <div style={{ display: 'grid', gap: SPACING.sm, justifyItems: 'start' }}>
+                        // Een formulier, zodat Enter in het codeveld de controle
+                        // start (A1.1); de knop is de verzendknop.
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                controleerCode();
+                            }}
+                            style={{ display: 'grid', gap: SPACING.sm, justifyItems: 'start' }}
+                        >
                             <Input
                                 value={code}
                                 onChange={(e) => setCode(e.target.value)}
                                 placeholder={t.code.placeholder}
                             />
                             <SecondaryButton
-                                onClick={controleerCode}
+                                type="submit"
                                 style={{ opacity: status === 'checking' ? 0.6 : 1 }}
                             >
                                 {status === 'checking' ? t.code.checking : t.code.check}
                             </SecondaryButton>
-                        </div>
+                        </form>
                     )}
                 </Field>
 
