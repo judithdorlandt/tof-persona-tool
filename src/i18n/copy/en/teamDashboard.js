@@ -33,7 +33,8 @@ const teamDashboard = {
     copyMessage: 'Copy the message for your team',
     copied: 'Copied',
     copyFailed: 'Copying did not work. Please try again.',
-    // TEMPORARY (E1.7): waiting for Judith's approval, see nl.
+    titleLoadFailed: 'No team picture right now',
+    titleForLoadFailed: 'No team picture right now for',
     loadFailed: 'The number of profiles added could not be loaded. Please try again later.',
     recipients: 'Send the message to your team. It has the link to the app and the team code. Anyone in the team can pass it on.',
     return: "Come back later at team.persona-tool.nl/en/team. In this browser you won't need to enter the team code again.",

@@ -52,10 +52,10 @@ export default function TeamGate({ count, loadFailed = false, accent, eyebrow, t
 
     const filled = Math.min(count, MIN_TEAM_RESPONSES);
 
-    // Bij een mislukt ophalen weet de app niet of het team onder de vijf zit.
-    // Een eigen kop is nog niet akkoord; tot die er is, de gewone kop.
+    // Bij een mislukt ophalen weet de app niet of het team onder de vijf zit;
+    // dan een kop die geen aantal beweert.
     function headTitle() {
-        if (loadFailed && copy.titleForLoadFailed) {
+        if (loadFailed) {
             return teamName ? copy.titleForLoadFailed : copy.titleLoadFailed;
         }
         return teamName ? copy.titleFor : copy.title;
@@ -75,9 +75,9 @@ export default function TeamGate({ count, loadFailed = false, accent, eyebrow, t
             <SectionCard accent={accent}>
                 {/* Ophalen lukte niet (E1.7): geen telling en geen vakjes, want
                     "0 van de vijf" zou lezen als een leeg team. Een stand,
-                    geen alarm: role="status". */}
+                    geen alarm: aria-live="polite". Opmaak als de telling. */}
                 {loadFailed ? (
-                    <p role="status" style={{ ...TYPE.body, color: 'var(--tof-text)' }}>
+                    <p aria-live="polite" style={{ ...TYPE.body, fontWeight: 600, color: 'var(--tof-text)' }}>
                         {copy.loadFailed}
                     </p>
                 ) : (
