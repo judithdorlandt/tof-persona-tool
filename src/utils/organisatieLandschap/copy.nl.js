@@ -175,7 +175,9 @@ export const COPY_NL = {
         orgRowLabel: 'ORGANISATIE',
         teamNameFallback: '—',
         // Alles zonder eigen rij samen (opdracht L1/L1b, besluit Judith 23 okt).
-        otherTeamsRowLabel: (n) => `Overige (samen ${n})`,
+        // Het aantal teams in "Overige" (redacteur 27 okt, C2). Zonder teams
+        // (alleen profielen zonder team) staat er alleen "Overige".
+        otherTeamsRowLabel: (t) => (t === 0 ? 'Overige' : `Overige (${t} ${t === 1 ? 'team' : 'teams'})`),
 
         officeCheck: {
             enough: (label) => `Zijn er genoeg ${label}?`,

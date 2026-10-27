@@ -146,7 +146,7 @@ export const COPY_EN = {
     data: {
         orgRowLabel: 'ORGANISATION',
         teamNameFallback: '—',
-        otherTeamsRowLabel: (n) => `Other (together ${n})`,
+        otherTeamsRowLabel: (t) => (t === 0 ? 'Other' : `Other (${t} ${t === 1 ? 'team' : 'teams'})`),
 
         officeCheck: {
             enough: (label) => `Are there enough ${label}?`,

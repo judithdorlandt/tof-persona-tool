@@ -91,15 +91,15 @@ export function prepareOrganisatieData({
     const teamRows = ownTeams
         .map((t) => buildTeamRow(t, cd, lang))
         .sort((a, b) => String(a.name).localeCompare(String(b.name), lang, { numeric: true }));
-    if (hasRestRow) {
-        teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), cd, lang));
-    }
-
     // Teams zonder eigen rij in dit overzicht: onder de tien, of meegeschoven
     // in de rest-groep. Alleen teams mét profielen (redactie punt 2, voorstel
     // A): teams zonder profielen tellen nergens mee en staan al op p2. Alleen
     // het aantal wordt genoemd, geen namen.
     const teamsWithoutOwnRow = activeTeams.length - ownTeams.length;
+
+    if (hasRestRow) {
+        teamRows.push(buildRestRow(aggregate, ownTeams, restSize(), teamsWithoutOwnRow, cd, lang));
+    }
 
     // Reconciliatie respondenten: het organisatietotaal (aggregate.teamCount)
     // telt álle responses; de teams tellen alleen responses die aan een team
@@ -216,7 +216,7 @@ function buildTeamRow(t, cd, lang) {
 // De rest-groep: de organisatie min de teams met een eigen rij. Zo zitten
 // kleine teams en niet-gekoppelde profielen er samen in, en sluit de som van
 // de rijen precies aan op het organisatietotaal.
-function buildRestRow(aggregate, ownTeams, n, cd, lang) {
+function buildRestRow(aggregate, ownTeams, n, teamCount, cd, lang) {
     const counts = {};
     (aggregate?.personasByPrimary || []).forEach((p) => {
         counts[p.id] = (counts[p.id] || 0) + (p.count || 0);
@@ -232,7 +232,8 @@ function buildRestRow(aggregate, ownTeams, n, cd, lang) {
         return { id, pct: Math.round((count / n) * 100), count };
     });
     return {
-        name: cd.otherTeamsRowLabel(n),
+        // Het aantal teams; n (profielen) staat al in de kolom ernaast (C2).
+        name: cd.otherTeamsRowLabel(teamCount),
         n,
         cells,
         reliability: confidenceFor(n, lang),
