@@ -340,7 +340,13 @@ function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
             });
         });
 
+        // Sla plekken over die het team als geheel 'Beperkt nodig' heeft
+        // (besluit Judith 27 okt): anders zegt deze actie "voorzie ook van
+        // informele plekken" terwijl de actie Uit spanning zegt dat het
+        // team die maar af en toe nodig heeft.
+        const beperktNodig = new Set((tension.oversupplied || []).map((w) => w.key));
         const topMinorityWorkplaces = Object.entries(workplaceScores)
+            .filter(([typeId]) => !beperktNodig.has(typeId))
             .sort((a, b) => b[1] - a[1])
             .slice(0, 2)
             .map(([typeId]) => profielTypeLabel({ id: typeId }, lang));
@@ -350,10 +356,14 @@ function buildWorkplaceQuickWins(aggregate, lang = 'nl') {
             lang
         );
 
-        wins.push({
-            source: 'minderheid',
-            action: t.minority(workplacesText, personaText, minority.length),
-        });
+        // Blijft er na het overslaan geen plek over, dan geen actie: een
+        // zin zonder plekken zegt niets.
+        if (topMinorityWorkplaces.length > 0) {
+            wins.push({
+                source: 'minderheid',
+                action: t.minority(workplacesText, personaText, minority.length),
+            });
+        }
     }
 
     // WIN 5+ — uit ONTBREKEND (strikte definitie uit aggregate)
