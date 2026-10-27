@@ -61,10 +61,10 @@ const teamIntro = {
     upgradeLead: 'Want to see several teams at once?',
     upgradeLink: 'Ask about the Organisation landscape →',
     teamFallback: 'Team',
-    levelDynamics: 'Team Insight + Dynamics',
+    levelDynamics: 'Team Insight + Team Dynamics',
     levelInsight: 'Team Insight',
-    openInsight: 'Insight →',
-    openDynamics: 'Dynamics →',
+    openInsight: 'Go to Team Insight →',
+    openDynamics: 'Go to Team Dynamics →',
   },
 
 

@@ -66,10 +66,10 @@ const teamIntro = {
     upgradeLead: 'Meerdere teams in beeld brengen?',
     upgradeLink: 'Vraag naar het Organisatielandschap →',
     teamFallback: 'Team',
-    levelDynamics: 'Teaminzicht + Dynamiek',
+    levelDynamics: 'Teaminzicht + Teamdynamiek',
     levelInsight: 'Teaminzicht',
-    openInsight: 'Inzicht →',
-    openDynamics: 'Dynamiek →',
+    openInsight: 'Naar Teaminzicht →',
+    openDynamics: 'Naar Teamdynamiek →',
   },
 
 
