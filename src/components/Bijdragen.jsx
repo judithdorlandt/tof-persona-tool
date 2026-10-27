@@ -34,7 +34,7 @@ import { useMemo, useState } from 'react';
 import { useArchetypes } from '../i18n/archetypes';
 import { useCopy, useLang } from '../i18n/LanguageContext';
 import { pagePath } from '../i18n/routes';
-import { DEFAULT_PERSONA_COLOR, PERSONA_COLORS } from '../lib/resultDerivations';
+import { buildScoreDistribution, DEFAULT_PERSONA_COLOR, PERSONA_COLORS } from '../lib/resultDerivations';
 import { decodeHandoff } from '../lib/profileHandoff';
 import { getResponsesByTeam, saveResponse, validateTeamAccessCode } from '../supabase';
 import { grantTeamLevel, LEVEL_INSIGHT } from '../utils/access';
@@ -139,14 +139,15 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
     const afdruk = access && profiel ? vingerafdruk(profiel, access.code) : null;
     const alIngebracht = !!afdruk && !nogmaals && gelezen().includes(afdruk);
 
-    // Hoogste score eerst — dan leest de lijst als een rangorde en niet als een
-    // tabel waarin je zelf moet zoeken.
+    // Hoogste aandeel eerst — dan leest de lijst als een rangorde en niet als
+    // een tabel waarin je zelf moet zoeken. Als aandeel van het totaal, met
+    // dezelfde omrekening als het resultaat in de app (A1.3): zo ziet het
+    // teamlid hier hetzelfde getal als daar, en geen ruwe score zonder eenheid.
     const scores = useMemo(() => {
         if (!profiel) return [];
-        return Object.entries(profiel.scores)
-            .map(([id, score]) => ({ id, score, name: naamVan(id) }))
-            .filter((r) => r.name)
-            .sort((a, b) => b.score - a.score);
+        return buildScoreDistribution(profiel.scores, ARCHETYPES)
+            .filter((r) => naamVan(r.id))
+            .map((r) => ({ id: r.id, name: naamVan(r.id), percentage: r.percentage }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [profiel, ARCHETYPES]);
 
@@ -370,7 +371,7 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
                                     color: 'var(--tof-text-soft)',
                                 }}
                             >
-                                {rij.name} {rij.score}
+                                {rij.name} {rij.percentage}%
                             </span>
                         ))}
                     </div>

@@ -19,7 +19,7 @@ const contribute = {
     primaryLabel: 'Eerste',
     secondaryLabel: 'Tweede',
     tertiaryLabel: 'Derde',
-    scoresHeading: 'Je werkstijl',
+    scoresHeading: 'Verdeling van jouw profiel',
     note:
       'En niets anders. Geen aantekeningen, geen antwoorden op open vragen, geen werkplekkeuzes. Wat je in de app bij je gesprek hebt opgeschreven blijft op je toestel staan.',
   },

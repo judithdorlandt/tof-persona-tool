@@ -19,7 +19,7 @@ const contribute = {
     primaryLabel: 'First',
     secondaryLabel: 'Second',
     tertiaryLabel: 'Third',
-    scoresHeading: 'Your working style',
+    scoresHeading: 'The balance of your profile',
     note:
       'And nothing else. No notes, no answers to open questions, no workplace choices. Whatever you wrote down for your conversation in the app stays on your device.',
   },
