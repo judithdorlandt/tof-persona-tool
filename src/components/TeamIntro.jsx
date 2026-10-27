@@ -473,6 +473,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                                 setTeamAccesses([]);
                             }}
                             adminMode={isAdminAccess()}
+                            showOrgOffer={Boolean(user) && isManagerMode}
                             onLogoutAdmin={() => {
                                 revokeAdminAccess();
                                 setTeamAccesses(listTeamAccesses());
@@ -521,11 +522,8 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
 // Alleen teams + openen. Geen upgrade-knoppen — die verwarren gebruikers die
 // niet weten wat een "Dynamics-code" is. Upgrade loopt via contact (aparte regel).
 
-function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMode = false, onLogoutAdmin }) {
+function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMode = false, showOrgOffer = false, onLogoutAdmin }) {
     const t = useCopy().teamIntro.access;
-
-    // Zijn er teams die nog op Insight-niveau staan? Alleen dan tonen we de upgrade-regel.
-    const hasInsightOnly = teamAccesses.some((e) => e.level !== LEVEL_DYNAMICS);
 
     return (
         <div style={{ display: 'grid', gap: 8 }}>
@@ -649,8 +647,10 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                 </div>
             </div>
 
-            {/* Upgrade-regel — subtiel, geen knop, alleen als relevant (en niet in admin-mode) */}
-            {hasInsightOnly && !adminMode && (
+            {/* De regel over het Organisatielandschap is aanbod: alleen voor
+                een ingelogde leidinggevende, niet voor een teamlid en niet in
+                admin-mode (besluit Judith 27 okt). */}
+            {showOrgOffer && !adminMode && (
                 <div
                     style={{
                         paddingLeft: isMobile ? 16 : 20,
