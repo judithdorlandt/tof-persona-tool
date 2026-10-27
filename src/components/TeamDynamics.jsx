@@ -1282,6 +1282,7 @@ function TensionRow({ tension, index, scores, totalScore, isOpen, isFirst, onTog
                                 <PersonaPill name={archA?.name || tension.a} pct={pctA} color={PERSONA_COLORS[tension.a]} />
                                 <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>{t.tensions.and}</span>
                                 <PersonaPill name={archB?.name || tension.b} pct={pctB} color={PERSONA_COLORS[tension.b]} />
+                                <span style={{ fontSize: 12, color: 'var(--tof-text-muted)' }}>{t.tensions.ofEnergy}</span>
                             </span>
                         </span>
 

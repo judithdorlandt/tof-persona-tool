@@ -32,6 +32,7 @@ const teamPanels = {
     },
     energy: {
       eyebrow: 'The energy in this team',
+      unit: '% of the team energy',
       lead:
         'Weighted working-style energy across all profiles. Working styles that are not primary still contribute through second and third preferences.',
     },

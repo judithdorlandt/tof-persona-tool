@@ -357,6 +357,15 @@ function EnergyDistribution({ items, isMobile }) {
                     columnGap: isMobile ? SPACING.md : SPACING.xl,
                 }}
             >
+                {/* Kolomkop rechts boven de percentages, één per kolom. */}
+                {(isMobile ? [0] : [0, 1]).map((col) => (
+                    <div
+                        key={`unit-${col}`}
+                        style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)', textAlign: 'right' }}
+                    >
+                        {t.unit}
+                    </div>
+                ))}
                 {items.map((persona) => (
                     <EnergyBar key={persona.id} persona={persona} />
                 ))}

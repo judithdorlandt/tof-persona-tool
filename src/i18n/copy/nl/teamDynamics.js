@@ -168,6 +168,8 @@ const teamDynamics = {
   tensions: {
     empty: 'Geen directe spanningen.',
     and: 'en',
+    // Eén keer achter het paar (B2.2): de percentages zijn van de teamenergie.
+    ofEnergy: 'van de teamenergie',
     risk: 'Risico',
     advice: 'Leiderschapsadvies',
     pairs: {

@@ -144,6 +144,7 @@ const teamDynamics = {
   tensions: {
     empty: 'No direct tensions.',
     and: 'and',
+    ofEnergy: 'of the team energy',
     risk: 'Risk',
     advice: 'Leadership advice',
     pairs: {

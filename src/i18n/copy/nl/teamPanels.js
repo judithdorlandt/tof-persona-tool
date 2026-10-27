@@ -32,6 +32,9 @@ const teamPanels = {
     },
     energy: {
       eyebrow: 'Energie van dit team',
+      // Kolomkop boven de percentages (A5.1): ze zijn van de teamenergie,
+      // niet van het aantal mensen zoals bij de werkstijlen erboven.
+      unit: '% van de teamenergie',
       lead:
         'Gewogen werkstijl-energie van alle profielen samen. Ook werkstijlen die niet primair zijn dragen bij via tweede en derde voorkeuren.',
     },
