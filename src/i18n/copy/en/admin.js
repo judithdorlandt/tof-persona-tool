@@ -234,17 +234,17 @@ The Office Factory
   },
 
   observations: {
-    eyebrow: 'Your own observations — added per organisation',
+    eyebrow: 'Signals from observation and conversation',
     lead: 'What you add here goes on a separate page in the Organisation landscape, under the headings below.',
     // Keys are database values of the `category` column — do not translate.
     categories: {
       leegloper: {
-        label: 'Where the organisation loses energy',
-        helper: 'E.g. acoustics, no-shows, agreements not being kept.',
+        label: 'Qualitative signals',
+        helper: 'Where the organisation loses energy. E.g. acoustics, no-shows, agreements not being kept.',
         placeholder: 'acoustics on the work floor',
       },
       werkt_goed: {
-        label: 'What works well in the organisation',
+        label: 'What works well',
         helper: 'E.g. an open feedback culture, quick decision-making.',
         placeholder: 'open feedback culture between teams',
       },

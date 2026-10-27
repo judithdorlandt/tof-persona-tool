@@ -257,17 +257,17 @@ The Office Factory
 
   /** Handmatige observaties die in de organisatie-PDF landen. */
   observations: {
-    eyebrow: 'Eigen observaties — handmatig per organisatie',
+    eyebrow: 'Signalen uit observatie en gesprek',
     lead: 'Wat je hier invult, komt op een eigen pagina in het Organisatielandschap, onder de kopjes hieronder.',
     // Sleutels = databasewaarden van de kolom `category`; niet vertalen.
     categories: {
       leegloper: {
-        label: 'Waar de organisatie op leegloopt',
-        helper: 'Bv. akoestiek, no-shows, niet nakomen van afspraken.',
+        label: 'Kwalitatieve signalen',
+        helper: 'Waar de organisatie op leegloopt. Bv. akoestiek, no-shows, niet nakomen van afspraken.',
         placeholder: 'akoestiek op de werkvloer',
       },
       werkt_goed: {
-        label: 'Wat werkt goed in de organisatie',
+        label: 'Wat werkt goed',
         helper: 'Bv. open feedbackcultuur, snelle besluitvorming.',
         placeholder: 'open feedbackcultuur tussen teams',
       },
