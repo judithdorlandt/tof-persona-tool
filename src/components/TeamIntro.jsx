@@ -905,21 +905,23 @@ function AccessStrip({
                 </p>
             </div>
 
-            <div style={{ display: 'grid', gap: 8 }}>
+            {/* Uitlegpunten met een neutraal bolletje in plaats van een groen
+                vinkje: een vinkje leest als "inbegrepen" of "gelukt" (A3.5). */}
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 12 }}>
                 {copy.bullets.map((b, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                        <div style={{
-                            width: 20, height: 20, borderRadius: 999,
-                            background: '#EAF0EB',
-                            border: `1.5px solid ${accent}`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: 12, fontWeight: 700, color: accentText,
-                            flexShrink: 0, marginTop: 1,
-                        }}>✓</div>
+                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                        <span
+                            aria-hidden="true"
+                            style={{
+                                width: 6, height: 6, borderRadius: 999,
+                                background: 'var(--tof-text-soft)',
+                                flexShrink: 0, marginTop: 9,
+                            }}
+                        />
                         <span style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--tof-text-soft)' }}>{b}</span>
-                    </div>
+                    </li>
                 ))}
-            </div>
+            </ul>
         </div>
     );
 }
