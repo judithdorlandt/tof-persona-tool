@@ -22,6 +22,7 @@ import {
     grantAdminAccess,
     revokeAdminAccess,
     revokeTeamAccess,
+    forgetCurrentTeam,
     listTeamAccesses,
     isManagerOf,
     levelFromCode,
@@ -34,6 +35,7 @@ import {
     validateAdminCode,
     getResponsesByTeam,
     getCurrentUser,
+    signOut,
     joinTeamByCode,
     getMyMemberships,
     getMyManagedTeams,
@@ -345,10 +347,21 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
             teamAccesses={teamAccesses}
             isMobile={isMobile}
             onOpenTeam={openExistingTeam}
-            onLogout={() => {
+            onLogout={async () => {
+                // Ingelogd (leidinggevende): echt uitloggen. Alleen de codes
+                // wissen hielp niet: na het verversen stonden zijn teams er
+                // weer, uit de koppeling, en hij was nog ingelogd (A3.3).
+                if (user) {
+                    await signOut();
+                    forgetCurrentTeam();
+                    revokeTeamAccess();
+                    setPage('login');
+                    return;
+                }
                 revokeTeamAccess();
                 setTeamAccesses([]);
             }}
+            signedIn={Boolean(user)}
             adminMode={isAdminAccess()}
             showOrgOffer={Boolean(user) && isManagerMode}
             onLogoutAdmin={() => {
@@ -526,7 +539,7 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
 // Alleen teams + openen. Geen upgrade-knoppen — die verwarren gebruikers die
 // niet weten wat een "Dynamics-code" is. Upgrade loopt via contact (aparte regel).
 
-function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMode = false, showOrgOffer = false, onLogoutAdmin }) {
+function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMode = false, signedIn = false, showOrgOffer = false, onLogoutAdmin }) {
     const t = useCopy().teamIntro.access;
 
     return (
@@ -616,7 +629,9 @@ function YourAccessPanel({ teamAccesses, isMobile, onOpenTeam, onLogout, adminMo
                             e.currentTarget.style.background = 'transparent';
                         }}
                     >
-                        {t.logout}
+                        {/* Beheerder en ingelogde gebruiker loggen echt uit; een
+                            teamlid met alleen een code vergeet die hier (A3.3). */}
+                        {adminMode || signedIn ? t.logout : t.forget}
                     </button>
                 </div>
 
