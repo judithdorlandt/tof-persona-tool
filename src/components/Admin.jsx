@@ -1258,8 +1258,11 @@ function OrganizationDetail({
                 lead={t.lead(org.teamCount, responses.length)}
                 actions={
                     // Onder de tien profielen voor de hele organisatie geen
-                    // rapport (MIN_ROW_PROFILES): dan geen knop.
-                    moduleSel === 'insight' && responses.length >= MIN_ROW_PROFILES ? (
+                    // rapport (MIN_ROW_PROFILES): dan geen knop. Precies de
+                    // telling van de generator (aggregate.teamCount), zodat
+                    // knop en rapport niet uit elkaar kunnen lopen. In beide
+                    // weergaven, ook op Teamdynamiek (D3).
+                    (aggregate?.teamCount || 0) >= MIN_ROW_PROFILES ? (
                         // flex-start: anders rekt de knop mee tot de breedte van de melding.
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
                             <PrimaryButton
