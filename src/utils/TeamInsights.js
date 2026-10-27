@@ -187,6 +187,9 @@ function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, aggr
         return null;
     }
 
+    // Op aandeel van het team, aflopend (besluit Judith 27 okt, A5.4): de
+    // lijst toont het aandeel, dus daar hoort hij ook op te staan. Bij een
+    // gelijk aandeel blijft de energie-volgorde (sort is stabiel).
     const present = (aggregate?.sortedPersonas || [])
         .filter((p) => p.count > 0)
         .map((p) => {
@@ -195,7 +198,8 @@ function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, aggr
                     ? Math.round((p.count / aggregate.teamCount) * 100)
                     : 0;
             return { ...p, teamPct };
-        });
+        })
+        .sort((a, b) => b.teamPct - a.teamPct);
 
     if (present.length === 0) return null;
 
@@ -218,32 +222,11 @@ function buildImpactSummary({ underserved, oversupplied, presentPersonaIds, aggr
     const dominantIds = new Set(dominantPersonas(aggregate).map((p) => p.id));
     const dominant = present.filter((p) => dominantIds.has(p.id));
     const afterDominant = present.filter((p) => !dominantIds.has(p.id));
-    let middle = [];
-    let minority = [];
-
-    if (present.length < 3) {
-        middle = afterDominant;
-    } else {
-        const tail = afterDominant.slice(-2);
-
-        if (tail.length === 1) {
-            if (tail[0].teamPct < 10) {
-                minority = tail;
-            } else {
-                middle = tail;
-            }
-        } else if (tail.length === 2) {
-            const bothUnder10 = tail.every((p) => p.teamPct < 10);
-            if (bothUnder10) {
-                minority = tail;
-                middle = afterDominant.slice(0, -2);
-            } else {
-                middle = afterDominant;
-            }
-        } else {
-            middle = afterDominant;
-        }
-    }
+    // "Risico op isolatie" voor elke werkstijl onder de 10% van het team,
+    // niet alleen de laatste twee van de lijst (besluit Judith 27 okt): drie
+    // werkstijlen met hetzelfde aandeel horen hetzelfde label te krijgen.
+    const middle = afterDominant.filter((p) => p.teamPct >= 10);
+    const minority = afterDominant.filter((p) => p.teamPct < 10);
 
     const dominantEnriched = dominant.map((p) => enrichPersona(p, 'dominant'));
     const middleEnriched = middle.map((p) => enrichPersona(p, 'middle'));
