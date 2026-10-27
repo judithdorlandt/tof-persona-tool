@@ -105,6 +105,13 @@ function assignResponsesToTeams(responses, teams) {
     return { byTeam, ambiguous };
 }
 
+// Eerste letter als hoofdletter, net als het Organisatielandschap bij het
+// tekenen van de signalen doet.
+function capitalizeFirst(s) {
+    const str = String(s || '');
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 // ─── HOOFDCOMPONENT ─────────────────────────────────────────────────────────
 
 export default function Admin({ setPage, setSelectedTeam, setTeamResponses }) {
@@ -1054,7 +1061,8 @@ function OrganizationDetail({
     }, [org]);
 
     async function handleAddObservation(category) {
-        const content = (obsForm[category] || '').trim();
+        // Met een hoofdletter opslaan, zoals het signaal in de PDF staat.
+        const content = capitalizeFirst((obsForm[category] || '').trim());
         if (!content) return;
         setObsBusy(true);
         setObsError(null);
@@ -1807,7 +1815,8 @@ function ObservationsSection({ observations, form, setForm, busy, error, onAdd, 
                                         borderRadius: 10,
                                     }}>
                                         <span style={{ fontSize: 14, color: 'var(--tof-text)' }}>
-                                            {it.content}
+                                            {/* Oudere signalen zonder hoofdletter tonen zoals in de PDF. */}
+                                            {capitalizeFirst(it.content)}
                                         </span>
                                         <button
                                             type="button"
