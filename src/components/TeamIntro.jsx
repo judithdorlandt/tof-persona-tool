@@ -337,6 +337,27 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
     // blok, en laten alleen YourAccessPanel zien.
     const isManagerMode = teamAccesses.some((a) => a.fromManager);
 
+    // Volgorde: wie al toegang heeft (en geen manager-mode is), ziet "Jouw
+    // toegang" direct onder de hero. Manager-mode en beheerder: zoals het was.
+    const accessFirst = !isManagerMode && teamAccesses.length > 0;
+    const yourAccessPanel = (
+        <YourAccessPanel
+            teamAccesses={teamAccesses}
+            isMobile={isMobile}
+            onOpenTeam={openExistingTeam}
+            onLogout={() => {
+                revokeTeamAccess();
+                setTeamAccesses([]);
+            }}
+            adminMode={isAdminAccess()}
+            showOrgOffer={Boolean(user) && isManagerMode}
+            onLogoutAdmin={() => {
+                revokeAdminAccess();
+                setTeamAccesses(listTeamAccesses());
+            }}
+        />
+    );
+
     // Ingelogd en de teams nog niet binnen: even niets tonen. Anders zag een
     // leidinggevende eerst kort het scherm voor bezoekers zonder team (kop +
     // codeveld), dat daarna verdween zodra zijn teams bekend waren.
@@ -441,6 +462,11 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                     </div>
                 </div>
 
+                {/* ── JOUW TOEGANG ─────────────────────────────────────── */}
+                {/* Heb je al toegang, dan zie je je teams eerst — daar kom je */}
+                {/* voor (besluit Judith 27 okt). Daarna pas het codeveld. */}
+                {accessFirst && yourAccessPanel}
+
                 {/* ── TOEGANG ─────────────────────────────────────────── */}
                 <AccessStrip
                     copy={t.entry}
@@ -456,31 +482,9 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                 </>
                 )}
 
-                {/* ── CONTEXTUELE VOLGORDE ─────────────────────────────── */}
-                {/* Returning users (al toegang) zien hun teams eerst — dat is */}
-                {/* waar ze voor komen. New users zien de code-invoer eerst. */}
-                {/* Manager-mode (auto-koppeling via team_managers) toont */}
-                {/* alleen YourAccessPanel — geen sales-hero, geen module-kaarten, */}
-                {/* geen code-invoer-blok. */}
-                {(teamAccesses.length > 0 || isAdminAccess()) && (
-                    <>
-                        <YourAccessPanel
-                            teamAccesses={teamAccesses}
-                            isMobile={isMobile}
-                            onOpenTeam={openExistingTeam}
-                            onLogout={() => {
-                                revokeTeamAccess();
-                                setTeamAccesses([]);
-                            }}
-                            adminMode={isAdminAccess()}
-                            showOrgOffer={Boolean(user) && isManagerMode}
-                            onLogoutAdmin={() => {
-                                revokeAdminAccess();
-                                setTeamAccesses(listTeamAccesses());
-                            }}
-                        />
-                    </>
-                )}
+                {/* ── JOUW TOEGANG, als je al toegang hebt maar geen manager-mode ── */}
+                {/* staat al onder de hero, vóór de toegangsstrook (zie hieronder). */}
+                {!accessFirst && (teamAccesses.length > 0 || isAdminAccess()) && yourAccessPanel}
 
                 {/* ── FOOTER NAVIGATIE ────────────────────────────────── */}
                 <div style={{
