@@ -215,6 +215,11 @@ export const COPY_NL = {
             // Achter noOwnRow als er een team van tien of meer is meegeschoven
             // (redacteur 26 okt).
             shiftedLarge: 'Een van die teams heeft tien of meer profielen. Het telt mee zodat ook “Overige” minstens tien profielen heeft.',
+            // Achter noOwnRowNoRest als er een team van tien of meer is
+            // meegeschoven (redacteur en Judith 27 okt); enkelvoud als dat het
+            // enige team is (dan gaat het om profielen zonder team).
+            shiftedLargeNoRest: 'Een van die teams heeft tien of meer profielen. Ook dat team staat niet apart, omdat de kleinere teams samen anders af te leiden zijn uit het totaal van de organisatie.',
+            shiftedLargeNoRestOne: 'Dat team heeft tien of meer profielen. Het staat niet apart, omdat de profielen zonder team anders af te leiden zijn uit het totaal van de organisatie.',
             // Zonder rij "Overige" (besluit Judith 23 okt).
             noOwnRowNoRest: (x) => (x === 1
                 ? '1 team staat niet als eigen rij in dit overzicht. Zo staat geen groep van minder dan tien profielen apart in beeld. Het telt mee in het totaal van de organisatie.'

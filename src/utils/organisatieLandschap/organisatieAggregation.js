@@ -363,7 +363,15 @@ export function buildAttentionSummary(data, copy = getOLCopy('nl')) {
     const x = data.teamsWithoutOwnRow || 0;
     if (x === 0) return [];
     const ca = copy.data.attention;
-    if (!data.hasRestRow) return [ca.noOwnRowNoRest(x)];
+    if (!data.hasRestRow) {
+        // Zonder "Overige": is er een team van tien of meer meegeschoven, dan
+        // zegt de kaart waarom (redacteur en Judith 27 okt). Bij één team gaat
+        // het om profielen zonder team, niet om kleinere teams.
+        if ((data.shiftedLargeTeams || 0) > 0) {
+            return [`${ca.noOwnRowNoRest(x)} ${x > 1 ? ca.shiftedLargeNoRest : ca.shiftedLargeNoRestOne}`];
+        }
+        return [ca.noOwnRowNoRest(x)];
+    }
     // Is er een team van tien of meer meegeschoven, dan zegt de kaart dat
     // (tekst redacteur 26 okt, alleen in het meervoud).
     const shifted = (data.shiftedLargeTeams || 0) > 0 && x > 1;

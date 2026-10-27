@@ -177,6 +177,8 @@ export const COPY_EN = {
                 ? '1 team does not have its own row in this overview. This way no group of fewer than ten profiles is shown separately. It is counted in “Other” and in the organisation total.'
                 : `${x} teams do not have their own row in this overview. This way no group of fewer than ten profiles is shown separately. They are counted in “Other” and in the organisation total.`),
             shiftedLarge: 'One of these teams has ten or more profiles. It is included so that “Other” also has at least ten profiles.',
+            shiftedLargeNoRest: 'One of these teams has ten or more profiles. It does not have its own row either, because the smaller teams together could then be derived from the organisation total.',
+            shiftedLargeNoRestOne: 'That team has ten or more profiles. It does not have its own row, because the profiles without a team could then be derived from the organisation total.',
             noOwnRowNoRest: (x) => (x === 1
                 ? '1 team does not have its own row in this overview. This way no group of fewer than ten profiles is shown separately. It is counted in the organisation total.'
                 : `${x} teams do not have their own row in this overview. This way no group of fewer than ten profiles is shown separately. They are counted in the organisation total.`),
