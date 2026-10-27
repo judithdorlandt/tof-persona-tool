@@ -520,28 +520,39 @@ export function Tile({
                         fontSize: 12,
                         lineHeight: 1.5,
                         color: isActive ? '#FFFFFF' : 'var(--tof-text-soft)',
+                        // Ruimte voor de pijl rechtsonder.
+                        paddingRight: 28,
                     }}
                 >
                     {hint}
                 </div>
             ) : null}
 
-            {/* Chevron onderaan rechts */}
-            <div
+            {/* Pijl onderaan rechts: een open hoek in de tekstkleur, zodat je
+                ziet dat de tegel opengaat (A5.11). Open: wit, omhoog. */}
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
                 aria-hidden="true"
                 style={{
                     position: 'absolute',
                     bottom: 12,
-                    right: 14,
-                    fontSize: 12,
-                    color: isActive ? '#FFFFFF' : accent,
-                    fontWeight: 700,
+                    right: 12,
+                    color: isActive ? '#FFFFFF' : 'var(--tof-text)',
                     transform: isActive ? 'rotate(180deg)' : 'rotate(0)',
                     transition: `transform 0.2s ${EASE}`,
                 }}
             >
-                ▾
-            </div>
+                <path
+                    d="M4 7l6 6 6-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                />
+            </svg>
         </button>
     );
 }
