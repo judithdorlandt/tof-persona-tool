@@ -123,28 +123,27 @@ function drawLegendTopRight(svg, y, copy) {
         ...TYPE_V9.eyebrow,
     }));
 
-    const sh = 4;
-    // Swatches volgen exact dezelfde lineaire schaal als de cellen (0%→1.0):
-    // 0.12 + (pct/100) * 0.88 op 0/25/50/75/100%.
-    [0.12, 0.34, 0.56, 0.78, 1].forEach((op, i) => {
-        const sx = legX + i * (LEGEND_SW + LEGEND_GAP);
-        // Grijswaarde — neutraal, niet persona-gekleurd
-        svg.appendChild(rect(sx, legY + 3, LEGEND_SW, sh, '#5C544B', { opacity: op }));
-    });
-    svg.appendChild(text({
-        x: legX, y: legY + 11.5,
-        content: copy.heatmap.legend.scaleLow,
-        ...TYPE_V9.footer,
-    }));
-    svg.appendChild(text({
-        x: right, y: legY + 11.5,
-        content: copy.heatmap.legend.scaleHigh,
-        ...TYPE_V9.footer, anchor: 'end',
-    }));
+    // Twee rijen van acht vlakjes in de personakleuren: licht (0%) en sterk
+    // (100%), op dezelfde schaal als de cellen (0.12 → 1.0). Zo toont de
+    // legenda dezelfde kleuren als de tabel (besluit 27 okt, grafisch C1).
+    const gap = 1;
+    const sw = (LEGEND_W - 7 * gap) / 8;
+    const sh = 3;
+    [[0.12, copy.heatmap.legend.scaleLow, legY + 2.5], [1, copy.heatmap.legend.scaleHigh, legY + 6.5]]
+        .forEach(([op, label, ry]) => {
+            ARCHETYPE_ORDER.forEach((id, i) => {
+                svg.appendChild(rect(legX + i * (sw + gap), ry, sw, sh, PERSONA_COLORS[id], { opacity: op }));
+            });
+            svg.appendChild(text({
+                x: legX - 2, y: ry + sh - 0.3,
+                content: label,
+                ...TYPE_V9.footer, anchor: 'end',
+            }));
+        });
     // Uitleg-regel. Wat "—" betekent staat in de voetnoot, zodat de legenda
     // kort blijft (toets na bouw, grafisch 1.1).
     const end = drawWrapped({
-        svg, x: right, y: legY + 16.5, maxWidth: LEGEND_W,
+        svg, x: right, y: legY + 14.5, maxWidth: LEGEND_W,
         content: copy.heatmap.legend.explanation, ...TYPE_V9.small, anchor: 'end',
     });
     return end - TYPE_V9.small.lineHeight;
