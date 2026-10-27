@@ -195,7 +195,11 @@ export default function TeamDashboard({
     // bij een gelijke stand beide namen. Consistent met de Werkstijlen-tegel.
     const dominantPersona = dominantNames(aggregate, lang);
 
-    const teamCount = aggregate?.teamCount || 0;
+    // Het getal dat je ziet = de telling van de drempel: rijen met een
+    // werkstijl (E2.5, 27 okt 2026). aggregate.teamCount telt alle rijen en
+    // blijft de noemer van de percentages.
+    const completeProfiles = countCompleteProfiles(teamResponses);
+    const teamCount = completeProfiles;
     // Eén schaal op beide dashboards en in de PDF's (besluit 6, 22 okt 2026).
     const reliability = teamCount > 0 ? getConfidence(teamCount, lang).label : '';
 
@@ -223,7 +227,6 @@ export default function TeamDashboard({
     // Onder vijf ingevulde werkstijlen geen teambeeld: in een kleiner team is
     // een uitslag herleidbaar tot een persoon. Beheerders mogen wel door, zij
     // zien de teams om de tool te kunnen bedienen.
-    const completeProfiles = countCompleteProfiles(teamResponses);
     if (completeProfiles < MIN_TEAM_RESPONSES && !isAdminAccess()) {
         return (
             <TeamGate

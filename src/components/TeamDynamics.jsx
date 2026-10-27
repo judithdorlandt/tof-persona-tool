@@ -142,16 +142,20 @@ export default function TeamDynamics({
         [leadershipActions, tensions, missingCritical, dynamicsAxes, lang]
     );
 
+    // Het getal dat je ziet = de telling van de drempel: rijen met een
+    // werkstijl (E2.5, 27 okt 2026). Metaregel, betrouwbaarheid en PDF.
+    const completeProfiles = countCompleteProfiles(teamResponses);
+
     // PDF-aggregate: minimal subset wat teamDynamicsPDF nodig heeft.
     const pdfAggregate = useMemo(() => ({
-        teamCount: teamResponses.length,
+        teamCount: completeProfiles,
         totalScores: scores,
         totalEnergy: totalScore,
-    }), [teamResponses.length, scores, totalScore]);
+    }), [completeProfiles, scores, totalScore]);
 
     const topPersonaId = dominantIds[0] || null;
     // Eén schaal op beide dashboards en in de PDF's (besluit 6, 22 okt 2026).
-    const reliability = teamResponses.length > 0 ? getConfidence(teamResponses.length, lang).label : '';
+    const reliability = completeProfiles > 0 ? getConfidence(completeProfiles, lang).label : '';
 
     const signatureLine = useMemo(() => {
         if (!teamResponses.length) return null;
@@ -253,7 +257,6 @@ export default function TeamDynamics({
     // een uitslag herleidbaar tot een persoon. Beheerders en het organisatie-
     // overzicht (embedded/forceAccess) mogen door — dat laatste aggregeert
     // over alle teams en is dus geen venster op één klein team.
-    const completeProfiles = countCompleteProfiles(teamResponses);
     if (completeProfiles < MIN_TEAM_RESPONSES && !passesGate) {
         return (
             <TeamGate
@@ -458,7 +461,7 @@ export default function TeamDynamics({
             <SignatureBlock
                 quote={signatureLine}
                 accent={ACCENT}
-                teamCount={teamResponses.length}
+                teamCount={completeProfiles}
                 organization={organization}
                 dominantPersona={dominantLabel}
                 dominantColor={topPersonaId ? PERSONA_COLORS[topPersonaId] : ACCENT}
