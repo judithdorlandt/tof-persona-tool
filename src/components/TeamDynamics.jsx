@@ -208,7 +208,11 @@ export default function TeamDynamics({
     }
 
     // ── GEEN DATA ────────────────────────────────────────────
-    if (!teamResponses || teamResponses.length === 0) {
+    // Alleen voor wie langs de drempel mag (ingebed, beheerder). Een
+    // leidinggevende met 0 profielen krijgt het wachtscherm hieronder, met de
+    // knop om het team uit te nodigen (besluit 1, 27 okt 2026).
+    const passesGate = isAdminAccess() || forceAccess || embedded;
+    if ((!teamResponses || teamResponses.length === 0) && passesGate) {
         if (embedded) {
             return (
                 <div style={{
@@ -250,12 +254,7 @@ export default function TeamDynamics({
     // overzicht (embedded/forceAccess) mogen door — dat laatste aggregeert
     // over alle teams en is dus geen venster op één klein team.
     const completeProfiles = countCompleteProfiles(teamResponses);
-    if (
-        completeProfiles < MIN_TEAM_RESPONSES
-        && !isAdminAccess()
-        && !forceAccess
-        && !embedded
-    ) {
+    if (completeProfiles < MIN_TEAM_RESPONSES && !passesGate) {
         return (
             <TeamGate
                 count={completeProfiles}
