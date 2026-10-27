@@ -27,7 +27,7 @@ import { copyText } from '../utils/copyText';
 export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
     const copy = useCopy().teamDashboard.gate;
     const [showNames, setShowNames] = useState(false);
-    const [copied, setCopied] = useState(false);
+    const [status, setStatus] = useState(null); // null | 'ok' | 'failed'
 
     useEffect(() => {
         if (!code) return undefined;
@@ -40,9 +40,10 @@ export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
 
     async function handleCopy() {
         const ok = await copyText(copy.message({ team: teamName, code, showNames }));
-        if (!ok) return;
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        // Mislukt: zelfde plek als "Gekopieerd", iets langer in beeld omdat de
+        // zin langer is (E1.4, 27 okt 2026).
+        setStatus(ok ? 'ok' : 'failed');
+        setTimeout(() => setStatus(null), ok ? 2000 : 4000);
     }
 
     const filled = Math.min(count, MIN_TEAM_RESPONSES);
@@ -82,7 +83,9 @@ export default function TeamGate({ count, accent, eyebrow, teamName, code }) {
                 {code && teamName ? (
                     <div style={{ marginTop: 16 }} aria-live="polite">
                         <PrimaryButton onClick={handleCopy} style={{ background: accent }}>
-                            {copied ? copy.copied : copy.copyMessage}
+                            {status === 'ok' ? copy.copied
+                                : status === 'failed' ? copy.copyFailed
+                                : copy.copyMessage}
                         </PrimaryButton>
                     </div>
                 ) : null}

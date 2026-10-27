@@ -32,6 +32,7 @@ const teamDashboard = {
     count: (n) => `${n} of five added`,
     copyMessage: 'Copy the message for your team',
     copied: 'Copied',
+    copyFailed: 'Copying did not work. Please try again.',
     message: ({ team, code, showNames }) => [
       `${team} is putting together a team picture. Here's how to take part:`,
       `1. Open this link on your phone and download the TOF Persona app: https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}`,

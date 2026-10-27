@@ -48,6 +48,7 @@ const teamDashboard = {
     count: (n) => `${n} van de vijf ingebracht`,
     copyMessage: 'Kopieer het bericht voor je team',
     copied: 'Gekopieerd',
+    copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
     // Het bericht dat de knop kopieert. Neutrale stem: ook een teamlid kan
     // het doorsturen. De laatste zin hangt af van de namenschakelaar.
     message: ({ team, code, showNames }) => [
