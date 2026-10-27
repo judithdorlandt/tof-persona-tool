@@ -20,6 +20,9 @@ const teamDynamics = {
     eyebrow: '02 — Teamdynamiek',
     title: 'Teamdynamiek voor',
     lead: 'Waar samenwerking schuurt, waarom tempo en reflectie botsen, en wat dat vraagt van leiderschap.',
+    // Voor wie dit deel is (besluit 3, akkoord Judith 27 okt 2026). "Is voor"
+    // en "het team": klopt ook voor de beheerder, die het ook ziet.
+    audience: 'Dit deel is voor de leidinggevende. Het team ziet alleen Teaminzicht.',
     downloadPdf: 'Download als PDF',
     backToInsight: '← Naar Teaminzicht',
     otherTeam: 'Ander team',

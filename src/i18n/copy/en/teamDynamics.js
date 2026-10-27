@@ -3,6 +3,7 @@ const teamDynamics = {
     eyebrow: '02 — Team Dynamics',
     title: 'Team Dynamics for',
     lead: 'Where collaboration grates, why pace and reflection collide, and what that asks of leadership.',
+    audience: 'This part is for the manager. The team only sees Team Insight.',
     downloadPdf: 'Download as PDF',
     backToInsight: '← Back to Team Insight',
     otherTeam: 'Another team',

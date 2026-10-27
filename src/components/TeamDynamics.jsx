@@ -412,6 +412,7 @@ export default function TeamDynamics({
                 titleAccent={teamName}
                 titleAccentColor={ACCENT}
                 lead={t.hero.lead}
+                leadNote={t.hero.audience}
                 actionsBelowOnNarrow
                 actions={
                     <>

@@ -66,6 +66,9 @@ export function HeroBlock({
     titleAccent,
     titleAccentColor,
     lead,
+    // Een tweede alinea in de opmaak van de lead (Teamdynamiek: voor wie dit
+    // deel is, besluit 3, 27 okt 2026).
+    leadNote,
     actions,
     // Op een smal scherm de knoppen onder de lead, zodat je eerst leest waar
     // je bent (E2.3, 27 okt 2026). Alleen waar de aanroeper erom vraagt.
@@ -161,6 +164,19 @@ export function HeroBlock({
                     }}
                 >
                     {lead}
+                </p>
+            ) : null}
+
+            {leadNote ? (
+                <p
+                    style={{
+                        ...TYPE.bodyLarge,
+                        color: '#6F6A66',
+                        maxWidth: 680,
+                        fontSize: compact ? 15 : 16,
+                    }}
+                >
+                    {leadNote}
                 </p>
             ) : null}
 
