@@ -110,8 +110,10 @@ const teamPanels = {
     isolationRisk: 'Risico op isolatie',
     office: {
       eyebrow: 'Check in je kantoor',
-      enough: 'Voorzien jullie genoeg in:',
-      notFull: 'En staat het niet vol met:',
+      // Vraagvorm van de Teaminzicht-PDF (besluit 7, 27 okt): één vraag per
+      // plek, label in kleine letters.
+      enough: (label) => `Zijn er genoeg ${label}?`,
+      notFull: (label) => `Worden de ${label} echt gebruikt?`,
     },
   },
 

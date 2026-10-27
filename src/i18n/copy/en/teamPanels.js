@@ -109,8 +109,8 @@ const teamPanels = {
     isolationRisk: 'Risk of isolation',
     office: {
       eyebrow: 'Check your office',
-      enough: 'Do you provide enough of:',
-      notFull: 'And is it not full of:',
+      enough: (label) => `Are there enough ${label}?`,
+      notFull: (label) => `Are the ${label} actually used?`,
     },
   },
 

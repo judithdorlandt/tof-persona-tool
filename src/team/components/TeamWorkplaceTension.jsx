@@ -323,66 +323,22 @@ function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
                 </p>
             </div>
 
-            {checkWorkplaces.length > 0 ? (
-                <div style={{ display: 'grid', gap: SPACING.sm }}>
-                    <p
-                        style={{
-                            margin: 0,
-                            fontFamily: 'var(--tof-font-body)',
-                            fontSize: 13,
-                            color: 'var(--tof-text-soft)',
-                        }}
-                    >
-                        {t.enough}
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                        {checkWorkplaces.map((wp) => (
-                            <WorkplacePill key={wp.key} workplace={wp} accent="var(--tof-accent-sage)" />
-                        ))}
-                    </div>
-                </div>
-            ) : null}
-
-            {uncheckWorkplaces.length > 0 ? (
-                <div style={{ display: 'grid', gap: SPACING.sm }}>
-                    <p
-                        style={{
-                            margin: 0,
-                            fontFamily: 'var(--tof-font-body)',
-                            fontSize: 13,
-                            color: 'var(--tof-text-soft)',
-                        }}
-                    >
-                        {t.notFull}
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                        {uncheckWorkplaces.map((wp) => (
-                            <WorkplacePill key={wp.key} workplace={wp} accent="var(--tof-accent-rose)" />
-                        ))}
-                    </div>
-                </div>
+            {/* Eén vraag per plek, op een eigen regel, zoals in de PDF
+                (besluit 7, 27 okt); de pillen vervallen. */}
+            {(checkWorkplaces.length > 0 || uncheckWorkplaces.length > 0) ? (
+                <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: SPACING.sm }}>
+                    {checkWorkplaces.map((wp) => (
+                        <li key={`enough-${wp.key}`} style={{ ...TYPE.body, fontSize: 14, margin: 0, color: 'var(--tof-text)' }}>
+                            {t.enough(wp.label.toLowerCase())}
+                        </li>
+                    ))}
+                    {uncheckWorkplaces.map((wp) => (
+                        <li key={`used-${wp.key}`} style={{ ...TYPE.body, fontSize: 14, margin: 0, color: 'var(--tof-text)' }}>
+                            {t.notFull(wp.label.toLowerCase())}
+                        </li>
+                    ))}
+                </ul>
             ) : null}
         </div>
-    );
-}
-
-function WorkplacePill({ workplace, accent }) {
-    return (
-        <span
-            style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'var(--tof-surface)',
-                border: `1px solid ${accent}44`,
-                borderRadius: RADIUS.pill,
-                padding: '5px 12px',
-                fontSize: 13,
-                color: 'var(--tof-text)',
-                fontWeight: 500,
-            }}
-        >
-            {workplace.label}
-        </span>
     );
 }
