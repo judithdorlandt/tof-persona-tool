@@ -57,8 +57,6 @@ export default function TeamWorkplaceTension({ insights }) {
                 gap: isMobile ? SPACING.lg : SPACING['2xl'],
             }}
         >
-            <Header isMobile={isMobile} />
-
             {/* HERO: anker-zinnen + impact-uitspraken */}
             {dominant.length > 0 ? (
                 <DominantHero personas={dominant} isMobile={isMobile} />
@@ -77,36 +75,6 @@ export default function TeamWorkplaceTension({ insights }) {
                     isMobile={isMobile}
                 />
             ) : null}
-        </div>
-    );
-}
-
-// =========================
-// HEADER
-// =========================
-
-function Header({ isMobile }) {
-    const t = useCopy().teamPanels.workplaceTension;
-
-    return (
-        <div
-            style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                justifyContent: 'flex-end',
-                gap: SPACING.md,
-                flexWrap: 'wrap',
-            }}
-        >
-            <div
-                style={{
-                    fontFamily: 'var(--tof-font-body)',
-                    fontSize: 13,
-                    color: 'var(--tof-text-muted)',
-                }}
-            >
-                {t.headerQuestion}
-            </div>
         </div>
     );
 }
@@ -332,7 +300,8 @@ function PersonaCard({ persona }) {
 // =========================
 
 function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
-    const t = useCopy().teamPanels.workplaceTension.office;
+    const { workplaceTension } = useCopy().teamPanels;
+    const t = workplaceTension.office;
 
     return (
         <div
@@ -343,8 +312,15 @@ function CheckYourOffice({ checkWorkplaces, uncheckWorkplaces, isMobile }) {
                 borderTop: '1px solid var(--tof-border)',
             }}
         >
-            <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
-                {t.eyebrow}
+            <div style={{ display: 'grid', gap: SPACING.xs }}>
+                <div style={{ ...TYPE.eyebrow, color: 'var(--tof-text-muted)' }}>
+                    {t.eyebrow}
+                </div>
+                {/* De kantoorvraag is de vraag waar dit blok antwoord op zoekt;
+                    hij stond los, rechts uitgelijnd, bovenaan het paneel (A5.3). */}
+                <p style={{ ...TYPE.body, fontSize: 14, margin: 0 }}>
+                    {workplaceTension.headerQuestion}
+                </p>
             </div>
 
             {checkWorkplaces.length > 0 ? (
