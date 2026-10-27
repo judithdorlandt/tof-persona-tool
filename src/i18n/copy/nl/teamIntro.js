@@ -60,9 +60,10 @@ const teamIntro = {
     oneTeam: 'Je hebt toegang tot dit team.',
     manyTeams: (n) => `Je hebt toegang tot ${n} teams.`,
     logout: 'Uitloggen',
-    // Teamlid zonder inlog: de knop vergeet de codes op dit toestel; met
-    // dezelfde code kom je terug (A3.3, tekst redacteur).
-    forget: 'Vergeten op dit toestel',
+    // Teamlid zonder inlog: de knop vergeet de codes in deze browser; met
+    // dezelfde code kom je terug (A3.3, tekst redacteur). "In deze browser",
+    // zoals gate.return (27 okt 2026).
+    forget: 'Vergeten in deze browser',
     adminNoTeams: 'Kies een team uit het overzicht om te openen.',
     // Inzicht en Dynamiek zijn samen Module 2 geworden, dus "upgrade naar
     // Dynamiek" bestaat niet meer als los product. De volgende stap is Module 3.

@@ -57,7 +57,7 @@ const teamIntro = {
     oneTeam: 'You have access to this team.',
     manyTeams: (n) => `You have access to ${n} teams.`,
     logout: 'Sign out',
-    forget: 'Forget on this device',
+    forget: 'Forget in this browser',
     adminNoTeams: 'Choose a team from the overview to open it.',
     upgradeLead: 'Want to see several teams at once?',
     upgradeLink: 'Ask about the Organisation landscape →',
