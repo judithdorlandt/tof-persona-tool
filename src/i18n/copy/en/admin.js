@@ -197,7 +197,7 @@ The Office Factory
     },
     belowThreshold: (n) =>
       `The Organisation landscape is available from ten profiles. Below that it is too easy to work out who answered what, and this report goes beyond the teams. This organisation has ${n} so far.`,
-    loadingResponses: 'Loading responses…',
+    loadingResponses: 'Loading profiles…',
     closeTile: 'Close ✕',
     teamsHeading: (n) => `Teams in this organisation (${n})`,
     ambiguous: {

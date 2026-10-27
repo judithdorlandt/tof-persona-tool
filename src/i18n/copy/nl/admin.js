@@ -215,7 +215,7 @@ The Office Factory
     // Onder de tien profielen: in plaats van de knop.
     belowThreshold: (n) =>
       `Het Organisatielandschap komt er vanaf tien profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, en dit rapport gaat buiten de teams. Deze organisatie heeft er nu ${n}.`,
-    loadingResponses: 'Responses laden…',
+    loadingResponses: 'Profielen laden…',
     closeTile: 'Sluiten ✕',
     teamsHeading: (n) => `Teams in deze organisatie (${n})`,
     /** Alleen voor de beheerder: responses die op meer dan één team matchten. */
