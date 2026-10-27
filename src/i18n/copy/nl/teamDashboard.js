@@ -44,7 +44,7 @@ const teamDashboard = {
   gate: {
     title: 'Nog geen teambeeld',
     titleFor: 'Nog geen teambeeld voor',
-    body: 'Het teambeeld verschijnt vanaf vijf ingevulde profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, ook als er geen namen bij staan.',
+    body: 'Het teambeeld verschijnt vanaf vijf ingebrachte profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, ook als er geen namen bij staan.',
     count: (n) => `${n} van de vijf ingebracht`,
     copyMessage: 'Kopieer het bericht voor je team',
     copied: 'Gekopieerd',

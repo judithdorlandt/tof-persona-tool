@@ -28,7 +28,7 @@ const teamDashboard = {
   gate: {
     title: 'No team picture yet',
     titleFor: 'No team picture yet for',
-    body: 'The team picture appears from five completed profiles onwards. Below that it is too easy to work out who answered what, even without names.',
+    body: 'The team picture appears once five profiles have been added. Below that it is too easy to work out who answered what, even without names.',
     count: (n) => `${n} of five added`,
     copyMessage: 'Copy the message for your team',
     copied: 'Copied',
