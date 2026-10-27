@@ -18,7 +18,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { PageShell, HeroBlock, SectionCard, SectionEyebrow, PrimaryButton } from '../ui/AppShell';
+import { PageShell, HeroBlock, SectionCard, PrimaryButton } from '../ui/AppShell';
 import { useCopy } from '../i18n/LanguageContext';
 import { TYPE, SPACING } from '../ui/tokens';
 import { MIN_TEAM_RESPONSES } from '../utils/access';
@@ -81,11 +81,17 @@ export default function TeamGate({ count, loadFailed = false, accent, eyebrow, t
                         {copy.loadFailed}
                     </p>
                 ) : (
-                    <>
-                        <SectionEyebrow color={accent}>{copy.count(count)}</SectionEyebrow>
+                    // De telling als gewone tekst, niet als eyebrow: het
+                    // belangrijkste getal hoort niet de kleinste tekst te zijn
+                    // (E1.5, 27 okt 2026). De modulekleur zit in de vakjes,
+                    // de rand en de knop.
+                    <div style={{ display: 'grid', gap: SPACING.sm }}>
+                        <p style={{ ...TYPE.body, fontWeight: 600, color: 'var(--tof-text)' }}>
+                            {copy.count(count)}
+                        </p>
                         <div
                             aria-hidden="true"
-                            style={{ display: 'flex', gap: 8, margin: '4px 0 0' }}
+                            style={{ display: 'flex', gap: 8, margin: 0 }}
                         >
                             {Array.from({ length: MIN_TEAM_RESPONSES }, (_, i) => (
                                 <span
@@ -100,7 +106,7 @@ export default function TeamGate({ count, loadFailed = false, accent, eyebrow, t
                                 />
                             ))}
                         </div>
-                    </>
+                    </div>
                 )}
 
                 {/* Zonder code (oude toegang) valt er niets te delen. */}

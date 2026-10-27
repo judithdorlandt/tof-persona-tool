@@ -45,7 +45,7 @@ const teamDashboard = {
     title: 'Nog geen teambeeld',
     titleFor: 'Nog geen teambeeld voor',
     body: 'Het teambeeld verschijnt vanaf vijf ingebrachte profielen. Daaronder is te makkelijk te herleiden wie wat heeft geantwoord, ook als er geen namen bij staan.',
-    count: (n) => `${n} van de vijf ingebracht`,
+    count: (n) => `${n} van de 5 ingebracht`,
     copyMessage: 'Kopieer het bericht voor je team',
     copied: 'Gekopieerd',
     copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',

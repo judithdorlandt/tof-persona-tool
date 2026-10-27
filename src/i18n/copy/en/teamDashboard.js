@@ -29,7 +29,7 @@ const teamDashboard = {
     title: 'No team picture yet',
     titleFor: 'No team picture yet for',
     body: 'The team picture appears once five profiles have been added. Below that it is too easy to work out who answered what, even without names.',
-    count: (n) => `${n} of five added`,
+    count: (n) => `${n} of 5 added`,
     copyMessage: 'Copy the message for your team',
     copied: 'Copied',
     copyFailed: 'Copying did not work. Please try again.',
