@@ -2,24 +2,24 @@ const strategicCompass = {
   back: '← Back to team space',
 
   hero: {
-    eyebrow: 'Module 04 · The Strategic Compass',
+    eyebrow: 'TOF Persona · The Strategic Compass',
     titleLead: 'What the world asks of you, translated into ',
     titleAccent: 'who your team is',
     titleTail: '.',
-    sub: 'For management teams, boards and workplace leads. External trends connected to your team personas — a compass for the next three to five years.',
+    sub: 'For management teams and boards. External trends connected to your team personas — a compass for the next three to five years.',
     cta: 'Explore the approach',
     meta: '3–5 YEARS · FOUR-MONTH PROGRAMME',
   },
 
   why: {
-    eyebrow: 'Why Module 4',
+    eyebrow: 'Why the Compass',
     titleLead: 'Strategy without a view of people is a ',
     titleAccent: 'compass without north',
     titleTail: '.',
     lead: 'Many strategy programmes look outward — trends, market, technology. Others look inward — culture, leadership, teams. The Strategic Compass does both. Trends always land differently depending on who actually works there.',
     // The paid modules side by side. Module 1 (the free app) is deliberately
     // absent: it is the way in, not an alternative to this programme.
-    compareHeads: ['Module 2', 'Module 3', 'Module 4'],
+    compareHeads: ['TOF Persona Team', 'The Organisation Landscape', 'The Strategic Compass'],
     compareRows: [
       {
         label: 'Perspective',
@@ -35,7 +35,7 @@ const strategicCompass = {
       },
       {
         label: 'Audience',
-        cells: ['Team leads, HR', 'Leadership, HR, workplace leads', 'Management team and board'],
+        cells: ['Team leads, HR', 'Leadership, HR', 'Management team and board'],
       },
     ],
   },
@@ -115,7 +115,7 @@ const strategicCompass = {
     {
       num: '03',
       name: 'Persona overlay',
-      meta: 'From Module 2 + 3',
+      meta: 'From the team pictures and the Organisation Landscape',
       body: 'How do your personas relate to those trends? A Maker-heavy team in a DEIB-driven organisation needs something very different from a Connector-heavy team.',
     },
     {
@@ -158,31 +158,31 @@ const strategicCompass = {
   ],
 
   stackSection: {
-    eyebrow: 'Where Module 4 fits',
+    eyebrow: 'Where the Compass fits',
     titleLead: 'Four modules, one ',
     titleAccent: 'story',
     titleTail: '.',
-    lead: 'Module 4 stands on the shoulders of the modules before it. Only once you know who works here, how teams work together and what the organisation looks like can you look meaningfully at where you want to go.',
+    lead: 'The Compass stands on the shoulders of what comes before it. Only once you know who works here, how teams work together and what the organisation looks like can you look meaningfully at where you want to go.',
   },
 
   stack: [
     {
-      num: 'Module 01 · The Persona app',
+      num: '01 · The app',
       title: 'Who are you?',
       body: 'The app on your phone. Your own profile, your workplace needs, your conversation prep.',
     },
     {
-      num: 'Module 02 · Team Insight & Dynamics',
+      num: '02 · TOF Persona Team',
       title: 'How do you work together?',
       body: 'Team dashboard. Persona mix, tensions, workplace needs and quick wins.',
     },
     {
-      num: 'Module 03 · Organisation landscape',
+      num: '03 · The Organisation Landscape',
       title: 'What do you see across teams?',
-      body: 'All teams side by side, with interpretation for leadership, HR and workplace.',
+      body: 'All teams side by side, with interpretation for leadership and HR.',
     },
     {
-      num: 'Module 04 · Strategic Compass',
+      num: '04 · The Strategic Compass',
       title: 'Where are we heading?',
       body: 'Outside in — trends and personas translated into strategy.',
     },

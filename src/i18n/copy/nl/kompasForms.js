@@ -16,9 +16,9 @@
 const kompasForms = {
     // ── Dashboard (TeamStrategic) ────────────────────────────────────────────
     dashboard: {
-        eyebrow: 'Module 4 · Strategisch Kompas',
+        eyebrow: 'Strategisch Kompas',
         back: '← Terug',
-        backToTool: '← Terug naar Persona Tool',
+        backToTool: '← Terug naar TOF Persona',
         thisOrganization: 'deze organisatie',
         defaultHorizon: '3–5 jaar',
 
@@ -70,12 +70,12 @@ const kompasForms = {
 
     // ── Intake-vragenlijst ───────────────────────────────────────────────────
     intake: {
-        eyebrow: 'Module 4 · Strategisch Kompas · Intake',
+        eyebrow: 'Strategisch Kompas · Intake',
         title: 'De start van jullie',
         titleAccent: 'kompas',
         intro:
             'Deze vragenlijst is de start van jullie Strategisch Kompas. Jullie antwoorden vormen, ' +
-            'samen met de persona-data uit Module 2 en 3 en de acht trends, de basis voor het ' +
+            'samen met de persona-data uit de teambeelden en het Organisatielandschap en de acht trends, de basis voor het ' +
             'ontwerpgesprek. Er volgt geen automatische uitslag — dit is input die we samen tot ' +
             'richting maken. Neem de tijd; eerlijke korte antwoorden zijn waardevoller dan volledige.',
 
@@ -150,18 +150,18 @@ const kompasForms = {
         },
 
         done: {
-            eyebrow: 'Module 4 · Strategisch Kompas',
+            eyebrow: 'Strategisch Kompas',
             title: 'Dank je.',
             body:
                 'Jullie input is opgeslagen. Judith neemt hem door en combineert hem met jullie ' +
                 'persona-data en de acht trends. In het ontwerpgesprek komt alles samen tot jullie kompas.',
-            back: '← Terug naar Module 4',
+            back: '← Terug naar het Kompas',
         },
     },
 
     // ── Check na drie maanden ────────────────────────────────────────────────
     review: {
-        eyebrow: 'Module 4 · Strategisch Kompas · Check na 3 maanden',
+        eyebrow: 'Strategisch Kompas · Check na 3 maanden',
         title: 'Drie maanden',
         titleAccent: 'verder',
         intro: 'Drie maanden verder. Deze korte check kijkt wat er is veranderd, zodat het kompas meebeweegt.',
@@ -205,10 +205,10 @@ const kompasForms = {
         },
 
         done: {
-            eyebrow: 'Module 4 · Strategisch Kompas',
+            eyebrow: 'Strategisch Kompas',
             title: 'Dank je.',
             body: 'Jullie input is opgeslagen. Judith neemt hem door zodat het kompas meebeweegt.',
-            back: '← Terug naar Module 4',
+            back: '← Terug naar het Kompas',
         },
     },
 

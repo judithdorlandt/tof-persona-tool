@@ -2,24 +2,24 @@ const strategicCompass = {
   back: '← Terug naar teamomgeving',
 
   hero: {
-    eyebrow: 'Module 04 · Het Strategisch Kompas',
+    eyebrow: 'TOF Persona · Het Strategisch Kompas',
     titleLead: 'Wat de wereld vraagt, vertaald naar ',
     titleAccent: 'wie je team is',
     titleTail: '.',
-    sub: "Voor MT, bestuur en huisvesting. Externe trends gekoppeld aan jouw team-persona's — een kompas voor de komende drie tot vijf jaar.",
+    sub: "Voor MT en bestuur. Externe trends gekoppeld aan jouw team-persona's — een kompas voor de komende drie tot vijf jaar.",
     cta: 'Ontdek de aanpak',
     meta: '3–5 JAAR · TRAJECT VAN 4 MAANDEN',
   },
 
   why: {
-    eyebrow: 'Waarom Module 4',
+    eyebrow: 'Waarom het Kompas',
     titleLead: 'Strategie zonder mensbeeld is een ',
     titleAccent: 'kompas zonder noord',
     titleTail: '.',
     lead: 'Veel strategie-trajecten kijken naar de buitenwereld — trends, markt, technologie. Andere kijken naar binnen — cultuur, leiderschap, teams. Het Strategisch Kompas doet beide. Trends raken organisaties altijd anders, afhankelijk van wie er werkt.',
     // De betaalde modules naast elkaar. Module 1 (de gratis app) staat hier
     // bewust niet in: die is de ingang, geen alternatief voor dit traject.
-    compareHeads: ['Module 2', 'Module 3', 'Module 4'],
+    compareHeads: ['TOF Persona Team', 'Organisatielandschap', 'Strategisch Kompas'],
     compareRows: [
       {
         label: 'Blik',
@@ -35,7 +35,7 @@ const strategicCompass = {
       },
       {
         label: 'Doelgroep',
-        cells: ['Teamleiders, HR', 'Directie, HR, huisvesting', 'MT en bestuur'],
+        cells: ['Teamleiders, HR', 'Directie, HR', 'MT en bestuur'],
       },
     ],
   },
@@ -115,7 +115,7 @@ const strategicCompass = {
     {
       num: '03',
       name: 'Persona-overlay',
-      meta: 'Uit Module 2 + 3',
+      meta: 'Uit de teambeelden en het Organisatielandschap',
       body: "Hoe verhouden jullie persona's zich tot die trends? Een Maker-zwaar team in een DEIB-gedreven organisatie vraagt iets héél anders dan een Verbinder-zwaar team.",
     },
     {
@@ -158,31 +158,31 @@ const strategicCompass = {
   ],
 
   stackSection: {
-    eyebrow: 'Waar Module 4 in past',
+    eyebrow: 'Waar het Kompas in past',
     titleLead: 'Vier modules, één ',
     titleAccent: 'verhaal',
     titleTail: '.',
-    lead: 'Module 4 staat op de schouders van de modules ervoor. Pas als je weet wie er werkt, hoe teams samenwerken en hoe de organisatie eruitziet, kan je betekenisvol kijken naar waar je heen wilt.',
+    lead: 'Het Kompas staat op de schouders van wat ervoor komt. Pas als je weet wie er werkt, hoe teams samenwerken en hoe de organisatie eruitziet, kan je betekenisvol kijken naar waar je heen wilt.',
   },
 
   stack: [
     {
-      num: 'Module 01 · De Persona-app',
+      num: '01 · De app',
       title: 'Wie ben jij?',
       body: 'De app op je telefoon. Je eigen profiel, je werkplekbehoefte, je gespreksvoorbereiding.',
     },
     {
-      num: 'Module 02 · Teaminzicht & Dynamiek',
+      num: '02 · TOF Persona Team',
       title: 'Hoe werken jullie samen?',
       body: 'Teamdashboard. Persona-mix, spanningen, werkplek­behoefte en quick wins.',
     },
     {
-      num: 'Module 03 · Organisatielandschap',
+      num: '03 · Organisatielandschap',
       title: 'Wat zie je over teams heen?',
-      body: 'Alle teams naast elkaar, met duiding voor directie, HR en huisvesting.',
+      body: 'Alle teams naast elkaar, met duiding voor directie en HR.',
     },
     {
-      num: 'Module 04 · Strategisch Kompas',
+      num: '04 · Strategisch Kompas',
       title: 'Waar gaan we naartoe?',
       body: "Buiten naar binnen — trends + persona's vertaald naar strategie.",
     },

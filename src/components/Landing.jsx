@@ -66,9 +66,10 @@ export default function Landing({ setPage }) {
                 </button>
 
                 <div className={styles.title}>
-                    <span className={styles.titleSpace}>The Office</span>
-                    <span className={styles.titleAccent}>Factory</span>
+                    <span className={styles.titleSpace}>TOF</span>
+                    <span className={styles.titleAccent}>Persona</span>
                 </div>
+                <p className={styles.titleSub}>The Office Factory</p>
 
                 <p className={styles.subtitle}>{t.subtitle}</p>
 

@@ -1,5 +1,5 @@
 const landing = {
-  logoButtonLabel: 'Begin de Persona Tool',
+  logoButtonLabel: 'Begin TOF Persona',
   logoAlt: 'TOF logo',
   subtitle: 'Inzicht in werkstijl, teamdynamiek en werkplek.',
   languageLabel: 'Kies je taal',

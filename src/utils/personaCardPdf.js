@@ -44,7 +44,7 @@ const COLOR = {
 const CARD_COPY = {
   nl: {
     pillPrimary: 'PRIMAIRE PERSONA',
-    roleFallback: 'TOF Persona Tool',
+    roleFallback: 'TOF Persona',
     titlePrefix: 'Jouw dominante profiel is ',
     verdelingEyebrow: 'VERDELING PROFIEL',
     mixEyebrow: 'JOUW MIX',
@@ -62,7 +62,7 @@ const CARD_COPY = {
   },
   en: {
     pillPrimary: 'PRIMARY PERSONA',
-    roleFallback: 'TOF Persona Tool',
+    roleFallback: 'TOF Persona',
     titlePrefix: 'Your dominant profile is ',
     verdelingEyebrow: 'PROFILE BREAKDOWN',
     mixEyebrow: 'YOUR MIX',
@@ -651,7 +651,7 @@ export function downloadPersonaCardVectorPDF({ pdfData, primaryColor, fileName, 
       title: fileName || c.docTitle,
       subject: c.docSubject(pdfData?.voorkant?.persona || ''),
       author: 'The Office Factory',
-      creator: 'TOF Persona Tool',
+      creator: 'TOF Persona',
       keywords: 'TOF, Persona, Personakaart, The Office Factory',
     });
   } catch (e) {

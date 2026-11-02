@@ -1,8 +1,4 @@
 const nav = {
-  // Under 'The Office Factory' next to the logo. Web = the team space, app =
-  // your own profile; together with the logo it reads "TOF Persona".
-  brandSub: 'Persona Team',
-  brandSubApp: 'Persona',
   // The logo is a button; this is what it does. That makes the image itself
   // decorative (alt=""), or a screen reader would announce it twice.
   logoToHome: 'Back to your overview',

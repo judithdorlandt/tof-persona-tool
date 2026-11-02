@@ -53,16 +53,29 @@
 
 .title {
   font-family: var(--tof-font-heading);
-  font-weight: 300;
+  font-weight: 400;
   font-size: clamp(30px, 5vw, 56px);
   letter-spacing: -0.025em;
   line-height: 1.05;
   color: var(--tof-text);
 }
-.titleSpace { margin-right: 0.15em; }
+/* `inherit` is nodig: index.css zet elke span op de body-font, en die regel
+   wint van overerving. Zonder dit staat het woordmerk in Inter. */
+.titleSpace { margin-right: 0.15em; font-family: inherit; }
 .titleAccent {
+  font-family: inherit;
   font-style: italic;
   color: var(--tof-accent-rose);
+}
+/* Regel 2 van het woordmerk, gelijk aan persona-tool.nl. De negatieve marge
+   haalt hem uit de 20px-gap van .stage, zodat hij bij de titel hoort. */
+.titleSub {
+  margin: -12px 0 0;
+  font-family: var(--tof-font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--tof-text-muted);
 }
 
 .subtitle {

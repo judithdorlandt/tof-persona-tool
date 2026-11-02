@@ -193,12 +193,12 @@ const native = {
       subject: (persona) =>
         persona
           ? `Ik kwam eruit als ${persona} — en dit wil ik met het team doen`
-          : 'Ik heb de Persona-test gedaan — en dit wil ik met het team doen',
+          : 'Ik heb de test in TOF Persona gedaan — en dit wil ik met het team doen',
       // Losse regels; ze worden met regeleinden aan elkaar geplakt.
       body: (persona) => [
         'Hoi,',
         '',
-        `Ik heb de Persona-test gedaan en werd er even stil van.${
+        `Ik heb de test in TOF Persona gedaan en werd er even stil van.${
           persona ? ` Ik kom eruit als ${persona}.` : ''
         } Voor het eerst staat er concreet waarom ik op sommige dagen leegloop en op andere alles aankan — en wat ik daarvoor van mijn werkplek en van jou nodig heb. Ik heb er aantekeningen bij gemaakt die ik graag een keer met je doorneem.`,
         '',

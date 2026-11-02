@@ -71,26 +71,27 @@
 }
 .brandTitle {
   font-family: var(--tof-font-heading);
-  font-weight: 300;
+  font-weight: 400;
   color: var(--tof-text);
   font-size: 1.125rem;
   letter-spacing: -0.025em;
 }
-.brandWord { margin-right: 0.15em; }
+/* `inherit`: index.css zet elke span op de body-font (zie Landing.module.css). */
+.brandWord { margin-right: 0.15em; font-family: inherit; }
 .brandAccent {
   font-family: var(--tof-font-heading);
-  font-weight: 300;
+  font-weight: 400;
   font-style: italic;
   color: var(--tof-accent-rose);
 }
+/* Regel 2 van het woordmerk, gelijk aan persona-tool.nl: gewone letters,
+   geen kapitalen of extra letterafstand. Valt op mobiel weg (zie onder). */
 .brandSub {
   margin-top: 2px;
   font-family: var(--tof-font-body);
   font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
   color: var(--tof-text-muted);
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.2;
 }
 

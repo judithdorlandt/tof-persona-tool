@@ -138,10 +138,10 @@ export default function Nav({
                         <img src={tofLogo} alt="" className={styles.logoImg} />
                         <div className={styles.brand}>
                             <span className={styles.brandTitle}>
-                                <span className={styles.brandWord}>The Office</span>
-                                <span className={styles.brandAccent}>Factory</span>
+                                <span className={styles.brandWord}>TOF</span>
+                                <span className={styles.brandAccent}>Persona</span>
                             </span>
-                            <span className={styles.brandSub}>{IS_NATIVE ? t.brandSubApp : t.brandSub}</span>
+                            <span className={styles.brandSub}>The Office Factory</span>
                         </div>
                     </button>
 

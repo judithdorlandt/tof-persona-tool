@@ -124,7 +124,7 @@ export default function Results({ resultData, setPage, noteEntry = null }) {
 
     const pdfData = useMemo(() => {
         const firstName = getFirstName(resultData?.name) || copy.download.nameFallback;
-        const roleLine = resultData?.role || resultData?.team_size || 'TOF Persona Tool';
+        const roleLine = resultData?.role || resultData?.team_size || 'TOF Persona';
 
         return {
             voorkant: {
