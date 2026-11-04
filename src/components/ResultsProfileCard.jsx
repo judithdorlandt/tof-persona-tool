@@ -9,6 +9,8 @@ import tofLogo from '../assets/tof-logo.png';
 import { useCopy } from '../i18n/LanguageContext';
 import { getReadableTextOnColor } from '../lib/resultDerivations';
 import PinButton from './result/PinButton';
+import WatJouTrekt from './result/WatJouTrekt';
+import { DIENSTENPROFIEL_ENABLED } from '../experimental/featureFlag';
 import ResultDistribution from './result/ResultDistribution';
 import { riseIn } from './result/motion';
 
@@ -468,6 +470,15 @@ export default function ResultsProfileCard({
                                                 </p>
                                             </div>
                                         ))}
+
+                                        {/* Wat jou naar kantoor trekt: één zin
+                                            onder de drie Bricks (dienstenprofiel). */}
+                                        {DIENSTENPROFIEL_ENABLED ? (
+                                            <WatJouTrekt
+                                                personaId={primary?.id}
+                                                labelStyle={INFO_LABEL_STYLE}
+                                            />
+                                        ) : null}
                                     </div>
                                 </InnerCard>
 

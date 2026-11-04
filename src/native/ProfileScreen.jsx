@@ -1,11 +1,13 @@
 import { useState } from 'react';
 
 import PinRow from '../components/result/PinRow';
+import WatJouTrekt from '../components/result/WatJouTrekt';
 import ResultDistribution from '../components/result/ResultDistribution';
 import { riseIn } from '../components/result/motion';
 import { useCopy } from '../i18n/LanguageContext';
 import { PERSONA_COLORS, getReadableTextOnColor } from '../lib/resultDerivations';
 import { PageShell } from '../ui/AppShell';
+import { DIENSTENPROFIEL_ENABLED } from '../experimental/featureFlag';
 import TeamInvite from './TeamInvite';
 
 /**
@@ -375,6 +377,12 @@ export default function ProfileScreen({
                                     </div>
                                 ))}
                             </div>
+                        )}
+
+                        {/* Wat jou naar kantoor trekt: één zin, onder de Bricks
+                            in dezelfde sectie (dienstenprofiel, 4 nov 2026). */}
+                        {DIENSTENPROFIEL_ENABLED && (
+                            <WatJouTrekt personaId={primary?.id} labelStyle={LABEL} />
                         )}
                     </Sectie>
                 )}
