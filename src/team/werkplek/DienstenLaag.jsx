@@ -103,7 +103,6 @@ export default function DienstenLaag({ aggregate }) {
                         fontSize: 13,
                         lineHeight: 1.55,
                         color: 'var(--tof-text-soft)',
-                        maxWidth: 760,
                         margin: 0,
                     }}
                 >
@@ -116,7 +115,6 @@ export default function DienstenLaag({ aggregate }) {
                     style={{
                         ...TYPE.meta,
                         lineHeight: 1.5,
-                        maxWidth: 620,
                         // Hangt aan de voetregel, zodat het één slotblok
                         // wordt: 12 px (mobiel 8) in plaats van de gridgap.
                         marginTop: isMobile ? SPACING.sm : SPACING.md,
@@ -143,7 +141,7 @@ function Blok({ kop, children }) {
 function WaaromLijst({ ids, namen, zinnen }) {
     const isNarrow = useIsNarrow();
     return (
-        <dl style={{ display: 'grid', gap: SPACING.md, maxWidth: 760, margin: 0 }}>
+        <dl style={{ display: 'grid', gap: SPACING.md, margin: 0 }}>
             {ids.map((id) =>
                 zinnen[id] ? (
                     <div
@@ -240,7 +238,7 @@ function DienstenLijst({ items, copy, isMobile }) {
 // een regel met gewicht — geen grijze melding, geen rose, geen kader.
 function GeenUitgesproken({ copy }) {
     return (
-        <div style={{ display: 'grid', gap: 6, maxWidth: 620 }}>
+        <div style={{ display: 'grid', gap: 6 }}>
             <p style={{ ...DIENSTNAAM, lineHeight: 1.2 }}>{copy.kop}</p>
             <p style={UITLEG}>{copy.tekst}</p>
         </div>
