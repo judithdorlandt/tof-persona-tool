@@ -27,3 +27,24 @@ export const QUIZTEST_ENABLED =
     quizTestEnvFlag !== undefined
         ? quizTestEnvFlag === '1' || quizTestEnvFlag === 'true'
         : QUIZTEST_DEFAULT;
+
+/**
+ * DIENSTENPROFIEL — "Wat dit team naar kantoor trekt"
+ *
+ * Een tweede laag in het Werkplek-paneel van het teamdashboard (onder "Let op
+ * de balans") en één zin in de Werkplek-sectie van het persoonlijke profiel.
+ * Het werkplekprofiel zelf hangt NIET aan deze schakelaar.
+ *
+ * Uit totdat Judith het in de preview heeft gezien (opdracht 4 nov 2026).
+ * Aanzetten:
+ *   - Snel: zet DIENSTENPROFIEL_DEFAULT hieronder op true.
+ *   - Via build/env: REACT_APP_DIENSTENPROFIEL = '1' (aan) of '0' (uit).
+ */
+const DIENSTENPROFIEL_DEFAULT = false;
+
+const dienstenprofielEnvFlag = process.env.REACT_APP_DIENSTENPROFIEL;
+
+export const DIENSTENPROFIEL_ENABLED =
+    dienstenprofielEnvFlag !== undefined
+        ? dienstenprofielEnvFlag === '1' || dienstenprofielEnvFlag === 'true'
+        : DIENSTENPROFIEL_DEFAULT;
