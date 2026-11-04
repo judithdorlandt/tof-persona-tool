@@ -25,6 +25,7 @@ import teamIntro from './teamIntro';
 import teamPanels from './teamPanels';
 import teamSelector from './teamSelector';
 import teamSignals from './teamSignals';
+import servicesProfile from './servicesProfile';
 import workplaceProfile from './workplaceProfile';
 
 const nl = {
@@ -55,6 +56,7 @@ const nl = {
   teamPanels,
   teamSelector,
   teamSignals,
+  servicesProfile,
   workplaceProfile,
 };
 
