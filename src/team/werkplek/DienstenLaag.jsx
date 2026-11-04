@@ -256,7 +256,9 @@ function HelptOok({ items, copy, isMobile }) {
                 margin: 0,
                 padding: 0,
                 display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, minmax(0, 1fr))',
+                // minmax(0, …): een lang woord ("Focusondersteuning") mag de
+                // kolom niet breder maken dan het paneel.
+                gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))',
                 columnGap: SPACING.lg,
                 rowGap: SPACING.sm,
             }}
@@ -271,6 +273,8 @@ function HelptOok({ items, copy, isMobile }) {
                             color: 'var(--tof-text-soft)',
                             paddingBottom: 6,
                             borderBottom: LIJN_RASTER,
+                            hyphens: 'auto',
+                            overflowWrap: 'break-word',
                         }}
                     >
                         {copy.diensten[id].naam}
