@@ -26,6 +26,9 @@ import {
     BAND,
 } from './werkplekProfielLogic';
 import { useCopy } from '../../i18n/LanguageContext';
+import { DIENSTENPROFIEL_ENABLED } from '../../experimental/featureFlag';
+import { MIN_TEAM_RESPONSES } from '../../utils/access';
+import DienstenLaag from './DienstenLaag';
 
 // Visuele duiding per band (subtiel, binnen het bestaande palet).
 const BAND_KLEUR = {
@@ -50,7 +53,10 @@ function typeCopy(COPY, type) {
     };
 }
 
-export default function WerkplekProfielInline({ aggregate }) {
+// `metDiensten`: alleen het teamdashboard zet de laag "Wat dit team naar kantoor
+// trekt" aan; het Organisatielandschap (Admin.jsx) gebruikt hetzelfde paneel
+// zonder. Met de schakelaar uit verschijnt er niets, ook geen lijn.
+export default function WerkplekProfielInline({ aggregate, metDiensten = false }) {
     const isMobile = useIsMobile();
     const { workplaceProfile: COPY } = useCopy();
 
@@ -90,6 +96,12 @@ export default function WerkplekProfielInline({ aggregate }) {
 
             {signalen.length > 0 ? (
                 <SignalenBlok ids={signalen} isMobile={isMobile} />
+            ) : null}
+
+            {/* Eigen drempel, ook voor beheerders (die mogen het teambeeld
+                onder vijf wel zien). */}
+            {metDiensten && DIENSTENPROFIEL_ENABLED && profiel.totaalLeden >= MIN_TEAM_RESPONSES ? (
+                <DienstenLaag aggregate={aggregate} />
             ) : null}
         </div>
     );

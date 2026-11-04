@@ -77,8 +77,11 @@ const PANEL_ID = 'teaminzicht-paneel';
  * het team met namen instemde; het organisatie-overzicht laat het weg.
  * `workplaceProfile` is de gelijknamige namespace: de namen van de
  * werkplektypen in de actieve taal, voor de Werkplek-tegel.
+ * `metDiensten` zet in het Werkplek-paneel de laag "Wat dit team naar kantoor
+ * trekt" aan; alleen het teamdashboard geeft hem mee, het organisatie-overzicht
+ * niet. De tegelwaarde (tegelKern) verandert er niet door.
  */
-export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'nl' } = {}) {
+export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'nl', metDiensten = false } = {}) {
     return [
         {
             id: 'personas',
@@ -110,7 +113,9 @@ export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'n
             buildHint: () => t.tiles.workplace.hint,
             detailTitle: t.tiles.workplace.detailTitle,
             detailLead: () => '',
-            render: (aggregate) => <WerkplekProfielInline aggregate={aggregate} />,
+            render: (aggregate) => (
+                <WerkplekProfielInline aggregate={aggregate} metDiensten={metDiensten} />
+            ),
         },
         {
             id: 'tension',
@@ -185,7 +190,7 @@ export default function TeamDashboard({
         [teamResponses, common.locale]
     );
     const tiles = useMemo(
-        () => buildTiles(t, { names, workplaceProfile, lang }),
+        () => buildTiles(t, { names, workplaceProfile, lang, metDiensten: true }),
         [t, names, workplaceProfile, lang]
     );
 
