@@ -152,7 +152,7 @@ export default function ProfileScreen({
                     />
                 </div>
 
-                {/* 3 — JOUW MIX */}
+                {/* 3 — AANVULLENDE PROFIELEN (2e en 3e werkstijl) */}
                 {mix.length > 0 && (
                     <Sectie label={t.mixLabel} accent={primaryColor} isMobile={isMobile} style={riseIn(2)}>
                         <div style={{ display: 'grid', gap: 10 }}>

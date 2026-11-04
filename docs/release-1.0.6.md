@@ -9,9 +9,11 @@ Dien 1.0.6 pas in als de beoordeling van 1.0.5 (iOS build 7, versionCode 5, comm
 
 ## Wat er in deze versie zit
 
-Sinds 1.0.5 staan er 11 commits op `main`, allemaal van het dienstenprofiel. Wat een app-gebruiker merkt:
+Sinds 1.0.5 staan er 11 commits van het dienstenprofiel op `main`, plus één tekstwijziging in het profiel. Wat een app-gebruiker merkt:
 
 - **"Wat jou naar kantoor trekt"** (`35db924`, aangezet in `d46c522`). In het profiel staat in de sectie Werkplek, onder de Bricks, één zin over wat jou naar kantoor trekt, met een disclaimerregel eronder. Hij volgt je primaire werkstijl. In het Engels heet het "What brings you to the office".
+
+- **"Aanvullende profielen"** in plaats van "Jouw mix" (EN: "Supporting profiles" in plaats van "Your mix"). Het kopje boven de 2e en 3e werkstijl zei "mix", terwijl de dominante werkstijl er niet bij stond. Ook aangepast in de personakaart-PDF (eyebrow) en in de lijst "Wat je downloadt". Geldt ook voor de webversie.
 
 De teamlaag "Wat dit team naar kantoor trekt" zit alleen in de webversie (teamdashboard). De app komt daar niet aan.
 
@@ -20,12 +22,12 @@ De teamlaag "Wat dit team naar kantoor trekt" zit alleen in de webversie (teamda
 | Stap | Uitslag |
 |---|---|
 | `npm run build:app` | Compiled successfully. `npx cap sync` naar `ios/` en `android/`. Publiek pad `t.p="/"` |
-| Tests (`react-scripts test`) | 2 suites, 22/22 geslaagd (bij de merge van het dienstenprofiel) |
-| Android `./gradlew bundleRelease` | BUILD SUCCESSFUL. `jarsigner -verify` → "jar verified". De manifest in de AAB noemt versionName 1.0.6. De bundel bevat "Wat jou naar kantoor trekt" |
+| Tests (`react-scripts test`) | 2 suites, 22/22 geslaagd |
+| Android `./gradlew bundleRelease` | BUILD SUCCESSFUL. `jarsigner -verify` → "jar verified". De manifest in de AAB noemt versionName 1.0.6. De bundel bevat "Wat jou naar kantoor trekt" en "Aanvullende profielen" |
 | iOS `xcodebuild … -configuration Release -destination 'generic/platform=iOS' build` | BUILD SUCCEEDED. Info.plist: 1.0.6 / 8 |
 
 **De AAB staat hier:**
-`android/app/build/outputs/bundle/release/app-release.aab` (4,98 MB, 4 nov 2026 15:37).
+`android/app/build/outputs/bundle/release/app-release.aab` (4,98 MB, 4 nov 2026 15:43).
 Ondertekend met de bestaande upload-keystore (`~/Documents/tof-persona-upload.jks`, via `android/keystore.properties`). Het bestand is gitignored en staat alleen op deze Mac. Let op: dit bestand vervangt de AAB van 1.0.5 op dezelfde plek.
 
 ## "Wat is er nieuw" / release-opmerkingen

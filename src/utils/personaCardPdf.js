@@ -47,7 +47,7 @@ const CARD_COPY = {
     roleFallback: 'TOF Persona',
     titlePrefix: 'Jouw dominante profiel is ',
     verdelingEyebrow: 'VERDELING PROFIEL',
-    mixEyebrow: 'JOUW MIX',
+    mixEyebrow: 'AANVULLENDE PROFIELEN',
     krachtEyebrow: 'WAT JOU IN BEWEGING BRENGT',
     leeglopersEyebrow: 'WAAR JE OP LEEGLOOPT',
     seeBack: 'ZIE ACHTERKANT',
@@ -65,7 +65,7 @@ const CARD_COPY = {
     roleFallback: 'TOF Persona',
     titlePrefix: 'Your dominant profile is ',
     verdelingEyebrow: 'PROFILE BREAKDOWN',
-    mixEyebrow: 'YOUR MIX',
+    mixEyebrow: 'SUPPORTING PROFILES',
     krachtEyebrow: 'WHAT GETS YOU MOVING',
     leeglopersEyebrow: 'WHERE YOU DRAIN',
     seeBack: 'SEE REVERSE',
@@ -236,7 +236,7 @@ function renderFront(pdf, data, primaryColor, c) {
   pdf.setLineWidth(0.7);
   pdf.line(page.x, y, page.x + 18, y);
 
-  // ── TWO-COLUMN BLOCK: VERDELING (left) + JOUW MIX (right)
+  // ── TWO-COLUMN BLOCK: VERDELING (left) + AANVULLENDE PROFIELEN (right)
   y += 9;
   const colGap = 4;
   const colLeftW = 66;
@@ -292,7 +292,7 @@ function renderFront(pdf, data, primaryColor, c) {
     leftY += rowGap;
   });
 
-  // ── RIGHT COL: JOUW MIX (max 2 cards)
+  // ── RIGHT COL: AANVULLENDE PROFIELEN (max 2 cards)
   let rightY = colStartY;
   setText(pdf, COLOR.textMuted);
   pdf.setFont(FONT_BODY, 'bold');

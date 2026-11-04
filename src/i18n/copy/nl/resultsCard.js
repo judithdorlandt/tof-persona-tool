@@ -26,7 +26,7 @@ const resultsCard = {
     motionTitle: 'Jouw natuurlijke kracht',
 
     distributionLabel: 'Verdeling van jouw profiel',
-    mixLabel: 'Jouw mix',
+    mixLabel: 'Aanvullende profielen',
 
     leadershipLabel: 'Wat helpt in leiderschap',
     leadershipTitle: 'Zo kom jij beter tot je recht',
@@ -71,7 +71,7 @@ const resultsCard = {
     includesLabel: 'Wat je downloadt',
     includes: [
       'Jouw dominante persona en profielverdeling',
-      'Jouw mix van secundaire persona\'s',
+      'Jouw aanvullende profielen',
       'Wat jou in beweging brengt',
       'Jouw ideale werkplekmix (top 3)',
       'Wat helpt in leiderschap',

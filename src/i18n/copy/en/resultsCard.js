@@ -26,7 +26,7 @@ const resultsCard = {
     motionTitle: 'Your natural strength',
 
     distributionLabel: 'The balance of your profile',
-    mixLabel: 'Your mix',
+    mixLabel: 'Supporting profiles',
 
     leadershipLabel: 'What helps in leadership',
     leadershipTitle: 'How you come into your own',
@@ -71,7 +71,7 @@ const resultsCard = {
     includesLabel: 'What you download',
     includes: [
       'Your dominant persona and profile balance',
-      'Your mix of secondary personas',
+      'Your supporting profiles',
       'What sets you in motion',
       'Your ideal workplace mix (top 3)',
       'What helps in leadership',
