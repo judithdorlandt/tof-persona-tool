@@ -87,18 +87,24 @@ describe('buildDienstenProfiel — regels', () => {
     });
 });
 
-describe('waaromWerkstijlen — telling van de chip Dominant', () => {
+describe('waaromWerkstijlen — elke werkstijl in het team', () => {
+    // personasByPrimary komt gesorteerd uit TeamAggregation (meeste eerst,
+    // daarna archetypevolgorde); de test geeft hem in die vorm mee.
     const agg = (lijst) => ({ personasByPrimary: lijst.map(([id, count]) => ({ id, count })) });
 
-    test('één dominante werkstijl → één zin', () => {
-        expect(waaromWerkstijlen(agg([['verbinder', 3], ['denker', 1], ['teamspeler', 1]]))).toEqual(['verbinder']);
+    test('alle werkstijlen, meeste mensen eerst', () => {
+        expect(waaromWerkstijlen(agg([['verbinder', 3], ['teamspeler', 1], ['denker', 1]]))).toEqual(['verbinder', 'teamspeler', 'denker']);
     });
 
-    test('gelijke stand → allemaal, in de volgorde van de chip', () => {
-        expect(waaromWerkstijlen(agg([['presteerder', 2], ['denker', 2], ['zekerzoeker', 1]]))).toEqual(['presteerder', 'denker']);
+    test('alle acht aanwezig → acht zinnen', () => {
+        expect(waaromWerkstijlen(agg(ALLE.map((id) => [id, 1])))).toEqual(ALLE);
     });
 
-    test('meer dan drie gelijk → de eerste drie', () => {
-        expect(waaromWerkstijlen(agg(ALLE.map((id) => [id, 1])))).toEqual(['maker', 'groeier', 'presteerder']);
+    test('werkstijl met nul mensen telt niet mee', () => {
+        expect(waaromWerkstijlen(agg([['presteerder', 2], ['denker', 0]]))).toEqual(['presteerder']);
+    });
+
+    test('leeg team → geen zinnen', () => {
+        expect(waaromWerkstijlen({})).toEqual([]);
     });
 });

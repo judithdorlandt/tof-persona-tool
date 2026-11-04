@@ -16,16 +16,12 @@
  */
 
 import { DIENSTTYPEN, berekenTeamDienstenmix } from './dienstenmix';
-import { dominantPersonas } from '../../utils/TeamAggregation';
 
 // Besloten 4 nov 2026; na de eerste echte teams bijstellen.
 export const SPRONG_DREMPEL = 0.25;
 
 // Hoeveel plaatsen er hoogstens onder "Wat een kantoordag de moeite waard maakt" staan.
 const MAX_TOP = 3;
-
-// Hoeveel waaromzinnen er hoogstens onder "Waarom dit team komt" staan.
-const MAX_WAAROM = 3;
 
 // Kommagetallen: 2,00 − 1,75 mag niet net onder 0,25 uitkomen.
 const EPSILON = 1e-9;
@@ -76,12 +72,15 @@ export function buildDienstenProfiel(aantallen) {
 }
 
 /**
- * Kop 1, "Waarom dit team komt": dezelfde telling als de chip "Dominant",
- * hoogstens drie, in de volgorde van de chip. Alleen persona-ids — geen
- * aantallen, percentages of namen van mensen.
+ * Kop 1, "Waarom dit team komt": élke werkstijl die primair in het team
+ * voorkomt, met de meeste mensen eerst en bij gelijke stand in de volgorde van
+ * de archetypen (dezelfde volgorde als "Wie zit er in dit team").
+ * Eerder alleen de dominante werkstijl(en), hoogstens drie; op verzoek van
+ * Judith (4 nov 2026) nu allemaal. Alleen persona-ids — geen aantallen,
+ * percentages of namen van mensen.
  */
 export function waaromWerkstijlen(aggregate) {
-    return dominantPersonas(aggregate)
-        .slice(0, MAX_WAAROM)
+    return (aggregate?.personasByPrimary || [])
+        .filter((p) => p.count > 0)
         .map((p) => p.id);
 }

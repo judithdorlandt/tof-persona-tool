@@ -247,3 +247,9 @@ Het individuele blok is 181 px hoog, in de app en op het web, in NL en in EN.
 1. Jij bekijkt het in de preview. Lokaal kan dat met de server `dienstenprofiel-web`. Een verzonnen team krijg je alleen met de tijdelijke override; die zet ik desgewenst weer neer, zonder commit.
 2. Daarna beslis je of de schakelaar aan gaat. Dat kan op twee manieren: `DIENSTENPROFIEL_DEFAULT` op `true` zetten, of op Netlify `REACT_APP_DIENSTENPROFIEL=1` instellen.
 3. Daarna mergen naar `main` en pas na jouw "push" pushen. Let op: zo lang de schakelaar uit staat, is een push zonder zichtbaar effect.
+
+## Wijziging na livegang (4 nov 2026)
+
+**"Waarom dit team komt" toont nu élke werkstijl in het team**, niet alleen de dominante (hoogstens drie). Besluit Judith na het zien van de live versie. Volgorde: meeste mensen eerst, bij gelijke stand de volgorde van de archetypen (zoals "Wie zit er in dit team"). Elke werkstijl krijgt zijn eigen zin uit v2 punt 3; de teksten zijn ongewijzigd. Bij acht werkstijlen in één team zijn het acht zinnen.
+
+Code: `waaromWerkstijlen` in `src/team/werkplek/dienstenProfielLogic.js`; tests in `dienstenProfielLogic.test.js` aangepast (23/23 geslaagd). Gecontroleerd in de preview met een verzonnen team (3 Verbinders, 2 Groeiers, 2 Zekerzoekers, 1 Maker, 1 Denker): vijf zinnen in die volgorde.
