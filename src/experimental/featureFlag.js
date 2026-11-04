@@ -35,12 +35,12 @@ export const QUIZTEST_ENABLED =
  * de balans") en één zin in de Werkplek-sectie van het persoonlijke profiel.
  * Het werkplekprofiel zelf hangt NIET aan deze schakelaar.
  *
- * Uit totdat Judith het in de preview heeft gezien (opdracht 4 nov 2026).
- * Aanzetten:
- *   - Snel: zet DIENSTENPROFIEL_DEFAULT hieronder op true.
+ * Aan sinds 4 nov 2026, na Judiths review in de preview.
+ * Uitzetten:
+ *   - Snel: zet DIENSTENPROFIEL_DEFAULT hieronder op false.
  *   - Via build/env: REACT_APP_DIENSTENPROFIEL = '1' (aan) of '0' (uit).
  */
-const DIENSTENPROFIEL_DEFAULT = false;
+const DIENSTENPROFIEL_DEFAULT = true;
 
 const dienstenprofielEnvFlag = process.env.REACT_APP_DIENSTENPROFIEL;
 
