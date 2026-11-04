@@ -216,8 +216,8 @@ De laag is hoger dan één scherm, dus per toestand zijn er twee beelden: `-1` i
 |---|---|---|---|
 | Normaal, NL (3 diensten, 1 waaromzin) | 999 px | 2.508 px | 1.484 px |
 | Normaal, EN | 997 px | — | — |
-| Geen uitgesproken, NL (3 waaromzinnen) | 926 px | 2.372 px | — |
-| Geen uitgesproken, EN | 922 px | 2.394 px | — |
+| Geen uitgesproken, NL (3 waaromzinnen) | 971 px (was 926 met twee kolommen) | 2.417 px | — |
+| Geen uitgesproken, EN | 950 px (was 922 met twee kolommen) | 2.422 px | — |
 
 Het paneel wordt dus ongeveer 1,7 keer zo lang: van bijna 2 naar ruim 3 telefoonschermen van 812 px. Dat is iets minder dan mijn schatting uit ronde 1.
 
@@ -237,7 +237,7 @@ Het individuele blok is 181 px hoog, in de app en op het web, in NL en in EN.
 
 ### 6. Wat ik onderweg tegenkwam
 
-- **Lange Nederlandse namen in "Helpt ook" op 375 px.** "Focusondersteuning" was breder dan de halve kolom en duwde het hele paneel buiten het scherm. Ik heb dat opgelost met de kolommen `minmax(0, 1fr)` en woordafbreking (`hyphens: auto`). Het gevolg is dat "Ontmoetingsmomenten" in het raster soms afgebroken wordt als "Ontmoetingsmomen-ten" (zie `team-geen-uitgesproken-nl-2.jpg`). De andere mogelijkheid is één kolom op mobiel, maar die wijkt af van het ontwerp en maakt de laag ongeveer 90 px langer. **Besluit Judith (4 nov 2026): afbreken laten staan.**
+- **Lange Nederlandse namen in "Helpt ook" op 375 px.** "Focusondersteuning" was breder dan de halve kolom en duwde het hele paneel buiten het scherm. Ik heb dat opgelost met de kolommen `minmax(0, 1fr)` en woordafbreking (`hyphens: auto`). Het gevolg is dat "Ontmoetingsmomenten" in het raster soms afgebroken wordt als "Ontmoetingsmomen-ten" (zie `team-geen-uitgesproken-nl-2.jpg`). De andere mogelijkheid is één kolom op mobiel, maar die wijkt af van het ontwerp en maakt de laag ongeveer 90 px langer. **Besluit Judith (4 nov 2026): eerst afbreken laten staan, daarna toch één kolom op mobiel.** Gebouwd: "Helpt ook" staat op mobiel in één kolom, alle namen blijven heel. De laag wordt daardoor 45 px (NL) en 28 px (EN) langer. Desktop houdt drie kolommen. De screenshots `team-geen-uitgesproken-{nl,en}-2.jpg` zijn vervangen.
 - **Jest en de router.** Het nieuwe testbestand moet `react-router-dom` nabootsen (`jest.mock(…, { virtual: true })`), omdat `TeamAggregation.js` via i18n de router binnenhaalt. De logica zelf heeft de router niet nodig.
 - **De eigen drempel bij beheerders** heb ik in de preview niet apart getest. Daarvoor is een beheerderslogin nodig. In de code is het één voorwaarde (`WerkplekProfielInline.jsx:103`).
 - **De laag in `/admin`** heb ik niet in de preview bekeken, om dezelfde reden (login). In de code roept `Admin.jsx:1033` `buildTiles` aan zonder `metDiensten`, dus de prop staat daar op `false`. `Admin.jsx` zelf is niet gewijzigd.

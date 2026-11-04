@@ -256,9 +256,10 @@ function HelptOok({ items, copy, isMobile }) {
                 margin: 0,
                 padding: 0,
                 display: 'grid',
-                // minmax(0, …): een lang woord ("Focusondersteuning") mag de
-                // kolom niet breder maken dan het paneel.
-                gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))',
+                // Mobiel één kolom, zodat lange Nederlandse namen heel blijven
+                // (besluit Judith, 4 nov 2026). minmax(0, …): een lang woord
+                // mag de kolom niet breder maken dan het paneel.
+                gridTemplateColumns: isMobile ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
                 columnGap: SPACING.lg,
                 rowGap: SPACING.sm,
             }}
