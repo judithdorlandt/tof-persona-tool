@@ -139,7 +139,8 @@ Bij de open vragen uit ronde 1 heb ik mijn eigen voorstel gevolgd:
 | `811db8e` | `servicesProfile` NL en EN |
 | `4acc6e8` | de laag in het Werkplek-paneel |
 | `35db924` | "Wat jou naar kantoor trekt" in de app en op het web |
-| (volgt) | correctie aan het raster bij lange namen, plus deze terugkoppeling en de screenshots |
+| `61c9986` | correctie aan het raster bij lange namen |
+| `876c437` | deze terugkoppeling en de screenshots |
 
 ### 1. Nieuwe en gewijzigde bestanden
 
