@@ -565,3 +565,33 @@ Gecontroleerd:
 - de Lovable-prompts, `strategie-nov-dec-2026.md`, `kalender.md` en de concepten.
 
 Gepubliceerde LinkedIn-posts en archieven blijven zoals ze zijn.
+
+### 10. Website- en marketingteksten op tien (akkoord Judith 16 nov 2026)
+
+In `tof-marketingteam` (geen git; reservekopie van alle elf bestanden in de kladmap van deze sessie, `marketing-backup-2026-11-16/`) staat nu "tien vragen" in de teksten die nog als bron dienen:
+
+| Bestand | Wat |
+|---|---|
+| `.claude/skills/tof-schrijfstijl/SKILL.md` | voorbeeld-drietal "Tien vragen. Vijf minuten. Geen account." |
+| `.claude/skills/tof-positionering/SKILL.md` | tien seconden, geloofwaardigheid, trede 1 |
+| `.claude/skills/tof-persona-inhoud/SKILL.md` | opzet: tien vragen (negen basisvragen + werkomgeving); vraag 10 beschreven, met de profielregel; "Tien is het aantal" |
+| `content/propositie.md` | onderscheidend, tien seconden, store-ondertitel, trede 1, teambeeld; plus een gedateerde notitie bij punt 1 |
+| `content/websiteteksten.md` | knop, subkop, kop "Van tien vragen naar een gesprek", stap 1 |
+| `content/klantreis-teamcode.md` | de mailteksten NL en EN (welkomst, levering, uitnodiging) en de brontabel |
+| `content/strategie-nov-dec-2026.md` | trede 2, "wat het is" |
+| `content/concepten/2026-11-12-pitch-tof-persona-teamleider.md` | twee zinnen en de bronverwijzing |
+| `content/concepten/2026-11-03-uitnodiging-teamsessie.md` | twee zinnen |
+| `content/concepten/2026-10-22-deelteksten-dashboards.md` | de drie deelteksten NL en EN, gelijk aan de app |
+| `content/concepten/2026-10-27-teksten-sites-indeling.md` | de zinnen voor de site, NL en EN |
+
+**Bewust niet aangepast** (historie of iets anders dan het aantal vragen):
+- uitgevoerde opdrachten en prompts (`opdracht-app-*`, `prompt-app-sessie.md`, `prompt-lovable-*`, `plakklaar-lovable-*`);
+- de nulmeting, de adviezen, de briefs en de UX-schetsen;
+- `strategie-okt-nov-2026.md`, de kalender en `verbeterpunten-teamdashboards.md`;
+- gepubliceerde posts, archieven en de `ideeen/`;
+- de toelichtende alinea's van oktober in `propositie.md`;
+- "negen" in een andere betekenis: de negen trendlijnen, de negen tekstmaten, de negen kamernamen, "alle negen" tests.
+
+**Twee dingen om te weten:**
+- **De live website `persona-tool.nl` (Lovable) zegt nog "negen vragen".** De bestanden hierboven veranderen de site niet. Daarvoor is een nieuwe plakbeurt in Lovable nodig, het liefst tegelijk met de nieuwe app in de stores.
+- `tof-persona-inhoud` heeft ook een kop "De negen soorten werkplekken". Sinds 30 september zijn het er acht (hybride is geen plek meer). Ik heb dat niet aangepast, want het valt buiten deze opdracht.
