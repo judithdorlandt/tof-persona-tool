@@ -19,9 +19,14 @@
  *   profiel staat niet in de logs van de host en niet in statistieken. Met
  *   `?p=` zou het dat wel doen, en dan zou het "pas na jouw klik"-verhaal niet
  *   meer kloppen.
- * - Er gaat zo weinig mee als mogelijk: alleen de drie persona's en de acht
- *   scores. Geen naam, geen aantekeningen, geen antwoord op de open vraag, geen
- *   werkplekkeuzes. Dat is precies wat een teambeeld nodig heeft en niets meer.
+ * - Er gaat zo weinig mee als mogelijk: de drie persona's, de acht scores en,
+ *   als je hem beantwoordde, je antwoord op de werkomgevingsvraag (`pk`, een
+ *   van de vier sleutels uit lib/prikkel.js). Geen naam, geen aantekeningen,
+ *   geen antwoord op de open vraag, geen werkplekkeuzes. Dat is precies wat een
+ *   teambeeld nodig heeft en niets meer.
+ * - `pk` is optioneel en VERSION blijft 1: een oudere app stuurt het niet, een
+ *   oudere website negeert het. Een hogere versie zou een oudere website elk
+ *   nieuw profiel laten weigeren (zie decodeHandoff).
  *
  * Omdat zo'n adres te typen, te delen en te bewerken is, vertrouwt `decode` de
  * inhoud niet: persona-id's moeten in ARCHETYPE_ORDER staan en scores moeten
@@ -31,6 +36,7 @@
  */
 
 import { ARCHETYPE_ORDER } from '../data';
+import { isPrikkel } from './prikkel';
 
 /** Zodat een oudere app-versie met een nieuwere website kan blijven praten. */
 const VERSION = 1;
@@ -73,6 +79,8 @@ export function encodeHandoff(result) {
         t: isArchetype(result.tertiary) ? result.tertiary : null,
         sc: scores,
     };
+    // Alleen als de vraag beantwoord is; anders blijft de link zoals hij was.
+    if (isPrikkel(result.prikkel)) payload.pk = result.prikkel;
 
     try {
         return toBase64Url(JSON.stringify(payload));
@@ -96,7 +104,9 @@ export function handoffUrl(result, siteUrl, path) {
 
 /**
  * Leest het profiel terug uit een hash (`#p=…`).
- * Returnt `{ primary, secondary, tertiary, scores }` of `null`.
+ * Returnt `{ primary, secondary, tertiary, scores, prikkel }` of `null`.
+ * `prikkel` is een van de vier sleutels of `null`; het profiel zelf blijft
+ * geldig zonder (oude links) of met een onbekende waarde.
  */
 export function decodeHandoff(hash) {
     const raw = String(hash || '').replace(/^#/, '');
@@ -127,5 +137,6 @@ export function decodeHandoff(hash) {
         secondary: isArchetype(payload.s) ? payload.s : null,
         tertiary: isArchetype(payload.t) ? payload.t : null,
         scores,
+        prikkel: isPrikkel(payload.pk) ? payload.pk : null,
     };
 }
