@@ -542,3 +542,26 @@ Gecontroleerd:
 **Buiten de repo, nog "negen":** `tof-marketingteam/content/storeteksten-persona-app.md`. Daar staan de Apple-ondertitel ("Hoe jij werkt in negen vragen" / "How you work in nine questions"), de korte omschrijving voor Google en de lange omschrijvingen in NL en EN.
 
 **Let op het moment van live gaan:** de webteksten (storescherm, welkomstmail, deelteksten) zeggen nu "tien". De app in de stores (1.0.6 en ouder) vraagt nog negen. Pushen naar `main` kan dus het best samenvallen met de nieuwe app in de stores.
+
+### 9. Storeteksten op tien (akkoord Judith 16 nov 2026)
+
+- **`tof-marketingteam/content/storeteksten-persona-app.md`.** Die map staat niet in git; de reservekopie van vóór de wijziging staat in de kladmap van deze sessie.
+  - Nieuwe teksten en tekenaantallen:
+
+    | Veld | NL | EN |
+    |---|---|---|
+    | Ondertitel Apple | "Hoe jij werkt in tien vragen" (28/30) | "How you work in ten questions" (29/30) |
+    | Korte omschrijving Google | (66/80) | (70/80) |
+    | Promotietekst Apple | (139/170) | (150/170) |
+
+  - In beide lange omschrijvingen: "Tien vragen" en "Ten questions".
+  - Bovenaan een gedateerde notitie: pas in de winkels aanpassen als de app met de tiende vraag live staat.
+  - De historische alinea's in §8 (15 okt) blijven, met één aanvulling.
+- **`docs/store-teksten.md` (dit repo, commit `1f19432`).** Het document is verouderd, maar de notities voor de beoordelaar en de opname-instructie zijn nog in gebruik. Die zeggen nu "ten questions" en "alle tien vragen".
+
+**Nog "negen" in andere marketingbestanden** (niet aangepast, niet gevraagd):
+- de skills `tof-schrijfstijl`, `tof-positionering` en `tof-persona-inhoud`;
+- `websiteteksten.md`, `propositie.md`, `klantreis-teamcode.md`, `advies-website-na-app.md`;
+- de Lovable-prompts, `strategie-nov-dec-2026.md`, `kalender.md` en de concepten.
+
+Gepubliceerde LinkedIn-posts en archieven blijven zoals ze zijn.
