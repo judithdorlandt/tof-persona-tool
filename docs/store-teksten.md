@@ -3,7 +3,7 @@
 > **VEROUDERD — niet meer als bron gebruiken.** Dit document is vervangen door
 > `content/storeteksten-persona-app.md` in het marketingproject. De teksten
 > hieronder noemen onder meer nog "een paar minuten" (§3 en §4); de app stelt
-> tien vragen (sinds 16 nov 2026) en vraagt ongeveer vijf minuten. Houd de genoemde versie aan.
+> tien vragen (sinds 16 nov 2026) en vraagt ongeveer zeven minuten. Houd de genoemde versie aan.
 > De notities voor de beoordelaar (§7) en de opname-instructie zijn nog wel in gebruik en
 > zijn op 16 nov 2026 bijgewerkt naar tien vragen.
 

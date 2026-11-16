@@ -552,7 +552,7 @@ export default function QuizTest({ setPage }) {
                 <Card isMobile={isMobile}>
                     {/*
                       Op de telefoon staat de instructie als kale regel ónder de
-                      vraag, zonder balk en zonder de kop "10 vragen · ± 5 minuten"
+                      vraag, zonder balk en zonder de kop "10 vragen · ± 7 minuten"
                       erboven: die herhaalt alleen wat de voortgangsbalk al
                       zegt, en samen kostten ze de ruimte waardoor de vraag
                       buiten beeld zakte.

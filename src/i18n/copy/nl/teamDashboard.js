@@ -69,7 +69,7 @@ const teamDashboard = {
     message: ({ team, code, showNames }) => [
       `Doe je mee met het teambeeld van ${team}? Zo werkt het:`,
       `1. Open deze link op je telefoon en download de app TOF Persona: https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}`,
-      '2. Doe de test in de app: tien vragen, ongeveer vijf minuten.',
+      '2. Doe de test in de app: tien vragen, ongeveer zeven minuten.',
       `3. Tik onderaan je profiel op 'Profiel inbrengen'. Vul op de website deze teamcode in, tik op 'Code controleren' en daarna op 'Inbrengen': ${code}`,
       "Pas na 'Inbrengen' telt je profiel mee. Bewaar dit bericht tot dan: de teamcode heb je pas na de test nodig.",
       "Zodra vijf collega's hun profiel hebben ingebracht, staat het teambeeld klaar. Je opent het op team.persona-tool.nl/team, met dezelfde teamcode.",

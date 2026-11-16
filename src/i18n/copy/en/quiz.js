@@ -1,5 +1,5 @@
 const quiz = {
-  eyebrow: (count) => `${count} questions · about 5 minutes`,
+  eyebrow: (count) => `${count} questions · about 7 minutes`,
 
   pickTwo: { before: 'Pick ', strong: 'exactly 2 answers', after: ' — your first choice carries the most weight.' },
   pickOne: { before: 'Pick ', strong: '1 answer', after: ' that fits you best.' },

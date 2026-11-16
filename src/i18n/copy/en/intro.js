@@ -18,7 +18,7 @@ const intro = {
     },
     {
       title: 'How long does it take?',
-      text: 'Ten questions, about five minutes. Nothing to prepare. Just answer honestly.',
+      text: 'Ten questions, about seven minutes. Nothing to prepare. Just answer honestly.',
     },
   ],
 

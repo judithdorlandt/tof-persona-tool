@@ -121,7 +121,7 @@ Ik wil graag met jullie kijken welke werkstijlen er in ons team zitten en wat we
 1. Open deze link op je telefoon en download de app TOF Persona:
 https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}
 
-2. Doe de test in de app: tien vragen, ongeveer vijf minuten. Daarna volgt een verdieping van ongeveer drie minuten; die is niet verplicht.
+2. Doe de test in de app: tien vragen, ongeveer zeven minuten. Daarna volgt een verdieping van ongeveer drie minuten; die is niet verplicht.
 
 3. Tik onderaan je profiel op "Profiel inbrengen". De website gaat open. Vul daar deze teamcode in, tik op "Code controleren" en daarna op "Inbrengen":
 ${code}

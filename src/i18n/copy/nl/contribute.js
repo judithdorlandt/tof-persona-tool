@@ -86,7 +86,7 @@ const contribute = {
         persona ? ` Ik kom er vooral uit als ${persona}. Herken je me erin?` : ''
       } Ik ben benieuwd wat het bij jou wordt.`,
       '',
-      'Zoek op TOF Persona in de App Store of Google Play. Het duurt ongeveer vijf minuten, daarna volgt een korte verdieping als je wilt.',
+      'Zoek op TOF Persona in de App Store of Google Play. Het duurt ongeveer zeven minuten, daarna volgt een korte verdieping als je wilt.',
     ].join('\n'),
   },
 

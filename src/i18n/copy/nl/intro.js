@@ -18,7 +18,7 @@ const intro = {
     },
     {
       title: 'Hoe lang duurt het?',
-      text: 'Tien vragen, ongeveer vijf minuten. Niets voorbereiden nodig. Gewoon eerlijk invullen.',
+      text: 'Tien vragen, ongeveer zeven minuten. Niets voorbereiden nodig. Gewoon eerlijk invullen.',
     },
   ],
 

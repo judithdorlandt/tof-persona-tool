@@ -82,7 +82,7 @@ const contribute = {
         persona ? ` My main working style came out as ${persona}. Does that sound like me?` : ''
       } I'm curious what yours would be.`,
       '',
-      'Look for TOF Persona in the App Store or Google Play. It takes about five minutes, with a short optional follow-up after that.',
+      'Look for TOF Persona in the App Store or Google Play. It takes about seven minutes, with a short optional follow-up after that.',
     ].join('\n'),
   },
 

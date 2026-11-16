@@ -110,7 +110,7 @@ I'd like us to look at which working styles we have in this team and what we nee
 1. Open this link on your phone and download the TOF Persona app:
 https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}
 
-2. Take the test in the app: ten questions, about five minutes. An optional deep dive of about three minutes follows.
+2. Take the test in the app: ten questions, about seven minutes. An optional deep dive of about three minutes follows.
 
 3. Tap "Add my profile" at the bottom of your profile. The website opens. Enter this team code there, tap "Check code" and then "Add my profile" again:
 ${code}

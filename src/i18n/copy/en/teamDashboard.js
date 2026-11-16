@@ -46,7 +46,7 @@ const teamDashboard = {
     message: ({ team, code, showNames }) => [
       `${team} is putting together a team picture. Here's how to take part:`,
       `1. Open this link on your phone and download the TOF Persona app: https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}`,
-      '2. Take the test in the app: ten questions, about five minutes.',
+      '2. Take the test in the app: ten questions, about seven minutes.',
       `3. Tap 'Add my profile' at the bottom of your profile. The website opens. Enter this team code, tap 'Check code' and then 'Add my profile' again: ${code}`,
       "Your profile only counts once you've tapped 'Add my profile' on the website. Keep this message until then: you only need the team code after the test.",
       'Once five colleagues have added their profile, the team picture is ready. You can open it at team.persona-tool.nl/en/team, with the same team code.',

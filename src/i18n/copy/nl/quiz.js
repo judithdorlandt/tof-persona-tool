@@ -6,7 +6,7 @@
  */
 const quiz = {
   // Boven elke basisvraag.
-  eyebrow: (count) => `${count} vragen · ± 5 minuten`,
+  eyebrow: (count) => `${count} vragen · ± 7 minuten`,
 
   // De instructiebalk. Het middelste deel staat vet.
   pickTwo: { before: 'Kies ', strong: 'precies 2 antwoorden', after: ' — je eerste keuze weegt het zwaarst.' },
