@@ -607,3 +607,32 @@ Publiceren pas als de nieuwe app in de stores staat.
 **Live nagelopen met curl** (www.persona-tool.nl, NL): "negen vragen" staat in de lead en in de groep "Wat je invult" op de homepage, in de zoekbeschrijving en de og-tekst, op /persona-insight, op /demo-test en in de og-tekst van /voor-je-team. Die staan allemaal in de prompt. Het Engels en tof.services worden in de browser geladen en waren met curl niet te lezen.
 
 **Bijvondst:** `persona-tool.nl` zonder www, via http en https, toont een TransIP-pagina "Reserved domain / Bezet!". Alleen `www.persona-tool.nl` werkt.
+
+### 12. Tien vragen is ongeveer zeven minuten (besluit Judith 16 nov 2026)
+
+**App** (commit "copy: tien vragen duurt ongeveer zeven minuten"), NL en EN:
+- de quizkop "10 vragen · ± 7 minuten" / "10 questions · about 7 minutes";
+- het startscherm van de app, de intro en het storescherm;
+- de welkomstmail in /admin en de stappen op het teamdashboard;
+- de deeltekst voor wie de app nog niet heeft (`contribute.js`);
+- de kop van `docs/store-teksten.md`.
+
+De verdieping blijft "3 min".
+
+Gecontroleerd:
+- het startscherm toont "Tien vragen, zeven minuten";
+- op desktop toont de quiz "1 / 10" en "10 VRAGEN · ± 7 MINUTEN";
+- 32 tests geslaagd en de build compileert.
+
+**Marketingmap.** In dezelfde levende teksten als in §10 staat nu "zeven minuten", ook "zeven minuten per persoon" in de websiteteksten en de concepten. Reservekopie: `marketing-backup-voor-zeven/` in de kladmap van deze sessie. De historische alinea's, de oud/nieuw-overzichten en de redactienotities zijn niet aangepast.
+
+**Storeteksten opnieuw geteld:**
+
+| Veld | NL | EN |
+|---|---|---|
+| Korte omschrijving Google | 67/80 | 71/80 |
+| Promotietekst Apple | 140/170 | 151/170 |
+
+De Apple-ondertitel noemt geen duur.
+
+**Lovable-prompt** (`plakklaar-lovable-2026-11-16-tien-vragen.md`): nu ook "vijf minuten" → "zeven minuten". Hij is opnieuw getoetst aan de live site, inclusief de lead "die je in ongeveer vijf minuten beantwoordt" en de og-teksten op /voor-je-organisatie, /strategisch-kompas en /demo.
