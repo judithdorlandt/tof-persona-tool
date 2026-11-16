@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import PinRow from '../components/result/PinRow';
+import PrikkelRegel from '../components/result/PrikkelRegel';
 import WatJouTrekt from '../components/result/WatJouTrekt';
 import ResultDistribution from '../components/result/ResultDistribution';
 import { riseIn } from '../components/result/motion';
@@ -378,6 +379,14 @@ export default function ProfileScreen({
                                 ))}
                             </div>
                         )}
+
+                        {/* Geluid om je heen: alleen bij een antwoord tegen
+                            de werkstijl in (prikkelbehoefte). */}
+                        <PrikkelRegel
+                            personaId={primary?.id}
+                            prikkel={resultData?.prikkel}
+                            labelStyle={LABEL}
+                        />
 
                         {/* Wat jou naar kantoor trekt: één zin, onder de Bricks
                             in dezelfde sectie (dienstenprofiel, 4 nov 2026). */}

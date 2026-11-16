@@ -27,6 +27,7 @@
 import { getCopy } from '../../i18n/copy';
 import nlQuizData from '../../i18n/copy/nl/quizData';
 import enQuizData from '../../i18n/copy/en/quizData';
+import { PRIKKEL_IDS } from '../../lib/prikkel';
 
 // Directe fallback: zolang de namespace nog niet in copy/{nl,en}/index.js is
 // geregistreerd blijft de vragenlijst gewoon werken.
@@ -64,12 +65,8 @@ export const WERKPLEK_IDS = [
   'social',
 ];
 
-/**
- * Data-ids van de werkomgevingsvraag (vraag 10, prikkelbehoefte) in hun vaste
- * volgorde — nooit vertalen, nooit schudden. Dezelfde sleutels gaan als `pk`
- * mee in de link naar het team (lib/profileHandoff.js).
- */
-export const PRIKKEL_IDS = ['stil', 'geroezemoes', 'reuring', 'maakt_niet_uit'];
+// Data-ids van de werkomgevingsvraag (vraag 10) in hun vaste volgorde staan in
+// lib/prikkel.js: daar leest ook de link naar het team (`pk`) ze.
 
 /** Tekenlimiet van de open vraag (V5). */
 export const OPEN_VRAAG_MAX_LENGTH = 200;

@@ -158,6 +158,8 @@ const archetypes = {
   },
   presteerder: {
     name: 'Presteerder',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Presteerders',
     kw: ['resultaat', 'tempo', 'grip'],
     short: 'Jij gaat voor resultaat. Je krijgt energie van voortgang, scherpte en iets echt afmaken.',
     motivation: 'Doelen halen, voortgang zien en grip houden op wat ertoe doet.',
@@ -227,6 +229,8 @@ const archetypes = {
   },
   denker: {
     name: 'Denker',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Denkers',
     kw: ['analyse', 'diepgang', 'inhoud'],
     short: 'Jij denkt eerst, dan doe je. Je wilt begrijpen hoe iets werkelijk in elkaar zit voordat je beweegt.',
     motivation: 'Complexiteit doorgronden en kwaliteit brengen op basis van inzicht.',
@@ -296,6 +300,8 @@ const archetypes = {
   },
   verbinder: {
     name: 'Verbinder',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Verbinders',
     kw: ['mensen', 'contact', 'samenhang'],
     short: 'Jij verbindt. Voor jou ontstaat goed werk pas echt als mensen zich gezien en verbonden voelen.',
     motivation: 'Menselijk contact, samenwerking en een sfeer waarin mensen elkaar echt vinden.',
@@ -434,6 +440,8 @@ const archetypes = {
   },
   zekerzoeker: {
     name: 'Zekerzoeker',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Zekerzoekers',
     kw: ['structuur', 'rust', 'duidelijkheid'],
     short: 'Jij zorgt dat het klopt. Duidelijkheid, structuur en voorspelbaarheid maken jou sterk.',
     motivation: 'Overzicht, stabiliteit en weten waar je aan toe bent.',
@@ -503,6 +511,8 @@ const archetypes = {
   },
   vernieuwer: {
     name: 'Vernieuwer',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Vernieuwers',
     kw: ['vooruitdenken', 'kansen', 'verandering'],
     short: 'Jij ziet wat anders kan. Voor jou is verandering niet vooral risico, maar vooral potentie.',
     motivation: 'Kansen zien, beweging creëren en bouwen aan iets dat beter kan.',

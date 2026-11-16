@@ -162,6 +162,8 @@ const archetypes = {
   },
   presteerder: {
     name: 'Achiever',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Achievers',
     kw: ['results', 'pace', 'grip'],
     short: 'You go for results. Progress, sharpness and genuinely finishing something are what energise you.',
     motivation: 'Hitting targets, seeing progress and keeping a grip on what matters.',
@@ -231,6 +233,8 @@ const archetypes = {
   },
   denker: {
     name: 'Thinker',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Thinkers',
     kw: ['analysis', 'depth', 'substance'],
     short: 'You think first, then act. You want to understand how something really works before you move.',
     motivation: 'Getting to the bottom of complexity and delivering quality based on insight.',
@@ -300,6 +304,8 @@ const archetypes = {
   },
   verbinder: {
     name: 'Connector',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Connectors',
     kw: ['people', 'contact', 'cohesion'],
     short: 'You connect. For you, good work only really happens when people feel seen and connected.',
     motivation: 'Human contact, collaboration and an atmosphere in which people genuinely find each other.',
@@ -438,6 +444,8 @@ const archetypes = {
   },
   zekerzoeker: {
     name: 'Stabiliser',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Stabilisers',
     kw: ['structure', 'calm', 'clarity'],
     short: 'You make sure things add up. Clarity, structure and predictability are what make you strong.',
     motivation: 'Overview, stability and knowing where you stand.',
@@ -507,6 +515,8 @@ const archetypes = {
   },
   vernieuwer: {
     name: 'Innovator',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Innovators',
     kw: ['thinking ahead', 'opportunities', 'change'],
     short: 'You see what could be different. For you change is not mainly a risk, but mainly potential.',
     motivation: 'Spotting opportunities, creating momentum and building towards something better.',

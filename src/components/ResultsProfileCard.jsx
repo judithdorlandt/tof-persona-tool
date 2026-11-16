@@ -9,6 +9,7 @@ import tofLogo from '../assets/tof-logo.png';
 import { useCopy } from '../i18n/LanguageContext';
 import { getReadableTextOnColor } from '../lib/resultDerivations';
 import PinButton from './result/PinButton';
+import PrikkelRegel from './result/PrikkelRegel';
 import WatJouTrekt from './result/WatJouTrekt';
 import { DIENSTENPROFIEL_ENABLED } from '../experimental/featureFlag';
 import ResultDistribution from './result/ResultDistribution';
@@ -470,6 +471,14 @@ export default function ResultsProfileCard({
                                                 </p>
                                             </div>
                                         ))}
+
+                                        {/* Geluid om je heen: alleen bij een
+                                            antwoord tegen de werkstijl in. */}
+                                        <PrikkelRegel
+                                            personaId={primary?.id}
+                                            prikkel={resultData?.prikkel}
+                                            labelStyle={INFO_LABEL_STYLE}
+                                        />
 
                                         {/* Wat jou naar kantoor trekt: één zin
                                             onder de drie Bricks (dienstenprofiel). */}
