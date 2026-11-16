@@ -5,7 +5,7 @@
  * vraag aan de andere kant zit dan je primaire werkstijl doet verwachten
  * (regels in src/lib/prikkel.js). Anders niets: een bevestiging is een blok
  * zonder nieuws. Staat vóór WatJouTrekt, in de app (native/ProfileScreen.jsx)
- * en op het web (ResultsProfileCard.jsx). Hangt aan PRIKKEL_ENABLED.
+ * en op het web (ResultsProfileCard.jsx).
  *
  * Opmaak als WatJouTrekt (lijn erboven, label in de labelstijl van de kaart),
  * maar de zin in broodtekst (14 px, --tof-text-soft) in plaats van de koptekst
@@ -14,7 +14,6 @@
  */
 
 import React from 'react';
-import { PRIKKEL_ENABLED } from '../../experimental/featureFlag';
 import { useArchetypes } from '../../i18n/archetypes';
 import { useCopy } from '../../i18n/LanguageContext';
 import { prikkelRegelSoort } from '../../lib/prikkel';
@@ -23,7 +22,6 @@ export default function PrikkelRegel({ personaId, prikkel, labelStyle }) {
     const { prikkelRegel: copy } = useCopy();
     const archetypes = useArchetypes();
 
-    if (!PRIKKEL_ENABLED) return null;
     const soort = prikkelRegelSoort(personaId, prikkel);
     if (!soort) return null;
     const werkstijlMv = archetypes.find((a) => a.id === personaId)?.naamMv;

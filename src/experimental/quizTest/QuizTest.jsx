@@ -4,7 +4,6 @@ import { useArchetypes } from '../../i18n/archetypes';
 import { useCopy, useLang } from '../../i18n/LanguageContext';
 import { saveResponse } from '../../supabase';
 import { IS_NATIVE } from '../../config/platform';
-import { PRIKKEL_ENABLED } from '../featureFlag';
 import { saveProfile } from '../../native/localStore';
 import { tap } from '../../native/nativeShell';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
@@ -18,8 +17,8 @@ import { getQuizData } from './quizTestData';
  * Verkorte flow uit het analysestuk "Korter afnemen, scherper prijzen":
  *   1. Aanmelden (hergebruikt QuizAanmelding)
  *   2. 9 basisvragen met vast antwoordpatroon (5x één keuze, 4x twee in volgorde),
- *      met PRIKKEL_ENABLED gevolgd door vraag 10: werkomgeving (telt mee in
- *      de teller, niet in de score)
+ *      gevolgd door vraag 10: werkomgeving (telt mee in de teller, niet in de
+ *      score)
  *   3. Keuzescherm ZONDER profiel: verdiepen of meteen onthullen
  *   4. Optionele verdieping (2 duels, druk, werkplekgebruik, open vraag)
  *   5. Onthulling, daarna het profiel (hergebruikt Results)
@@ -321,10 +320,10 @@ export default function QuizTest({ setPage }) {
         DUEL_INTRO,
         WERKOMGEVING_VRAAG,
     } = useMemo(() => getQuizData(lang), [lang]);
-    // Het aantal vragen in de teller en de voortgangsbalk. Met de schakelaar
-    // aan komt de werkomgevingsvraag erbij als vraag 10. Die telt niet mee in
-    // de score: de scoring loopt alleen over BASIS_VRAGEN.
-    const TOTAAL_VRAGEN = BASIS_VRAGEN.length + (PRIKKEL_ENABLED ? 1 : 0);
+    // Het aantal vragen in de teller en de voortgangsbalk: de negen basis-
+    // vragen plus de werkomgevingsvraag als vraag 10. Die telt niet mee in de
+    // score: de scoring loopt alleen over BASIS_VRAGEN.
+    const TOTAAL_VRAGEN = BASIS_VRAGEN.length + 1;
     // intake | basis | werkomgeving | keuze | verdieping | onthulling | profielScherp
     const [phase, setPhase] = useState('intake');
     const [profile, setProfile] = useState(null);
@@ -436,7 +435,7 @@ export default function QuizTest({ setPage }) {
                     openAntwoord: openText,
                     // Los veld, buiten de scores. Gaat mee in het lokale
                     // profiel (saveProfile) en, als `pk`, in de link naar het team.
-                    ...(PRIKKEL_ENABLED ? { prikkel } : {}),
+                    prikkel,
                 }
                 : null,
         [profile, verscherpteScores, gebruikNu, mistPlek, openText, prikkel] // eslint-disable-line react-hooks/exhaustive-deps
@@ -500,7 +499,7 @@ export default function QuizTest({ setPage }) {
         });
         setScores(next);
         if (basisStep + 1 < BASIS_VRAGEN.length) setBasisStep((s) => s + 1);
-        else setPhase(PRIKKEL_ENABLED ? 'werkomgeving' : 'keuze');
+        else setPhase('werkomgeving');
     };
 
     const kiesPrikkel = (id) => {
