@@ -3,7 +3,9 @@
 > **VEROUDERD — niet meer als bron gebruiken.** Dit document is vervangen door
 > `content/storeteksten-persona-app.md` in het marketingproject. De teksten
 > hieronder noemen onder meer nog "een paar minuten" (§3 en §4); de app stelt
-> negen vragen en vraagt ongeveer vijf minuten. Houd de genoemde versie aan.
+> tien vragen (sinds 16 nov 2026) en vraagt ongeveer vijf minuten. Houd de genoemde versie aan.
+> De notities voor de beoordelaar (§7) en de opname-instructie zijn nog wel in gebruik en
+> zijn op 16 nov 2026 bijgewerkt naar tien vragen.
 
 Kant-en-klaar om over te nemen in App Store Connect en de Play Console, in beide
 talen. De toon volgt de app zelf: "Ontdek hoe jij werkt", "Negen vragen, een paar
@@ -201,13 +203,13 @@ recording was made on a device build of that same corrected code.
 1. SCREEN RECORDING
 Attached: a recording on a physical iPhone on the latest iOS, on a freshly
 installed copy. It begins with launching the app and shows the full flow:
-language choice, the empty start screen, the nine questions, the profile, the
+language choice, the empty start screen, the ten questions, the profile, the
 conversation notes, the history with the saved profile, the persona library, and
 the privacy screen, where one action erases everything — after which the history
 is empty again.
 
 2. PURPOSE AND TARGET AUDIENCE
-TOF Persona is a self-reflection tool about how someone works. Nine questions
+TOF Persona is a self-reflection tool about how someone works. Ten questions
 produce a work-style profile (one of eight personas) describing their strengths,
 what drains them and what they need from the people around them. It is a starting
 point for a conversation with a colleague or manager; four note fields record
@@ -218,14 +220,14 @@ claim. Nothing in it is unsuitable for any age, hence the 4+ rating.
 3. SETUP AND ACCESS
 Nothing to set up or unlock. No account, login, registration or subscription, so
 there are no demo credentials. Everything is available on first launch. Flow:
-launch, choose Dutch or English, tap the button that starts the test, answer nine
+launch, choose Dutch or English, tap the button that starts the test, answer ten
 questions (tap one or two options, tap again to deselect, then continue), and the
 profile appears.
 
 On a fresh install the start screen deliberately shows only the test button and a
 privacy link. Once a profile exists it also shows the persona library, the
 conversation notes and the history, and a tab bar appears. The reviewer therefore
-needs to finish the nine questions once to see the whole app.
+needs to finish the ten questions once to see the whole app.
 
 The notes a user writes are stored only on that one device, are never uploaded
 and can never be seen by any other user. There is no feed and no sharing between
@@ -274,7 +276,7 @@ Begin de opname vóórdat je de app opent; Apple eist dat het starten erop staat
 1. Het beginscherm van iOS, dan de app openen (het opstartscherm hoort erbij).
 2. De taalkeuze: kies een taal.
 3. Het startscherm, even stil laten staan zodat de tekst leesbaar is.
-4. De test starten en alle negen vragen doorlopen — tik bij één vraag ook een
+4. De test starten en alle tien vragen doorlopen — tik bij één vraag ook een
    keuze weer uit, zodat te zien is dat het togglet.
 5. Het profiel dat eruit komt, langzaam helemaal naar beneden scrollen.
 6. Terug naar het startscherm, de personabibliotheek openen en één persona.
