@@ -115,8 +115,13 @@ for (let q = 1; q < 9; q++) {
     await kiesTwee();
     await volgende();
 }
+// Vraag 10, werkomgeving: één antwoord. kiesTwee tikt er twee aan; bij één
+// keuze wint de laatste (geroezemoes), en dat geeft bewust geen extra regel in
+// het profiel. "Naar mijn profiel" is dan de laatste knop.
+await kiesTwee();
+await volgende();
 
-// Na de negende vraag komt eerst het keuzescherm. "Toon mijn profiel" start de
+// Na vraag 10 komt eerst het keuzescherm. "Toon mijn profiel" start de
 // onthulling: twaalf flitsen van 280 ms plus 1250 ms dat de naam blijft staan,
 // bijna vijf seconden. Pas daarna staat het profiel er.
 await wacht(1500);
