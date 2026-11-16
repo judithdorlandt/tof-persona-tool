@@ -28,7 +28,7 @@ const quizInApp = {
     title: 'Zo werkt het',
     items: [
       'Download TOF Persona in de App Store of Google Play.',
-      'Doe de test: negen vragen, ongeveer vijf minuten. Daarna kun je verdiepen, ongeveer drie minuten.',
+      'Doe de test: tien vragen, ongeveer vijf minuten. Daarna kun je verdiepen, ongeveer drie minuten.',
       'Heb je een teamcode? Breng je profiel daarna in bij je team.',
     ],
   },

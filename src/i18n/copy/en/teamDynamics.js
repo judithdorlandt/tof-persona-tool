@@ -255,7 +255,7 @@ const teamDynamics = {
     copyFailed: 'Copying did not work. Please try again.',
     text: `Hi,
 
-I did TOF Persona with my team. Everyone answers nine questions about how they work. The team then gets a shared picture of its working styles and what it needs from the workplace, and I get an extra view of what that means for how I lead. By default it doesn't show who has which working style, not even to the manager, and with fewer than five completed profiles there's no picture at all. That's what lets people answer honestly.
+I did TOF Persona with my team. Everyone answers ten questions about how they work. The team then gets a shared picture of its working styles and what it needs from the workplace, and I get an extra view of what that means for how I lead. By default it doesn't show who has which working style, not even to the manager, and with fewer than five completed profiles there's no picture at all. That's what lets people answer honestly.
 
 I won't show you my own team's picture: you know my team, so you could pick people out. The example team at www.persona-tool.nl/demo shows what it looks like. If you want it for your own team, www.persona-tool.nl/voor-je-team explains how.
 

@@ -82,7 +82,7 @@ const contribute = {
     copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
     // Zonder persona vervallen de tweede en derde zin.
     message: (persona) => [
-      `Ik heb TOF Persona gedaan: negen vragen over hoe ik werk.${
+      `Ik heb TOF Persona gedaan: tien vragen over hoe ik werk.${
         persona ? ` Ik kom er vooral uit als ${persona}. Herken je me erin?` : ''
       } Ik ben benieuwd wat het bij jou wordt.`,
       '',

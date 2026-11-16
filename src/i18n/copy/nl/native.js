@@ -11,7 +11,7 @@ const native = {
       'Dit is het profiel dat je nu bekijkt. Het staat op je toestel en gaat nergens anders heen.',
     emptyTitle: 'Ontdek hoe jij werkt.',
     emptyIntro:
-      'Negen vragen, vijf minuten. Daarna weet je in welke werkomgeving jij tot je recht komt — en blijft dat hier staan, alleen voor jou.',
+      'Tien vragen, vijf minuten. Daarna weet je in welke werkomgeving jij tot je recht komt — en blijft dat hier staan, alleen voor jou.',
     profileEyebrow: 'Jouw profiel',
     openProfile: 'Bekijk je profiel',
     startTest: 'Doe de test',
@@ -335,7 +335,7 @@ const native = {
   //
   // Op de knoppen staat gewone taal. Het TOF-model (Bricks · Bytes · Behavior ·
   // Belonging) staat als klein kopje bóven het hoofdstuk — zie `chapterHeads`.
-  // Wie net negen vragen heeft ingevuld snapt "Digitaal" meteen en "Bytes" niet.
+  // Wie net tien vragen heeft ingevuld snapt "Digitaal" meteen en "Bytes" niet.
   chapters: {
     label: 'Onderdeel van je profiel',
     // "Beweging" was te abstract om op een knop te snappen; het gaat over waar

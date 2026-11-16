@@ -287,7 +287,7 @@ const teamDynamics = {
     copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
     text: `Hoi,
 
-Ik heb met mijn team TOF Persona gedaan. Iedereen vult negen vragen in over de eigen manier van werken. Het team krijgt daarna een gezamenlijk beeld van de werkstijlen en van wat het team van de werkplek vraagt. Ik zie als leidinggevende daarnaast wat dat vraagt van leidinggeven. Wie welke werkstijl heeft, staat er standaard niet in, ook niet voor de leidinggevende, en onder vijf ingevulde profielen is er geen beeld. Daardoor kan iedereen eerlijk invullen.
+Ik heb met mijn team TOF Persona gedaan. Iedereen vult tien vragen in over de eigen manier van werken. Het team krijgt daarna een gezamenlijk beeld van de werkstijlen en van wat het team van de werkplek vraagt. Ik zie als leidinggevende daarnaast wat dat vraagt van leidinggeven. Wie welke werkstijl heeft, staat er standaard niet in, ook niet voor de leidinggevende, en onder vijf ingevulde profielen is er geen beeld. Daardoor kan iedereen eerlijk invullen.
 
 Mijn eigen teambeeld laat ik je niet zien: jij kent mijn team, dus je zou er mensen in kunnen herkennen. Hoe het eruitziet, zie je aan het voorbeeldteam op www.persona-tool.nl/demo. Wil je het voor je eigen team, dan staat op www.persona-tool.nl/voor-je-team hoe dat gaat.
 

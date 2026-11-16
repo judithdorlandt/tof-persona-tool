@@ -22,7 +22,7 @@ const quiz = {
   toProfile: 'Naar mijn profiel',
   next: 'Volgende',
 
-  // Het keuzemoment na de negen vragen. Je profiel is dan wél berekend maar
+  // Het keuzemoment na de tien vragen. Je profiel is dan wél berekend maar
   // nog niet in beeld: welke knop je ook kiest, je komt via de onthulling bij
   // je profiel en pas daar wordt het bewaard. Twee toonzettingen — als de
   // nummers 1 en 2 vlak bij elkaar liggen duwen we richting de verdieping,

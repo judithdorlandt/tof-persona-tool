@@ -28,7 +28,7 @@ const quizInApp = {
     title: 'How it works',
     items: [
       'Download TOF Persona from the App Store or Google Play.',
-      'Take the test: nine questions, about five minutes. Then an optional deep dive of about three more.',
+      'Take the test: ten questions, about five minutes. Then an optional deep dive of about three more.',
       'Got a team code? Add your profile to your team afterwards.',
     ],
   },
