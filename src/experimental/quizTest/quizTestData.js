@@ -64,6 +64,13 @@ export const WERKPLEK_IDS = [
   'social',
 ];
 
+/**
+ * Data-ids van de werkomgevingsvraag (vraag 10, prikkelbehoefte) in hun vaste
+ * volgorde — nooit vertalen, nooit schudden. Dezelfde sleutels gaan als `pk`
+ * mee in de link naar het team (lib/profileHandoff.js).
+ */
+export const PRIKKEL_IDS = ['stil', 'geroezemoes', 'reuring', 'maakt_niet_uit'];
+
 /** Tekenlimiet van de open vraag (V5). */
 export const OPEN_VRAAG_MAX_LENGTH = 200;
 
@@ -73,6 +80,7 @@ export const OPEN_VRAAG_MAX_LENGTH = 200;
  * Geeft exact dezelfde vormen terug als de oude named exports:
  *   { BASIS_VRAGEN, DRUK_VRAAG, WERKPLEK_TYPES, OPEN_VRAAG,
  *     DUEL_ESSENTIE, DUEL_INTRO }
+ * plus WERKOMGEVING_VRAAG (vraag 10): { q, a: [{ id, text }] }.
  */
 export function getQuizData(lang = 'nl') {
   const t = quizTexts(lang);
@@ -88,6 +96,10 @@ export function getQuizData(lang = 'nl') {
     OPEN_VRAAG: { q: t.open.q, maxLength: OPEN_VRAAG_MAX_LENGTH },
     DUEL_ESSENTIE: { ...t.duelEssentie },
     DUEL_INTRO: t.duelIntro,
+    WERKOMGEVING_VRAAG: {
+      q: t.werkomgeving.q,
+      a: PRIKKEL_IDS.map((id) => ({ id, text: t.werkomgeving.a[id] })),
+    },
   };
 }
 
@@ -101,7 +113,7 @@ export const BASIS_VRAGEN = NL.BASIS_VRAGEN;
 export const DRUK_VRAAG = NL.DRUK_VRAAG;
 
 /**
- * Verdieping — V4: werkplekgebruik. Twee keer drie keuzes uit dezelfde negen
+ * Verdieping — V4: werkplekgebruik. Twee keer drie keuzes uit dezelfde acht
  * plektypen. Niet gescoord op archetype; het verschil tussen "gebruik nu" en
  * "mis" is de kern van het huisvestingsadvies.
  */

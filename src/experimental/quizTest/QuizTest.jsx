@@ -4,6 +4,7 @@ import { useArchetypes } from '../../i18n/archetypes';
 import { useCopy, useLang } from '../../i18n/LanguageContext';
 import { saveResponse } from '../../supabase';
 import { IS_NATIVE } from '../../config/platform';
+import { PRIKKEL_ENABLED } from '../featureFlag';
 import { saveProfile } from '../../native/localStore';
 import { tap } from '../../native/nativeShell';
 import QuizAanmelding from '../../components/QuizAanmelding.jsx';
@@ -16,7 +17,9 @@ import { getQuizData } from './quizTestData';
  *
  * Verkorte flow uit het analysestuk "Korter afnemen, scherper prijzen":
  *   1. Aanmelden (hergebruikt QuizAanmelding)
- *   2. 9 basisvragen met vast antwoordpatroon (5x één keuze, 4x twee in volgorde)
+ *   2. 9 basisvragen met vast antwoordpatroon (5x één keuze, 4x twee in volgorde),
+ *      met PRIKKEL_ENABLED gevolgd door vraag 10: werkomgeving (telt mee in
+ *      de teller, niet in de score)
  *   3. Keuzescherm ZONDER profiel: verdiepen of meteen onthullen
  *   4. Optionele verdieping (2 duels, druk, werkplekgebruik, open vraag)
  *   5. Onthulling, daarna het profiel (hergebruikt Results)
@@ -316,8 +319,13 @@ export default function QuizTest({ setPage }) {
         OPEN_VRAAG,
         DUEL_ESSENTIE,
         DUEL_INTRO,
+        WERKOMGEVING_VRAAG,
     } = useMemo(() => getQuizData(lang), [lang]);
-    // intake | basis | keuze | verdieping | onthulling | profielScherp
+    // Het aantal vragen in de teller en de voortgangsbalk. Met de schakelaar
+    // aan komt de werkomgevingsvraag erbij als vraag 10. Die telt niet mee in
+    // de score: de scoring loopt alleen over BASIS_VRAGEN.
+    const TOTAAL_VRAGEN = BASIS_VRAGEN.length + (PRIKKEL_ENABLED ? 1 : 0);
+    // intake | basis | werkomgeving | keuze | verdieping | onthulling | profielScherp
     const [phase, setPhase] = useState('intake');
     const [profile, setProfile] = useState(null);
     const [scores, setScores] = useState(emptyScores());
@@ -327,6 +335,9 @@ export default function QuizTest({ setPage }) {
     const [shuffled, setShuffled] = useState([]);
     const [selected, setSelected] = useState([]);
     const [error, setError] = useState('');
+
+    // vraag 10 — werkomgeving: 'stil' | 'geroezemoes' | 'reuring' | 'maakt_niet_uit'
+    const [prikkel, setPrikkel] = useState(null);
 
     // verdieping
     const [verdiepStep, setVerdiepStep] = useState(0); // 0=duel1 1=duel2 2=druk 3=werkplek 4=open
@@ -372,6 +383,12 @@ export default function QuizTest({ setPage }) {
         if (topRef.current) topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, [phase, basisStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Vraag 10 begint, net als elke basisvraag, bovenaan.
+    useEffect(() => {
+        if (phase !== 'werkomgeving') return;
+        if (topRef.current) topRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, [phase]);
+
     // Shuffle druk-opties zodra we bij die stap zijn.
     useEffect(() => {
         if (phase !== 'verdieping' || verdiepStep !== 2) return;
@@ -413,9 +430,16 @@ export default function QuizTest({ setPage }) {
     const scherpResult = useMemo(
         () =>
             profile
-                ? { ...buildResult(verscherpteScores), werkplek: { gebruikNu, mist: mistPlek }, openAntwoord: openText }
+                ? {
+                    ...buildResult(verscherpteScores),
+                    werkplek: { gebruikNu, mist: mistPlek },
+                    openAntwoord: openText,
+                    // Los veld, buiten de scores. Gaat mee in het lokale
+                    // profiel (saveProfile) en, als `pk`, in de link naar het team.
+                    ...(PRIKKEL_ENABLED ? { prikkel } : {}),
+                }
                 : null,
-        [profile, verscherpteScores, gebruikNu, mistPlek, openText] // eslint-disable-line react-hooks/exhaustive-deps
+        [profile, verscherpteScores, gebruikNu, mistPlek, openText, prikkel] // eslint-disable-line react-hooks/exhaustive-deps
     );
 
     // Opslaan zodra het verscherpte profiel in beeld komt — één keer.
@@ -476,7 +500,12 @@ export default function QuizTest({ setPage }) {
         });
         setScores(next);
         if (basisStep + 1 < BASIS_VRAGEN.length) setBasisStep((s) => s + 1);
-        else setPhase('keuze');
+        else setPhase(PRIKKEL_ENABLED ? 'werkomgeving' : 'keuze');
+    };
+
+    const kiesPrikkel = (id) => {
+        if (id !== prikkel) tap();
+        setPrikkel(id);
     };
 
     const kiesDuel = (archetypeId) => {
@@ -501,7 +530,7 @@ export default function QuizTest({ setPage }) {
 
     // ── BASIS ────────────────────────────────────────────────────────────────────
     if (phase === 'basis') {
-        const progress = ((basisStep + 1) / BASIS_VRAGEN.length) * 100;
+        const progress = ((basisStep + 1) / TOTAAL_VRAGEN) * 100;
         const hint = currentBasis.pick === 2 ? t.pickTwo : t.pickOne;
         const hintTekst = (
             <>
@@ -517,20 +546,20 @@ export default function QuizTest({ setPage }) {
                         <div style={{ width: `${progress}%`, height: '100%', background: PALETTE.accent, borderRadius: 999, transition: 'width .3s' }} />
                     </div>
                     <span style={{ color: 'var(--tof-text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.5, whiteSpace: 'nowrap', fontWeight: 600 }}>
-                        {basisStep + 1} / {BASIS_VRAGEN.length}
+                        {basisStep + 1} / {TOTAAL_VRAGEN}
                     </span>
                 </div>
 
                 <Card isMobile={isMobile}>
                     {/*
                       Op de telefoon staat de instructie als kale regel ónder de
-                      vraag, zonder balk en zonder de "9 vragen · ± 5 minuten"
+                      vraag, zonder balk en zonder de kop "9 vragen · ± 5 minuten"
                       erboven: die herhaalt alleen wat de voortgangsbalk al
                       zegt, en samen kostten ze de ruimte waardoor de vraag
                       buiten beeld zakte.
                     */}
                     <div>
-                        {!isMobile && <Eyebrow>{t.eyebrow(BASIS_VRAGEN.length)}</Eyebrow>}
+                        {!isMobile && <Eyebrow>{t.eyebrow(TOTAAL_VRAGEN)}</Eyebrow>}
                         <Title isMobile={isMobile}>{currentBasis.q}</Title>
                         {isMobile && (
                             <p style={{ margin: '5px 0 0', fontSize: 12.5, lineHeight: 1.4, color: PALETTE.soft }}>
@@ -565,7 +594,71 @@ export default function QuizTest({ setPage }) {
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <PrimaryBtn isMobile={isMobile} onClick={nextBasis} disabled={selected.length !== currentBasis.pick}>
-                            {basisStep + 1 === BASIS_VRAGEN.length ? t.toProfile : t.nextQuestion}
+                            {basisStep + 1 === TOTAAL_VRAGEN ? t.toProfile : t.nextQuestion}
+                        </PrimaryBtn>
+                    </div>
+                </Card>
+            </Shell>
+        );
+    }
+
+    // ── VRAAG 10 — WERKOMGEVING ─────────────────────────────────────────────────
+    // Zelfde scherm als een basisvraag (balk, teller, instructie), met twee
+    // verschillen: de opties worden niet geschud — het is een schaal van stil
+    // naar reuring, met "maakt weinig uit" onderaan — en ze staan ook op
+    // desktop in één kolom. Telt niet mee in de score.
+    if (phase === 'werkomgeving') {
+        const hint = t.pickOne;
+        const hintTekst = (
+            <>
+                {hint.before}
+                <strong style={{ color: PALETTE.ink }}>{hint.strong}</strong>
+                {hint.after}
+            </>
+        );
+        return (
+            <Shell isMobile={isMobile} innerRef={topRef}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ flex: 1, height: 5, background: '#e6dfd8', borderRadius: 999, overflow: 'hidden' }}>
+                        <div style={{ width: '100%', height: '100%', background: PALETTE.accent, borderRadius: 999, transition: 'width .3s' }} />
+                    </div>
+                    <span style={{ color: 'var(--tof-text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1.5, whiteSpace: 'nowrap', fontWeight: 600 }}>
+                        {TOTAAL_VRAGEN} / {TOTAAL_VRAGEN}
+                    </span>
+                </div>
+
+                <Card isMobile={isMobile}>
+                    <div>
+                        {!isMobile && <Eyebrow>{t.eyebrow(TOTAAL_VRAGEN)}</Eyebrow>}
+                        <Title isMobile={isMobile}>{WERKOMGEVING_VRAAG.q}</Title>
+                        {isMobile && (
+                            <p style={{ margin: '5px 0 0', fontSize: 12.5, lineHeight: 1.4, color: PALETTE.soft }}>
+                                {hintTekst}
+                            </p>
+                        )}
+                    </div>
+
+                    {!isMobile && (
+                        <div style={{ background: PALETTE.bg, borderRadius: 10, padding: '9px 14px', fontSize: 13, color: PALETTE.soft, lineHeight: 1.4 }}>
+                            {hintTekst}
+                        </div>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: isMobile ? 6 : 8 }}>
+                        {WERKOMGEVING_VRAAG.a.map((option) => (
+                            <OptionButton
+                                key={option.id}
+                                option={option}
+                                order={prikkel === option.id ? '✓' : null}
+                                isMobile={isMobile}
+                                onClick={() => kiesPrikkel(option.id)}
+                            />
+                        ))}
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <PrimaryBtn isMobile={isMobile} onClick={() => setPhase('keuze')} disabled={!prikkel}>
+                            {t.toProfile}
                         </PrimaryBtn>
                     </div>
                 </Card>

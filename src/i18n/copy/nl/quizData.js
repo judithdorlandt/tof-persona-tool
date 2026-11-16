@@ -7,7 +7,7 @@
  *   4 verbinder · 5 teamspeler · 6 zekerzoeker · 7 vernieuwer
  * De scoring mapt op INDEX. Nooit herordenen, nooit toevoegen of weglaten.
  *
- * `werkplek` en `duelEssentie` zijn gesleuteld op id — de sleutels zijn data,
+ * `werkplek`, `werkomgeving.a` en `duelEssentie` zijn gesleuteld op id — de sleutels zijn data,
  * alleen de waarden zijn tekst.
  */
 const quizData = {
@@ -151,13 +151,25 @@ const quizData = {
   werkplek: {
     focus: 'Concentratieplek',
     work: 'Standaard werkplek',
-    hybride: 'Hybride plek',
     meeting: 'Overlegplek',
     project: 'Creatieve of projectplek',
     team: 'Samenwerkplek',
     learning: 'Leerplek',
     retreat: 'Rustplek',
     social: 'Informele plek',
+  },
+
+  // ── Vraag 10 — werkomgeving (prikkelbehoefte, sleutels = data-ids) ─────
+  // Telt mee in de teller, niet in de score. Vaste volgorde, niet schudden:
+  // het is een schaal van stil naar reuring, met "maakt weinig uit" onderaan.
+  werkomgeving: {
+    q: 'Je hebt een uur om iets lastigs af te maken. Waar lukt dat het best?',
+    a: {
+      stil: 'In stilte, zonder mensen om me heen',
+      geroezemoes: 'Met zacht geroezemoes op de achtergrond',
+      reuring: 'Midden in de reuring, met leven om me heen',
+      maakt_niet_uit: 'Dat maakt voor mij weinig uit',
+    },
   },
 
   // ── Verdieping — V5: open vraag ──────────────────────────────────────────

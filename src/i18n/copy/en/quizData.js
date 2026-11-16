@@ -7,7 +7,7 @@
  *   4 verbinder · 5 teamspeler · 6 zekerzoeker · 7 vernieuwer
  * Scoring maps by INDEX. Never reorder, never add or drop an option.
  *
- * `werkplek` and `duelEssentie` are keyed by id — the keys are data, only the
+ * `werkplek`, `werkomgeving.a` and `duelEssentie` are keyed by id — the keys are data, only the
  * values are text.
  */
 const quizData = {
@@ -151,13 +151,24 @@ const quizData = {
   werkplek: {
     focus: 'Focus spaces',
     work: 'Standard workstations',
-    hybride: 'Hybrid spaces',
     meeting: 'Meeting spaces',
     project: 'Creative spaces',
     team: 'Collaboration spaces',
     learning: 'Learning spaces',
     retreat: 'Retreat spaces',
     social: 'Informal spaces',
+  },
+
+  // ── Question 10 — working environment (keys are data ids) ──────────────
+  // Counts towards the counter, not the score. Fixed order, never shuffled.
+  werkomgeving: {
+    q: 'You have an hour to finish something difficult. Where do you get that done best?',
+    a: {
+      stil: 'In silence, with no one around me',
+      geroezemoes: 'With a low murmur in the background',
+      reuring: 'Right in the buzz, with plenty going on around me',
+      maakt_niet_uit: "It doesn't make much difference to me",
+    },
   },
 
   // ── Deep dive — V5: open question ────────────────────────────────────────
