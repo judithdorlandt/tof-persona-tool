@@ -497,3 +497,25 @@ Niet gemaakt: vraag 10 in het Engels en vraag 10 op het web of desktop. De Engel
 - **App-versie:** gaat mee met de eerstvolgende store-build na 1.0.6, met de schakelaar aan. Judith bouwt en dient in.
 - **Later (Supabase-ronde):** tabel en leesfunctie, opslaan via Bijdragen, de regel "Je werkomgeving" in Bijdragen, het teamblok, de losse link en de kopieerknop. Daarbij horen keuzes 2 tot en met 5.
 - **Pushen:** alleen na een expliciet "push" voor deze opdracht. Eerst moet de branch in `main`.
+
+---
+
+### 7. Besluit Judith (16 nov 2026): altijd aan, geen schakelaar
+
+Commit `feat(prikkel): altijd aan, geen schakelaar`:
+- `PRIKKEL_ENABLED` is weg uit `featureFlag.js`, `QuizTest.jsx` en `PrikkelRegel.jsx`.
+- Vraag 10 staat altijd na de basisvragen. `prikkel` staat altijd in `scherpResult`.
+- De profielregel verschijnt zodra het antwoord tegen de werkstijl in gaat.
+
+**Gecontroleerd:**
+- 32 tests geslaagd en de build compileert.
+- Op de gewone previewserver `persona-app-native`, zonder env-variabele:
+  - de teller loopt van 1 / 10 tot 10 / 10;
+  - vraag 10 verschijnt, op desktop met de kop "10 vragen · ± 5 minuten";
+  - het antwoord `stil` staat in het bewaarde profiel.
+
+§5 ("Bewijs dat de schakelaar uit staat") geldt daarmee niet meer.
+
+**Gevolg voor de teksten:** "Negen vragen" in `native.js` r. 14 (startscherm van de app) en `intro.js` r. 21 (nl en en) klopt in de app niet meer zodra deze code in een store-build zit. De webteksten (welkomstmail, teamdashboard, deelteksten) zeggen ook "negen" en horen bij de app-versie die mensen downloaden, dus die kunnen pas mee als de nieuwe app in de stores staat.
+
+**Web:** de webquiz is dicht, dus op het web verandert er voor bezoekers niets. Mergen in `main` en pushen kan veilig. De app krijgt het pas met de volgende store-build.
