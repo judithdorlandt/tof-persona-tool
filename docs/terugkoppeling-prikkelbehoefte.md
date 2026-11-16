@@ -519,3 +519,26 @@ Commit `feat(prikkel): altijd aan, geen schakelaar`:
 **Gevolg voor de teksten:** "Negen vragen" in `native.js` r. 14 (startscherm van de app) en `intro.js` r. 21 (nl en en) klopt in de app niet meer zodra deze code in een store-build zit. De webteksten (welkomstmail, teamdashboard, deelteksten) zeggen ook "negen" en horen bij de app-versie die mensen downloaden, dus die kunnen pas mee als de nieuwe app in de stores staat.
 
 **Web:** de webquiz is dicht, dus op het web verandert er voor bezoekers niets. Mergen in `main` en pushen kan veilig. De app krijgt het pas met de volgende store-build.
+
+### 8. "9 wordt 10", overal (besluit Judith 16 nov 2026)
+
+Commit `ec914ee`, NL en EN:
+- **In de app:** het startscherm (`native.js` r. 14) en de intro (`intro.js` r. 21).
+- **Op het web:** het storescherm (`quizInApp.js` r. 31), de welkomstmail in /admin (`admin.js`) en de stappen op het teamdashboard (`teamDashboard.js` r. 72/49).
+- **De drie deelteksten:** `teamDashboard.js`, `teamDynamics.js` en `contribute.js`.
+- **Commentaar:** in `quiz.js` en `QuizTest.jsx`.
+- Het getal in de quizkop en in de teller komt uit de code en zegt al "10".
+
+Gecontroleerd:
+- in de app-preview: het startscherm toont "Tien vragen, vijf minuten" en "Ten questions, five minutes";
+- 32 tests geslaagd en de build compileert.
+
+**Bewust niet aangepast:**
+- `quiz.js` r. 66 / en r. 49, "Dit is je profiel, op basis van je negen antwoorden.": dat klopt, want vraag 10 telt niet mee in de score. Met "tien" zou de zin onwaar worden.
+- Het commentaar "Basis — 9 vragen" in `quizData.js` en `quizTestData.js`: dat gaat over de negen basisvragen.
+- Oude terugkoppelingen (`terugkoppeling-vragenlijstduur.md`) en de als verouderd gemarkeerde `docs/store-teksten.md`: dat is historie.
+- De gebouwde bundels in `ios/` en `android/`: die worden bij de volgende `cap sync` vervangen.
+
+**Buiten de repo, nog "negen":** `tof-marketingteam/content/storeteksten-persona-app.md`. Daar staan de Apple-ondertitel ("Hoe jij werkt in negen vragen" / "How you work in nine questions"), de korte omschrijving voor Google en de lange omschrijvingen in NL en EN.
+
+**Let op het moment van live gaan:** de webteksten (storescherm, welkomstmail, deelteksten) zeggen nu "tien". De app in de stores (1.0.6 en ouder) vraagt nog negen. Pushen naar `main` kan dus het best samenvallen met de nieuwe app in de stores.
