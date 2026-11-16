@@ -595,3 +595,15 @@ In `tof-marketingteam` (geen git; reservekopie van alle elf bestanden in de klad
 **Twee dingen om te weten:**
 - **De live website `persona-tool.nl` (Lovable) zegt nog "negen vragen".** De bestanden hierboven veranderen de site niet. Daarvoor is een nieuwe plakbeurt in Lovable nodig, het liefst tegelijk met de nieuwe app in de stores.
 - `tof-persona-inhoud` heeft ook een kop "De negen soorten werkplekken". Sinds 30 september zijn het er acht (hybride is geen plek meer). Ik heb dat niet aangepast, want het valt buiten deze opdracht.
+
+### 11. Lovable-prompt voor de websites (16 nov 2026)
+
+Plakklaar in `tof-marketingteam/content/plakklaar-lovable-2026-11-16-tien-vragen.md`, in twee stappen:
+1. **persona-tool.nl.** Lovable zoekt eerst alle vindplaatsen op. Daarna past het alleen het getal aan, met de verwachte zinnen erbij.
+2. **tof.services.** `index.personaTraject.body`.
+
+Publiceren pas als de nieuwe app in de stores staat.
+
+**Live nagelopen met curl** (www.persona-tool.nl, NL): "negen vragen" staat in de lead en in de groep "Wat je invult" op de homepage, in de zoekbeschrijving en de og-tekst, op /persona-insight, op /demo-test en in de og-tekst van /voor-je-team. Die staan allemaal in de prompt. Het Engels en tof.services worden in de browser geladen en waren met curl niet te lezen.
+
+**Bijvondst:** `persona-tool.nl` zonder www, via http en https, toont een TransIP-pagina "Reserved domain / Bezet!". Alleen `www.persona-tool.nl` werkt.
