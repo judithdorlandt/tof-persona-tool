@@ -840,3 +840,17 @@ Verwacht, rij voor rij:
 Wijkt er iets af? Stuur de uitkomst door, dan kijk ik ernaar. Pas als alles klopt, kan de branch op "push" naar `main`.
 
 **Na de push** moet de app-versie na 1.0.7 nog `privacyApp` onder vraag 10 krijgen. Dat bouw ik op een apart "ga bouwen".
+
+### 8. Migratie 011 gedraaid (17 nov 2026)
+
+Op verzoek van Judith ("draai het voor mij") heeft de hoofdsessie op 17 nov migratie 011 gedraaid op productie (project `lchfxkeubshkekepkxfh`, SQL Editor). Het ging om de statements uit `supabase/011_prikkel_antwoorden.sql` zonder het commentaar. Via een hash is gecontroleerd dat ze gelijk zijn aan het bestand. Uitkomst: "Success. No rows returned".
+
+De controlequery uit §7 gaf alle acht rijen zoals verwacht:
+- kolommen: `id, invite_code, prikkel`
+- tabelrecht voor anon en authenticated: `false`
+- beide functies: `true`
+- 3 stil + 2 reuring: `gemengd`
+- 1 stil: `null`
+- een onbekende code: `null`
+
+Daarmee is aan de voorwaarde voor de push voldaan. De branch `prikkel-supabase` wacht nu alleen nog op Judiths "push".
