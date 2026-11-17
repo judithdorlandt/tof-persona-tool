@@ -1,7 +1,7 @@
 # Release 1.0.7: tien vragen, en geluid om je heen
 
 Gebouwd op 16 november 2026. iOS **1.0.7 (build 9)**, Android **1.0.7 (versionCode 7)**.
-**iOS 1.0.7 (9) geüpload naar App Store Connect op 17 nov 2026** (`xcodebuild -exportArchive`, "Upload succeeded"). Nog niet ingediend voor beoordeling. **Android 1.0.7 (7) plus de vernieuwde Store-vermelding NL en EN ingediend bij Google Play op 17 nov 2026** (7 wijzigingen, "Wijzigingen worden beoordeeld"; Beheerd publiceren staat uit, dus live zodra goedgekeurd). Play-schermafbeeldingen 1320 × 2640 uit `store-assets/screenshots-play/`.
+**iOS 1.0.7 (9) geüpload naar App Store Connect op 17 nov 2026** (`xcodebuild -exportArchive`, "Upload succeeded"). **Ingediend voor beoordeling bij Apple op 17 nov 2026.** **Android 1.0.7 (7) plus de vernieuwde Store-vermelding NL en EN ingediend bij Google Play op 17 nov 2026** (7 wijzigingen, "Wijzigingen worden beoordeeld"; Beheerd publiceren staat uit, dus live zodra goedgekeurd). Play-schermafbeeldingen 1320 × 2640 uit `store-assets/screenshots-play/`.
 
 ## Voorwaarde
 
