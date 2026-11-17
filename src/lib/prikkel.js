@@ -36,3 +36,32 @@ export function prikkelRegelSoort(personaId, prikkel) {
     if (!bij || prikkel !== bij) return null;
     return bij === 'reuring' ? 'reuringBijStil' : 'stilBijLeven';
 }
+
+/**
+ * De markering "voor dit team is al een werkomgevingsantwoord binnen" in deze
+ * browser. Gezet door de losse link (/werkomgeving) en door Bijdragen als er
+ * een antwoord meeging. Vangt dubbel tellen in dezelfde browser; een ander
+ * toestel of een privévenster niet (besluit Judith 17 nov 2026, punt 4).
+ * Bewaart niets anders dan '1': geen antwoord, geen naam.
+ */
+export function prikkelMarkeringSleutel(code) {
+    return `tof_prikkel_${String(code || '').trim()}`;
+}
+
+export function heeftPrikkelMarkering(code) {
+    if (!String(code || '').trim()) return false;
+    try {
+        return window.localStorage.getItem(prikkelMarkeringSleutel(code)) === '1';
+    } catch {
+        return false;
+    }
+}
+
+export function zetPrikkelMarkering(code) {
+    if (!String(code || '').trim()) return;
+    try {
+        window.localStorage.setItem(prikkelMarkeringSleutel(code), '1');
+    } catch {
+        // Geen opslag (privévenster, geblokkeerd): dan geen markering.
+    }
+}

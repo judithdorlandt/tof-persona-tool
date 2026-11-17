@@ -379,6 +379,68 @@ export async function saveResponse(profile) {
 }
 
 // =========================
+// WERKOMGEVING (prikkelbehoefte) — supabase/011_prikkel_antwoorden.sql
+// =========================
+
+const PRIKKEL_WAARDEN = ['stil', 'geroezemoes', 'reuring', 'maakt_niet_uit'];
+const PRIKKEL_TEAMSIGNALEN = ['gemengd', 'stil', 'reuring', 'zonder_uitersten'];
+
+/**
+ * Bewaart één werkomgevingsantwoord voor een teamcode, los van het profiel:
+ * zonder naam, zonder werkstijl, zonder datum. Schrijft alleen via de functie
+ * prikkel_opslaan (de tabel zelf heeft geen rechten).
+ *
+ * Gooit nooit. Geeft true als de server de rij schreef, anders false (lege of
+ * ongeldige code, onbekende waarde, functie bestaat nog niet, netwerkfout).
+ * Een mislukking is geen reden voor een foutmelding in beeld: het profiel is
+ * dan wel binnen, alleen het losse antwoord niet.
+ */
+export async function savePrikkel(inviteCode, prikkel) {
+  const code = String(inviteCode || '').trim();
+  if (!code || !PRIKKEL_WAARDEN.includes(prikkel)) return false;
+  if (!ensureSupabase()) return false;
+  try {
+    const { data, error } = await supabase
+      .rpc('prikkel_opslaan', { p_code: code, p_prikkel: prikkel });
+    if (error) {
+      console.warn('savePrikkel:', error.message || error);
+      return false;
+    }
+    return data === true;
+  } catch (err) {
+    console.warn('savePrikkel:', err?.message || err);
+    return false;
+  }
+}
+
+/**
+ * Het teamsignaal voor een code: 'gemengd' | 'stil' | 'reuring' |
+ * 'zonder_uitersten', of null (minder dan vijf antwoorden met een voorkeur,
+ * onbekende code, functie bestaat nog niet, fout). De server geeft alleen de
+ * uitkomst terug, nooit aantallen.
+ *
+ * `undefined` betekent: niet op te halen (geen client, fout, functie
+ * ontbreekt). Dan toont het dashboard het blok helemaal niet, in plaats van
+ * een lege toestand die "nog te weinig antwoorden" beweert.
+ */
+export async function getPrikkelVoorCode(inviteCode) {
+  const code = String(inviteCode || '').trim();
+  if (!code || !ensureSupabase()) return undefined;
+  try {
+    const { data, error } = await supabase
+      .rpc('prikkel_voor_code', { p_code: code });
+    if (error) {
+      if (!isMissingFunction(error)) console.warn('getPrikkelVoorCode:', error.message || error);
+      return undefined;
+    }
+    return PRIKKEL_TEAMSIGNALEN.includes(data) ? data : null;
+  } catch (err) {
+    console.warn('getPrikkelVoorCode:', err?.message || err);
+    return undefined;
+  }
+}
+
+// =========================
 // FEEDBACK
 // =========================
 
