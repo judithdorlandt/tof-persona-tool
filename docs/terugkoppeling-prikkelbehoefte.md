@@ -636,3 +636,64 @@ Gecontroleerd:
 De Apple-ondertitel noemt geen duur.
 
 **Lovable-prompt** (`plakklaar-lovable-2026-11-16-tien-vragen.md`): nu ook "vijf minuten" → "zeven minuten". Hij is opnieuw getoetst aan de live site, inclusief de lead "die je in ongeveer vijf minuten beantwoordt" en de og-teksten op /voor-je-organisatie, /strategisch-kompas en /demo.
+
+---
+
+## Plan na besluiten 17 nov
+
+De besluiten staan in `tof-marketingteam/content/opdracht-app-prikkelbehoefte.md` ("Besluiten na ronde 1") en de nieuwe teksten in `teksten-app-prikkelbehoefte.md` ("Aanvulling 17 nov"). Hieronder staat alleen wat verandert ten opzichte van ronde 1, §4. **Er is nog niets gebouwd.** Er ligt nog geen "ga bouwen".
+
+### Botsing die eerst beslist moet worden: de teller
+
+Besluit 1 en de nieuwe eyebrow `werkomgeving.eyebrowApp` ("Nog één vraag · werkomgeving") gaan uit van een vraag **buiten de teller en de voortgangsbalk**. Op 16 nov besloot Judith juist "9 vragen worden er 10": de vraag staat **in de teller** (10 / 10, "Tien vragen, zeven minuten"). Zo is het gebouwd, live op het web (`50b2ff8`) en ingediend als app 1.0.7 bij Apple en Google (17 nov). Ook de store-, website- en marketingteksten zeggen tien.
+
+- **Mijn voorstel:** de teller blijft zoals hij is (10 / 10). Dan komt `eyebrowApp` er niet: "Nog één vraag" naast "10 / 10" leest dubbel. Op desktop staat al de eyebrow `10 vragen · ± 7 minuten`.
+- **Wil Judith toch terug naar buiten de teller?** Dan moet alles van §8, §9, §10 en §12 terug (app, stores, websites en marketing), en ook een nieuwe app-versie.
+
+### Wat verandert per onderdeel
+
+**Onderdeel 1, `supabase/011_prikkel_antwoorden.sql`**
+- Geen kolom `created_on`. De tabel krijgt alleen `id`, `invite_code` en `prikkel`.
+- Schrijven alleen via `public.prikkel_opslaan(p_code text, p_prikkel text)`, met `security definer`, `search_path = private, public`, een codecontrole op `active = true` en een controle op de vier waarden. Geeft `boolean` terug.
+- Op de tabel: `revoke all` van `public`, `anon` en `authenticated`, en daarna **geen enkel recht**. Variant (a), insert met een policy, vervalt.
+- `execute` op `prikkel_opslaan` en `prikkel_voor_code` voor anon en authenticated.
+- `prikkel_voor_code` en de uitkomstregel blijven zoals in §4.
+- Het controleblok controleert ook dat anon en authenticated geen tabelrechten hebben.
+
+**Onderdeel 2, `savePrikkel`**
+- Alleen `supabase.rpc('prikkel_opslaan', …)`. Bij een lege code doet hij niets (besluit 5).
+
+**Onderdeel 3 (web) en 4 (verdieping)**
+- De fase `werkomgeving` vóór `keuze` bestaat al, in de app en op het web (ronde 2, §7). Er komt geen nieuwe fase bij.
+- Onderdeel 4, stap 4 in de verdieping, **vervalt**. Die is ook nooit gebouwd.
+- Op het web: opslaan na `saveResponse` alleen als er een `invite_code` is (besluit 5). De server zoekt geen code op.
+
+**Privacyregel in de app (nieuw: `werkomgeving.privacyApp`)**
+- De regel komt onder de vraag in de fase `werkomgeving`, in de app, in 13 px zachte tekst, in NL en EN, teken voor teken.
+- De regel belooft "wordt apart bewaard … pas vanaf vijf antwoorden". Hij gaat dus pas mee in de app-versie **na** 1.0.7, en pas als het web-deel live staat (zie de volgorde hieronder).
+- Op het web blijft `werkomgeving.privacy` staan voor het moment dat de webquiz weer opengaat.
+
+**Onderdeel 6, Bijdragen**
+- Na een gelukte `savePrikkel(access.code, profiel.prikkel)` zet Bijdragen `localStorage` `tof_prikkel_<CODE>` = `'1'`. Dat zit in een try/catch, en alleen als er een `pk` was.
+
+**Onderdeel 8, de losse link**
+- Het pad wordt `/werkomgeving` (NL) en `/working-environment` (EN), als page-key in `routes.js`.
+- Bij het openen staat `tof_prikkel_<CODE>` al? Dan toont de pagina `prikkelLink.alBinnen` in plaats van de vraag, zonder "toch opnieuw".
+- Na een gelukte verzending zet de pagina dezelfde markering.
+- `prikkelLink.alGehad` blijft boven de vraag staan.
+- In /admin: de tekstknop `admin.prikkelLink.knop` ("Kopieer link werkomgeving"), na het kopiëren de melding `admin.prikkelLink.gekopieerd` ("Link gekopieerd"), via `copyText`. De link wordt `https://team.persona-tool.nl/werkomgeving?code=<CODE>`.
+- De schakelaar `PRIKKEL_ENABLED` uit §4 bestaat niet meer (besluit 16 nov). Alles staat aan zodra het gebouwd is.
+
+**Onderdeel 5, `naamMv`**
+- Toevoegen in `archetypes.js`: `maker` Makers/Makers, `groeier` Groeiers/Growers, `teamspeler` Teamspelers/Team Players.
+- `zekerzoeker` staat er al (Zekerzoekers/Stabilisers) en klopt met de aanvulling. Daarmee zijn alle acht er.
+
+**`{maand}`**
+- Eén constante, `PRIKKEL_START_MAAND = { nl, en }`, in het copybestand van het teamblok. Ik vul die in bij de push naar `main`, met de maandnaam zonder jaartal.
+- Kanttekening: de maand die telt, is de maand waarin het **web-deel** antwoorden gaat bewaren, niet de maand van 1.0.7. Wie met 1.0.7 een profiel invult en pas daarna bijdraagt, telt gewoon mee: `pk` gaat al mee in de link. Wie vóór die maand bijdroeg, is niet meegeteld, ook als die de vraag al kreeg. De zin "kreeg hem toen nog niet" klopt voor die groep dus niet helemaal. Dat laat ik zo, tenzij de redactie het anders wil.
+
+### Volgorde van uitrollen
+
+1. Judith draait `011_prikkel_antwoorden.sql` zelf in Supabase. Ik raak productie niet aan.
+2. Een push naar `main` (web): `savePrikkel` in Bijdragen, de markering, de losse link, de adminknop en het teamblok. Dit vraagt geen nieuwe app-versie, want Bijdragen draait op het web en `pk` gaat al mee vanaf 1.0.7.
+3. De app-versie na 1.0.7: alleen `privacyApp` onder vraag 10 (plus `eyebrowApp` als de teller toch verandert).
