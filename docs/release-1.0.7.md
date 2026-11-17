@@ -1,7 +1,7 @@
 # Release 1.0.7: tien vragen, en geluid om je heen
 
 Gebouwd op 16 november 2026. iOS **1.0.7 (build 9)**, Android **1.0.7 (versionCode 7)**.
-Niets geüpload en niets ingediend.
+**iOS 1.0.7 (9) geüpload naar App Store Connect op 17 nov 2026** (`xcodebuild -exportArchive`, "Upload succeeded"). Nog niet ingediend voor beoordeling. Android nog niet geüpload.
 
 ## Voorwaarde
 
@@ -68,11 +68,9 @@ New: a tenth question about how much sound you need to work well. If your answer
 ## Stappen voor Judith
 
 ### Apple
-1. Open `ios/App/App.xcworkspace` in Xcode.
-2. Kies **Any iOS Device (arm64)** en daarna **Product → Archive**.
-3. Organizer: **Distribute App → App Store Connect → Upload**. Het buildnummer blijft 9.
-4. App Store Connect: maak **versie 1.0.7** aan, kies build **1.0.7 (9)**, plak de NL- en EN-tekst bij "Wat is er nieuw" en neem de nieuwe ondertitel en omschrijving over.
-5. Dien in via **Add for Review**. Bij een eerdere afwijzing loopt het via Distribution → App Review → **Resubmit**.
+1. ~~Archiveren en uploaden~~ — gedaan op 17 nov 2026. Wacht tot build 1.0.7 (9) in App Store Connect klaar is met verwerken (meestal 10–30 minuten, je krijgt een mail).
+2. App Store Connect: maak **versie 1.0.7** aan, kies build **1.0.7 (9)**, plak de NL- en EN-tekst bij "Wat is er nieuw" en neem de nieuwe ondertitel en omschrijving over.
+3. Dien in via **Add for Review**. Bij een eerdere afwijzing loopt het via Distribution → App Review → **Resubmit**.
 
 ### Google Play
 1. Play Console → **Productie → Nieuwe release maken** → upload `app-release.aab`.
