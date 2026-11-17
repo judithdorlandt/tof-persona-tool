@@ -643,7 +643,7 @@ De Apple-ondertitel noemt geen duur.
 
 De besluiten staan in `tof-marketingteam/content/opdracht-app-prikkelbehoefte.md` ("Besluiten na ronde 1") en de nieuwe teksten in `teksten-app-prikkelbehoefte.md` ("Aanvulling 17 nov"). Hieronder staat alleen wat verandert ten opzichte van ronde 1, §4. **Er is nog niets gebouwd.** Er ligt nog geen "ga bouwen".
 
-### Botsing die eerst beslist moet worden: de teller
+### Botsing over de teller (opgelost 17 nov: blijft 10 / 10, `eyebrowApp` vervalt)
 
 Besluit 1 en de nieuwe eyebrow `werkomgeving.eyebrowApp` ("Nog één vraag · werkomgeving") gaan uit van een vraag **buiten de teller en de voortgangsbalk**. Op 16 nov besloot Judith juist "9 vragen worden er 10": de vraag staat **in de teller** (10 / 10, "Tien vragen, zeven minuten"). Zo is het gebouwd, live op het web (`50b2ff8`) en ingediend als app 1.0.7 bij Apple en Google (17 nov). Ook de store-, website- en marketingteksten zeggen tien.
 
