@@ -20,6 +20,7 @@ import {
 import { PageShell } from './ui/AppShell';
 
 import Bijdragen from './components/Bijdragen.jsx';
+import PrikkelLink from './components/PrikkelLink.jsx';
 import Landing from './components/Landing.jsx';
 import Nav from './components/Nav.jsx';
 import Home from './components/Home.jsx';
@@ -318,6 +319,11 @@ export default function App() {
           />
         );
 
+      // De losse link voor bestaande teams: alleen de werkomgevingsvraag.
+      // Alleen op het web (staat niet in NATIVE_PAGES), zonder navigatiebalk.
+      case 'werkomgeving':
+        return <PrikkelLink />;
+
       case 'historie':
         return <History setPage={navigate} />;
 
@@ -441,7 +447,7 @@ export default function App() {
   // Pagina's waar de Nav NIET getoond moet worden. De landing is in beide
   // werelden een kaal merkscherm; de auth-pagina's bestaan alleen op het web.
   const hideNav = page === 'landing'
-    || (!IS_NATIVE && (page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm'));
+    || (!IS_NATIVE && (page === 'werkomgeving' || page === 'login' || page === 'testerlogin' || page === 'authcallback' || page === 'authconfirm'));
 
   // De balk onderin hoort bij een app die iets van je bewaart: zolang er geen
   // profiel is, is er ook niets om heen te gaan en blijft hij weg.

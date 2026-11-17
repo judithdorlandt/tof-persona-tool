@@ -25,6 +25,7 @@ import teamIntro from './teamIntro';
 import teamPanels from './teamPanels';
 import teamSelector from './teamSelector';
 import teamSignals from './teamSignals';
+import prikkelLink from './prikkelLink';
 import prikkelRegel from './prikkelRegel';
 import servicesProfile from './servicesProfile';
 import workplaceProfile from './workplaceProfile';
@@ -57,6 +58,7 @@ const nl = {
   teamPanels,
   teamSelector,
   teamSignals,
+  prikkelLink,
   prikkelRegel,
   servicesProfile,
   workplaceProfile,
