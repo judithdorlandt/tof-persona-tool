@@ -293,6 +293,12 @@ The Office Factory
     bodyBefore: 'Here you will soon be able to link a director or board member to',
     bodyAfter: '. At organisation level they get the same insights a manager gets within a single team.',
   },
+
+  /** Stand-alone link with only the working-environment question, per team code (src/components/PrikkelLink.jsx). */
+  prikkelLink: {
+    knop: 'Copy working environment link',
+    gekopieerd: 'Link copied',
+  },
 };
 
 export default admin;

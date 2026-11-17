@@ -52,6 +52,7 @@ import { SPACING, TYPE, RADIUS, MODULE } from '../ui/tokens';
 import { buildTeamAggregate, dominantPersonas, dominantNames } from '../utils/TeamAggregation';
 import { buildTeamInsights } from '../utils/TeamInsights';
 import { namesVisibility } from '../utils/access';
+import { copyText } from '../utils/copyText';
 import { MIN_ROW_PROFILES } from '../utils/organisatieLandschap/constants';
 import { prepareOrganisatieData } from '../utils/organisatieLandschap/organisatieAggregation';
 import { buildTiles } from './TeamDashboard.jsx';
@@ -1020,6 +1021,9 @@ function OrganizationDetail({
     // show_names zoals de teamlijst hem ophaalde.
     const [showNamesByCode, setShowNamesByCode] = useState({});
     const [namesBusyCode, setNamesBusyCode] = useState(null);
+    // Welke teamcode net zijn werkomgevingslink kopieerde (melding "Link
+    // gekopieerd" bij die rij, een paar seconden).
+    const [prikkelGekopieerd, setPrikkelGekopieerd] = useState(null);
     const [moduleSel, setModuleSel] = useState('insight');
     // Eigen observaties per organisatie — handmatige input naast data-driven inzichten.
     const [observations, setObservations] = useState([]);
@@ -1226,6 +1230,17 @@ function OrganizationDetail({
             return;
         }
         setShowNamesByCode((prev) => ({ ...prev, [teamRow.code]: next }));
+    }
+
+    // De losse link voor bestaande teams (PrikkelLink.jsx). Altijd het
+    // NL-pad op het teamadres; de pagina kent ook /en/working-environment.
+    async function handleCopyPrikkelLink(code) {
+        const ok = await copyText(`https://team.persona-tool.nl/werkomgeving?code=${encodeURIComponent(code)}`);
+        if (!ok) return;
+        setPrikkelGekopieerd(code);
+        window.setTimeout(() => {
+            setPrikkelGekopieerd((huidig) => (huidig === code ? null : huidig));
+        }, 2500);
     }
 
     async function handleViewTeam(summary) {
@@ -1541,6 +1556,32 @@ function OrganizationDetail({
                                                 {s.team.code && namesNote(s) ? (
                                                     <div style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--tof-text-muted)', maxWidth: 360 }}>
                                                         {namesNote(s)}
+                                                    </div>
+                                                ) : null}
+                                                {s.team.code && !inactive ? (
+                                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleCopyPrikkelLink(s.team.code)}
+                                                            style={{
+                                                                padding: 0,
+                                                                background: 'none',
+                                                                border: 'none',
+                                                                fontSize: 12,
+                                                                fontFamily: 'inherit',
+                                                                color: 'var(--tof-text-muted)',
+                                                                cursor: 'pointer',
+                                                                textDecoration: 'underline',
+                                                                textUnderlineOffset: 2,
+                                                            }}
+                                                        >
+                                                            {admin.prikkelLink.knop}
+                                                        </button>
+                                                        {prikkelGekopieerd === s.team.code ? (
+                                                            <span role="status" style={{ fontSize: 12, color: 'var(--tof-accent-sage-text)' }}>
+                                                                {admin.prikkelLink.gekopieerd}
+                                                            </span>
+                                                        ) : null}
                                                     </div>
                                                 ) : null}
                                             </div>

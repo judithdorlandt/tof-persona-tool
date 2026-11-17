@@ -318,6 +318,12 @@ The Office Factory
     bodyBefore: 'Hier kun je straks een bestuurder of directielid koppelen aan',
     bodyAfter: '. Hij of zij krijgt op organisatie-niveau dezelfde inzichten als een manager binnen één team.',
   },
+
+  /** Losse link met alleen de werkomgevingsvraag, per teamcode (src/components/PrikkelLink.jsx). */
+  prikkelLink: {
+    knop: 'Kopieer link werkomgeving',
+    gekopieerd: 'Link gekopieerd',
+  },
 };
 
 export default admin;
