@@ -24,6 +24,12 @@
  * andere (een quizvraag, het gespreksscherm, het privacyscherm) zijn er op
  * 12 oktober 2026 uit gehaald. Alleen de eerste drie zijn zichtbaar in de
  * zoekresultaten, en wat daarachter stond haalde niemand.
+ *
+ * Google Play: FORMAAT=play maakt dezelfde drie op 1320 x 2640 (440 x 880
+ * punten, 3x) in store-assets/screenshots-play/<taal>/. Play weigert beelden
+ * waarvan de lange zijde meer dan twee keer de korte is, en 1320 x 2868 is
+ * 1 : 2,17. Het scherm is dus iets lager; verder is alles gelijk.
+ *   FORMAAT=play node store-assets/make-store-screenshots.mjs nl
  */
 import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
@@ -35,7 +41,8 @@ const puppeteer = require(process.env.PUPPETEER || 'puppeteer-core');
 
 const CHROME = process.env.CHROME_PAD || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const taal = process.argv[2] === 'en' ? 'en' : 'nl';
-const UIT = resolve(dirname(fileURLToPath(import.meta.url)), 'screenshots', taal);
+const PLAY = process.env.FORMAAT === 'play';
+const UIT = resolve(dirname(fileURLToPath(import.meta.url)), PLAY ? 'screenshots-play' : 'screenshots', taal);
 mkdirSync(UIT, { recursive: true });
 
 const wacht = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -75,7 +82,7 @@ async function schiet(page, naam) {
 const browser = await puppeteer.launch({
     executablePath: CHROME,
     headless: 'new',
-    defaultViewport: { width: 440, height: 956, deviceScaleFactor: 3, isMobile: true, hasTouch: true },
+    defaultViewport: { width: 440, height: PLAY ? 880 : 956, deviceScaleFactor: 3, isMobile: true, hasTouch: true },
     args: ['--font-render-hinting=none', '--force-color-profile=srgb', '--hide-scrollbars'],
 });
 const page = await browser.newPage();
