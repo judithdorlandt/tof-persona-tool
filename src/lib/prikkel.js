@@ -69,7 +69,8 @@ export function zetPrikkelMarkering(code) {
 /**
  * {maand} in de lege toestand van het teamblok ("wie vóór {maand} een profiel
  * invulde, kreeg hem toen nog niet"): de maand waarin het web de antwoorden
- * gaat bewaren. Eén constante, in te vullen bij de push naar main; maandnaam
- * zonder jaartal (teksten-app-prikkelbehoefte.md, "Aanvulling 17 nov").
+ * ging bewaren. Migratie 011 is op 17 november 2026 gedraaid en het web-deel
+ * ging die dag live, dus: november. Maandnaam zonder jaartal
+ * (teksten-app-prikkelbehoefte.md, "Aanvulling 17 nov").
  */
 export const PRIKKEL_START_MAAND = { nl: 'november', en: 'November' };
