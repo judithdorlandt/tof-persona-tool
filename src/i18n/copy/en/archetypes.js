@@ -14,6 +14,8 @@
 const archetypes = {
   maker: {
     name: 'Maker',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Makers',
     kw: ['creating', 'freedom', 'experiment'],
     short: 'You make things. Ideas only really gain value for you once you can turn them into something visible or tangible.',
     motivation: 'The freedom to create, to experiment and to put something down quickly.',
@@ -93,6 +95,8 @@ const archetypes = {
   },
   groeier: {
     name: 'Grower',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Growers',
     kw: ['learning', 'development', 'forward'],
     short: 'You grow. Standing still does not feel safe to you — it feels like losing energy.',
     motivation: 'Learning new things, developing yourself and always getting a step further.',
@@ -375,6 +379,8 @@ const archetypes = {
   },
   teamspeler: {
     name: 'Team Player',
+    // Plural with capital, for the working-environment line (prikkelRegel.js).
+    naamMv: 'Team Players',
     kw: ['loyalty', 'trust', 'winning together'],
     short: 'You work for the team. What counts for you is not only what you achieve, but above all what you build together.',
     motivation: 'Contributing to a settled group with trust, continuity and shared success.',

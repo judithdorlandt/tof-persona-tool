@@ -11,6 +11,8 @@
 const archetypes = {
   maker: {
     name: 'Maker',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Makers',
     kw: ['creëren', 'vrijheid', 'experiment'],
     short: 'Jij maakt. Ideeën krijgen voor jou pas echt waarde als je ze kunt omzetten in iets zichtbaars of tastbaars.',
     motivation: 'Vrijheid om te creëren, te experimenteren en snel iets neer te zetten.',
@@ -89,6 +91,8 @@ const archetypes = {
   },
   groeier: {
     name: 'Groeier',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Groeiers',
     kw: ['leren', 'ontwikkeling', 'vooruit'],
     short: 'Jij groeit. Stilstand voelt voor jou niet veilig, maar juist alsof je energie verliest.',
     motivation: 'Nieuwe dingen leren, jezelf ontwikkelen en steeds een stap verder komen.',
@@ -371,6 +375,8 @@ const archetypes = {
   },
   teamspeler: {
     name: 'Teamspeler',
+    // Meervoud met hoofdletter, voor de prikkelregel (prikkelRegel.js).
+    naamMv: 'Teamspelers',
     kw: ['loyaliteit', 'vertrouwen', 'samen winnen'],
     short: 'Jij werkt voor het team. Voor jou telt niet alleen wat jij bereikt, maar vooral wat jullie samen neerzetten.',
     motivation: 'Bijdragen aan een vaste groep met vertrouwen, continuïteit en gezamenlijk succes.',
