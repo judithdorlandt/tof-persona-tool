@@ -29,6 +29,7 @@ import { useCopy } from '../../i18n/LanguageContext';
 import { DIENSTENPROFIEL_ENABLED } from '../../experimental/featureFlag';
 import { MIN_TEAM_RESPONSES } from '../../utils/access';
 import DienstenLaag from './DienstenLaag';
+import PrikkelBlok from './PrikkelBlok';
 
 // Visuele duiding per band (subtiel, binnen het bestaande palet).
 const BAND_KLEUR = {
@@ -56,7 +57,12 @@ function typeCopy(COPY, type) {
 // `metDiensten`: alleen het teamdashboard zet de laag "Wat dit team naar kantoor
 // trekt" aan; het Organisatielandschap (Admin.jsx) gebruikt hetzelfde paneel
 // zonder. Met de schakelaar uit verschijnt er niets, ook geen lijn.
-export default function WerkplekProfielInline({ aggregate, metDiensten = false }) {
+//
+// `prikkel`: het teamsignaal "Geluid en werkomgeving" uit prikkel_voor_code.
+// undefined = niet opgehaald of niet op te halen (Organisatielandschap, fout,
+// migratie 011 nog niet gedraaid): dan geen blok. null = te weinig
+// antwoorden met een voorkeur: dan de lege toestand.
+export default function WerkplekProfielInline({ aggregate, metDiensten = false, prikkel = undefined }) {
     const isMobile = useIsMobile();
     const { workplaceProfile: COPY } = useCopy();
 
@@ -96,6 +102,12 @@ export default function WerkplekProfielInline({ aggregate, metDiensten = false }
 
             {signalen.length > 0 ? (
                 <SignalenBlok ids={signalen} isMobile={isMobile} />
+            ) : null}
+
+            {/* Zelfde drempel van vijf profielen; daaronder is er geen
+                teambeeld. De drempel van vijf voorkeuren zit in SQL. */}
+            {prikkel !== undefined && profiel.totaalLeden >= MIN_TEAM_RESPONSES ? (
+                <PrikkelBlok signaal={prikkel} />
             ) : null}
 
             {/* Eigen drempel, ook voor beheerders (die mogen het teambeeld

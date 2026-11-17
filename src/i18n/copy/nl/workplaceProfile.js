@@ -13,6 +13,8 @@
  *   - `signalen`→ signal-ids uit buildGedragssignalen()
  */
 
+import { PRIKKEL_START_MAAND } from '../../../lib/prikkel';
+
 const workplaceProfile = {
     ui: {
         eyebrow: 'Werkplekbehoefte',
@@ -166,6 +168,31 @@ const workplaceProfile = {
                 'Concentratie en rust domineren, terwijl informeel en samen werken weinig nadruk krijgen. ' +
                 'Onderlinge afstemming kan verschralen als ontmoeting niet vanzelf gebeurt.',
         },
+    },
+
+    // Teamblok "Geluid en werkomgeving" (prikkelbehoefte). Het signaal komt
+    // uit public.prikkel_voor_code (supabase/011); hier alleen de woorden.
+    // Bron: tof-marketingteam/content/teksten-app-prikkelbehoefte.md, §3.
+    prikkelTeam: {
+        eyebrow: 'Geluid en werkomgeving',
+        gemengd: {
+            kop: 'Dit team heeft stilte én reuring nodig',
+            tekst: 'Eén open ruimte werkt dan voor niemand goed. Spreek af dat wie stilte zoekt in de Concentratieplekken werkt en wie reuring zoekt aan de Informele plekken. Bellen en overleggen gebeurt buiten de Concentratieplekken.',
+        },
+        stil: {
+            kop: 'Voor dit team komt stilte eerst',
+            tekst: 'Bewaak dat de Concentratieplekken stil blijven en dat de Rustplekken geen belhoek worden. Spreek samen af waar wel gebeld en overlegd wordt.',
+        },
+        reuring: {
+            kop: 'Dit team werkt het best met leven eromheen',
+            tekst: 'Een stil kantoor voelt voor dit team leeg en geeft weinig reden om te komen. Spreek dagen af waarop het team er samen is en werk die dagen ook aan de Informele plekken.',
+        },
+        zonderUitersten: {
+            kop: 'Dit team zit tussen stilte en reuring in',
+            tekst: 'Een open ruimte met wat geroezemoes werkt hier, zolang er elders gebeld wordt. Houd de Concentratieplekken vrij voor wie een tijd helemaal stil wil werken.',
+        },
+        meta: 'Dit blok komt uit de antwoorden van het team zelf, zonder namen. De plekken hierboven zijn afgeleid uit de werkstijlen.',
+        leeg: `Geluid en werkomgeving: nog te weinig antwoorden met een voorkeur om iets over dit team te zeggen. De vraag is nieuw: wie vóór ${PRIKKEL_START_MAAND.nl} een profiel invulde, kreeg hem toen nog niet.`,
     },
 };
 

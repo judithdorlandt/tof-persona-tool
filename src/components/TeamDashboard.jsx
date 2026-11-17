@@ -13,7 +13,7 @@
  * NIET aggregate.sortedPersonas (dat is energie-sortering — voor Dynamics).
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import {
     PageShell,
@@ -47,7 +47,7 @@ import {
     namesByPersona,
     rememberAfterLogin,
 } from '../utils/access';
-import { logPdfDownload } from '../supabase';
+import { getPrikkelVoorCode, logPdfDownload } from '../supabase';
 import TeamGate from './TeamGate';
 import ShareNote from './ShareNote';
 
@@ -81,7 +81,7 @@ const PANEL_ID = 'teaminzicht-paneel';
  * trekt" aan; alleen het teamdashboard geeft hem mee, het organisatie-overzicht
  * niet. De tegelwaarde (tegelKern) verandert er niet door.
  */
-export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'nl', metDiensten = false } = {}) {
+export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'nl', metDiensten = false, prikkel = undefined } = {}) {
     return [
         {
             id: 'personas',
@@ -114,7 +114,7 @@ export function buildTiles(t, { names = null, workplaceProfile = null, lang = 'n
             detailTitle: t.tiles.workplace.detailTitle,
             detailLead: () => '',
             render: (aggregate) => (
-                <WerkplekProfielInline aggregate={aggregate} metDiensten={metDiensten} />
+                <WerkplekProfielInline aggregate={aggregate} metDiensten={metDiensten} prikkel={prikkel} />
             ),
         },
         {
@@ -189,9 +189,22 @@ export default function TeamDashboard({
         () => namesByPersona(teamResponses, common.locale),
         [teamResponses, common.locale]
     );
+    // Het teamsignaal "Geluid en werkomgeving" (supabase/011). Alleen de
+    // uitkomst komt binnen, nooit aantallen. undefined = geen blok.
+    const teamCode = selectedTeam?.code || '';
+    const [prikkel, setPrikkel] = useState(undefined);
+    useEffect(() => {
+        let actief = true;
+        setPrikkel(undefined);
+        if (!teamCode) return undefined;
+        getPrikkelVoorCode(teamCode).then((uitkomst) => {
+            if (actief) setPrikkel(uitkomst);
+        });
+        return () => { actief = false; };
+    }, [teamCode]);
     const tiles = useMemo(
-        () => buildTiles(t, { names, workplaceProfile, lang, metDiensten: true }),
-        [t, names, workplaceProfile, lang]
+        () => buildTiles(t, { names, workplaceProfile, lang, metDiensten: true, prikkel }),
+        [t, names, workplaceProfile, lang, prikkel]
     );
 
     const teamName = resolveTeamName(selectedTeam, t.fallbackTeamName);

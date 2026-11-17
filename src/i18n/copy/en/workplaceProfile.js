@@ -13,6 +13,8 @@
  *   - `signalen` → signal ids from buildGedragssignalen()
  */
 
+import { PRIKKEL_START_MAAND } from '../../../lib/prikkel';
+
 const workplaceProfile = {
     ui: {
         eyebrow: 'Workplace needs',
@@ -166,6 +168,31 @@ const workplaceProfile = {
                 'Focus and retreat dominate, while informal and collaborative work get little emphasis. ' +
                 'Mutual alignment can thin out if encounters do not happen naturally.',
         },
+    },
+
+    // Team block "Sound and working environment" (prikkelbehoefte). The signal
+    // comes from public.prikkel_voor_code (supabase/011); only the words live
+    // here. Source: tof-marketingteam/content/teksten-app-prikkelbehoefte.md, §3.
+    prikkelTeam: {
+        eyebrow: 'Sound and working environment',
+        gemengd: {
+            kop: 'This team needs both quiet and buzz',
+            tekst: 'A single open space then suits nobody. Agree that people who want quiet work in the focus spaces and people who want buzz work at the informal spaces. Calls and meetings happen outside the focus spaces.',
+        },
+        stil: {
+            kop: 'For this team, quiet comes first',
+            tekst: 'Make sure the focus spaces stay quiet and the retreat spaces do not turn into phone booths. Agree together where people can make calls and meet.',
+        },
+        reuring: {
+            kop: 'This team works best when the office is lively',
+            tekst: 'A quiet office feels empty to this team and gives it little reason to come in. Agree on days when the whole team is in, and on those days work at the informal spaces too.',
+        },
+        zonderUitersten: {
+            kop: 'This team sits between quiet and buzz',
+            tekst: 'An open space with a low murmur of voices works here, as long as calls are taken elsewhere. Keep the focus spaces free for anyone who needs a spell of complete quiet.',
+        },
+        meta: "This block comes from the team's own answers, without names. The spaces above are based on the working styles.",
+        leeg: `Sound and working environment: not enough answers with a preference yet to say anything about this team. The question is new: anyone who filled in a profile before ${PRIKKEL_START_MAAND.en} did not get it then.`,
     },
 };
 
