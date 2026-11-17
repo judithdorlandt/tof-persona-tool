@@ -20,6 +20,11 @@ const contribute = {
     secondaryLabel: 'Second',
     tertiaryLabel: 'Third',
     scoresHeading: 'The balance of your profile',
+    // Only when the working-environment answer is in the link (pk). The value
+    // is the chosen answer from quizData.werkomgeving.a.
+    werkomgevingHeading: 'Your working environment',
+    werkomgevingNote:
+      'This answer is stored separately, without your name or your working style, even if you add your first name below. Your team only sees one signal for the team as a whole, and only once there are five answers.',
     note:
       'And nothing else. No notes, no answers to open questions, no workplace choices. Whatever you wrote down for your conversation in the app stays on your device.',
   },

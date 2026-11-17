@@ -20,6 +20,11 @@ const contribute = {
     secondaryLabel: 'Tweede',
     tertiaryLabel: 'Derde',
     scoresHeading: 'Verdeling van jouw profiel',
+    // Alleen als het werkomgevingsantwoord in de link zit (pk). De waarde is
+    // het gekozen antwoord uit quizData.werkomgeving.a.
+    werkomgevingHeading: 'Je werkomgeving',
+    werkomgevingNote:
+      'Dit antwoord wordt apart bewaard, zonder je naam en zonder je werkstijl, ook als je hieronder je voornaam invult. Je team ziet alleen een signaal over het hele team, en pas vanaf vijf antwoorden.',
     note:
       'En niets anders. Geen aantekeningen, geen antwoorden op open vragen, geen werkplekkeuzes. Wat je in de app bij je gesprek hebt opgeschreven blijft op je toestel staan.',
   },

@@ -36,7 +36,8 @@ import { useCopy, useLang } from '../i18n/LanguageContext';
 import { pagePath } from '../i18n/routes';
 import { buildScoreDistribution, DEFAULT_PERSONA_COLOR, PERSONA_COLORS } from '../lib/resultDerivations';
 import { decodeHandoff } from '../lib/profileHandoff';
-import { getResponsesByTeam, saveResponse, validateTeamAccessCode } from '../supabase';
+import { getResponsesByTeam, savePrikkel, saveResponse, validateTeamAccessCode } from '../supabase';
+import { heeftPrikkelMarkering, zetPrikkelMarkering } from '../lib/prikkel';
 import { grantTeamLevel, LEVEL_INSIGHT } from '../utils/access';
 import {
     HeroBlock,
@@ -114,7 +115,7 @@ const LINK_KNOP = {
 };
 
 export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }) {
-    const { contribute: t } = useCopy();
+    const { contribute: t, quizData } = useCopy();
     const { lang } = useLang();
     const ARCHETYPES = useArchetypes();
 
@@ -209,6 +210,19 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
             setStatus('idle');
             setFout(err?.message || t.errors.saveFailed);
             return;
+        }
+
+        // Het werkomgevingsantwoord (pk) gaat apart, naar een eigen tabel
+        // zonder naam en zonder werkstijl. Niet wachten: het profiel is al
+        // binnen, en een mislukking geeft geen foutmelding. Staat de markering
+        // voor dit team al (losse link of eerdere bijdrage in deze browser),
+        // dan niet nog een keer: dat zou dubbel tellen. Na een gelukte
+        // verzending de markering zetten (besluit Judith 17 nov, punt 4).
+        if (profiel.prikkel && !heeftPrikkelMarkering(access.code)) {
+            const teamCode = access.code;
+            savePrikkel(teamCode, profiel.prikkel).then((ok) => {
+                if (ok) zetPrikkelMarkering(teamCode);
+            });
         }
 
         // Vanaf hier is deze bijdrage gedaan. Eerst onthouden, dan pas de hash
@@ -377,6 +391,22 @@ export default function Bijdragen({ setPage, setSelectedTeam, setTeamResponses }
                         ))}
                     </div>
                 </div>
+
+                {/* Boven de note, zodat "En niets anders" na het laatste
+                    meegestuurde onderdeel komt. */}
+                {profiel.prikkel && quizData?.werkomgeving?.a?.[profiel.prikkel] && (
+                    <div style={{ display: 'grid', gap: SPACING.xs + 2 }}>
+                        <span style={{ ...TYPE.bodySmall, color: 'var(--tof-text-muted)' }}>
+                            {t.payload.werkomgevingHeading}
+                        </span>
+                        <span style={{ ...TYPE.body, color: 'var(--tof-text)' }}>
+                            {quizData.werkomgeving.a[profiel.prikkel]}
+                        </span>
+                        <span style={{ ...TYPE.bodySmall, color: 'var(--tof-text-soft)' }}>
+                            {t.payload.werkomgevingNote}
+                        </span>
+                    </div>
+                )}
 
                 <p style={{ ...TYPE.bodySmall, color: 'var(--tof-text-muted)', margin: 0 }}>
                     {t.payload.note}
