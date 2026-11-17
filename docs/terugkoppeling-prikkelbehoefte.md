@@ -697,3 +697,146 @@ Besluit 1 en de nieuwe eyebrow `werkomgeving.eyebrowApp` ("Nog één vraag · we
 1. Judith draait `011_prikkel_antwoorden.sql` zelf in Supabase. Ik raak productie niet aan.
 2. Een push naar `main` (web): `savePrikkel` in Bijdragen, de markering, de losse link, de adminknop en het teamblok. Dit vraagt geen nieuwe app-versie, want Bijdragen draait op het web en `pk` gaat al mee vanaf 1.0.7.
 3. De app-versie na 1.0.7: alleen `privacyApp` onder vraag 10 (plus `eyebrowApp` als de teller toch verandert).
+
+---
+
+## Ronde 3: Supabase-deel (17 november 2026)
+
+Gebouwd na "Ga bouwen" van Judith (17 nov), volgens "Plan na besluiten 17 nov" hierboven. Alles staat op branch **`prikkel-supabase`**: niet gepusht en niet in `main` gezet. **De migratie is niet gedraaid**: dat doet Judith zelf (stappen onderaan). `privacyApp` is niet gebouwd; die hoort bij de app-versie na 1.0.7.
+
+### 1. Commits (één onderdeel per commit)
+
+| Commit | Onderdeel |
+|---|---|
+| `d393181` | `supabase/011_prikkel_antwoorden.sql`: tabel, `prikkel_opslaan`, `prikkel_voor_code`, controleblok |
+| `ef9071f` | `savePrikkel` en `getPrikkelVoorCode` in `src/supabase.js`, `prikkelUitkomst.js` met tests, de markering `tof_prikkel_<CODE>` in `src/lib/prikkel.js` |
+| `877196a` | Bijdragen: regel "Je werkomgeving", apart opslaan, markering |
+| `bea1fdb` | Teamblok "Geluid en werkomgeving" (`PrikkelBlok.jsx`) in het Werkplek-paneel, `{maand}` als constante |
+| `5f16ce8` | Losse link `/werkomgeving` en `/en/working-environment` (`PrikkelLink.jsx`) |
+| `483079f` | Knop "Kopieer link werkomgeving" in /admin |
+| `00913dc` | `naamMv` voor alle acht werkstijlen |
+
+### 2. De SQL in het kort (`supabase/011_prikkel_antwoorden.sql`)
+
+- **`private.prikkel_antwoorden`** heeft precies drie kolommen: `id`, `invite_code` en `prikkel` (met een check op de vier waarden). Geen naam, geen werkstijl, geen verwijzing naar `responses`, geen datum.
+  - RLS staat aan en er zijn geen policies.
+  - `revoke all` van `public`, `anon` en `authenticated`. Niemand heeft enig tabelrecht.
+- **`private.prikkel_uitkomst(stil, geroezemoes, reuring)`** is een pure functie met de regel, in gehele getallen.
+  - Volgorde: n < 5 → `null`; stil ≥ 30 % én reuring ≥ 30 % → `gemengd`; stil ≥ 50 % → `stil`; reuring ≥ 50 % → `reuring`; anders → `zonder_uitersten`.
+  - Niet aan te roepen door anon of authenticated.
+- **`public.prikkel_opslaan(p_code, p_prikkel)`** is `security definer`.
+  - Controleert of de code bestaat en `active = true` is, en of de waarde een van de vier is.
+  - Schrijft één rij en geeft `true` terug, anders `false`.
+  - Geeft geen fout bij een onbekende code, zodat de browser niets leert over welke codes bestaan.
+- **`public.prikkel_voor_code(p_code)`** is `security definer` en `stable`. Hij geeft alleen de uitkomst terug, **nooit aantallen**. Bij een onbekende of inactieve code: `null`.
+- `execute` op beide public-functies is er voor anon en authenticated. `responses` en de bestaande functies blijven onaangeroerd.
+
+### 3. Tests
+
+**SQL.** De migratie is gedraaid in PGlite, een Postgres 16 in het geheugen, met nagebootste rollen `anon`/`authenticated` en een kleine `team_access_codes`. Niet in Supabase.
+
+| Verdeling (alleen voorkeuren tellen) | Uitkomst |
+|---|---|
+| 4× 'maakt niet uit' + 1 stil (n = 1) | `null` |
+| 2 stil + 2 reuring (n = 4) | `null` |
+| **3 stil + 2 reuring** | **`gemengd`** |
+| 3 stil + 2 geroezemoes | `stil` |
+| 3 reuring + 2 geroezemoes | `reuring` |
+| 1 stil + 3 geroezemoes + 1 reuring | `zonder_uitersten` |
+| 3 stil + 4 geroezemoes + 3 reuring (precies 30 %) | `gemengd` |
+| 5 stil + 3 geroezemoes + 2 reuring (precies 50 %) | `stil` |
+| niets | `null` |
+| 2 stil + 6 geroezemoes + 2 reuring (20 %) | `zonder_uitersten` |
+
+Verder in PGlite, als de rol `anon`:
+- **Kolommen:** `id`, `invite_code`, `prikkel`.
+- **`has_table_privilege` select/insert** voor anon en authenticated: allemaal `false`. `execute` op `prikkel_opslaan` en `prikkel_voor_code`: `true`; op `prikkel_uitkomst`: `false`.
+- **`prikkel_opslaan`** gaf voor een actieve code met een geldige waarde `true` (6×). Een inactieve code, een onbekende code, de waarde `'hard'` en een lege code gaven `false`. Er stonden daarna precies 6 rijen in de tabel.
+- **`prikkel_voor_code`:** 'ACTIEF' (3 stil, 2 reuring, 1 maakt niet uit) gaf `gemengd`, 'UIT' gaf `null`.
+- **Rechtstreeks lezen en schrijven** in de tabel als anon: geweigerd.
+- **Tweede keer draaien:** zonder fout (idempotent).
+
+**JavaScript.** `npx react-scripts test`: 5 suites, **47/47 geslaagd**.
+- `prikkelUitkomst.test.js` volgt dezelfde verdelingen als de SQL-test, plus de grenzen 30 % en 50 % en n = 4 tegenover n = 5.
+- `prikkel.test.js` test de markering: de sleutel per code, zetten en lezen, en geen markering bij een lege code.
+- De webbuild compileert.
+- ESLint is schoon op alle gewijzigde bestanden. De twee meldingen in `dienstenProfielLogic.test.js` (import/first) waren er al en zijn niet van deze ronde.
+
+### 4. Schermafbeeldingen (375 px, NL en EN)
+
+Gemaakt in headless Chrome tegen de webbuild. **Alle verzoeken naar Supabase zijn onderschept en nagebootst**; niets bereikte productie. De teamdata is verzonnen (8 profielen, "Voorbeeld BV · Voorbeeldteam", code `DEMO-2026`). De bestanden staan in `docs/prikkel-ronde3/`.
+
+| Wat | NL | EN |
+|---|---|---|
+| Losse link, de vraag (eerste antwoord gekozen) | `nl-link-1-vraag.jpg` | `en-link-1-vraag.jpg` |
+| Losse link, gelukt | `nl-link-2-gelukt.jpg` | `en-link-2-gelukt.jpg` |
+| Losse link, tweede bezoek: `alBinnen` | `nl-link-3-albinnen.jpg` | `en-link-3-albinnen.jpg` |
+| Losse link zonder geldige code: `ongeldig` | `nl-link-4-ongeldig.jpg` | `en-link-4-ongeldig.jpg` |
+| Teamblok, `gemengd` | `nl-team-gemengd.jpg` | `en-team-gemengd.jpg` |
+| Teamblok, leeg (`null`) | `nl-team-leeg.jpg` | `en-team-leeg.jpg` |
+| /admin, knop na klikken ("Link gekopieerd") | `nl-admin-knop.jpg` | `en-admin-knop.jpg` |
+| Bijdragen, "Je werkomgeving" boven "En niets anders" | `nl-bijdragen-werkomgeving.jpg` | `en-bijdragen-werkomgeving.jpg` |
+
+Wat in die doorloop is nagegaan:
+- **Losse link:** na "Versturen" staat `tof_prikkel_DEMO-2026 = '1'` in localStorage. Na herladen staat er `alBinnen` in plaats van de vraag.
+- **/admin:** het klembord bevat `https://team.persona-tool.nl/werkomgeving?code=DEMO-2026`, ook in de Engelse /admin.
+- **Bijdragen:** "Inbrengen" stuurt eerst `responses` (zonder het antwoord) en daarna apart `prikkel_opslaan {"p_code":"DEMO-2026","p_prikkel":"reuring"}`. Daarna staat de markering.
+- **Teamblok:** staat na "Beperkt nodig" / "Let op de balans" en vóór "Wat dit team naar kantoor trekt".
+
+### 5. Hoe het zich gedraagt zolang 011 niet gedraaid is
+
+- **Teamdashboard:** `prikkel_voor_code` bestaat niet, dus `getPrikkelVoorCode` geeft `undefined` en er komt geen blok. Ook geen lege toestand die iets onwaars zou beweren.
+- **Bijdragen:** het profiel gaat gewoon mee. Het losse antwoord mislukt stil, er komt geen markering, en er is geen foutmelding.
+- **Losse link en knop in /admin:** de pagina toont de vraag, maar "Versturen" lukt niet (de knop staat weer klaar, zonder melding). **Stuur dus geen link rond en push niet voordat 011 gedraaid is.**
+
+### 6. Keuzes die ik zelf maakte (zeg het als het anders moet)
+
+1. **`{maand}`** = `PRIKKEL_START_MAAND` in `src/lib/prikkel.js`. Hij staat nu op `november` / `November`. Bij de push naar `main` vul ik de maand in waarin het web de antwoorden gaat bewaren.
+2. **"Toch opnieuw" in Bijdragen:** staat de markering voor die code al, dan gaat het antwoord niet nog een keer mee. Het profiel wel, zoals nu. Zo telt één browser niet dubbel.
+3. **De losse link:** toont ook de instructieregel `quiz.pickOne` ("Kies 1 antwoord dat het beste bij jou past."), zoals bij de vraag in de app. Bij `alBinnen` is er geen "toch opnieuw".
+4. **De knop in /admin:** verschijnt alleen bij een actieve code. De melding "Link gekopieerd" staat 2,5 seconden naast de knop. De link gebruikt altijd het NL-pad; de pagina zelf werkt ook als `/en/working-environment`.
+
+### 7. Stappen voor Judith in Supabase
+
+1. Open Supabase → **SQL Editor** → **New query**.
+2. Plak de hele inhoud van `supabase/011_prikkel_antwoorden.sql` en klik **Run**. Je ziet "Success. No rows returned"; dat is goed.
+3. Draai daarna deze controlequery als losse query. Hij schrijft niets:
+
+```sql
+select 'kolommen' as controle,
+       string_agg(column_name, ', ' order by ordinal_position) as uitkomst
+from information_schema.columns
+where table_schema = 'private' and table_name = 'prikkel_antwoorden'
+union all
+select 'tabelrecht ' || r.rolname,
+       (has_table_privilege(r.rolname, 'private.prikkel_antwoorden', 'select')
+        or has_table_privilege(r.rolname, 'private.prikkel_antwoorden', 'insert'))::text
+from pg_roles r where r.rolname in ('anon', 'authenticated')
+union all
+select 'functie ' || p.proname, p.prosecdef::text
+from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public' and p.proname in ('prikkel_opslaan', 'prikkel_voor_code')
+union all
+select 'regel 3 stil + 2 reuring', private.prikkel_uitkomst(3, 0, 2)
+union all
+select 'regel 1 stil (4x maakt niet uit)', coalesce(private.prikkel_uitkomst(1, 0, 0), 'null')
+union all
+select 'onbekende code', coalesce(public.prikkel_voor_code('BESTAAT-NIET'), 'null');
+```
+
+Verwacht, rij voor rij:
+
+| controle | uitkomst |
+|---|---|
+| kolommen | `id, invite_code, prikkel` |
+| tabelrecht anon | `false` |
+| tabelrecht authenticated | `false` |
+| functie prikkel_opslaan | `true` |
+| functie prikkel_voor_code | `true` |
+| regel 3 stil + 2 reuring | `gemengd` |
+| regel 1 stil (4x maakt niet uit) | `null` |
+| onbekende code | `null` |
+
+Wijkt er iets af? Stuur de uitkomst door, dan kijk ik ernaar. Pas als alles klopt, kan de branch op "push" naar `main`.
+
+**Na de push** moet de app-versie na 1.0.7 nog `privacyApp` onder vraag 10 krijgen. Dat bouw ik op een apart "ga bouwen".
