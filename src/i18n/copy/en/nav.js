@@ -3,6 +3,9 @@ const nav = {
   // decorative (alt=""), or a screen reader would announce it twice.
   logoToHome: 'TOF Workstyle, back to your overview',
   logoToTeam: 'TOF Workstyle, back to your team overview',
+  // On the web the product is called TOF Workstyle Team (see the wordmark).
+  logoToHomeWeb: 'TOF Workstyle Team, back to your overview',
+  logoToTeamWeb: 'TOF Workstyle Team, back to your team overview',
   myTeam: 'My team',
   home: 'Home',
   intro: 'A quick explanation',

@@ -26,7 +26,7 @@ export const COPY_NL = {
     // ── Pagina 1 — TOF Brand cover
     brandCover: {
         tagline: 'Inzicht in werkstijlen en werkplek, voor de hele organisatie.',
-        eyebrow: 'TOF PERSONA',
+        eyebrow: 'THE OFFICE FACTORY',
         kicker: 'Organisatielandschap',
         meta: (date, respondents, activeTeams, totalTeams) =>
             `${date}  ·  ${respondents} ${respondents === 1 ? 'ingevuld profiel' : 'ingevulde profielen'}  ·  ${activeTeams} van ${totalTeams} teams met ingevulde profielen`,

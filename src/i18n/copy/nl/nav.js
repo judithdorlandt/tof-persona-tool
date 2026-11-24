@@ -3,6 +3,9 @@ const nav = {
   // decoratief (alt=""), anders hoort een schermlezer het dubbel.
   logoToHome: 'TOF Werkstijl, terug naar je overzicht',
   logoToTeam: 'TOF Werkstijl, terug naar je teamoverzicht',
+  // Op het web heet het product TOF Werkstijl Team (zie het woordmerk).
+  logoToHomeWeb: 'TOF Werkstijl Team, terug naar je overzicht',
+  logoToTeamWeb: 'TOF Werkstijl Team, terug naar je teamoverzicht',
   myTeam: 'Mijn team',
   home: 'Home',
   intro: 'Eerst even uitleg',

@@ -23,7 +23,7 @@ export const COPY_EN = {
     // ── Page 1 — TOF brand cover
     brandCover: {
         tagline: 'Insight into working styles and workplace, across the whole organisation.',
-        eyebrow: 'TOF PERSONA',
+        eyebrow: 'THE OFFICE FACTORY',
         kicker: 'Organisation landscape',
         meta: (date, respondents, activeTeams, totalTeams) =>
             `${date}  ·  ${respondents} ${respondents === 1 ? 'completed profile' : 'completed profiles'}  ·  ${activeTeams} of ${totalTeams} teams with completed profiles`,

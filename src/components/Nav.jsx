@@ -117,6 +117,12 @@ export default function Nav({
         </div>
     );
 
+    // Het label begint met de naam zoals die in beeld staat: op het web met
+    // "Team", in de app zonder.
+    const logoLabel = IS_NATIVE
+        ? (isManager ? t.logoToTeam : t.logoToHome)
+        : (isManager ? t.logoToTeamWeb : t.logoToHomeWeb);
+
     return (
         <div className={styles.bar}>
             <div className={styles.inner}>
@@ -132,8 +138,8 @@ export default function Nav({
                             handleNavigate(isManager ? 'team' : 'home');
                         }}
                         className={styles.logoBtn}
-                        aria-label={isManager ? t.logoToTeam : t.logoToHome}
-                        title={isManager ? t.logoToTeam : t.logoToHome}
+                        aria-label={logoLabel}
+                        title={logoLabel}
                     >
                         <img src={tofLogo} alt="" className={styles.logoImg} />
                         <div className={styles.brand}>
