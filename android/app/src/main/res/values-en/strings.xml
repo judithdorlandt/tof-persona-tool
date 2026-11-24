@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <!-- Naam onder het icoon op een Engels ingesteld toestel. -->
+    <string name="app_name">TOF Workstyle</string>
+    <string name="title_activity_main">TOF Workstyle</string>
+</resources>

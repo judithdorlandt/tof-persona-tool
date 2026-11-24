@@ -1,6 +1,6 @@
 {
   "appId": "services.tof.persona",
-  "appName": "TOF Persona",
+  "appName": "TOF Werkstijl",
   "webDir": "build",
   "backgroundColor": "#F7F3EE",
   "ios": {
