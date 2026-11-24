@@ -44,7 +44,7 @@ const COLOR = {
 const CARD_COPY = {
   nl: {
     pillPrimary: 'PRIMAIRE PERSONA',
-    roleFallback: 'TOF Persona',
+    roleFallback: 'TOF Werkstijl',
     titlePrefix: 'Jouw dominante profiel is ',
     verdelingEyebrow: 'VERDELING PROFIEL',
     mixEyebrow: 'AANVULLENDE PROFIELEN',
@@ -56,13 +56,13 @@ const CARD_COPY = {
     score: (value) => `score ${value}`,
     leiderschapEyebrow: 'WAT HELPT IN LEIDERSCHAP',
     tagline: 'Helping people understand their workplace through insight, design and movement.',
-    docTitle: 'TOF Personakaart',
+    docTitle: 'Personakaart · TOF Werkstijl',
     docSubject: (persona) => `Personakaart — ${persona}`,
     defaultFileName: 'personakaart TOF.pdf',
   },
   en: {
     pillPrimary: 'PRIMARY PERSONA',
-    roleFallback: 'TOF Persona',
+    roleFallback: 'TOF Workstyle',
     titlePrefix: 'Your dominant profile is ',
     verdelingEyebrow: 'PROFILE BREAKDOWN',
     mixEyebrow: 'SUPPORTING PROFILES',
@@ -74,7 +74,7 @@ const CARD_COPY = {
     score: (value) => `score ${value}`,
     leiderschapEyebrow: 'WHAT HELPS IN LEADERSHIP',
     tagline: 'Helping people understand their workplace through insight, design and movement.',
-    docTitle: 'TOF Persona Card',
+    docTitle: 'Persona card · TOF Workstyle',
     docSubject: (persona) => `Persona card — ${persona}`,
     defaultFileName: 'persona card TOF.pdf',
   },
@@ -651,8 +651,8 @@ export function downloadPersonaCardVectorPDF({ pdfData, primaryColor, fileName, 
       title: fileName || c.docTitle,
       subject: c.docSubject(pdfData?.voorkant?.persona || ''),
       author: 'The Office Factory',
-      creator: 'TOF Persona',
-      keywords: 'TOF, Persona, Personakaart, The Office Factory',
+      creator: 'TOF Werkstijl',
+      keywords: 'TOF Werkstijl, persona, personakaart, The Office Factory',
     });
   } catch (e) {
     // Sommige jsPDF-builds gooien hierop; niet fataal.

@@ -105,7 +105,7 @@ const INSIGHT_COPY = {
             reflectie: 'ZELF AAN DE SLAG',
         },
         sourceFallback: 'ZELF AAN DE SLAG',
-        footerTagline: 'TOF Persona · The Office Factory',
+        footerTagline: 'TOF Werkstijl Team · The Office Factory',
     },
     en: {
         fileSuffix: 'team insight',
@@ -150,7 +150,7 @@ const INSIGHT_COPY = {
             reflectie: 'GET STARTED YOURSELF',
         },
         sourceFallback: 'GET STARTED YOURSELF',
-        footerTagline: 'TOF Persona · The Office Factory',
+        footerTagline: 'TOF Workstyle Team · The Office Factory',
     },
 };
 

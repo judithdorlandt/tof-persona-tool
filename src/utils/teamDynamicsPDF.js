@@ -111,7 +111,7 @@ const DYNAMICS_COPY = {
         },
         sourceFallback: 'ZELF AAN DE SLAG',
         footerQuote: '"Regie geven is duidelijkheid scheppen — niet bepalen."',
-        footerTagline: 'TOF Persona · The Office Factory',
+        footerTagline: 'TOF Werkstijl Team · The Office Factory',
     },
     en: {
         fileSuffix: 'team dynamics',
@@ -149,7 +149,7 @@ const DYNAMICS_COPY = {
         },
         sourceFallback: 'GET STARTED YOURSELF',
         footerQuote: '"Giving direction is creating clarity — not deciding for people."',
-        footerTagline: 'TOF Persona · The Office Factory',
+        footerTagline: 'TOF Workstyle Team · The Office Factory',
     },
 };
 
