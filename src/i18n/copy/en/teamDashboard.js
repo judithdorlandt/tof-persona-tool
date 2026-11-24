@@ -45,7 +45,7 @@ const teamDashboard = {
     },
     message: ({ team, code, showNames }) => [
       `${team} is putting together a team picture. Here's how to take part:`,
-      `1. Open this link on your phone and download the TOF Persona app: https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}`,
+      `1. Open this link on your phone and download the TOF Workstyle app: https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}`,
       '2. Take the test in the app: ten questions, about seven minutes.',
       `3. Tap 'Add my profile' at the bottom of your profile. The website opens. Enter this team code, tap 'Check code' and then 'Add my profile' again: ${code}`,
       "Your profile only counts once you've tapped 'Add my profile' on the website. Keep this message until then: you only need the team code after the test.",
@@ -115,7 +115,7 @@ const teamDashboard = {
       copyFailed: 'Copying did not work. Please try again.',
       shareText: `Hi,
 
-Our team did TOF Persona. Everyone answers ten questions about how they work. What I found most interesting was seeing how I work, and why that sometimes causes friction in a team.
+Our team did TOF Workstyle. Everyone answers ten questions about how they work. What I found most interesting was seeing how I work, and why that sometimes causes friction in a team.
 
 The team then gets a shared picture: which working styles it has and what it needs from the workplace. By default it doesn't show who has which working style, not even to a manager. And with fewer than five completed profiles, there's no picture at all.
 

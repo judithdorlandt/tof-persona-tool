@@ -19,7 +19,7 @@ const strategicCompass = {
     lead: 'Many strategy programmes look outward — trends, market, technology. Others look inward — culture, leadership, teams. The Strategic Compass does both. Trends always land differently depending on who actually works there.',
     // The paid modules side by side. Module 1 (the free app) is deliberately
     // absent: it is the way in, not an alternative to this programme.
-    compareHeads: ['TOF Persona Team', 'The Organisation Landscape', 'The Strategic Compass'],
+    compareHeads: ['TOF Workstyle Team', 'The Organisation Landscape', 'The Strategic Compass'],
     compareRows: [
       {
         label: 'Perspective',
@@ -172,7 +172,7 @@ const strategicCompass = {
       body: 'The app on your phone. Your own profile, your workplace needs, your conversation prep.',
     },
     {
-      num: '02 · TOF Persona Team',
+      num: '02 · TOF Workstyle Team',
       title: 'How do you work together?',
       body: 'Team dashboard. Persona mix, tensions, workplace needs and quick wins.',
     },

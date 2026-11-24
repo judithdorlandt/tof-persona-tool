@@ -29,7 +29,7 @@ const teamIntro = {
     },
     appCta: 'Take the test in the app →',
     requestLead: 'No team yet?',
-    requestLink: 'Request TOF Persona Team →',
+    requestLink: 'Request TOF Workstyle Team →',
   },
 
   managerWelcome: {

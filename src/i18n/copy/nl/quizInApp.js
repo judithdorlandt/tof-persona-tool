@@ -13,7 +13,7 @@ const quizInApp = {
   eyebrow: 'De app',
   title: 'De test zit in de app',
   lead:
-    'De test staat in de app TOF Persona: op je telefoon en zonder account. Daarna kies je zelf of je profiel bij een team terechtkomt.',
+    'De test staat in de app TOF Werkstijl: op je telefoon en zonder account. Daarna kies je zelf of je profiel bij een team terechtkomt.',
 
   teamCode: {
     title: 'Jouw teamcode',
@@ -27,7 +27,7 @@ const quizInApp = {
   steps: {
     title: 'Zo werkt het',
     items: [
-      'Download TOF Persona in de App Store of Google Play.',
+      'Download TOF Werkstijl in de App Store of Google Play.',
       'Doe de test: tien vragen, ongeveer zeven minuten. Daarna kun je verdiepen, ongeveer drie minuten.',
       'Heb je een teamcode? Breng je profiel daarna in bij je team.',
     ],

@@ -118,7 +118,7 @@ Hoi allemaal,
 
 Ik wil graag met jullie kijken welke werkstijlen er in ons team zitten en wat we van onze werkplek nodig hebben. Daarvoor doet ieder van ons een korte test in de app TOF Persona. Zodra genoeg collega's meedoen, krijgen we een beeld van het team. Zo doe je mee:
 
-1. Open deze link op je telefoon en download de app TOF Persona:
+1. Open deze link op je telefoon en download de app TOF Werkstijl:
 https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}
 
 2. Doe de test in de app: tien vragen, ongeveer zeven minuten. Daarna volgt een verdieping van ongeveer drie minuten; die is niet verplicht.

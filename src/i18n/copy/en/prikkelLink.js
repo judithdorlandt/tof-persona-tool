@@ -12,7 +12,7 @@ const prikkelLink = {
   eyebrow: 'One question for your team',
   title: 'How much sound do you need to work well?',
   intro:
-    'Your team already uses TOF Persona. One question has been added, so the team picture can also show how much quiet or buzz you need. Your profile stays as it is.',
+    'Your team already uses TOF Workstyle. One question has been added, so the team picture can also show how much quiet or buzz you need. Your profile stays as it is.',
   alGehad: 'If you already answered this question when you filled in your profile, there is nothing more to do.',
   privacy:
     'Your answer is stored without your name or your working style, even if your team uses the names option. Your team only sees one signal for the team as a whole, and only once there are five answers.',

@@ -87,11 +87,11 @@ const contribute = {
     copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
     // Zonder persona vervallen de tweede en derde zin.
     message: (persona) => [
-      `Ik heb TOF Persona gedaan: tien vragen over hoe ik werk.${
+      `Ik heb TOF Werkstijl gedaan: tien vragen over hoe ik werk.${
         persona ? ` Ik kom er vooral uit als ${persona}. Herken je me erin?` : ''
       } Ik ben benieuwd wat het bij jou wordt.`,
       '',
-      'Zoek op TOF Persona in de App Store of Google Play. Het duurt ongeveer zeven minuten, daarna volgt een korte verdieping als je wilt.',
+      'Zoek op TOF Werkstijl in de App Store of Google Play. Het duurt ongeveer zeven minuten, daarna volgt een korte verdieping als je wilt.',
     ].join('\n'),
   },
 

@@ -83,11 +83,11 @@ const contribute = {
     copyFailed: 'Copying did not work. Please try again.',
     // Without a persona, the second and third sentences drop out.
     message: (persona) => [
-      `I did TOF Persona: ten questions about how I work.${
+      `I did TOF Workstyle: ten questions about how I work.${
         persona ? ` My main working style came out as ${persona}. Does that sound like me?` : ''
       } I'm curious what yours would be.`,
       '',
-      'Look for TOF Persona in the App Store or Google Play. It takes about seven minutes, with a short optional follow-up after that.',
+      'Look for TOF Workstyle in the App Store or Google Play. It takes about seven minutes, with a short optional follow-up after that.',
     ].join('\n'),
   },
 

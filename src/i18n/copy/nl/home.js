@@ -12,7 +12,7 @@ const home = {
 
   offerCard: {
     eyebrow: 'Voor jezelf',
-    title: 'De app TOF Persona',
+    title: 'De app TOF Werkstijl',
     text: 'Je eigen profiel: hoe je werkt, waar je energie van krijgt en wat je nodig hebt. Heb je een teamcode, dan breng je het daarna in bij je team.',
   },
 
@@ -25,7 +25,7 @@ const home = {
 
   footer: {
     logoAlt: 'TOF logo',
-    body: 'TOF Persona is ontwikkeld door The Office Factory, die werkomgeving, digitale middelen en gedrag in samenhang bekijkt.',
+    body: 'TOF Werkstijl is ontwikkeld door The Office Factory, die werkomgeving, digitale middelen en gedrag in samenhang bekijkt.',
     website: 'Ga naar website →',
     contact: 'Plan een gesprek',
     privacy:

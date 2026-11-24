@@ -68,7 +68,7 @@ const teamDashboard = {
     // het doorsturen. De laatste zin hangt af van de namenschakelaar.
     message: ({ team, code, showNames }) => [
       `Doe je mee met het teambeeld van ${team}? Zo werkt het:`,
-      `1. Open deze link op je telefoon en download de app TOF Persona: https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}`,
+      `1. Open deze link op je telefoon en download de app TOF Werkstijl: https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}`,
       '2. Doe de test in de app: tien vragen, ongeveer zeven minuten.',
       `3. Tik onderaan je profiel op 'Profiel inbrengen'. Vul op de website deze teamcode in, tik op 'Code controleren' en daarna op 'Inbrengen': ${code}`,
       "Pas na 'Inbrengen' telt je profiel mee. Bewaar dit bericht tot dan: de teamcode heb je pas na de test nodig.",
@@ -152,7 +152,7 @@ const teamDashboard = {
       copyFailed: 'Kopiëren lukte niet. Probeer het nog een keer.',
       shareText: `Hoi,
 
-In ons team hebben we TOF Persona gedaan. Iedereen vult tien vragen in over de eigen manier van werken. Ik vond het vooral interessant om te zien hoe ik zelf werk, en waarom dat in een team soms schuurt.
+In ons team hebben we TOF Werkstijl gedaan. Iedereen vult tien vragen in over de eigen manier van werken. Ik vond het vooral interessant om te zien hoe ik zelf werk, en waarom dat in een team soms schuurt.
 
 Daarna krijgt het team een gezamenlijk beeld: welke werkstijlen er zijn en wat het team van de werkplek vraagt. Wie welke werkstijl heeft, staat er standaard niet in, ook niet voor de leidinggevende. En onder vijf ingevulde profielen is er geen beeld.
 

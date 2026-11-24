@@ -12,7 +12,7 @@ const home = {
 
   offerCard: {
     eyebrow: 'For yourself',
-    title: 'The TOF Persona app',
+    title: 'The TOF Workstyle app',
     text: 'Your own profile: how you work, what gives you energy and what you need. Got a team code? Then add it to your team afterwards.',
   },
 
@@ -25,7 +25,7 @@ const home = {
 
   footer: {
     logoAlt: 'TOF logo',
-    body: 'TOF Persona was developed by The Office Factory, which looks at workplace, digital tools and behaviour as one whole.',
+    body: 'TOF Workstyle was developed by The Office Factory, which looks at workplace, digital tools and behaviour as one whole.',
     website: 'Visit tof.services →',
     contact: 'Book a conversation',
     privacy:

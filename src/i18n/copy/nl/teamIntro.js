@@ -32,7 +32,7 @@ const teamIntro = {
     },
     appCta: 'Doe de test in de app →',
     requestLead: 'Nog geen team?',
-    requestLink: 'Vraag TOF Persona Team aan →',
+    requestLink: 'Vraag TOF Werkstijl Team aan →',
   },
 
   managerWelcome: {

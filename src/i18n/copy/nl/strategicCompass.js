@@ -19,7 +19,7 @@ const strategicCompass = {
     lead: 'Veel strategie-trajecten kijken naar de buitenwereld — trends, markt, technologie. Andere kijken naar binnen — cultuur, leiderschap, teams. Het Strategisch Kompas doet beide. Trends raken organisaties altijd anders, afhankelijk van wie er werkt.',
     // De betaalde modules naast elkaar. Module 1 (de gratis app) staat hier
     // bewust niet in: die is de ingang, geen alternatief voor dit traject.
-    compareHeads: ['TOF Persona Team', 'Organisatielandschap', 'Strategisch Kompas'],
+    compareHeads: ['TOF Werkstijl Team', 'Organisatielandschap', 'Strategisch Kompas'],
     compareRows: [
       {
         label: 'Blik',
@@ -172,7 +172,7 @@ const strategicCompass = {
       body: 'De app op je telefoon. Je eigen profiel, je werkplekbehoefte, je gespreksvoorbereiding.',
     },
     {
-      num: '02 · TOF Persona Team',
+      num: '02 · TOF Werkstijl Team',
       title: 'Hoe werken jullie samen?',
       body: 'Teamdashboard. Persona-mix, spanningen, werkplek­behoefte en quick wins.',
     },

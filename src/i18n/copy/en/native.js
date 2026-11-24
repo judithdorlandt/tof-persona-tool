@@ -189,18 +189,18 @@ const native = {
       subject: (persona) =>
         persona
           ? `My main working style came out as ${persona} — and I want to do this with the team`
-          : 'I took the test in TOF Persona — and I want to do this with the team',
+          : 'I took the test in TOF Workstyle — and I want to do this with the team',
       // Separate lines; they are joined with line breaks.
       body: (persona) => [
         'Hi,',
         '',
-        `I took the test in TOF Persona and it genuinely stopped me for a moment.${
+        `I took the test in TOF Workstyle and it genuinely stopped me for a moment.${
           persona ? ` My main working style came out as ${persona}.` : ''
         } For the first time it spells out why some days drain me and others I can take on anything — and what I need from my workspace and from you to get there. I made notes I would like to go through with you.`,
         '',
         'This is who I am, but I am really curious about how we work as a team. Would it be an idea to do this together with the team?',
         '',
-        'You can download the app as TOF Persona in the App Store or Google Play.',
+        'You can download the app as TOF Workstyle in the App Store or Google Play.',
         'How it works for a team is explained at www.persona-tool.nl/voor-je-team.',
         '',
         'Best,',

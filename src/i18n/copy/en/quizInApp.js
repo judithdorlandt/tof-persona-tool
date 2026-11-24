@@ -13,7 +13,7 @@ const quizInApp = {
   eyebrow: 'The app',
   title: 'The test lives in the app',
   lead:
-    'The test lives in the TOF Persona app — on your phone, no account needed. Afterwards, you decide whether your profile goes to a team.',
+    'The test lives in the TOF Workstyle app — on your phone, no account needed. Afterwards, you decide whether your profile goes to a team.',
 
   teamCode: {
     title: 'Your team code',
@@ -27,7 +27,7 @@ const quizInApp = {
   steps: {
     title: 'How it works',
     items: [
-      'Download TOF Persona from the App Store or Google Play.',
+      'Download TOF Workstyle from the App Store or Google Play.',
       'Take the test: ten questions, about seven minutes. Then an optional deep dive of about three more.',
       'Got a team code? Add your profile to your team afterwards.',
     ],

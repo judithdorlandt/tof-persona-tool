@@ -11,7 +11,7 @@ const prikkelLink = {
   eyebrow: 'Eén vraag voor je team',
   title: 'Hoeveel geluid heb je nodig om goed te werken?',
   intro:
-    'Je team gebruikt TOF Persona al. Er is één vraag bijgekomen, zodat het teambeeld ook laat zien hoeveel stilte of reuring jullie nodig hebben. Je profiel verandert er niet door.',
+    'Je team gebruikt TOF Werkstijl al. Er is één vraag bijgekomen, zodat het teambeeld ook laat zien hoeveel stilte of reuring jullie nodig hebben. Je profiel verandert er niet door.',
   alGehad: 'Kreeg je deze vraag al toen je je profiel invulde? Dan hoef je niets te doen.',
   privacy:
     'Je antwoord wordt bewaard zonder je naam en zonder je werkstijl, ook als je team de namenoptie gebruikt. Je team ziet alleen een signaal over het hele team, en pas vanaf vijf antwoorden.',
