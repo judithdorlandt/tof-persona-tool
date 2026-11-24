@@ -439,9 +439,6 @@ export default function TeamIntro({ setPage, setTeamResponses, setSelectedTeam }
                 }}>
                     <div style={{ position: 'absolute', left: 0, top: 0, width: 4, height: '100%', background: 'var(--tof-accent-rose)', borderRadius: '4px 0 0 4px' }} />
                     <div style={{ paddingLeft: isMobile ? 8 : 16, display: 'grid', gap: isMobile ? 12 : 14 }}>
-                        <div style={{ color: 'var(--tof-accent-rose)', letterSpacing: 2, fontSize: 12, textTransform: 'uppercase', fontWeight: 700 }}>
-                            {t.hero.eyebrow}
-                        </div>
                         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
                             <h1 style={{
                                 margin: 0,

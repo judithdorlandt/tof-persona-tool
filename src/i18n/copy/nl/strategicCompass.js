@@ -2,7 +2,7 @@ const strategicCompass = {
   back: '← Terug naar teamomgeving',
 
   hero: {
-    eyebrow: 'TOF Persona · Het Strategisch Kompas',
+    eyebrow: 'The Office Factory · Het Strategisch Kompas',
     titleLead: 'Wat de wereld vraagt, vertaald naar ',
     titleAccent: 'wie je team is',
     titleTail: '.',

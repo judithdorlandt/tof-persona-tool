@@ -130,19 +130,6 @@ export default function Home({ setPage }) {
             }}
           >
             <div>
-              <div
-                style={{
-                  color: 'var(--tof-accent-rose)',
-                  letterSpacing: 2,
-                  fontSize: 12,
-                  marginBottom: 12,
-                  textTransform: 'uppercase',
-                  fontWeight: 600,
-                }}
-              >
-                {t.eyebrow}
-              </div>
-
               <h1
                 style={{
                   fontSize: isMobile ? 34 : 44,

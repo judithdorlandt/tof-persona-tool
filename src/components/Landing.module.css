@@ -86,6 +86,10 @@
   color: var(--tof-text-muted);
   font-size: clamp(14px, 2vw, 17px);
   line-height: 1.7;
+  /* Geen los laatste woord ("having.") op smalle schermen. Werkt vanaf
+     Safari/iOS 17.5, Chrome 114, Firefox 121; daaronder gewone afbreking
+     (vandaar ook de vaste spatie in de Engelse tekst). */
+  text-wrap: balance;
 }
 
 /* Taalkeuze — op het web en in de app. Wrapt vanzelf zodra er meer talen

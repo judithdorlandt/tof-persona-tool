@@ -2,7 +2,7 @@ const strategicCompass = {
   back: '← Back to team space',
 
   hero: {
-    eyebrow: 'TOF Persona · The Strategic Compass',
+    eyebrow: 'The Office Factory · The Strategic Compass',
     titleLead: 'What the world asks of you, translated into ',
     titleAccent: 'who your team is',
     titleTail: '.',

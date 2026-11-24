@@ -116,7 +116,7 @@ Eerst één ding: stuur je team het bericht tussen de twee lijnen hieronder. Kop
 
 Hoi allemaal,
 
-Ik wil graag met jullie kijken welke werkstijlen er in ons team zitten en wat we van onze werkplek nodig hebben. Daarvoor doet ieder van ons een korte test in de app TOF Persona. Zodra genoeg collega's meedoen, krijgen we een beeld van het team. Zo doe je mee:
+Ik wil graag met jullie kijken hoe ieder van ons werkt en wat we als team van onze werkplek nodig hebben. Daarvoor doen we allemaal een korte test in de app TOF Werkstijl. Zodra genoeg collega's meedoen, krijgen we een beeld van het team. Zo doe je mee:
 
 1. Open deze link op je telefoon en download de app TOF Werkstijl:
 https://team.persona-tool.nl/quiz?code=${encodeURIComponent(code)}

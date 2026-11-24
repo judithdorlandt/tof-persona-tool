@@ -18,7 +18,7 @@ const kompasForms = {
     dashboard: {
         eyebrow: 'Strategic Compass',
         back: '← Back',
-        backToTool: '← Back to TOF Persona',
+        backToTool: '← Back to team space',
         thisOrganization: 'this organisation',
         defaultHorizon: '3–5 years',
 

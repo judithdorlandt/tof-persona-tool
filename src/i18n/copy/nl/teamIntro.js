@@ -43,7 +43,6 @@ const teamIntro = {
   },
 
   hero: {
-    eyebrow: 'TOF Persona Team',
     titleLead: 'Jouw team heeft een patroon.',
     titleHighlight: 'Hier zie je het.',
     leadDesktop:

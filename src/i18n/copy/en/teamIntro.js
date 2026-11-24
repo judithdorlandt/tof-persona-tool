@@ -40,7 +40,6 @@ const teamIntro = {
   },
 
   hero: {
-    eyebrow: 'TOF Persona Team',
     titleLead: 'Your team has a pattern.',
     titleHighlight: 'This is where you see it.',
     leadDesktop:

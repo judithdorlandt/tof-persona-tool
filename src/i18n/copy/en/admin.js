@@ -105,7 +105,7 @@ First, one thing: send your team the message between the two lines below. Copy i
 
 Hi all,
 
-I'd like us to look at which working styles we have in this team and what we need from our workplace. To do that, each of us takes a short test in the TOF Persona app. Once enough of us have done it, we'll get a picture of the team. Here's how to take part:
+I'd like us to look at which working styles we have in this team and what we need from our workplace. To do that, each of us takes a short test in the TOF Workstyle app. Once enough of us have done it, we'll get a picture of the team. Here's how to take part:
 
 1. Open this link on your phone and download the TOF Workstyle app:
 https://team.persona-tool.nl/en/quiz?code=${encodeURIComponent(code)}

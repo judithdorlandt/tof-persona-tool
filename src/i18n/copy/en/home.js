@@ -1,9 +1,8 @@
 const home = {
-  eyebrow: 'TOF Persona Team',
   heroTitle: 'Your profile starts in the app.',
   heroTitleAccent: 'Your team comes together here.',
   heroLead:
-    'Everyone on the team takes the test in the TOF Persona app. This is where you see what those profiles say together: the working styles in your team, where the energy is and where things rub.',
+    'Everyone on the team takes the test in the TOF Workstyle app. This is where you see what those profiles say together: the working styles in your team, where the energy is and where things rub.',
 
   // Opens the code window.
   ctaTeamEnvironment: 'I have an access code',
