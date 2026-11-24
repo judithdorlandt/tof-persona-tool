@@ -19,7 +19,7 @@ export default function Nav({
     isManager = false,
     onLogout,
 }) {
-    const { nav: t } = useCopy();
+    const { nav: t, common: c } = useCopy();
     const { lang, setLang } = useLang();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 820);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -139,7 +139,12 @@ export default function Nav({
                         <div className={styles.brand}>
                             <span className={styles.brandTitle}>
                                 <span className={styles.brandWord}>TOF</span>
-                                <span className={styles.brandAccent}>Persona</span>
+                                <span className={styles.brandAccent}>{c.brandAccent}</span>
+                                {/* Op het web (team.persona-tool.nl) heet het product
+                                    TOF Werkstijl Team; de app blijft TOF Werkstijl. */}
+                                {!IS_NATIVE && (
+                                    <span className={styles.brandTeam}>{c.brandTeam}</span>
+                                )}
                             </span>
                             <span className={styles.brandSub}>The Office Factory</span>
                         </div>

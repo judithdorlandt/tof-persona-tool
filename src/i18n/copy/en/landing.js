@@ -1,5 +1,5 @@
 const landing = {
-  logoButtonLabel: 'Start TOF Persona',
+  logoButtonLabel: 'Start TOF Workstyle',
   logoAlt: 'TOF logo',
   subtitle: 'Insight into working style, team dynamics and workplace.',
   languageLabel: 'Choose your language',

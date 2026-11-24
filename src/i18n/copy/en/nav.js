@@ -1,8 +1,8 @@
 const nav = {
   // The logo is a button; this is what it does. That makes the image itself
   // decorative (alt=""), or a screen reader would announce it twice.
-  logoToHome: 'Back to your overview',
-  logoToTeam: 'Back to your team overview',
+  logoToHome: 'TOF Workstyle, back to your overview',
+  logoToTeam: 'TOF Workstyle, back to your team overview',
   myTeam: 'My team',
   home: 'Home',
   intro: 'A quick explanation',

@@ -67,6 +67,8 @@
   font-style: italic;
   color: var(--tof-accent-rose);
 }
+/* "Team" (alleen web): recht en donker, net als "TOF". 0.25em i.p.v. 0.15em: de cursieve l/e van het accentwoord hangt naar rechts over. */
+.titleTeam { margin-left: 0.25em; font-family: inherit; }
 /* Regel 2 van het woordmerk, gelijk aan persona-tool.nl. De negatieve marge
    haalt hem uit de 20px-gap van .stage, zodat hij bij de titel hoort. */
 .titleSub {

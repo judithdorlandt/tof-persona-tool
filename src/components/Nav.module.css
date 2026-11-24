@@ -84,10 +84,13 @@
   font-style: italic;
   color: var(--tof-accent-rose);
 }
+/* "Team" (alleen web): recht en donker, net als "TOF". 0.25em i.p.v. 0.15em: de cursieve l/e van het accentwoord hangt naar rechts over. */
+.brandTeam { margin-left: 0.25em; font-family: inherit; }
 /* Regel 2 van het woordmerk, gelijk aan persona-tool.nl: gewone letters,
    geen kapitalen of extra letterafstand. Valt op mobiel weg (zie onder). */
 .brandSub {
-  margin-top: 2px;
+  /* 4px: de j en de y van Werkstijl/Workstyle steken onder de basislijn uit. */
+  margin-top: 4px;
   font-family: var(--tof-font-body);
   font-size: 12px;
   color: var(--tof-text-muted);

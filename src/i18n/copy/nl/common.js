@@ -1,4 +1,7 @@
 const common = {
+  // Woordmerk: "TOF" + cursief accentwoord; op het web volgt "Team".
+  brandAccent: 'Werkstijl',
+  brandTeam: 'Team',
   back: 'Terug',
   next: 'Verder',
   close: 'Sluiten',

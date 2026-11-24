@@ -1,4 +1,7 @@
 const common = {
+  // Wordmark: "TOF" + italic accent word; on the web followed by "Team".
+  brandAccent: 'Workstyle',
+  brandTeam: 'Team',
   back: 'Back',
   next: 'Continue',
   close: 'Close',

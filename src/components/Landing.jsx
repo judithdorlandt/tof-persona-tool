@@ -13,7 +13,7 @@ import { IS_NATIVE } from '../config/platform';
 const AUTO_ENTER_MS = 2800;
 
 export default function Landing({ setPage }) {
-    const { landing: t } = useCopy();
+    const { landing: t, common: c } = useCopy();
     const { lang, setLang, rememberLang, langChosen } = useLang();
     const [isVisible, setIsVisible] = useState(false);
     const [isLeaving, setIsLeaving] = useState(false);
@@ -67,7 +67,10 @@ export default function Landing({ setPage }) {
 
                 <div className={styles.title}>
                     <span className={styles.titleSpace}>TOF</span>
-                    <span className={styles.titleAccent}>Persona</span>
+                    <span className={styles.titleAccent}>{c.brandAccent}</span>
+                    {!IS_NATIVE && (
+                        <span className={styles.titleTeam}>{c.brandTeam}</span>
+                    )}
                 </div>
                 <p className={styles.titleSub}>The Office Factory</p>
 

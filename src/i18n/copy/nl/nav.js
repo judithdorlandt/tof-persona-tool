@@ -1,8 +1,8 @@
 const nav = {
   // Het logo is een knop; dit is wat hij doet. Het plaatje zelf is daarmee
   // decoratief (alt=""), anders hoort een schermlezer het dubbel.
-  logoToHome: 'Terug naar je overzicht',
-  logoToTeam: 'Terug naar je teamoverzicht',
+  logoToHome: 'TOF Werkstijl, terug naar je overzicht',
+  logoToTeam: 'TOF Werkstijl, terug naar je teamoverzicht',
   myTeam: 'Mijn team',
   home: 'Home',
   intro: 'Eerst even uitleg',
